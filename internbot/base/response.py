@@ -1,3 +1,5 @@
+# add appearance order
+
 from operator import attrgetter
 
 class Responses(object):
