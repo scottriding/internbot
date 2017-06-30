@@ -56,7 +56,8 @@ class QSFBlocksParser(object):
     def parse(self, blocks_element):
         blocks = Blocks()
         for block_element in blocks_element['Payload']:
-            block = Block(block_element['Description'])
-            blocks.add(block)
+            if block_element['Description'] != 'Trash / Unused Questions':
+                block = Block(block_element['Description'])
+                blocks.add(block)
         return blocks
 
