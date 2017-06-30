@@ -7,11 +7,10 @@ class Responses(object):
     def __init__(self):
         self.__responses = []
 
-    def add(self, response, frequency):
+    def add(self, response, code=None):
         self.__responses.append(
-            Response(response, frequency)
+            Response(response, code)
         )
-        self.sort()
 
     def sort(self):
         self.__responses.sort(
@@ -19,15 +18,24 @@ class Responses(object):
             reverse = True
         )
 
+    def sort_by_codes(self, codes):
+        pass
+
     def __iter__(self):
         return(iter(self.__responses))
+
+    def __repr__(self):
+        result = ''
+        for response in self.__responses:
+            result += "\t\t\t%s\n" % str(response)
+        return result
 
 
 class Response(object):
 
-    def __init__ (self, response, frequency):
+    def __init__ (self, response, code=None):
         self.response = response
-        self.frequency = frequency
+        self.code = code
 
     @property
     def response(self):
@@ -36,6 +44,14 @@ class Response(object):
     @response.setter
     def response(self, response):
         self.__response = str(response)
+
+    @property
+    def code(self):
+        return self.__code
+
+    @code.setter
+    def code(self, code):
+        self.__code = str(code)
 
     @property
     def frequency(self):
@@ -47,5 +63,5 @@ class Response(object):
 
     def __repr__(self):
         result = ""
-        result += "%s: %s" % (self.response, str(self.frequency))
+        result += "%s: %s" % (self.code, self.response)
         return result

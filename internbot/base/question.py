@@ -10,6 +10,13 @@ class Questions(object):
     def add(self, question):
         self.__questions.append(question)
 
+    def replace(self, question):
+        location = self.location_by_id(question.id)
+        self.__questions[location] = question
+
+    def location_by_id(self, question_id):
+        next((i for i, question in enumerate(self.__questions) if question.id == question_id), None)
+
     def get_by_name(self, question_name):
         pass
 
@@ -71,9 +78,12 @@ class Question(object):
     def responses(self):
         return self.__responses
 
-    def add_response(self, response, freq):
-        self.__responses.add(response, freq)
+    def add_response(self, response, code=None):
+        self.__responses.add(response, code)
 
     def __repr__(self):
-        return "Question: %s" % self.id
+        result = ''
+        result += "Question: %s" % self.id
+        result += str(self.__responses)
+        return result
 
