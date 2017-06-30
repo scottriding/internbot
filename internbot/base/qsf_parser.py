@@ -1,6 +1,7 @@
 import json
 from survey import Survey
 from block import Blocks, Block
+from question import Questions, Question
 
 class QSFParser(object):
 
@@ -58,6 +59,10 @@ class QSFBlocksParser(object):
         for block_element in blocks_element['Payload']:
             if block_element['Description'] != 'Trash / Unused Questions':
                 block = Block(block_element['Description'])
+                for question_id in block_element['BlockElements']:
+                    if question_id['Type'] == 'Question':
+                        question = Question(question_id['QuestionID'])
+                        block.add_question(question)
                 blocks.add(block)
         return blocks
 

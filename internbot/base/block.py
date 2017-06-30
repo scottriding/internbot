@@ -20,7 +20,13 @@ class Blocks(object):
 class Block(object):
 
     def __init__ (self, block_name):
+        self.__questions = Questions()
         self.name = block_name
 
+    def add_question(self, question):
+        self.__questions.add(question)
+
     def __repr__(self):
-        return "Block: %s" % (self.name)
+        result = "Block: %s\n" % (self.name)
+        result += str(self.__questions)
+        return result
