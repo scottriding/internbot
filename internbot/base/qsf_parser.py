@@ -53,6 +53,9 @@ class QSFBlocksParser(object):
 
 class QSFQuestionsParser(object):
 
+    def __init__(self):
+        self.matrix_parser = QSFQuestionsMatrixParser()
+        
     def parse(self, question_elements):
         questions = []
         matrix_questions = []
@@ -67,17 +70,25 @@ class QSFQuestionsParser(object):
                 if question_payload.get('Choices') and len(question_payload['Choices']) > 0:
                     for code, response in question_payload['Choices'].iteritems():
                         question.add_response(response['Display'], code)
+                questions.append(question)        
             elif question.type == 'Matrix' and (len(question_payload['Choices']) > 0):
                 matrix_prompts = question_payload['Choices']
-                for code, prompt in matrix_prompts.iteritems():
-                    matrix_question = Question(str(question_payload['QuestionID']) + '_' + code)
-                    matrix_question.subtype = question_payload['SubSelector']
-                    matrix_question.name = str(question_payload['QuestionID']) + '_' + code
-                    matrix_question.prompt = prompt['Display']
-                    questions.append(matrix_question)    
-            questions.append(question)
+                matrix_questions = self.matrix_parser.parse(question_payload, matrix_prompts)   
+                for question in matrix_questions:
+                    questions.append(question)
         print questions
         return questions
+        
+class QSFQuestionsMatrixParser(object):
 
+    def parse(self, question_payload, matrix_prompts):
+        matrix_questions = []
+        for code, prompt in matrix_prompts.iteritems():
+            matrix_question = Question(str(question_payload['QuestionID']) + '_' + code)
+            matrix_question.subtype = question_payload['SubSelector']
+            matrix_question.name = str(question_payload['QuestionID']) + '_' + code
+            matrix_question.prompt = prompt['Display']
+            matrix_questions.append(matrix_question)
+        return matrix_questions    
 
 
