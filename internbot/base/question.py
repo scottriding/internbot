@@ -105,7 +105,7 @@ class Question(object):
 
     def __repr__(self):
         result = ''
-        result += "Question: %s" % self.name
+        result += "Question: %s" % self.id
         result += str(self.__responses)
         return result
 

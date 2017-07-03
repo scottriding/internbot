@@ -86,8 +86,10 @@ class QSFQuestionsMatrixParser(object):
         for code, prompt in matrix_prompts.iteritems():
             matrix_question = Question(str(question_payload['QuestionID']) + '_' + code)
             matrix_question.subtype = question_payload['SubSelector']
-            matrix_question.name = str(question_payload['QuestionID']) + '_' + code
+            matrix_question.name = str(question_payload['DataExportTag']) + '_' + code
             matrix_question.prompt = prompt['Display']
+            for code, response in question_payload['Answers'].iteritems():
+                matrix_question.add_response(response['Display'], code)
             matrix_questions.append(matrix_question)
         return matrix_questions    
 

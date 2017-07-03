@@ -26,8 +26,8 @@ class Responses(object):
 
     def __repr__(self):
         result = ''
-        #for response in self.__responses:
-        #    result += "\t\t\t%s\n" % str(response)
+        for response in self.__responses:
+            result += "\t\t\t%s\n" % str(response)
         return result
 
 
