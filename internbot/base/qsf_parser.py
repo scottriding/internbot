@@ -55,17 +55,28 @@ class QSFQuestionsParser(object):
 
     def parse(self, question_elements):
         questions = []
+        matrix_questions = []
         for question_element in question_elements:
             question_payload = question_element['Payload']
             question = Question(question_payload['QuestionID'])
             question.name = question_payload['DataExportTag']
             question.prompt = question_payload['QuestionText']
             question.type = question_payload['QuestionType']
-            question.subtype = question_payload['Selector']
-            if question_payload.get('Choices') and len(question_payload['Choices']) > 0:
-                for code, response in question_payload['Choices'].iteritems():
-                    question.add_response(response['Display'], code)
+            if not(question.type == 'Matrix'):
+                question.subtype = question_payload['Selector']
+                if question_payload.get('Choices') and len(question_payload['Choices']) > 0:
+                    for code, response in question_payload['Choices'].iteritems():
+                        question.add_response(response['Display'], code)
+            elif question.type == 'Matrix' and (len(question_payload['Choices']) > 0):
+                matrix_prompts = question_payload['Choices']
+                for code, prompt in matrix_prompts.iteritems():
+                    matrix_question = Question(str(question_payload['QuestionID']) + '_' + code)
+                    matrix_question.subtype = question_payload['SubSelector']
+                    matrix_question.name = str(question_payload['QuestionID']) + '_' + code
+                    matrix_question.prompt = prompt['Display']
+                    questions.append(matrix_question)    
             questions.append(question)
+        print questions
         return questions
 
 
