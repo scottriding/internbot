@@ -19,7 +19,6 @@ class Blocks(object):
 
     def update_question(self, question):
         block = self.find_by_question_id(question.id)
-        print(block)
         block.update_question(question)
 
     def __repr__(self):

@@ -13,10 +13,15 @@ class Questions(object):
     def replace(self, question):
         location = self.location_by_id(question.id)
         self.__questions[location] = question
-
+    
     def location_by_id(self, question_id):
-        next((i for i, question in enumerate(self.__questions) if question.id == question_id), None)
-
+        count = 0
+        for question in self.__questions:
+            if question_id == question.id:
+                return count
+            else:
+                count += 1
+        return None        
     def get_by_name(self, question_name):
         pass
 

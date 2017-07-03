@@ -17,8 +17,7 @@ class QSFParser(object):
         for block in blocks:
             survey.add_block(block)
         questions = self.questions_parser.parse(self.find_elements('SQ', qsf_json))
-        for question in questions:
-            survey.update_question(question)
+        survey.update_questions(questions)
         return survey
 
     def parse_json(self, path_to_qsf):

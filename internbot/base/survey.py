@@ -9,11 +9,11 @@ class Survey(object):
     def add_block(self, block):
         self.__blocks.add(block)
 
-    def update_question(self, question):
-        print(question)
-        if self.__blocks.question_id_exists(question.id):
-            block = self.__blocks.find_by_question_id(question.id)
-            block.update_question(question)
+    def update_questions(self, questions):
+        for question in questions:
+            if self.__blocks.question_id_exists(question.id):
+                block = self.__blocks.find_by_question_id(question.id)
+                block.update_question(question)
 
     def __repr__ (self):
         result = ''
