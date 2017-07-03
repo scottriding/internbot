@@ -22,6 +22,7 @@ class Questions(object):
             else:
                 count += 1
         return None        
+    
     def get_by_name(self, question_name):
         pass
 
@@ -62,6 +63,22 @@ class Question(object):
     @name.setter
     def name(self, name):
         self.__name = str(name)
+        
+    @property
+    def type(self):
+        return self.__type
+
+    @type.setter
+    def type(self, type):
+        self.__type = str(type)
+
+    @property
+    def subtype(self):
+        return self.__subtype
+
+    @subtype.setter
+    def subtype(self, subtype):
+        self.__subtype = str(subtype)        
 
     @property
     def prompt(self):
@@ -88,7 +105,7 @@ class Question(object):
 
     def __repr__(self):
         result = ''
-        result += "Question: %s" % self.id
+        result += "Question: %s" % self.name
         result += str(self.__responses)
         return result
 
