@@ -43,7 +43,7 @@ class QSFBlocksParser(object):
     def parse(self, blocks_element):
         blocks = Blocks()
         for block_element in blocks_element['Payload']:
-            if block_element['Description'] != 'Trash / Unused Questions':
+            if block_element['Type'] != 'Trash':
                 block = Block(block_element['Description'])
                 for question_id in block_element['BlockElements']:
                     if question_id['Type'] == 'Question':
@@ -66,7 +66,7 @@ class QSFQuestionsParser(object):
             question.prompt = question_payload['QuestionText']
             question.type = question_payload['QuestionType']
 
-            if question_payload.get('DynamicChoices'):
+            if question_payload.get('DynamicChoices') and question.type != 'Matrix':
                 question.has_carry_forward_responses = True
                 carry_forward_locator = question_payload['DynamicChoices']['Locator']
                 carry_forward_match = re.match('q://(QID\d+).+', carry_forward_locator)
@@ -91,17 +91,16 @@ class QSFQuestionsParser(object):
         dynamic_questions = [question for question in questions if question.has_carry_forward_responses == True]
         for dynamic_question in dynamic_questions:
             matching_question = next((question for question in questions if question.id == dynamic_question.carry_forward_question_id), None)
-            if matching_question == None: # matching_question is matrix so grab each question
-                self.carry_forward_prompts(dynamic_question)
-            else:
-                dynamic_question.response_order = matching_question.response_order
-                for response in matching_question.responses:
-                    dynamic_question.add_response(response.response, response.code)
+            dynamic_question.response_order = matching_question.response_order
+            for response in matching_question.responses:
+                dynamic_question.add_response(response.response, response.code)
         return questions
-    
+
     def carry_forward_prompts(self, dynamic_question):
-        pass
-        
+        dynamic_questions = [question for question in questions if question.has_carry_forward_prompts == True]
+        print(dynamic_questions)
+        return questions
+
 
 class QSFQuestionsMatrixParser(object):
 
@@ -109,7 +108,7 @@ class QSFQuestionsMatrixParser(object):
         matrix_questions = []
         prompts = question_payload['Choices']
         responses = question_payload['Answers']
-        if len(prompts) > 0:
+        if question_payload.get('DynamicChoices') is None:
             for code, prompt in prompts.iteritems():
                 question = Question()
                 question.id = '%s_%s' % (str(question_payload['QuestionID']), code)
@@ -127,7 +126,7 @@ class QSFQuestionsMatrixParser(object):
             question.name = question_payload['DataExportTag']
             question.prompt = question_payload['QuestionText']
             question.type = question_payload['QuestionType']
-            question.has_carry_forward_responses = True
+            question.has_carry_forward_prompts = True
             carry_forward_locator = question_payload['DynamicChoices']['Locator']
             carry_forward_match = re.match('q://(QID\d+).+', carry_forward_locator)
             question.carry_forward_question_id = carry_forward_match.group(1)

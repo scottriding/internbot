@@ -34,6 +34,8 @@ class Question(object):
         self.__responses = Responses()
         self.__response_order = []
         self.has_carry_forward_responses = False
+        self.has_carry_forward_prompts = False
+        self.subtype = ''
 
     @property
     def id(self):
@@ -76,6 +78,14 @@ class Question(object):
         self.__has_carry_forward_responses = bool(has_carry_forward_responses)
 
     @property
+    def has_carry_forward_prompts(self):
+        return self.__has_carry_forward_prompts
+
+    @has_carry_forward_prompts.setter
+    def has_carry_forward_prompts(self, has_carry_forward_prompts):
+        self.__has_carry_forward_prompts = bool(has_carry_forward_prompts)
+
+    @property
     def carry_forward_question_id(self):
         return self.__carry_forward_question_id
 
@@ -113,7 +123,7 @@ class Question(object):
             self.__response_order.append(str(response_location))
 
     def spss_name(self):
-        if self.type == 'MC' and self.subtype == 'SAVR':
+        if self.type == 'MC' and self.subtype in ['SAVR','SAHR']:
             return self.name
         elif self.type == 'Matrix' and self.subtype == 'SingleAnswer':
             return self.name

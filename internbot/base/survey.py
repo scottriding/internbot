@@ -12,7 +12,8 @@ class Survey(object):
     def add_questions(self, questions):
         for question in questions:
             block = self.__blocks.find_by_assigned_id(question.id)
-            block.add_question(question)
+            if block is not None:
+                block.add_question(question)
 
     def __repr__ (self):
         result = ''

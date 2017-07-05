@@ -36,7 +36,7 @@ class Block(object):
 
     def is_id_assigned(self, question_id):
         for id in self.__assigned_ids:
-            if re.match('(%s)_?(\d+)?' % id, question_id):
+            if re.match('(%s)(?:\_|$)(\d+)?' % id, question_id):
                 return True
         return False
 
