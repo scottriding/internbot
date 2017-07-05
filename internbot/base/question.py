@@ -1,6 +1,7 @@
 # add question type
 
 from response import Responses
+import re
 
 class Questions(object):
 
@@ -10,24 +11,9 @@ class Questions(object):
     def add(self, question):
         self.__questions.append(question)
 
-    def replace(self, question):
-        location = self.location_by_id(question.id)
-        self.__questions[location] = question
-
-    def location_by_id(self, question_id):
-        count = 0
-        for question in self.__questions:
-            if question_id == question.id:
-                return count
-            else:
-                count += 1
-        return None
-
-    def get_by_name(self, question_name):
-        pass
-
-    def get_by_id(self, question_id):
-        pass
+    def sort(self, question_id_order):
+        sorter = QuestionSorter(question_id_order)
+        self.__questions = sorter.sort(self.__questions)
 
     def __len__(self):
         return len(self.__questions)
@@ -108,4 +94,29 @@ class Question(object):
         result += "Question: %s\n" % self.id
         result += str(self.__responses)
         return result
+
+
+class QuestionSorter(object):
+
+    def __init__(self, question_order):
+        self.__order = question_order
+
+    def sort(self, questions):
+        return sorted(questions, cmp=self.compare)
+
+    def compare(self, question1, question2):
+        id1_components = re.match('(QID\d+)(_\d+)?', question1.id)
+        id2_components = re.match('(QID\d+)(_\d+)?', question2.id)
+        id1_location = self.__order.index(id1_components.group(1))
+        id2_location = self.__order.index(id2_components.group(1))
+        if id1_location > id2_location:
+            return 1
+        elif id1_location < id2_location:
+            return -1
+        elif id1_components.group(2) > id2_components.group(2):
+            return 1
+        elif id1_components.group(2) < id2_components.group(2):
+            return -1
+        else:
+            return 0
 

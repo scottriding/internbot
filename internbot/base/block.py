@@ -42,6 +42,7 @@ class Block(object):
 
     def add_question(self, question):
         self.__questions.add(question)
+        self.__questions.sort(self.__assigned_ids)
 
     def __repr__(self):
         result = "Block: %s\n" % (self.name)
