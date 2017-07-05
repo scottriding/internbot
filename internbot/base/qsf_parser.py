@@ -17,7 +17,7 @@ class QSFParser(object):
         for block in blocks:
             survey.add_block(block)
         questions = self.questions_parser.parse(self.find_elements('SQ', qsf_json))
-        survey.update_questions(questions)
+        survey.add_questions(questions)
         return survey
 
     def parse_json(self, path_to_qsf):
@@ -46,8 +46,7 @@ class QSFBlocksParser(object):
                 block = Block(block_element['Description'])
                 for question_id in block_element['BlockElements']:
                     if question_id['Type'] == 'Question':
-                        question = Question(question_id['QuestionID'])
-                        block.add_question(question)
+                        block.assign_id(question_id['QuestionID'])
                 blocks.add(block)
         return blocks
 
@@ -55,42 +54,40 @@ class QSFQuestionsParser(object):
 
     def __init__(self):
         self.matrix_parser = QSFQuestionsMatrixParser()
-        
+
     def parse(self, question_elements):
         questions = []
-        matrix_questions = []
         for question_element in question_elements:
             question_payload = question_element['Payload']
             question = Question(question_payload['QuestionID'])
             question.name = question_payload['DataExportTag']
             question.prompt = question_payload['QuestionText']
             question.type = question_payload['QuestionType']
-            if not(question.type == 'Matrix'):
+            if question.type == 'Matrix':
+                matrix_questions = self.matrix_parser.parse(question_payload)
+                for question in matrix_questions:
+                    questions.append(question)
+            else:
                 question.subtype = question_payload['Selector']
                 if question_payload.get('Choices') and len(question_payload['Choices']) > 0:
                     for code, response in question_payload['Choices'].iteritems():
                         question.add_response(response['Display'], code)
-                questions.append(question)        
-            elif question.type == 'Matrix' and (len(question_payload['Choices']) > 0):
-                matrix_prompts = question_payload['Choices']
-                matrix_questions = self.matrix_parser.parse(question_payload, matrix_prompts)   
-                for question in matrix_questions:
-                    questions.append(question)
-        print questions
+                questions.append(question)
         return questions
-        
+
 class QSFQuestionsMatrixParser(object):
 
-    def parse(self, question_payload, matrix_prompts):
+    def parse(self, question_payload):
         matrix_questions = []
-        for code, prompt in matrix_prompts.iteritems():
-            matrix_question = Question(str(question_payload['QuestionID']) + '_' + code)
-            matrix_question.subtype = question_payload['SubSelector']
-            matrix_question.name = str(question_payload['DataExportTag']) + '_' + code
-            matrix_question.prompt = prompt['Display']
-            for code, response in question_payload['Answers'].iteritems():
-                matrix_question.add_response(response['Display'], code)
-            matrix_questions.append(matrix_question)
-        return matrix_questions    
-
+        prompts = question_payload['Choices']
+        responses = question_payload['Answers']
+        for code, prompt in prompts.iteritems():
+            question = Question('%s_%s' % (str(question_payload['QuestionID']), code))
+            question.subtype = question_payload['SubSelector']
+            question.name = '%s_%s' % (str(question_payload['DataExportTag']), code)
+            question.prompt = prompt['Display']
+            for code, response in responses.iteritems():
+                question.add_response(response['Display'], code)
+            matrix_questions.append(question)
+        return matrix_questions
 

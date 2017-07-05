@@ -13,7 +13,7 @@ class Questions(object):
     def replace(self, question):
         location = self.location_by_id(question.id)
         self.__questions[location] = question
-    
+
     def location_by_id(self, question_id):
         count = 0
         for question in self.__questions:
@@ -21,8 +21,8 @@ class Questions(object):
                 return count
             else:
                 count += 1
-        return None        
-    
+        return None
+
     def get_by_name(self, question_name):
         pass
 
@@ -63,7 +63,7 @@ class Question(object):
     @name.setter
     def name(self, name):
         self.__name = str(name)
-        
+
     @property
     def type(self):
         return self.__type
@@ -78,7 +78,7 @@ class Question(object):
 
     @subtype.setter
     def subtype(self, subtype):
-        self.__subtype = str(subtype)        
+        self.__subtype = str(subtype)
 
     @property
     def prompt(self):
@@ -105,7 +105,7 @@ class Question(object):
 
     def __repr__(self):
         result = ''
-        result += "Question: %s" % self.id
+        result += "Question: %s\n" % self.id
         result += str(self.__responses)
         return result
 
