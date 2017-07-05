@@ -1,4 +1,5 @@
 import json
+import re
 from survey import Survey
 from block import Blocks, Block
 from question import Questions, Question
@@ -64,6 +65,13 @@ class QSFQuestionsParser(object):
             question.name = question_payload['DataExportTag']
             question.prompt = question_payload['QuestionText']
             question.type = question_payload['QuestionType']
+
+            if question_payload.get('DynamicChoices'):
+                question.has_carry_forward_responses = True
+                carry_forward_locator = question_payload['DynamicChoices']['Locator']
+                carry_forward_match = re.match('q://(QID\d+).+', carry_forward_locator)
+                question.carry_forward_question_id = carry_forward_match.group(1)
+
             if question.type == 'Matrix':
                 matrix_questions = self.matrix_parser.parse(question_payload)
                 for question in matrix_questions:
@@ -75,7 +83,20 @@ class QSFQuestionsParser(object):
                     for code, response in question_payload['Choices'].iteritems():
                         question.add_response(response['Display'], code)
                 questions.append(question)
+
+        questions = self.carry_forward_responses(questions)
         return questions
+
+    def carry_forward_responses(self, questions):
+        dynamic_questions = [question for question in questions if question.has_carry_forward_responses == True]
+        for dynamic_question in dynamic_questions:
+            matching_question = next((question for question in questions if question.id == dynamic_question.carry_forward_question_id))
+            dynamic_question.response_order = matching_question.response_order
+            for response in matching_question.responses:
+                dynamic_question.add_response(response.response, response.code)
+            print(dynamic_question)
+        return questions
+
 
 class QSFQuestionsMatrixParser(object):
 

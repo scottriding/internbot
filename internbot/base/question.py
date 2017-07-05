@@ -33,6 +33,7 @@ class Question(object):
     def __init__(self):
         self.__responses = Responses()
         self.__response_order = []
+        self.has_carry_forward_responses = False
 
     @property
     def id(self):
@@ -65,6 +66,22 @@ class Question(object):
     @subtype.setter
     def subtype(self, subtype):
         self.__subtype = str(subtype)
+
+    @property
+    def has_carry_forward_responses(self):
+        return self.__has_carry_forward_responses
+
+    @has_carry_forward_responses.setter
+    def has_carry_forward_responses(self, has_carry_forward_responses):
+        self.__has_carry_forward_responses = bool(has_carry_forward_responses)
+
+    @property
+    def carry_forward_question_id(self):
+        return self.__carry_forward_question_id
+
+    @carry_forward_question_id.setter
+    def carry_forward_question_id(self, carry_forward_question_id):
+        self.__carry_forward_question_id = str(carry_forward_question_id)
 
     @property
     def prompt(self):
