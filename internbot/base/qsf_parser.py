@@ -90,12 +90,18 @@ class QSFQuestionsParser(object):
     def carry_forward_responses(self, questions):
         dynamic_questions = [question for question in questions if question.has_carry_forward_responses == True]
         for dynamic_question in dynamic_questions:
-            matching_question = next((question for question in questions if question.id == dynamic_question.carry_forward_question_id))
-            dynamic_question.response_order = matching_question.response_order
-            for response in matching_question.responses:
-                dynamic_question.add_response(response.response, response.code)
+            matching_question = next((question for question in questions if question.id == dynamic_question.carry_forward_question_id), None)
+            if matching_question == None: # matching_question is matrix so grab each question
+                self.carry_forward_prompts(dynamic_question)
+            else:
+                dynamic_question.response_order = matching_question.response_order
+                for response in matching_question.responses:
+                    dynamic_question.add_response(response.response, response.code)
         return questions
-
+    
+    def carry_forward_prompts(self, dynamic_question):
+        pass
+        
 
 class QSFQuestionsMatrixParser(object):
 
@@ -103,16 +109,28 @@ class QSFQuestionsMatrixParser(object):
         matrix_questions = []
         prompts = question_payload['Choices']
         responses = question_payload['Answers']
-        for code, prompt in prompts.iteritems():
+        if len(prompts) > 0:
+            for code, prompt in prompts.iteritems():
+                question = Question()
+                question.id = '%s_%s' % (str(question_payload['QuestionID']), code)
+                question.type = question_payload['QuestionType']
+                question.subtype = question_payload['SubSelector']
+                question.name = '%s_%s' % (str(question_payload['DataExportTag']), code)
+                question.prompt = prompt['Display']
+                question.response_order = question_payload['AnswerOrder']
+                for code, response in responses.iteritems():
+                    question.add_response(response['Display'], code)
+            matrix_questions.append(question)
+        else:
             question = Question()
-            question.id = '%s_%s' % (str(question_payload['QuestionID']), code)
+            question.id = question_payload['QuestionID']
+            question.name = question_payload['DataExportTag']
+            question.prompt = question_payload['QuestionText']
             question.type = question_payload['QuestionType']
-            question.subtype = question_payload['SubSelector']
-            question.name = '%s_%s' % (str(question_payload['DataExportTag']), code)
-            question.prompt = prompt['Display']
-            question.response_order = question_payload['AnswerOrder']
-            for code, response in responses.iteritems():
-                question.add_response(response['Display'], code)
+            question.has_carry_forward_responses = True
+            carry_forward_locator = question_payload['DynamicChoices']['Locator']
+            carry_forward_match = re.match('q://(QID\d+).+', carry_forward_locator)
+            question.carry_forward_question_id = carry_forward_match.group(1)
             matrix_questions.append(question)
         return matrix_questions
 
