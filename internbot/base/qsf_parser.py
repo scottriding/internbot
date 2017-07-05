@@ -106,6 +106,7 @@ class QSFQuestionsMatrixParser(object):
         for code, prompt in prompts.iteritems():
             question = Question()
             question.id = '%s_%s' % (str(question_payload['QuestionID']), code)
+            question.type = question_payload['QuestionType']
             question.subtype = question_payload['SubSelector']
             question.name = '%s_%s' % (str(question_payload['DataExportTag']), code)
             question.prompt = prompt['Display']

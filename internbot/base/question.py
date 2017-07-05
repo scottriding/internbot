@@ -112,13 +112,28 @@ class Question(object):
         for response_location in response_order:
             self.__response_order.append(str(response_location))
 
+    def spss_name(self):
+        if self.type == 'MC' and self.subtype == 'SAVR':
+            return self.name
+        elif self.type == 'Matrix' and self.subtype == 'SingleAnswer':
+            return self.name
+        elif self.type == 'MC' and self.subtype == 'MAVR':
+            names = []
+            for response in self.responses:
+                names.append('%s_%s' % (self.name, response.code))
+            return names
+        elif self.type == 'DB':
+            return self.name
+        else:
+            return 'SPSS name not known'
+
     def add_response(self, response, code=None):
         self.__responses.add(response, code)
         self.__responses.sort(self.response_order)
 
     def __repr__(self):
         result = ''
-        result += "Question: %s\n" % self.id
+        result += "Question: %s\n" % self.spss_name()
         result += str(self.__responses)
         return result
 
