@@ -35,7 +35,6 @@ class Question(object):
         self.__response_order = []
         self.has_carry_forward_responses = False
         self.has_carry_forward_prompts = False
-        self.subtype = ''
 
     @property
     def id(self):
@@ -135,7 +134,7 @@ class Question(object):
         elif self.type == 'DB':
             return self.name
         else:
-            return 'SPSS name not known'
+            return self.name
 
     def add_response(self, response, code=None):
         self.__responses.add(response, code)

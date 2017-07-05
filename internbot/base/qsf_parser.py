@@ -85,6 +85,7 @@ class QSFQuestionsParser(object):
                 questions.append(question)
 
         questions = self.carry_forward_responses(questions)
+        questions = self.carry_forward_prompts(questions)
         return questions
 
     def carry_forward_responses(self, questions):
@@ -96,9 +97,21 @@ class QSFQuestionsParser(object):
                 dynamic_question.add_response(response.response, response.code)
         return questions
 
-    def carry_forward_prompts(self, dynamic_question):
+    def carry_forward_prompts(self, questions):
         dynamic_questions = [question for question in questions if question.has_carry_forward_prompts == True]
-        print(dynamic_questions)
+        carried_forward_questions = []
+        for dynamic_question in dynamic_questions:
+            matching_questions = [] # Find all the questions that have the same prefix as my question_id carry forward
+            for matching_question in matching_questions:
+                question = Question()
+                question.prompt = matching_question.prompt
+                question.type = dynamic_question.type
+                question.subtype = dynamic_question.subtype
+                question.has_carry_forward_prompts = dynamic_question.has_carry_forward_prompts
+                question.carry_forward_question_id = dynamic_question.carry_forward_question_id
+                question.id = '%s_%s' % (dynamic_question.id, matching_question)
+                question.name =
+                carried_forward_questions.append(question)
         return questions
 
 
@@ -114,7 +127,10 @@ class QSFQuestionsMatrixParser(object):
                 question.id = '%s_%s' % (str(question_payload['QuestionID']), code)
                 question.type = question_payload['QuestionType']
                 question.subtype = question_payload['SubSelector']
-                question.name = '%s_%s' % (str(question_payload['DataExportTag']), code)
+                if question_payload['ChoiceDataExportTags']:
+                    question.name = question_payload['ChoiceDataExportTags'][code]
+                else:
+                    question.name = '%s_%s' % (str(question_payload['DataExportTag']), code)
                 question.prompt = prompt['Display']
                 question.response_order = question_payload['AnswerOrder']
                 for code, response in responses.iteritems():
@@ -126,6 +142,7 @@ class QSFQuestionsMatrixParser(object):
             question.name = question_payload['DataExportTag']
             question.prompt = question_payload['QuestionText']
             question.type = question_payload['QuestionType']
+            question.subtype = question_payload['SubSelector']
             question.has_carry_forward_prompts = True
             carry_forward_locator = question_payload['DynamicChoices']['Locator']
             carry_forward_match = re.match('q://(QID\d+).+', carry_forward_locator)
