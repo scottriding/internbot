@@ -94,7 +94,6 @@ class QSFQuestionsParser(object):
             dynamic_question.response_order = matching_question.response_order
             for response in matching_question.responses:
                 dynamic_question.add_response(response.response, response.code)
-            print(dynamic_question)
         return questions
 
 
