@@ -30,9 +30,9 @@ class Questions(object):
 
 class Question(object):
 
-    def __init__(self, id=''):
+    def __init__(self):
         self.__responses = Responses()
-        self.id = id
+        self.__response_order = []
 
     @property
     def id(self):
@@ -86,8 +86,18 @@ class Question(object):
     def responses(self):
         return self.__responses
 
+    @property
+    def response_order(self):
+        return self.__response_order
+
+    @response_order.setter
+    def response_order(self, response_order):
+        for response_location in response_order:
+            self.__response_order.append(str(response_location))
+
     def add_response(self, response, code=None):
         self.__responses.add(response, code)
+        self.__responses.sort(self.response_order)
 
     def __repr__(self):
         result = ''

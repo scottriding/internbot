@@ -59,7 +59,8 @@ class QSFQuestionsParser(object):
         questions = []
         for question_element in question_elements:
             question_payload = question_element['Payload']
-            question = Question(question_payload['QuestionID'])
+            question = Question()
+            question.id = question_payload['QuestionID']
             question.name = question_payload['DataExportTag']
             question.prompt = question_payload['QuestionText']
             question.type = question_payload['QuestionType']
@@ -70,6 +71,7 @@ class QSFQuestionsParser(object):
             else:
                 question.subtype = question_payload['Selector']
                 if question_payload.get('Choices') and len(question_payload['Choices']) > 0:
+                    question.response_order = question_payload['ChoiceOrder']
                     for code, response in question_payload['Choices'].iteritems():
                         question.add_response(response['Display'], code)
                 questions.append(question)
@@ -82,10 +84,12 @@ class QSFQuestionsMatrixParser(object):
         prompts = question_payload['Choices']
         responses = question_payload['Answers']
         for code, prompt in prompts.iteritems():
-            question = Question('%s_%s' % (str(question_payload['QuestionID']), code))
+            question = Question()
+            question.id = '%s_%s' % (str(question_payload['QuestionID']), code)
             question.subtype = question_payload['SubSelector']
             question.name = '%s_%s' % (str(question_payload['DataExportTag']), code)
             question.prompt = prompt['Display']
+            question.response_order = question_payload['AnswerOrder']
             for code, response in responses.iteritems():
                 question.add_response(response['Display'], code)
             matrix_questions.append(question)
