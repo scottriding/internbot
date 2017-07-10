@@ -17,6 +17,7 @@ class QSFParser(object):
         survey = self.survey_parser.parse(qsf_json['SurveyEntry'])
         block_ids = self.blockflow_parser.parse(self.find_element('FL', qsf_json))
         blocks = self.blocks_parser.parse(self.find_element('BL', qsf_json))
+        blocks.sort(block_ids)
         questions = self.questions_parser.parse(self.find_elements('SQ', qsf_json))
         survey = self.compile_survey(survey, blocks, questions)
         return survey
@@ -61,6 +62,7 @@ class QSFBlocksParser(object):
         for block_element in blocks_element['Payload']:
             if block_element['Type'] != 'Trash':
                 block = Block(block_element['Description'])
+                block.blockid = block_element['ID']
                 for question_id in block_element['BlockElements']:
                     if question_id['Type'] == 'Question':
                         block.assign_id(question_id['QuestionID'])
@@ -173,11 +175,11 @@ class QSFResponsesParser(object):
                 question.add_response(response['Display'], code)
         
     def carry_forward_responses(self, questions):
-       dynamic_questions = [question for question in questions if question.has_carry_forward_responses == True]
-       for dynamic_question in dynamic_questions:
-           matching_question = next((question for question in questions if question.id == dynamic_question.carry_forward_question_id), None)
-           dynamic_question.response_order = matching_question.response_order
-           for response in matching_question.responses:
-               dynamic_question.add_response(response.response, response.code)
-       return questions
+        dynamic_questions = [question for question in questions if question.has_carry_forward_responses == True]
+        for dynamic_question in dynamic_questions:
+            matching_question = next((question for question in questions if question.id == dynamic_question.carry_forward_question_id), None)
+            dynamic_question.response_order = matching_question.response_order
+            for response in matching_question.responses:
+                dynamic_question.add_response(response.response, response.code)
+        return questions
 

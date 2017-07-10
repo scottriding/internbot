@@ -12,7 +12,7 @@ class Sorter(object):
         elif self.__type == 'responses':
             return sorted(list_to_sort, cmp=self.response_compare)
         elif self.__type == 'blocks':
-            pass
+            return sorted(list_to_sort, cmp=self.block_compare)
         elif self.__type == 'prompts':
             pass
     
@@ -40,4 +40,14 @@ class Sorter(object):
         elif response1_location < response2_location:
             return -1
         else:
-            return 0    
+            return 0  
+
+    def block_compare(self, block1, block2):
+        block1_location = self.__sort_order.index(block1.blockid)
+        block2_location = self.__sort_order.index(block2.blockid)
+        if block1_location > block2_location:
+            return 1
+        elif block1_location < block2_location:
+            return -1
+        else:
+            return 0 
