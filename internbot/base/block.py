@@ -43,14 +43,14 @@ class Block(object):
     def add_question(self, question):
         self.__questions.add(question)
         self.__questions.sort(self.__assigned_ids)
-        
-    @block_id.setter
-    def block_id(self, id):
-        self.__block_id = str(id)
     
     @property
-    def id(self):
-        return self.__id
+    def blockid(self):
+        return self.__blockid
+     
+    @blockid.setter
+    def blockid(self, id):
+        self.__blockid = str(id)
         
 
     def __repr__(self):

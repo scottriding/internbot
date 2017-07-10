@@ -8,16 +8,17 @@ class QSFParser(object):
 
     def __init__(self):
         self.survey_parser = QSFSurveyParser()
+        self.blockflow_parser = QSFBlockFlowParser()
         self.blocks_parser = QSFBlocksParser()
         self.questions_parser = QSFQuestionsParser()
 
     def parse(self, path_to_qsf):
         qsf_json = self.parse_json(path_to_qsf)
         survey = self.survey_parser.parse(qsf_json['SurveyEntry'])
+        block_ids = self.blockflow_parser.parse(self.find_element('FL', qsf_json))
         blocks = self.blocks_parser.parse(self.find_element('BL', qsf_json))
         questions = self.questions_parser.parse(self.find_elements('SQ', qsf_json))
         survey = self.compile_survey(survey, blocks, questions)
-        print survey
         return survey
         
     def parse_json(self, path_to_qsf):
@@ -42,6 +43,16 @@ class QSFSurveyParser(object):
 
     def parse(self, survey_element):
         return Survey(survey_element['SurveyName'])
+        
+class QSFBlockFlowParser(object):
+    
+    def parse(self, flow_element):
+        block_ids = []
+        flow_payload = flow_element['Payload']['Flow']
+        for block in flow_payload:
+            block_ids.append(block['ID'])
+        return block_ids    
+            
 
 class QSFBlocksParser(object):
 
@@ -55,6 +66,8 @@ class QSFBlocksParser(object):
                         block.assign_id(question_id['QuestionID'])
                 blocks.add(block)
         return blocks
+        
+
 
 class QSFQuestionsParser(object):
 
