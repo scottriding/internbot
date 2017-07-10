@@ -1,7 +1,6 @@
-# add question type
-
 from response import Responses
-import re
+from sorter import Sorter
+
 
 class Questions(object):
 
@@ -12,7 +11,7 @@ class Questions(object):
         self.__questions.append(question)
 
     def sort(self, question_id_order):
-        sorter = QuestionSorter(question_id_order)
+        sorter = Sorter(question_id_order, 'questions')
         self.__questions = sorter.sort(self.__questions)
 
     def __len__(self):
@@ -145,29 +144,3 @@ class Question(object):
         result += "Question: %s\n" % self.spss_name()
         result += str(self.__responses)
         return result
-
-
-class QuestionSorter(object):
-
-    def __init__(self, question_order):
-        self.__order = question_order
-
-    def sort(self, questions):
-        return sorted(questions, cmp=self.compare)
-
-    def compare(self, question1, question2):
-        id1_components = re.match('(QID\d+)(_\d+)?', question1.id)
-        id2_components = re.match('(QID\d+)(_\d+)?', question2.id)
-        id1_location = self.__order.index(id1_components.group(1))
-        id2_location = self.__order.index(id2_components.group(1))
-        if id1_location > id2_location:
-            return 1
-        elif id1_location < id2_location:
-            return -1
-        elif id1_components.group(2) > id2_components.group(2):
-            return 1
-        elif id1_components.group(2) < id2_components.group(2):
-            return -1
-        else:
-            return 0
-

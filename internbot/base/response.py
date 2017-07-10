@@ -1,6 +1,5 @@
-# add appearance order
-
 from operator import attrgetter
+from sorter import Sorter
 
 class Responses(object):
 
@@ -13,7 +12,7 @@ class Responses(object):
         )
 
     def sort(self, response_order):
-        sorter = ResponseSorter(response_order)
+        sorter = Sorter(response_order, 'responses')
         self.__responses = sorter.sort(self.__responses)
 
     def __iter__(self):
@@ -60,21 +59,3 @@ class Response(object):
         result = ""
         result += "%s: %s" % (self.code, self.response)
         return result
-
-class ResponseSorter(object):
-
-    def __init__(self, response_order):
-        self.__order = response_order
-
-    def sort(self, responses):
-        return sorted(responses, cmp=self.compare)
-
-    def compare(self, response1, response2):
-        response1_location = self.__order.index(response1.code)
-        response2_location = self.__order.index(response2.code)
-        if response1_location > response2_location:
-            return 1
-        elif response1_location < response2_location:
-            return -1
-        else:
-            return 0
