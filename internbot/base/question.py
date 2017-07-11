@@ -23,9 +23,79 @@ class Questions(object):
     def __repr__(self):
         result = ''
         for question in self.__questions:
-            result += "\t\t%s\n" % str(question)
+            result += "\t\t%s\n" % (str(question)
         return result
+        
+class CompositeQuestion(object):
 
+    def __init__(self):
+        self.__questions = []
+        self.has_carry_forward_prompts = False
+        
+    @property
+    def id(self):
+        return self.__id
+
+    @id.setter
+    def id(self, id):
+        self.__id = str(id)
+
+    @property
+    def name(self):
+        return self.__name
+
+    @name.setter
+    def name(self, name):
+        self.__name = str(name)
+
+    @property
+    def type(self):
+        return self.__type
+
+    @type.setter
+    def type(self, type):
+        self.__type = str(type)
+
+    @property
+    def subtype(self):
+        return self.__subtype
+
+    @subtype.setter
+    def subtype(self, subtype):
+        self.__subtype = str(subtype)
+
+    @property
+    def prompt(self):
+        return self.__prompt
+
+    @prompt.setter
+    def prompt(self, prompt):
+        self.__prompt = str(prompt)
+
+    @property
+    def has_carry_forward_prompts(self):
+        return self.__has_carry_forward_prompts
+
+    @has_carry_forward_prompts.setter
+    def has_carry_forward_prompts(self, has_carry_forward_prompts):
+        self.__has_carry_forward_prompts = bool(has_carry_forward_prompts)
+        
+    @property
+    def n(self):
+        return self.__n
+
+    @n.setter
+    def n(self, n):
+        self.__n = int(n)
+
+    def spss_name(self):
+        pass
+
+    def add_question(self, question):
+        self.__questions.append(question)
+
+    def __repr__(self):
+        pass    
 
 class Question(object):
 
@@ -33,7 +103,6 @@ class Question(object):
         self.__responses = Responses()
         self.__response_order = []
         self.has_carry_forward_responses = False
-        self.has_carry_forward_prompts = False
 
     @property
     def id(self):
@@ -74,14 +143,6 @@ class Question(object):
     @has_carry_forward_responses.setter
     def has_carry_forward_responses(self, has_carry_forward_responses):
         self.__has_carry_forward_responses = bool(has_carry_forward_responses)
-
-    @property
-    def has_carry_forward_prompts(self):
-        return self.__has_carry_forward_prompts
-
-    @has_carry_forward_prompts.setter
-    def has_carry_forward_prompts(self, has_carry_forward_prompts):
-        self.__has_carry_forward_prompts = bool(has_carry_forward_prompts)
 
     @property
     def carry_forward_question_id(self):
@@ -144,3 +205,6 @@ class Question(object):
         result += "Question: %s\n" % self.name
         result += str(self.__responses)
         return result
+        
+
+

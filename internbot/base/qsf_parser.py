@@ -127,7 +127,6 @@ class QSFQuestionsParser(object):
                 carried_forward_questions.append(question)
         return questions
 
-
 class QSFQuestionsMatrixParser(object):
 
     def parse(self, question_payload):
