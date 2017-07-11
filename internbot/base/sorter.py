@@ -44,6 +44,21 @@ class QuestionSorter(Sorter):
         else:
             return 0
     
+class CompositeQuestionSorter(Sorter):
+    
+    def __init__(self, sort_order):
+        super(CompositeQuestionSorter, self).__init__(sort_order)
+    
+    def compare(self, question1, question2):
+        question1_location = self.sort_order.index(question1.code)
+        question2_location = self.sort_order.index(question2.code)
+        if question1_location > question2_location:
+            return 1
+        elif question1_location < question2_location:
+            return -1
+        else:
+            return 0    
+    
 class ResponseSorter(Sorter):
     
     def __init__(self, sort_order):

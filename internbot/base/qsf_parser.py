@@ -136,6 +136,7 @@ class QSFQuestionsMatrixParser(object):
             for code, prompt in prompts.iteritems():
                 question = Question()
                 question.id = '%s_%s' % (str(question_payload['QuestionID']), code)
+                question.code = code
                 question.type = question_payload['QuestionType']
                 question.subtype = question_payload['SubSelector']
                 if question_payload['ChoiceDataExportTags']:
@@ -148,6 +149,7 @@ class QSFQuestionsMatrixParser(object):
                     question.add_response(response['Display'], code)
                 matrix_question.add_question(question)
                 matrix_question.id = question_payload['QuestionID']
+                matrix_question.question_order = question_payload['ChoiceOrder']
         else:
             question = CompositeQuestion()
             question.id = question_payload['QuestionID']

@@ -1,5 +1,5 @@
 from response import Responses
-from sorter import QuestionSorter
+from sorter import QuestionSorter, CompositeQuestionSorter
 
 
 class Questions(object):
@@ -30,6 +30,7 @@ class CompositeQuestion(object):
 
     def __init__(self):
         self.__questions = []
+        self.__question_order = []
         self.has_carry_forward_prompts = False
         self.has_carry_forward_responses = False
         
@@ -88,12 +89,25 @@ class CompositeQuestion(object):
     @n.setter
     def n(self, n):
         self.__n = int(n)
+        
+    @property
+    def question_order(self):
+        return self.__question_order
+
+    @question_order.setter    
+    def question_order(self, order):
+        self.__question_order = order
 
     def spss_name(self):
         pass
 
     def add_question(self, question):
         self.__questions.append(question)
+        self.sort()
+        
+    def sort(self):
+        sorter = CompositeQuestionSorter(self.__question_order)
+        self.__questions = sorter.sort(self.__questions)
 
     def __repr__(self):
         result = ''
@@ -140,7 +154,15 @@ class Question(object):
     @subtype.setter
     def subtype(self, subtype):
         self.__subtype = str(subtype)
-
+        
+    @property
+    def code(self):
+        return self.__code
+    
+    @code.setter
+    def code(self, code):
+        self.__code = str(code)
+        
     @property
     def has_carry_forward_responses(self):
         return self.__has_carry_forward_responses
