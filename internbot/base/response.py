@@ -1,5 +1,5 @@
 from operator import attrgetter
-from sorter import Sorter
+from sorter import ResponseSorter
 
 class Responses(object):
 
@@ -12,7 +12,7 @@ class Responses(object):
         )
 
     def sort(self, response_order):
-        sorter = Sorter(response_order, 'responses')
+        sorter = ResponseSorter(response_order)
         self.__responses = sorter.sort(self.__responses)
 
     def __iter__(self):

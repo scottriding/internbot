@@ -1,5 +1,5 @@
 from response import Responses
-from sorter import Sorter
+from sorter import QuestionSorter
 
 
 class Questions(object):
@@ -11,7 +11,7 @@ class Questions(object):
         self.__questions.append(question)
 
     def sort(self, question_id_order):
-        sorter = Sorter(question_id_order, 'questions')
+        sorter = QuestionSorter(question_id_order)
         self.__questions = sorter.sort(self.__questions)
 
     def __len__(self):

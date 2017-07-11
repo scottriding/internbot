@@ -1,5 +1,5 @@
 from question import Questions
-from sorter import Sorter
+from sorter import BlockSorter
 import re
 
 class Blocks(object):
@@ -17,7 +17,7 @@ class Blocks(object):
         return None
         
     def sort(self, block_id_order):
-        sorter = Sorter(block_id_order, 'blocks')
+        sorter = BlockSorter(block_id_order)
         self.__blocks = sorter.sort(self.__blocks)    
 
     def __repr__(self):
