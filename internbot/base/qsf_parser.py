@@ -68,8 +68,6 @@ class QSFBlocksParser(object):
                         block.assign_id(question_id['QuestionID'])
                 blocks.add(block)
         return blocks
-        
-
 
 class QSFQuestionsParser(object):
 
@@ -143,14 +141,14 @@ class QSFQuestionsMatrixParser(object):
                 question.type = question_payload['QuestionType']
                 question.subtype = question_payload['SubSelector']
                 if question_payload['ChoiceDataExportTags']:
-                    question.name = question_payload['ChoiceDataExportTags'][code]
+                    question.name = question_payload['ChoiceDataExportTags'][code]    
                 else:
                     question.name = '%s_%s' % (str(question_payload['DataExportTag']), code)
                 question.prompt = prompt['Display']
                 question.response_order = question_payload['AnswerOrder']
                 for code, response in responses.iteritems():
-                    question.add_response(response['Display'], code)
-            matrix_questions.append(question)
+                    question.add_response(response['Display'], code)        
+                matrix_questions.append(question)
         else:
             question = Question()
             question.id = question_payload['QuestionID']

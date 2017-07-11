@@ -141,6 +141,6 @@ class Question(object):
 
     def __repr__(self):
         result = ''
-        result += "Question: %s\n" % self.spss_name()
+        result += "Question: %s\n" % self.name
         result += str(self.__responses)
         return result
