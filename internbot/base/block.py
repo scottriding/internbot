@@ -57,7 +57,6 @@ class Block(object):
     def blockid(self, id):
         self.__blockid = str(id)
         
-
     def __repr__(self):
         result = "Block: %s\n" % (self.name)
         result += str(self.__questions)

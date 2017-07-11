@@ -1,44 +1,7 @@
-import json
 import re
 from survey import Survey
 from block import Blocks, Block
 from question import Questions, Question, CompositeQuestion
-
-class QSFParser(object):
-
-    def __init__(self):
-        self.survey_parser = QSFSurveyParser()
-        self.blockflow_parser = QSFBlockFlowParser()
-        self.blocks_parser = QSFBlocksParser()
-        self.questions_parser = QSFQuestionsParser()
-
-    def parse(self, path_to_qsf):
-        qsf_json = self.parse_json(path_to_qsf)
-        survey = self.survey_parser.parse(qsf_json['SurveyEntry'])
-        block_ids = self.blockflow_parser.parse(self.find_element('FL', qsf_json))
-        blocks = self.blocks_parser.parse(self.find_element('BL', qsf_json))
-        blocks.sort(block_ids)
-        questions = self.questions_parser.parse(self.find_elements('SQ', qsf_json))
-        survey = self.compile_survey(survey, blocks, questions)
-        return survey
-        
-    def parse_json(self, path_to_qsf):
-        with open(path_to_qsf) as file:
-            qsf_file = json.load(file)
-        return qsf_file
-        
-    def compile_survey(self, survey, blocks, questions):
-        for block in blocks:
-            survey.add_block(block)
-        survey.add_questions(questions)
-        return survey
-
-    def find_element(self, element_name, qsf_json):
-        return next(iter(self.find_elements(element_name, qsf_json)), None)
-
-    def find_elements(self, element_name, qsf_json):
-        elements = qsf_json['SurveyElements']
-        return [element for element in elements if element['Element'] == element_name]
 
 class QSFSurveyParser(object):
 
@@ -54,7 +17,6 @@ class QSFBlockFlowParser(object):
             block_ids.append(block['ID'])
         return block_ids    
             
-
 class QSFBlocksParser(object):
 
     def parse(self, blocks_element):
