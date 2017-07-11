@@ -23,7 +23,7 @@ class Questions(object):
     def __repr__(self):
         result = ''
         for question in self.__questions:
-            result += "\t\t%s\n" % (str(question)
+            result += "\t\t%s\n" % (str(question))
         return result
         
 class CompositeQuestion(object):
@@ -31,6 +31,7 @@ class CompositeQuestion(object):
     def __init__(self):
         self.__questions = []
         self.has_carry_forward_prompts = False
+        self.has_carry_forward_responses = False
         
     @property
     def id(self):
@@ -95,7 +96,10 @@ class CompositeQuestion(object):
         self.__questions.append(question)
 
     def __repr__(self):
-        pass    
+        result = ''
+        for question in self.__questions:
+            result += "\n\t\t%s" % str(question)
+        return result    
 
 class Question(object):
 
@@ -103,6 +107,7 @@ class Question(object):
         self.__responses = Responses()
         self.__response_order = []
         self.has_carry_forward_responses = False
+        self.has_carry_forward_prompts = False
 
     @property
     def id(self):
@@ -197,8 +202,7 @@ class Question(object):
             return self.name
 
     def add_response(self, response, code=None):
-        self.__responses.add(response, code)
-        self.__responses.sort(self.response_order)
+        self.__responses.add(response, code)  
 
     def __repr__(self):
         result = ''

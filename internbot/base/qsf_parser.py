@@ -2,7 +2,7 @@ import json
 import re
 from survey import Survey
 from block import Blocks, Block
-from question import Questions, Question
+from question import Questions, Question, CompositeQuestion
 
 class QSFParser(object):
 
@@ -85,9 +85,8 @@ class QSFQuestionsParser(object):
                 self.assign_carry_forward(question, question_payload)
 
             if question.type == 'Matrix':
-                matrix_questions = self.matrix_parser.parse(question_payload)
-                for question in matrix_questions:
-                    questions.append(question)
+                matrix_question = self.matrix_parser.parse(question_payload)
+                questions.append(matrix_question)
             else:
                 self.response_parser.parse(question, question_payload, question_element)
                 questions.append(question)
@@ -130,7 +129,7 @@ class QSFQuestionsParser(object):
 class QSFQuestionsMatrixParser(object):
 
     def parse(self, question_payload):
-        matrix_questions = []
+        matrix_question = CompositeQuestion()
         prompts = question_payload['Choices']
         responses = question_payload['Answers']
         if question_payload.get('DynamicChoices') is None:
@@ -146,10 +145,11 @@ class QSFQuestionsMatrixParser(object):
                 question.prompt = prompt['Display']
                 question.response_order = question_payload['AnswerOrder']
                 for code, response in responses.iteritems():
-                    question.add_response(response['Display'], code)        
-                matrix_questions.append(question)
+                    question.add_response(response['Display'], code)
+                matrix_question.add_question(question)
+                matrix_question.id = question_payload['QuestionID']
         else:
-            question = Question()
+            question = CompositeQuestion()
             question.id = question_payload['QuestionID']
             question.name = question_payload['DataExportTag']
             question.prompt = question_payload['QuestionText']
@@ -159,8 +159,9 @@ class QSFQuestionsMatrixParser(object):
             carry_forward_locator = question_payload['DynamicChoices']['Locator']
             carry_forward_match = re.match('q://(QID\d+).+', carry_forward_locator)
             question.carry_forward_question_id = carry_forward_match.group(1)
-            matrix_questions.append(question)
-        return matrix_questions
+            matrix_question.add_question(question)
+            matrix_question.id = question.id
+        return matrix_question
         
 class QSFResponsesParser(object):
 
