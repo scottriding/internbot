@@ -80,7 +80,23 @@ class CompositeQuestion(object):
 
     @question_order.setter    
     def question_order(self, order):
-        self.__question_order = order        
+        self.__question_order = order
+
+    @property
+    def has_carry_forward_prompts(self):
+        return self.__has_carry_forward_prompts
+
+    @has_carry_forward_prompts.setter
+    def has_carry_forward_prompts(self, has_carry_forward_prompts):
+        self.__has_carry_forward_prompts = bool(has_carry_forward_prompts)
+        
+    @property
+    def carry_forward_question_id(self):
+        return self.__carry_forward_question_id
+
+    @carry_forward_question_id.setter
+    def carry_forward_question_id(self, carry_forward_question_id):
+        self.__carry_forward_question_id = str(carry_forward_question_id)    
         
     def add(self, question):
         self.__questions.append(question)
@@ -88,7 +104,8 @@ class CompositeQuestion(object):
         
     def sort(self):
         sorter = CompositeQuestionSorter(self.__question_order)
-        self.__questions = sorter.sort(self.__questions)    
+        if len(self.__questions) > 0:
+            self.__questions = sorter.sort(self.__questions)    
 
     def __len__(self):
         return len(self.__questions)

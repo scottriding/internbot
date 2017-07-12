@@ -23,7 +23,7 @@ class QSFBlockFlowParser(object):
     def parse(self, flow_element):
         flow_payload = flow_element['Payload']['Flow']
         for block in flow_payload:
-            if block['Type'] != 'Branch' and block['Type'] != 'EmbeddedData' and block['Type'] != 'EndSurvey':
+            if block['Type'] == 'Block' or block['Type'] == 'Standard':
                 self.__block_ids.append(block['ID'])
         return self.__block_ids
             
@@ -35,11 +35,11 @@ class QSFBlocksParser(object):
     def parse(self, blocks_element):
         for block_element in blocks_element['Payload']:
             if block_element['Type'] != 'Trash':
-                block = self.block_basics(block_element)
+                block = self.block_details(block_element)
                 self.__blocks.add(block)
         return self.__blocks
         
-    def block_basics(self, block_element):
+    def block_details(self, block_element):
         block = Block(block_element['Description'])
         block.blockid = block_element['ID']
         self.assign_question_id(block_element, block)
@@ -60,7 +60,7 @@ class QSFQuestionsParser(object):
     def parse(self, question_elements):
         for question_element in question_elements:
             question_payload = question_element['Payload']
-            question = self.parse_question_basics(question_payload)
+            question = self.question_details(question_payload)
             
             if question_payload.get('DynamicChoices') and question.type != 'Matrix':
                 self.assign_carry_forward(question, question_payload)
@@ -76,7 +76,7 @@ class QSFQuestionsParser(object):
         self.__questions = self.carry_forward_prompts(self.__questions)
         return self.__questions
         
-    def parse_question_basics(self, question_payload):
+    def question_details(self, question_payload):
         question = Question()
         question.id = question_payload['QuestionID']
         question.name = question_payload['DataExportTag']
@@ -94,17 +94,16 @@ class QSFQuestionsParser(object):
         dynamic_questions = [question for question in questions if question.has_carry_forward_prompts == True]
         carried_forward_questions = []
         for dynamic_question in dynamic_questions:
-            matching_questions = [] # Find all the questions that have the same prefix as my question_id carry forward
-            for matching_question in matching_questions:
+            matching_question = next((question for question in questions if question.id == dynamic_question.carry_forward_question_id), None)
+            dynamic_question.question_order = matching_question.response_order
+            for response in matching_question.responses:
                 question = Question()
-                question.prompt = matching_question.prompt
-                question.type = dynamic_question.type
-                question.subtype = dynamic_question.subtype
-                question.has_carry_forward_prompts = dynamic_question.has_carry_forward_prompts
-                question.carry_forward_question_id = dynamic_question.carry_forward_question_id
-                question.id = '%s_%s' % (dynamic_question.id, matching_question)
-                question.name = '%s_%s' % (dynamic_question.id, matching_question)
-                carried_forward_questions.append(question)
+                question.prompt = response
+                question.code = response.code
+                question.id = '%s_%s' % (dynamic_question.id, response.code)
+                question.name = '%s_%s' % (dynamic_question.name, response.code)
+                dynamic_question.add(question)
+                carried_forward_questions.append(question)                
         return questions
 
 class QSFQuestionsMatrixParser(object):
@@ -118,17 +117,14 @@ class QSFQuestionsMatrixParser(object):
         return matrix_question
        
     def dynamic_matrix(self, question_payload, matrix_question):
-        question = Question()
-        question.id = question_payload['QuestionID']
-        question.name = question_payload['DataExportTag']
-        question.prompt = question_payload['QuestionText']
-        question.subtype = question_payload['SubSelector']
-        question.has_carry_forward_prompts = True
+        matrix_question.id = question_payload['QuestionID']
+        matrix_question.name = question_payload['DataExportTag']
+        matrix_question.prompt = question_payload['QuestionText']
+        matrix_question.subtype = question_payload['SubSelector']
+        matrix_question.has_carry_forward_prompts = True
         carry_forward_locator = question_payload['DynamicChoices']['Locator']
         carry_forward_match = re.match('q://(QID\d+).+', carry_forward_locator)
-        question.carry_forward_question_id = carry_forward_match.group(1)
-        matrix_question.add(question)
-        matrix_question.id = question.id
+        matrix_question.carry_forward_question_id = carry_forward_match.group(1)
             
     def basic_matrix(self, question_payload, matrix_question):
         prompts = question_payload['Choices']
