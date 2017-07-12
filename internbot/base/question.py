@@ -31,6 +31,7 @@ class CompositeQuestion(object):
     def __init__(self):
         self.__questions = []
         self.__question_order = []
+        self.__temp_responses = Responses()
         self.has_carry_forward_prompts = False
         self.has_carry_forward_responses = False 
         
@@ -96,9 +97,17 @@ class CompositeQuestion(object):
 
     @carry_forward_question_id.setter
     def carry_forward_question_id(self, carry_forward_question_id):
-        self.__carry_forward_question_id = str(carry_forward_question_id)    
+        self.__carry_forward_question_id = str(carry_forward_question_id)
+
+    @property
+    def temp_responses(self):
+        return self.__temp_responses
         
-    def add(self, question):
+    def add_response(self, response, code):
+        self.__temp_responses.add(response, code)
+        self.sort()    
+        
+    def add_question(self, question):
         self.__questions.append(question)
         self.sort()
         
@@ -111,7 +120,7 @@ class CompositeQuestion(object):
         return len(self.__questions)
 
     def __iter__(self):
-        return iter(self.__questions)
+        return iter(self.__questions)    
 
     def __repr__(self):
         bool = True
@@ -235,7 +244,7 @@ class Question(object):
 
     def add_response(self, response, code=None):
         self.__responses.add(response, code)
-        self.__responses.sort(self.__response_order)
+        #self.__responses.sort(self.__response_order)
 
     def __repr__(self):
         result = ''

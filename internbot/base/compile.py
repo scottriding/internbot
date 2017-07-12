@@ -43,3 +43,4 @@ class CompileQSF(object):
     def find_elements(self, element_name, qsf_json):
         elements = qsf_json['SurveyElements']
         return [element for element in elements if element['Element'] == element_name]
+ 
