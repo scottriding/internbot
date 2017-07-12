@@ -98,10 +98,11 @@ class QSFQuestionsParser(object):
             dynamic_question.question_order = matching_question.response_order
             for response in matching_question.responses:
                 question = Question()
-                question.prompt = response
+                question.prompt = response.response
                 question.code = response.code
                 question.id = '%s_%s' % (dynamic_question.id, response.code)
                 question.name = '%s_%s' % (dynamic_question.name, response.code)
+                question.response_order = matching_question.response_order
                 for response in dynamic_question.temp_responses:
                     question.add_response(response.response, response.code)
                 dynamic_question.add_question(question)

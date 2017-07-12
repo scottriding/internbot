@@ -244,11 +244,11 @@ class Question(object):
 
     def add_response(self, response, code=None):
         self.__responses.add(response, code)
-        #self.__responses.sort(self.__response_order)
+        self.__responses.sort(self.__response_order)
 
     def __repr__(self):
         result = ''
-        result += "Question: %s\n" % self.name
+        result += "Question: %s\n" % self.prompt
         result += str(self.__responses)
         return result
         
