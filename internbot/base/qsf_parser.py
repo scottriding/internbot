@@ -23,7 +23,8 @@ class QSFBlockFlowParser(object):
     def parse(self, flow_element):
         flow_payload = flow_element['Payload']['Flow']
         for block in flow_payload:
-            self.__block_ids.append(block['ID'])
+            if block['Type'] != 'Branch' and block['Type'] != 'EmbeddedData' and block['Type'] != 'EndSurvey':
+                self.__block_ids.append(block['ID'])
         return self.__block_ids
             
 class QSFBlocksParser(object):

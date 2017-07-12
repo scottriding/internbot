@@ -32,8 +32,7 @@ class CompositeQuestion(object):
         self.__questions = []
         self.__question_order = []
         self.has_carry_forward_prompts = False
-        self.has_carry_forward_responses = False
-        self.__type = 'Composite' 
+        self.has_carry_forward_responses = False 
         
     @property
     def id(self):
@@ -54,6 +53,10 @@ class CompositeQuestion(object):
     @property
     def type(self):
         return self.__type
+        
+    @type.setter
+    def type(self, type):
+        self.__type = str(type)
 
     @property
     def subtype(self):
@@ -88,6 +91,10 @@ class CompositeQuestion(object):
         self.__n = int(n)
         
     @property
+    def questions(self):
+        return self.__questions    
+        
+    @property
     def question_order(self):
         return self.__question_order
 
@@ -107,10 +114,7 @@ class CompositeQuestion(object):
         self.__questions = sorter.sort(self.__questions)
 
     def __repr__(self):
-        result = ''
-        for question in self.__questions:
-            result += "\n\t\t%s" % str(question)
-        return result    
+        return '' 
 
 class Question(object):
 
@@ -221,11 +225,12 @@ class Question(object):
             return self.name
 
     def add_response(self, response, code=None):
-        self.__responses.add(response, code)  
+        self.__responses.add(response, code)
+        self.__responses.sort(self.__response_order)
 
     def __repr__(self):
         result = ''
-        result += "Question: %s\n" % self.name
+        result += "Question: %s\n" % self.prompt
         result += str(self.__responses)
         return result
         
