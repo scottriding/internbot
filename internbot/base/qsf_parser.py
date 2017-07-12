@@ -103,7 +103,7 @@ class QSFQuestionsParser(object):
                 question.id = '%s_%s' % (dynamic_question.id, response.code)
                 question.name = '%s_%s' % (dynamic_question.name, response.code)
                 for response in dynamic_question.temp_responses:
-                    question.add_response(response, response.code)
+                    question.add_response(response.response, response.code)
                 dynamic_question.add_question(question)
                 carried_forward_questions.append(question)                
         return questions
