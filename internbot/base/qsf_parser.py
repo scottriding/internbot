@@ -6,16 +6,25 @@ from question import Questions, Question, CompositeQuestion
 class QSFSurveyParser(object):
 
     def parse(self, survey_element):
-        return Survey(survey_element['SurveyName'])
+        survey = self.create_survey(survey_element)
+        return survey
+        
+    def create_survey(self, survey_element):
+        return Survey(self.parse_name(survey_element))
+        
+    def parse_name(self, survey_element):
+        return survey_element['SurveyName']
         
 class QSFBlockFlowParser(object):
+
+    def __init__(self):
+        self.__block_ids = []
     
     def parse(self, flow_element):
-        block_ids = []
         flow_payload = flow_element['Payload']['Flow']
         for block in flow_payload:
-            block_ids.append(block['ID'])
-        return block_ids    
+            self.__block_ids.append(block['ID'])
+        return self.__block_ids
             
 class QSFBlocksParser(object):
 
@@ -23,13 +32,20 @@ class QSFBlocksParser(object):
         blocks = Blocks()
         for block_element in blocks_element['Payload']:
             if block_element['Type'] != 'Trash':
-                block = Block(block_element['Description'])
-                block.blockid = block_element['ID']
-                for question_id in block_element['BlockElements']:
-                    if question_id['Type'] == 'Question':
-                        block.assign_id(question_id['QuestionID'])
+                block = self.block_basics(blocks_element['Payload'])
                 blocks.add(block)
         return blocks
+        
+    def block_basics(self, block_element):
+        block = Block(block_element['Description'])
+        block.blockid = block_element['ID']
+        self.assign_question_id(block_element, block)
+        return block
+        
+    def assign_question_id(self, block_element, block):
+        for question_id in block_element['BlockElements']:
+            if question_id['Type'] == 'Question':
+                block.assign_id(question_id['QuestionID'])
 
 class QSFQuestionsParser(object):
 
@@ -114,12 +130,12 @@ class QSFQuestionsMatrixParser(object):
                 matrix_question.question_order = question_payload['ChoiceOrder']
                 matrix_question.name = question_payload['DataExportTag']
                 matrix_question.subtype = question_payload['SubSelector']
+                matrix_question.prompt = prompt['Display']
         else:
             question = CompositeQuestion()
             question.id = question_payload['QuestionID']
             question.name = question_payload['DataExportTag']
             question.prompt = question_payload['QuestionText']
-            question.type = question_payload['QuestionType']
             question.subtype = question_payload['SubSelector']
             question.has_carry_forward_prompts = True
             carry_forward_locator = question_payload['DynamicChoices']['Locator']
