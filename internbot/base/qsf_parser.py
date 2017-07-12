@@ -112,32 +112,34 @@ class QSFQuestionsMatrixParser(object):
     def parse(self, question_payload):
         matrix_question = CompositeQuestion()
         if question_payload.get('DynamicChoices') is None:
-            self.basic_matrix(question_payload, matrix_question)
-                   
+            self.basic_matrix(question_payload, matrix_question)       
         else:
-            question = Question()
-            question.id = question_payload['QuestionID']
-            question.name = question_payload['DataExportTag']
-            question.prompt = question_payload['QuestionText']
-            question.subtype = question_payload['SubSelector']
-            question.has_carry_forward_prompts = True
-            carry_forward_locator = question_payload['DynamicChoices']['Locator']
-            carry_forward_match = re.match('q://(QID\d+).+', carry_forward_locator)
-            question.carry_forward_question_id = carry_forward_match.group(1)
-            matrix_question.add(question)
-            matrix_question.id = question.id
+            self.dynamic_matrix(question_payload, matrix_question)
         return matrix_question
-        
+       
+    def dynamic_matrix(self, question_payload, matrix_question):
+        question = Question()
+        question.id = question_payload['QuestionID']
+        question.name = question_payload['DataExportTag']
+        question.prompt = question_payload['QuestionText']
+        question.subtype = question_payload['SubSelector']
+        question.has_carry_forward_prompts = True
+        carry_forward_locator = question_payload['DynamicChoices']['Locator']
+        carry_forward_match = re.match('q://(QID\d+).+', carry_forward_locator)
+        question.carry_forward_question_id = carry_forward_match.group(1)
+        matrix_question.add(question)
+        matrix_question.id = question.id
+            
     def basic_matrix(self, question_payload, matrix_question):
         prompts = question_payload['Choices']
         responses = question_payload['Answers']
         for code, prompt in prompts.iteritems():
-            question = self.compile_question(code, prompt, question_payload, responses)
+            question = self.question_details(code, prompt, question_payload, responses)
             matrix_question.add(question)
             matrix_question.prompt = question_payload['QuestionDescription']
-            self.compile_matrix(matrix_question, question_payload)
+            self.matrix_details(matrix_question, question_payload)
     
-    def compile_question(self, code, prompt, question_payload, responses):
+    def question_details(self, code, prompt, question_payload, responses):
         question = Question()
         question.id = '%s_%s' % (str(question_payload['QuestionID']), code)
         question.code = code
@@ -153,7 +155,7 @@ class QSFQuestionsMatrixParser(object):
             question.add_response(response['Display'], code)
         return question
         
-    def compile_matrix(self, matrix_question, question_payload):
+    def matrix_details(self, matrix_question, question_payload):
         matrix_question.id = question_payload['QuestionID']
         matrix_question.question_order = question_payload['ChoiceOrder']
         matrix_question.name = question_payload['DataExportTag']
