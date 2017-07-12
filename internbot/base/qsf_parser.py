@@ -128,14 +128,14 @@ class QSFQuestionsMatrixParser(object):
                 question.response_order = question_payload['AnswerOrder']
                 for code, response in responses.iteritems():
                     question.add_response(response['Display'], code)
-                matrix_question.add_question(question)
+                matrix_question.add(question)
                 matrix_question.id = question_payload['QuestionID']
                 matrix_question.question_order = question_payload['ChoiceOrder']
                 matrix_question.name = question_payload['DataExportTag']
                 matrix_question.subtype = question_payload['SubSelector']
                 matrix_question.prompt = prompt['Display']
         else:
-            question = CompositeQuestion()
+            question = Question()
             question.id = question_payload['QuestionID']
             question.name = question_payload['DataExportTag']
             question.prompt = question_payload['QuestionText']
@@ -144,7 +144,7 @@ class QSFQuestionsMatrixParser(object):
             carry_forward_locator = question_payload['DynamicChoices']['Locator']
             carry_forward_match = re.match('q://(QID\d+).+', carry_forward_locator)
             question.carry_forward_question_id = carry_forward_match.group(1)
-            matrix_question.add_question(question)
+            matrix_question.add(question)
             matrix_question.id = question.id
         return matrix_question
         

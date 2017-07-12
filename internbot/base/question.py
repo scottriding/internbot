@@ -37,84 +37,76 @@ class CompositeQuestion(object):
     @property
     def id(self):
         return self.__id
-
+        
     @id.setter
     def id(self, id):
         self.__id = str(id)
-
+    
     @property
     def name(self):
         return self.__name
-
+    
     @name.setter
     def name(self, name):
         self.__name = str(name)
-
+    
+    @property
+    def prompt(self):
+        return self.__prompt
+    
+    @prompt.setter
+    def prompt(self, prompt):
+        self.__prompt = str(prompt)
+    
     @property
     def type(self):
         return self.__type
-        
-    @type.setter
-    def type(self, type):
-        self.__type = str(type)
 
+    @type.setter
+    def type(self):
+        self.__type = 'Composite' 
+        
     @property
     def subtype(self):
         return self.__subtype
 
     @subtype.setter
     def subtype(self, subtype):
-        self.__subtype = str(subtype)
+        self.__subtype = str(subtype)    
 
-    @property
-    def prompt(self):
-        return self.__prompt
-
-    @prompt.setter
-    def prompt(self, prompt):
-        self.__prompt = str(prompt)
-
-    @property
-    def has_carry_forward_prompts(self):
-        return self.__has_carry_forward_prompts
-
-    @has_carry_forward_prompts.setter
-    def has_carry_forward_prompts(self, has_carry_forward_prompts):
-        self.__has_carry_forward_prompts = bool(has_carry_forward_prompts)
-        
-    @property
-    def n(self):
-        return self.__n
-
-    @n.setter
-    def n(self, n):
-        self.__n = int(n)
-        
-    @property
-    def questions(self):
-        return self.__questions    
-        
     @property
     def question_order(self):
         return self.__question_order
 
     @question_order.setter    
     def question_order(self, order):
-        self.__question_order = order
-
-    def spss_name(self):
-        pass
-
-    def add_question(self, question):
+        self.__question_order = order        
+        
+    def add(self, question):
         self.__questions.append(question)
         self.sort()
         
     def sort(self):
         sorter = CompositeQuestionSorter(self.__question_order)
-        self.__questions = sorter.sort(self.__questions)
+        self.__questions = sorter.sort(self.__questions)    
+
+    def __len__(self):
+        return len(self.__questions)
+
+    def __iter__(self):
+        return iter(self.__questions)
 
     def __repr__(self):
-        return '' 
+        bool = True
+        result = ''
+        for question in self.__questions:
+            if bool == True:
+                result += '%s' % (str(question))
+                bool = False
+            else:    
+                result += "\t\t%s\n" % (str(question))
+        return result        
+         
 
 class Question(object):
 
@@ -230,7 +222,7 @@ class Question(object):
 
     def __repr__(self):
         result = ''
-        result += "Question: %s\n" % self.prompt
+        result += "Question: %s\n" % self.name
         result += str(self.__responses)
         return result
         
