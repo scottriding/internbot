@@ -28,13 +28,15 @@ class QSFBlockFlowParser(object):
             
 class QSFBlocksParser(object):
 
+    def __init__(self):
+        self.__blocks = Blocks()
+
     def parse(self, blocks_element):
-        blocks = Blocks()
         for block_element in blocks_element['Payload']:
             if block_element['Type'] != 'Trash':
-                block = self.block_basics(blocks_element['Payload'])
-                blocks.add(block)
-        return blocks
+                block = self.block_basics(block_element)
+                self.__blocks.add(block)
+        return self.__blocks
         
     def block_basics(self, block_element):
         block = Block(block_element['Description'])
@@ -52,9 +54,9 @@ class QSFQuestionsParser(object):
     def __init__(self):
         self.matrix_parser = QSFQuestionsMatrixParser()
         self.response_parser = QSFResponsesParser()
+        self.__questions = []
 
     def parse(self, question_elements):
-        questions = []
         for question_element in question_elements:
             question_payload = question_element['Payload']
             question = self.parse_question_basics(question_payload)
@@ -64,14 +66,14 @@ class QSFQuestionsParser(object):
 
             if question.type == 'Matrix':
                 matrix_question = self.matrix_parser.parse(question_payload)
-                questions.append(matrix_question)
+                self.__questions.append(matrix_question)
             else:
                 self.response_parser.parse(question, question_payload, question_element)
-                questions.append(question)
+                self.__questions.append(question)
 
-        questions = self.response_parser.carry_forward_responses(questions)
-        questions = self.carry_forward_prompts(questions)
-        return questions
+        self.__questions = self.response_parser.carry_forward_responses(self.__questions)
+        self.__questions = self.carry_forward_prompts(self.__questions)
+        return self.__questions
         
     def parse_question_basics(self, question_payload):
         question = Question()
