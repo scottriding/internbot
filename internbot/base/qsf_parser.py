@@ -112,6 +112,8 @@ class QSFQuestionsMatrixParser(object):
                 matrix_question.add_question(question)
                 matrix_question.id = question_payload['QuestionID']
                 matrix_question.question_order = question_payload['ChoiceOrder']
+                matrix_question.name = question_payload['DataExportTag']
+                matrix_question.subtype = question_payload['SubSelector']
         else:
             question = CompositeQuestion()
             question.id = question_payload['QuestionID']

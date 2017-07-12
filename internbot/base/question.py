@@ -33,6 +33,7 @@ class CompositeQuestion(object):
         self.__question_order = []
         self.has_carry_forward_prompts = False
         self.has_carry_forward_responses = False
+        self.__type = 'Composite' 
         
     @property
     def id(self):
@@ -53,10 +54,6 @@ class CompositeQuestion(object):
     @property
     def type(self):
         return self.__type
-
-    @type.setter
-    def type(self, type):
-        self.__type = str(type)
 
     @property
     def subtype(self):
