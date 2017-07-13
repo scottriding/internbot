@@ -248,7 +248,7 @@ class Question(object):
 
     def __repr__(self):
         result = ''
-        result += "Question: %s\n" % self.prompt
+        result += "%s: %s\n" % (self.name, self.prompt)
         result += str(self.__responses)
         return result
         

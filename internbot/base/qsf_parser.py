@@ -2,6 +2,7 @@ import re
 from survey import Survey
 from block import Blocks, Block
 from question import Questions, Question, CompositeQuestion
+import sys
 
 class QSFSurveyParser(object):
 
@@ -23,20 +24,27 @@ class QSFBlockFlowParser(object):
     def parse(self, flow_element):
         flow_payload = flow_element['Payload']['Flow']
         for block in flow_payload:
-            if block['Type'] == 'Block' or block['Type'] == 'Standard':
+            if block['Type'] == 'Block' or block['Type'] == 'Standard': 
                 self.__block_ids.append(block['ID'])
         return self.__block_ids
-            
+        
 class QSFBlocksParser(object):
 
     def __init__(self):
         self.__blocks = Blocks()
 
     def parse(self, blocks_element):
-        for block_element in blocks_element['Payload']:
-            if block_element['Type'] != 'Trash':
-                block = self.block_details(block_element)
-                self.__blocks.add(block)
+        payload = blocks_element['Payload']
+        try:
+            for block_element in payload:
+                if block_element['Type'] != 'Trash':
+                    block = self.block_details(block_element)
+                    self.__blocks.add(block)
+        except TypeError:
+            for key, value in payload.iteritems():
+                if value['Type'] != 'Trash':
+                    block = self.block_details(value)
+                    self.__blocks.add(block)
         return self.__blocks
         
     def block_details(self, block_element):
@@ -121,10 +129,7 @@ class QSFQuestionsMatrixParser(object):
        
     def dynamic_matrix(self, question_payload, matrix_question):
         responses = question_payload['Answers']
-        matrix_question.id = question_payload['QuestionID']
-        matrix_question.name = question_payload['DataExportTag']
-        matrix_question.prompt = question_payload['QuestionText']
-        matrix_question.subtype = question_payload['SubSelector']
+        self.matrix_details(matrix_question, question_payload)
         matrix_question.has_carry_forward_prompts = True
         carry_forward_locator = question_payload['DynamicChoices']['Locator']
         carry_forward_match = re.match('q://(QID\d+).+', carry_forward_locator)
@@ -138,7 +143,7 @@ class QSFQuestionsMatrixParser(object):
         for code, prompt in prompts.iteritems():
             question = self.question_details(code, prompt, question_payload, responses)
             matrix_question.add_question(question)
-            matrix_question.prompt = question_payload['QuestionDescription']
+            matrix_question.question_order = question_payload['ChoiceOrder']
             self.matrix_details(matrix_question, question_payload)
     
     def question_details(self, code, prompt, question_payload, responses):
@@ -159,8 +164,8 @@ class QSFQuestionsMatrixParser(object):
         
     def matrix_details(self, matrix_question, question_payload):
         matrix_question.id = question_payload['QuestionID']
-        matrix_question.question_order = question_payload['ChoiceOrder']
         matrix_question.name = question_payload['DataExportTag']
+        matrix_question.prompt = question_payload['QuestionDescription']
         matrix_question.subtype = question_payload['SubSelector']
         
 class QSFResponsesParser(object):
