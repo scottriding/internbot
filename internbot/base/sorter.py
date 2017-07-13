@@ -21,14 +21,14 @@ class BlockSorter(Sorter):
         elif block1_location < block2_location:
             return -1
         else:
-            return 0 
-            
+            return 0     
+
 class QuestionSorter(Sorter):
     
     def __init__(self, sort_order):
         super(QuestionSorter, self).__init__(sort_order)
     
-    def compare(self, question1, question2):
+    def compare(self, question1, question2):        
         id1_components = re.match('(QID\d+)(_\d+)?', question1.id)
         id2_components = re.match('(QID\d+)(_\d+)?', question2.id)
         id1_location = self.sort_order.index(id1_components.group(1))

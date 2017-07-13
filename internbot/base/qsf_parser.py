@@ -2,7 +2,6 @@ import re
 from survey import Survey
 from block import Blocks, Block
 from question import Questions, Question, CompositeQuestion
-import sys
 
 class QSFSurveyParser(object):
 
@@ -24,8 +23,13 @@ class QSFBlockFlowParser(object):
     def parse(self, flow_element):
         flow_payload = flow_element['Payload']['Flow']
         for block in flow_payload:
-            if block['Type'] == 'Block' or block['Type'] == 'Standard': 
+            if block['Type'] == 'Block' or block['Type'] == 'Standard':
                 self.__block_ids.append(block['ID'])
+            else:
+                for key, value in block.iteritems():
+                    if key == 'Flow':
+                        if value[0].get('EmbeddedData') is None:
+                            self.__block_ids.append(value[0]['ID'])
         return self.__block_ids
         
 class QSFBlocksParser(object):
