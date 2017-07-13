@@ -64,13 +64,16 @@ class ResponseSorter(Sorter):
     def __init__(self, sort_order):
         super(ResponseSorter, self).__init__(sort_order)
     
-    def compare(self, response1, response2):        
-        response1_location = self.sort_order.index(response1.code)
-        response2_location = self.sort_order.index(response2.code)
-        if response1_location > response2_location:
-            return 1
-        elif response1_location < response2_location:
-            return -1
-        else:
-            return 0  
+    def compare(self, response1, response2):
+        try:
+            response1_location = self.sort_order.index(response1.code)
+            response2_location = self.sort_order.index(response2.code)
+            if response1_location > response2_location:
+                return 1
+            elif response1_location < response2_location:
+                return -1
+            else:
+                return 0
+        except ValueError:
+            return 0
         

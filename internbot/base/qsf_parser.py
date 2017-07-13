@@ -68,20 +68,17 @@ class QSFQuestionsParser(object):
     def parse(self, question_elements):
         for question_element in question_elements:
             question_payload = question_element['Payload']
-            if question_payload['Selector'] == "Browser":
-                break
-            else: 
-                question = self.question_details(question_payload)
+            question = self.question_details(question_payload)
             
-                if question_payload.get('DynamicChoices') and question.type != 'Matrix':
-                    self.assign_carry_forward(question, question_payload)
+            if question_payload.get('DynamicChoices') and question.type != 'Matrix':
+                self.assign_carry_forward(question, question_payload)
 
-                if question.type == 'Matrix':
-                    matrix_question = self.matrix_parser.parse(question_payload)
-                    self.__questions.append(matrix_question)
-                else:
-                    self.response_parser.parse(question, question_payload, question_element)
-                    self.__questions.append(question)
+            if question.type == 'Matrix':
+                matrix_question = self.matrix_parser.parse(question_payload)
+                self.__questions.append(matrix_question)
+            else:
+                self.response_parser.parse(question, question_payload, question_element)
+                self.__questions.append(question)
 
         self.__questions = self.response_parser.carry_forward_responses(self.__questions)
         self.__questions = self.carry_forward_prompts(self.__questions)
@@ -176,7 +173,8 @@ class QSFResponsesParser(object):
     def parse(object, question, question_payload, question_element):
         question.subtype = question_payload['Selector']
         if question_payload.get('Choices') and len(question_payload['Choices']) > 0:
-            question.response_order = question_payload['ChoiceOrder']
+            if question_payload.get('ChoiceOrder') and len(question_payload['ChoiceOrder']) > 0: 
+                question.response_order = question_payload['ChoiceOrder']
             for code, response in question_payload['Choices'].iteritems():
                 question.add_response(response['Display'], code)
         
