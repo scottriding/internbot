@@ -27,9 +27,9 @@ class QSFBlockFlowParser(object):
                 self.__block_ids.append(block['ID'])
             else:
                 for key, value in block.iteritems():
-                    if key == 'Flow':
-                        if value[0].get('EmbeddedData') is None:
-                            self.__block_ids.append(value[0]['ID'])
+                    if key == 'Flow' and value[0].get('EmbeddedData') is None:
+                        for i in value:
+                            self.__block_ids.append(i['ID'])
         return self.__block_ids
         
 class QSFBlocksParser(object):
