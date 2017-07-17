@@ -23,14 +23,20 @@ class QSFBlockFlowParser(object):
     def parse(self, flow_element):
         flow_payload = flow_element['Payload']['Flow']
         for block in flow_payload:
-            if block['Type'] == 'Block' or block['Type'] == 'Standard':
-                self.__block_ids.append(block['ID'])
-            else:
-                for key, value in block.iteritems():
-                    if key == 'Flow' and value[0].get('EmbeddedData') is None:
-                        for i in value:
-                            self.__block_ids.append(i['ID'])
+            self.basic_flow(block)
         return self.__block_ids
+        
+    def basic_flow_structure(self, block):
+        if block['Type'] == 'Block' or block['Type'] == 'Standard':
+            self.__block_ids.append(block['ID'])
+        else:
+            self.layered_flow(block)
+        
+    def layered_flow_structure(self, block):
+        for type, value in block.iteritems():
+            if type == 'Flow' and value[0].get('EmbeddedData') is None:
+                for i in value:
+                    self.__block_ids.append(i['ID'])
         
 class QSFBlocksParser(object):
 
@@ -40,17 +46,23 @@ class QSFBlocksParser(object):
     def parse(self, blocks_element):
         payload = blocks_element['Payload']
         try:
-            for block_element in payload:
-                if block_element['Type'] != 'Trash':
-                    block = self.block_details(block_element)
-                    self.__blocks.add(block)
+            self.basic_block_structure(payload)
         except TypeError:
-            for key, value in payload.iteritems():
-                if value['Type'] != 'Trash':
-                    block = self.block_details(value)
-                    self.__blocks.add(block)
+            self.layered_block_structure(payload)
         return self.__blocks
         
+    def basic_block_structure(self, payload):
+        for block_element in payload:
+            if block_element['Type'] != 'Trash':
+                block = self.block_details(block_element)
+                self.__blocks.add(block)
+    
+    def layered_block_structure(self, payload):
+        for key, value in payload.iteritems():
+            if value['Type'] != 'Trash':
+                block = self.block_details(value)
+                self.__blocks.add(block)
+    
     def block_details(self, block_element):
         block = Block(block_element['Description'])
         block.blockid = block_element['ID']
