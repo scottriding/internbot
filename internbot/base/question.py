@@ -31,6 +31,7 @@ class CompositeQuestion(object):
     def __init__(self):
         self.__questions = []
         self.__question_order = []
+        self.__type = 'Composite'
         self.__temp_responses = Responses()
         self.has_carry_forward_prompts = False
         self.has_carry_forward_responses = False 
@@ -62,11 +63,7 @@ class CompositeQuestion(object):
     @property
     def type(self):
         return self.__type
-
-    @type.setter
-    def type(self):
-        self.__type = 'Composite' 
-        
+   
     @property
     def subtype(self):
         return self.__subtype
