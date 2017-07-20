@@ -1,2 +1,2 @@
 from survey import Survey
-from qsf_parser import QSFParser
+from compile import QSFSurveyCompiler

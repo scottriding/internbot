@@ -1,7 +1,7 @@
 from qsf_parser import QSFSurveyParser, QSFBlockFlowParser, QSFBlocksParser, QSFQuestionsParser
 import json
 
-class CompileQSF(object):
+class QSFSurveyCompiler(object):
 
     def __init__(self):
         self.survey_parser = QSFSurveyParser()
@@ -19,12 +19,12 @@ class CompileQSF(object):
             character = character.split(" ")
             error_word = character[5]
             print 'Remove word: %s' % (error_word)
-        
+
     def parse_json(self, path_to_qsf):
         with open(path_to_qsf) as file:
             qsf_file = json.load(file)
         return qsf_file
-        
+
     def compile_survey(self, qsf_json):
         survey = self.survey_parser.parse(qsf_json['SurveyEntry'])
         blocks = self.compile_blocks(qsf_json)
@@ -39,13 +39,13 @@ class CompileQSF(object):
         blocks = self.blocks_parser.parse(self.find_element('BL', qsf_json))
         blocks.sort(block_ids)
         return blocks
-        
-    def compile_questions(self, qsf_json):    
+
+    def compile_questions(self, qsf_json):
         return self.questions_parser.parse(self.find_elements('SQ', qsf_json))
-        
+
     def find_element(self, element_name, qsf_json):
         return next(iter(self.find_elements(element_name, qsf_json)), None)
 
     def find_elements(self, element_name, qsf_json):
         elements = qsf_json['SurveyElements']
-        return [element for element in elements if element['Element'] == element_name]       
+        return [element for element in elements if element['Element'] == element_name]
