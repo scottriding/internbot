@@ -70,7 +70,11 @@ class CompositeQuestion(object):
 
     @subtype.setter
     def subtype(self, subtype):
-        self.__subtype = str(subtype)    
+        self.__subtype = str(subtype)
+
+    @property
+    def questions(self):
+        return self.__questions
 
     @property
     def question_order(self):
@@ -223,21 +227,6 @@ class Question(object):
     def response_order(self, response_order):
         for response_location in response_order:
             self.__response_order.append(str(response_location))
-
-    def spss_name(self):
-        if self.type == 'MC' and self.subtype in ['SAVR','SAHR']:
-            return self.name
-        elif self.type == 'Matrix' and self.subtype == 'SingleAnswer':
-            return self.name
-        elif self.type == 'MC' and self.subtype == 'MAVR':
-            names = []
-            for response in self.responses:
-                names.append('%s_%s' % (self.name, response.code))
-            return names
-        elif self.type == 'DB':
-            return self.name
-        else:
-            return self.name
 
     def add_response(self, response, code=None):
         self.__responses.add(response, code)
