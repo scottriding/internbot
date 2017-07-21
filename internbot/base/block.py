@@ -16,6 +16,14 @@ class Blocks(object):
                 return block
         return None
         
+    def find_question_by_name(self, question_name):
+        for block in self.__blocks:
+            block.blockid
+            matching_question = block.find_question_by_name(question_name)
+            if matching_question is not None:
+                break
+        return matching_question
+            
     def sort(self, block_id_order):
         sorter = BlockSorter(block_id_order)
         self.__blocks = sorter.sort(self.__blocks)    
@@ -48,6 +56,17 @@ class Block(object):
     def add_question(self, question):
         self.__questions.add(question)
         self.__questions.sort(self.__assigned_ids)
+        
+    def find_question_by_name(self, question_name):
+        for question in self.questions:
+            if re.match('(%s)(?:\_|$)(\d+)?' % question.name, question_name):
+                return question
+            else:
+                pass
+    
+    @property
+    def questions(self):
+        return self.__questions
     
     @property
     def blockid(self):

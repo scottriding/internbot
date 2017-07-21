@@ -8,6 +8,10 @@ class QSFSurveyCompiler(object):
         self.blockflow_parser = QSFBlockFlowParser()
         self.blocks_parser = QSFBlocksParser()
         self.questions_parser = QSFQuestionsParser()
+        
+    @property
+    def questions(self):
+        return self.__questions
 
     def compile(self, path_to_qsf):
         try:
@@ -52,8 +56,8 @@ class QSFSurveyCompiler(object):
         blocks.sort(block_ids)
         return blocks
         
-    def compile_questions(self, qsf_json):    
-        return self.questions_parser.parse(self.find_elements('SQ', qsf_json))
+    def compile_questions(self, qsf_json):
+        return self.questions_parser.parse(self.find_elements('SQ', qsf_json))  
     
     def find_element(self, element_name, qsf_json):
         return next(iter(self.find_elements(element_name, qsf_json)), None)

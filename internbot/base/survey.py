@@ -5,6 +5,10 @@ class Survey(object):
     def __init__(self, survey_name):
         self.__blocks = Blocks()
         self.name = survey_name
+        
+    @property
+    def blocks(self):
+        return self.__blocks
 
     def add_block(self, block):
         self.__blocks.add(block)
