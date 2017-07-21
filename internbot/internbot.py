@@ -25,5 +25,5 @@ if __name__ == '__main__':
     survey = compiler.compile(args.qsf)
 
     if args.report == 'SPSS':
-        translater = translate.SPSSTranslator()
+        translator = translate.SPSSTranslator()
         translator.define_variables(survey, args.output)
