@@ -18,7 +18,7 @@ class SPSSTranslator(object):
                 grouped_questions.append(self.translate_composite(question, group_names))
             elif question.type == 'MC' and question.subtype == 'MAVR':
                 grouped_questions.append(self.translate_mc_multiple(question, group_names))
-        result += self.add_groups(grouped_questions, group_names, result)
+        result += self.add_groups(grouped_questions, group_names)
         return result
 
     def translate_composite(self, question, name):
@@ -43,8 +43,8 @@ class SPSSTranslator(object):
         result += "VALUE=1\n"
         return result
 
-    def add_groups(self, grouped_questions, grouped_name, result):
-        result += 'EXECUTE.\n\nMRSETS\n'
+    def add_groups(self, grouped_questions, grouped_name):
+        result = 'EXECUTE.\n\nMRSETS\n'
         for item in grouped_questions:
             result += item
         result += '  /DISPLAY NAME=['
