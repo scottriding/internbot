@@ -5,10 +5,15 @@ class Survey(object):
     def __init__(self, survey_name):
         self.__blocks = Blocks()
         self.name = survey_name
+        self.__questions = []
         
     @property
     def blocks(self):
         return self.__blocks
+        
+    @property
+    def questions(self):
+        return self.__questions
 
     def add_block(self, block):
         self.__blocks.add(block)
@@ -18,6 +23,7 @@ class Survey(object):
             block = self.__blocks.find_by_assigned_id(question.id)
             if block is not None:
                 block.add_question(question)
+                self.__questions.append(question)
 
     def __repr__ (self):
         result = ''
