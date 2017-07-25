@@ -8,7 +8,7 @@ class ReportGenerator(object):
         
     def generate_report(self, path_to_csv, path_to_template, path_to_output):
         with open(path_to_csv, 'rb') as csvfile:
-            file = csv.DicReader(csvfile, quotechar = '"')
+            file = csv.DictReader(csvfile, quotechar = '"')
             for question_data in file:
                 matching_question = self.find_question(question_data['name'], self.survey)
                 matching_response = self.find_response(question_data['response'], matching_question)
