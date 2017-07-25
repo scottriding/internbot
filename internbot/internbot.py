@@ -33,4 +33,6 @@ if __name__ == '__main__':
         
     if args.report == 'topline':
         report = topline.ReportGenerator(survey)
-        report.generate_report(args.csv, args.template, args.output)
+        report.generate_docx(args.csv, args.template, args.output)
+        #report.generate_ppt(args.template, args.output)
+
