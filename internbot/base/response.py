@@ -30,6 +30,7 @@ class Response(object):
     def __init__ (self, response, code=None):
         self.response = response
         self.code = code
+        self.__has_frequency = False
 
     @property
     def response(self):
@@ -54,6 +55,11 @@ class Response(object):
     @frequency.setter
     def frequency(self, frequency):
         self.__frequency = float(frequency)
+        self.__has_frequency = True
+
+    @property
+    def has_frequency(self):
+        return self.__has_frequency
 
     def __repr__(self):
         result = ""

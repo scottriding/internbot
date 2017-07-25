@@ -13,7 +13,7 @@ class ReportGenerator(object):
                 matching_question = self.find_question(question_data['name'], self.survey)
                 matching_response = self.find_response(question_data['response'], matching_question)
                 self.add_frequency(matching_response, question_data['frequency'])
-            report = ToplineReport(self.__questions, path_to_template)
+            report = ToplineReport(self.survey.get_questions(), path_to_template)
             report.save(path_to_output)
             
     def find_question(self, question_to_find, survey):
