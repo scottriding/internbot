@@ -1,4 +1,5 @@
 from pptx import Presentation
+from pptx.util import Inches, Pt
 
 class ToplinePPT(object):
     
@@ -18,15 +19,21 @@ class ToplinePPT(object):
         self.ppt.save(path_to_output)
 
     def write_question(self, question):
-        slide = self.ppt.add_slide()
+        slide = self.ppt.slides.add_slide(self.ppt.slide_layouts[1])
         self.write_name(question.name, slide)
         self.write_prompt(question.prompt, slide)
 
     def write_name(self, name, slide):
-        slide.shapes.title.text(name)
+        left = top = width = height = Inches(1)
+        txBox = slide.shapes.add_textbox(left, top, width, height)
+        tf = txBox.text_frame
+        tf.text = name
 
     def write_prompt(self, prompt, slide):
-        slide.shapes.add_textbox.text_frame.text(prompt)
+        left = top = width = height = Inches(2)
+        txBox = slide.shapes.add_textbox(left, top, width, height)
+        tf = txBox.text_frame
+        tf.text = prompt
 
     def get_ppt(self):
         return self.ppt
