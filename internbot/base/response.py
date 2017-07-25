@@ -24,7 +24,6 @@ class Responses(object):
             result += "\t\t\t%s\n" % str(response)
         return result
 
-
 class Response(object):
 
     def __init__ (self, response, code=None):

@@ -1,7 +1,6 @@
 from response import Responses
 from sorter import QuestionSorter, CompositeQuestionSorter
 
-
 class Questions(object):
 
     def __init__(self):
@@ -132,8 +131,7 @@ class CompositeQuestion(object):
                 bool = False
             else:    
                 result += "\t\t%s\n" % (str(question))
-        return result        
-         
+        return result                 
 
 class Question(object):
 
@@ -238,5 +236,3 @@ class Question(object):
         result += str(self.__responses)
         return result
         
-
-
