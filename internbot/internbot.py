@@ -2,7 +2,7 @@ import argparse
 import base
 import sys
 import translate
-# import topline
+import topline
 
 
 if __name__ == '__main__':
@@ -14,6 +14,8 @@ if __name__ == '__main__':
     parser.add_argument('qsf', help='path to the Qualtrics QSF file')
     parser.add_argument('report', help='Report to be generated (either topline or SPSS)')
     parser.add_argument('output', help='path to output file')
+    parser.add_argument('csv', help='path to csv file')
+    parser.add_argument('template', help='path to template')
 
     args = parser.parse_args()
 
@@ -27,3 +29,7 @@ if __name__ == '__main__':
     if args.report == 'SPSS':
         translator = translate.SPSSTranslator()
         translator.define_variables(survey, args.output)
+        
+    if args.report == 'topline':
+        report = generate_report.ReportGenerator()
+        report.generate_report(args.csv, args.template, args.output)
