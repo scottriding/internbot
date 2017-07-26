@@ -28,8 +28,8 @@ class ToplinePPT(object):
         title.text = name
 
     def write_prompt(self, prompt, slide):
-        subtitle = slide.placeholders[1]
-        subtitle.text = prompt
+        body = slide.placeholders[1]
+        body.text = prompt
 
     def get_ppt(self):
         return self.ppt
