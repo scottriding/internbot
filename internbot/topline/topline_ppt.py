@@ -24,16 +24,12 @@ class ToplinePPT(object):
         self.write_prompt(question.prompt, slide)
 
     def write_name(self, name, slide):
-        left = top = width = height = Inches(1)
-        txBox = slide.shapes.add_textbox(left, top, width, height)
-        tf = txBox.text_frame
-        tf.text = name
+        title = slide.shapes.title
+        title.text = name
 
     def write_prompt(self, prompt, slide):
-        left = top = width = height = Inches(2)
-        txBox = slide.shapes.add_textbox(left, top, width, height)
-        tf = txBox.text_frame
-        tf.text = prompt
+        subtitle = slide.placeholders[1]
+        subtitle.text = prompt
 
     def get_ppt(self):
         return self.ppt
