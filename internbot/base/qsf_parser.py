@@ -23,7 +23,7 @@ class QSFBlockFlowParser(object):
     def parse(self, flow_element):
         flow_payload = flow_element['Payload']['Flow']
         for block in flow_payload:
-            self.basic_flow_structure(block) 
+            self.basic_flow_structure(block)
         return self.__block_ids
         
     def basic_flow_structure(self, block):
@@ -38,8 +38,11 @@ class QSFBlockFlowParser(object):
                 for i in value:
                     if i.get('ID') is not None:
                         self.__block_ids.append(i['ID'])
-                    elif i['Flow'][0].get('ID') is not None:
-                        self.__block_ids.append(i['Flow'][0]['ID'])
+                    else:
+                        try:
+                            self.__block_ids.append(i['Flow'][0]['ID'])
+                        except:
+                            pass
                         
 class QSFBlocksParser(object):
 
