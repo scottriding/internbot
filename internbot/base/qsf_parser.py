@@ -98,6 +98,8 @@ class QSFQuestionsParser(object):
             if question.type == 'Matrix':
                 matrix_question = self.matrix_parser.parse(question_payload)
                 self.__questions.append(matrix_question)
+            elif question.type == 'Meta':
+                pass
             else:
                 self.response_parser.parse(question, question_payload, question_element)
                 self.__questions.append(question)

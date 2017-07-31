@@ -15,8 +15,6 @@ class ToplinePPT(object):
         for question in self.questions:
             if question.type == 'Composite':
                 self.write_composite_slide(question)
-            elif question.type == 'Meta':
-                pass
             else:
                 self.write_basic_slide(question)
 
