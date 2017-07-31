@@ -15,6 +15,9 @@ class Responses(object):
         sorter = ResponseSorter(response_order)
         self.__responses = sorter.sort(self.__responses)
 
+    def __len__(self):
+        return len(self.__responses)
+
     def __iter__(self):
         return(iter(self.__responses))
 

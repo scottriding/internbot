@@ -23,11 +23,7 @@ class Survey(object):
     def get_questions(self):
         for block in self.__blocks:
             for question in block.questions:
-                if question.type is not 'Composite':
-                    self.__questions.append(question)
-                else:
-                    for sub_question in question.questions:
-                        self.__questions.append(sub_question)
+                self.__questions.append(question)
         return self.__questions   
 
     def __repr__ (self):

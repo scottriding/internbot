@@ -13,7 +13,12 @@ class ToplineReport(object):
 
     def write_questions(self):
         for question in self.questions:
-            self.write_question(question)
+            if question.type == 'Composite':
+                self.write_composite_question(question)
+            elif question.type == 'Meta':
+                pass
+            else:
+                self.write_question(question)
 
     def save_file(self, path_to_output):
         self.doc.save(path_to_output)
@@ -23,6 +28,13 @@ class ToplineReport(object):
         self.write_name(question.name, paragraph)
         self.write_prompt(question.prompt, paragraph)
         self.write_responses(question.responses)
+        self.doc.add_paragraph("") # space between questions
+
+    def write_composite_question(self, question):
+        paragraph = self.doc.add_paragraph() # each question starts a new paragraph
+        self.write_name(question.name, paragraph)
+        self.write_prompt(question.prompt, paragraph)
+        self.write_sub_questions(question.questions)
         self.doc.add_paragraph("") # space between questions
 
     def write_name(self, name, paragraph):
@@ -55,6 +67,32 @@ class ToplineReport(object):
                 first_row = False
             else:
                 response_cells[3].text = '--'
+
+    def write_sub_questions(self, sub_questions):
+        table = self.doc.add_table(rows = 1, cols = 0)
+        table.add_column(width = Inches(1))
+        table.add_column(width = Inches(1))
+        first_row = True
+        header_cells = table.add_row().cells
+        for sub_question in sub_questions:
+            if first_row == True:
+                for response in sub_question.responses:
+                    response_cells = table.add_column(width = Inches(1)).cells
+                    response_cells[1].text = response.response
+            question_cells = table.add_row().cells
+            question_cells[1].text = sub_question.prompt
+            index = 2
+            for response in sub_question.responses:
+                if response.has_frequency is True and first_row is True:
+                    question_cells[index].text = self.freqs_percent(response.frequency) + '%'
+                    first_row = False
+                elif response.has_frequency is True and first_row is False:
+                    question_cells[index].text = self.freqs_percent(response.frequency)
+                elif response.has_frequency is False and first_row is True:
+                    question_cells[index].text = '--%'
+                else:
+                    question_cells[index].text = '--'
+                index += 1
 
     def get_doc(self):
         return self.doc
