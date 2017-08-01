@@ -114,7 +114,7 @@ class QSFQuestionsParser(object):
         question = Question()
         question.id = question_payload['QuestionID']
         question.name = question_payload['DataExportTag']
-        question.prompt = question_payload['QuestionText']
+        question.prompt = question_payload['QuestionText'].encode('ascii', 'ignore')
         question.type = question_payload['QuestionType']
         return question
         
@@ -158,7 +158,7 @@ class QSFQuestionsMatrixParser(object):
             question.name = question_payload['ChoiceDataExportTags'][code]    
         else:
             question.name = '%s_%s' % (str(question_payload['DataExportTag']), code)
-        question.prompt = prompt['Display']
+        question.prompt = prompt['Display'].encode('ascii', 'ignore')
         question.response_order = question_payload['AnswerOrder']
         for code, response in responses.iteritems():
             question.add_response(response['Display'], code)
@@ -167,7 +167,7 @@ class QSFQuestionsMatrixParser(object):
     def matrix_details(self, matrix_question, question_payload):
         matrix_question.id = question_payload['QuestionID']
         matrix_question.name = question_payload['DataExportTag']
-        matrix_question.prompt = question_payload['QuestionDescription']
+        matrix_question.prompt = question_payload['QuestionText'].encode('ascii', 'ignore')
         matrix_question.subtype = question_payload['SubSelector']
         
 class QSFResponsesParser(object):

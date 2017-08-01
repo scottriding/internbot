@@ -10,15 +10,9 @@ class QSFSurveyCompiler(object):
         self.questions_parser = QSFQuestionsParser()
 
     def compile(self, path_to_qsf):
-        try:
-            qsf_json = self.parse_json(path_to_qsf)
-            survey = self.compile_survey(qsf_json)
-            return survey
-        except UnicodeEncodeError, e:
-            character = str(e)
-            character = character.split(" ")
-            error_word = character[5]
-            print 'Remove word: %s' % (error_word)
+        qsf_json = self.parse_json(path_to_qsf)
+        survey = self.compile_survey(qsf_json)
+        return survey
 
     def parse_json(self, path_to_qsf):
         with open(path_to_qsf) as file:
@@ -49,3 +43,4 @@ class QSFSurveyCompiler(object):
     def find_elements(self, element_name, qsf_json):
         elements = qsf_json['SurveyElements']
         return [element for element in elements if element['Element'] == element_name]
+
