@@ -199,9 +199,14 @@ class QSFResponsesParser(object):
         if question_payload.get('Choices') and len(question_payload['Choices']) > 0:
             if question_payload.get('ChoiceOrder') and len(question_payload['ChoiceOrder']) > 0: 
                 question.response_order = question_payload['ChoiceOrder']
-            for code, response in question_payload['Choices'].iteritems():
-                question.add_response(response['Display'], code)
-        
+            if question.subtype != 'NPS':
+                for code, response in question_payload['Choices'].iteritems():
+                    question.add_response(response['Display'], code)
+            else:
+                for iteration in question_payload['Choices']:
+                    for response, code in iteration.iteritems():
+                        question.add_response(code, code)
+                    
     def carry_forward_responses(self, questions):
         dynamic_questions = [question for question in questions if question.has_carry_forward_responses == True]
         for dynamic_question in dynamic_questions:
