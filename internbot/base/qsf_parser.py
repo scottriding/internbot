@@ -2,6 +2,7 @@ import re
 from survey import Survey
 from block import Blocks, Block
 from question import Questions, Question, CompositeQuestion
+from HTMLParser import HTMLParser
 
 class QSFSurveyParser(object):
 
@@ -114,9 +115,14 @@ class QSFQuestionsParser(object):
         question = Question()
         question.id = question_payload['QuestionID']
         question.name = question_payload['DataExportTag']
-        question.prompt = question_payload['QuestionText'].encode('ascii', 'ignore')
+        question.prompt = self.strip_tags(question_payload['QuestionText'].encode('ascii', 'ignore'))
         question.type = question_payload['QuestionType']
         return question
+
+    def strip_tags(self, html):
+        html_parser = MLStripper()
+        html_parser.feed(html)
+        return html_parser.get_data()
         
 
 class QSFQuestionsMatrixParser(object):
@@ -242,3 +248,13 @@ class QSFCarryForwardParser(object):
                 dynamic_question.add_response(response.response, response.code)
         return questions
 
+class MLStripper(HTMLParser):
+    def __init__(self):
+        self.reset()
+        self.fed = []
+    
+    def handle_data(self, d):
+        self.fed.append(d)
+    
+    def get_data(self):
+        return ''.join(self.fed)
