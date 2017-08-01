@@ -86,6 +86,7 @@ class QSFQuestionsParser(object):
     def __init__(self):
         self.matrix_parser = QSFQuestionsMatrixParser()
         self.response_parser = QSFResponsesParser()
+        self.carry_forward_parser = QSFCarryForwardParser()
         self.__questions = []
 
     def parse(self, question_elements):
@@ -94,7 +95,7 @@ class QSFQuestionsParser(object):
             question = self.question_details(question_payload)
             
             if question_payload.get('DynamicChoices') and question.type != 'Matrix':
-                self.assign_carry_forward(question, question_payload)
+                self.carry_forward_parser.assign_carry_forward(question, question_payload)
 
             if question.type == 'Matrix':
                 matrix_question = self.matrix_parser.parse(question_payload)
@@ -106,7 +107,7 @@ class QSFQuestionsParser(object):
                 self.__questions.append(question)
 
         self.__questions = self.response_parser.carry_forward_responses(self.__questions)
-        self.__questions = self.carry_forward_prompts(self.__questions)
+        self.__questions = self.carry_forward_parser.parse(self.__questions)
         return self.__questions
         
     def question_details(self, question_payload):
@@ -117,51 +118,6 @@ class QSFQuestionsParser(object):
         question.type = question_payload['QuestionType']
         return question
         
-    def assign_carry_forward(self, question, question_payload):
-        question.has_carry_forward_responses = True
-        carry_forward_locator = question_payload['DynamicChoices']['Locator']
-        carry_forward_match = re.match('q://(QID\d+).+', carry_forward_locator)
-        question.carry_forward_question_id = carry_forward_match.group(1)
-            
-    def carry_forward_prompts(self, questions):
-        dynamic_questions = [question for question in questions if question.has_carry_forward_prompts == True]
-        carried_forward_questions = []
-        for dynamic_question in dynamic_questions:
-            matching_question = next((question for question in questions if question.id == dynamic_question.carry_forward_question_id), None)
-            if matching_question.type == 'Composite':
-                self.carry_forward_composite(matching_question, dynamic_question, carried_forward_questions)
-                
-            else:
-                self.carry_forward_basic(matching_question, dynamic_question, carried_forward_questions)                
-        return questions
-
-    def carry_forward_composite(self, matching_question, dynamic_question, carried_forward_questions):
-        dynamic_question.question_order = matching_question.question_order
-        for sub_question in matching_question.questions:
-            question = Question()
-            question.prompt = sub_question.prompt
-            question.ocde = sub_question.code
-            question.id = '%s_%s' % (dynamic_question.id, sub_question.code)
-            question.name = '%s_%s' % (dynamic_question.name, sub_question.code)
-            question.response_order = sub_question.response_order
-            for response in sub_question.responses:
-                question.add_response(response.response, response.code)
-            dynamic_question.add_question(question)
-            carried_forward_questions.append(question)
-
-    def carry_forward_basic(self, matching_question, dynamic_question, carried_forward_questions):
-        dynamic_question.question_order = matching_question.response_order
-        for response in matching_question.responses:
-            question = Question()
-            question.prompt = response.response
-            question.code = response.code
-            question.id = '%s_%s' % (dynamic_question.id, response.code)
-            question.name = '%s_%s' % (dynamic_question.name, response.code)
-            question.response_order = matching_question.response_order
-            for response in dynamic_question.temp_responses:
-                question.add_response(response.response, response.code)
-            dynamic_question.add_question(question)
-            carried_forward_questions.append(question)
 
 class QSFQuestionsMatrixParser(object):
 
@@ -237,4 +193,51 @@ class QSFResponsesParser(object):
             for response in matching_question.responses:
                 dynamic_question.add_response(response.response, response.code)
         return questions
+
+class QSFCarryForwardParser(object):
+
+    def assign_carry_forward(self, question, question_payload):
+        question.has_carry_forward_responses = True
+        carry_forward_locator = question_payload['DynamicChoices']['Locator']
+        carry_forward_match = re.match('q://(QID\d+).+', carry_forward_locator)
+        question.carry_forward_question_id = carry_forward_match.group(1)
+
+    def parse(self, questions):
+        dynamic_questions = [question for question in questions if question.has_carry_forward_prompts == True]
+        carried_forward_questions = []
+        for dynamic_question in dynamic_questions:
+            matching_question = next((question for question in questions if question.id == dynamic_question.carry_forward_question_id), None)
+            if matching_question.type == 'Composite':
+                self.carry_forward_composite(matching_question, dynamic_question, carried_forward_questions)
+            else:
+                self.carry_forward_basic(matching_question, dynamic_question, carried_forward_questions)                
+        return questions        
+
+    def carry_forward_composite(self, matching_question, dynamic_question, carried_forward_questions):
+        dynamic_question.question_order = matching_question.question_order
+        for sub_question in matching_question.questions:
+            question = Question()
+            question.prompt = sub_question.prompt
+            question.ocde = sub_question.code
+            question.id = '%s_%s' % (dynamic_question.id, sub_question.code)
+            question.name = '%s_%s' % (dynamic_question.name, sub_question.code)
+            question.response_order = sub_question.response_order
+            for response in sub_question.responses:
+                question.add_response(response.response, response.code)
+            dynamic_question.add_question(question)
+            carried_forward_questions.append(question)
+
+    def carry_forward_basic(self, matching_question, dynamic_question, carried_forward_questions):
+        dynamic_question.question_order = matching_question.response_order
+        for response in matching_question.responses:
+            question = Question()
+            question.prompt = response.response
+            question.code = response.code
+            question.id = '%s_%s' % (dynamic_question.id, response.code)
+            question.name = '%s_%s' % (dynamic_question.name, response.code)
+            question.response_order = matching_question.response_order
+            for response in dynamic_question.temp_responses:
+                question.add_response(response.response, response.code)
+            dynamic_question.add_question(question)
+            carried_forward_questions.append(question)
 
