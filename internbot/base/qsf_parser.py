@@ -34,15 +34,16 @@ class QSFBlockFlowParser(object):
         
     def layered_flow_structure(self, block):
         for type, value in block.iteritems():
-            if type == 'Flow' and value[0].get('EmbeddedData') is None:
-                for i in value:
-                    if i.get('ID') is not None:
-                        self.__block_ids.append(i['ID'])
-                    else:
-                        try:
-                            self.__block_ids.append(i['Flow'][0]['ID'])
-                        except:
-                            pass
+            if (type == 'Flow' and len(value) > 0) and \
+               (type == 'Flow' and value[0].get('EmbeddedData') is None):
+                self.grab_blockid_layer_details(value)
+
+    def grab_blockid_layer_details(self, layer_details):
+        for detail in layer_details:
+            if detail.get('ID') is not None:
+                self.__block_ids.append(detail['ID'])
+            elif detail.get('Flow') is not None:
+                self.__block_ids.append(detail['Flow'][0]['ID'])
                         
 class QSFBlocksParser(object):
 
