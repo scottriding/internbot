@@ -88,6 +88,7 @@ class ToplineReport(object):
                     question_cells[index].text = self.freqs_percent(response.frequency)
                 elif response.has_frequency is False and first_row is True:
                     question_cells[index].text = '--%'
+                    first_row = False
                 else:
                     question_cells[index].text = '--'
                 index += 1
