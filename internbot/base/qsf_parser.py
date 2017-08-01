@@ -86,7 +86,7 @@ class QSFQuestionsParser(object):
     def __init__(self):
         self.matrix_parser = QSFQuestionsMatrixParser()
         self.response_parser = QSFResponsesParser()
-        self.carry_forward_parser = QSFCarryForwardParser()
+        self.carryforwardparser = QSFCarryForwardParser()
         self.__questions = []
 
     def parse(self, question_elements):
@@ -95,7 +95,7 @@ class QSFQuestionsParser(object):
             question = self.question_details(question_payload)
             
             if question_payload.get('DynamicChoices') and question.type != 'Matrix':
-                self.carry_forward_parser.assign_carry_forward(question, question_payload)
+                self.carryforwardparser.assign_carry_forward(question, question_payload)
 
             if question.type == 'Matrix':
                 matrix_question = self.matrix_parser.parse(question_payload)
@@ -106,8 +106,8 @@ class QSFQuestionsParser(object):
                 self.response_parser.parse(question, question_payload, question_element)
                 self.__questions.append(question)
 
-        self.__questions = self.response_parser.carry_forward_responses(self.__questions)
-        self.__questions = self.carry_forward_parser.parse(self.__questions)
+        self.__questions = self.carryforwardparser.carry_forward_responses(self.__questions)
+        self.__questions = self.carryforwardparser.carry_forward_prompts(self.__questions)
         return self.__questions
         
     def question_details(self, question_payload):
@@ -185,14 +185,6 @@ class QSFResponsesParser(object):
                 for code, response in question_payload['Choices'].iteritems():
                     question.add_response(response['Display'], code)
                                    
-    def carry_forward_responses(self, questions):
-        dynamic_questions = [question for question in questions if question.has_carry_forward_responses == True]
-        for dynamic_question in dynamic_questions:
-            matching_question = next((question for question in questions if question.id == dynamic_question.carry_forward_question_id), None)
-            dynamic_question.response_order = matching_question.response_order
-            for response in matching_question.responses:
-                dynamic_question.add_response(response.response, response.code)
-        return questions
 
 class QSFCarryForwardParser(object):
 
@@ -202,18 +194,18 @@ class QSFCarryForwardParser(object):
         carry_forward_match = re.match('q://(QID\d+).+', carry_forward_locator)
         question.carry_forward_question_id = carry_forward_match.group(1)
 
-    def parse(self, questions):
+    def carry_forward_prompts(self, questions):
         dynamic_questions = [question for question in questions if question.has_carry_forward_prompts == True]
         carried_forward_questions = []
         for dynamic_question in dynamic_questions:
             matching_question = next((question for question in questions if question.id == dynamic_question.carry_forward_question_id), None)
             if matching_question.type == 'Composite':
-                self.carry_forward_composite(matching_question, dynamic_question, carried_forward_questions)
+                self.composite_prompts(matching_question, dynamic_question, carried_forward_questions)
             else:
-                self.carry_forward_basic(matching_question, dynamic_question, carried_forward_questions)                
+                self.basic_prompts(matching_question, dynamic_question, carried_forward_questions)                
         return questions        
 
-    def carry_forward_composite(self, matching_question, dynamic_question, carried_forward_questions):
+    def composite_prompts(self, matching_question, dynamic_question, carried_forward_questions):
         dynamic_question.question_order = matching_question.question_order
         for sub_question in matching_question.questions:
             question = Question()
@@ -227,7 +219,7 @@ class QSFCarryForwardParser(object):
             dynamic_question.add_question(question)
             carried_forward_questions.append(question)
 
-    def carry_forward_basic(self, matching_question, dynamic_question, carried_forward_questions):
+    def basic_prompts(self, matching_question, dynamic_question, carried_forward_questions):
         dynamic_question.question_order = matching_question.response_order
         for response in matching_question.responses:
             question = Question()
@@ -240,4 +232,13 @@ class QSFCarryForwardParser(object):
                 question.add_response(response.response, response.code)
             dynamic_question.add_question(question)
             carried_forward_questions.append(question)
+
+    def carry_forward_responses(self, questions):
+        dynamic_questions = [question for question in questions if question.has_carry_forward_responses == True]
+        for dynamic_question in dynamic_questions:
+            matching_question = next((question for question in questions if question.id == dynamic_question.carry_forward_question_id), None)
+            dynamic_question.response_order = matching_question.response_order
+            for response in matching_question.responses:
+                dynamic_question.add_response(response.response, response.code)
+        return questions
 
