@@ -44,8 +44,8 @@ class QSFBlockFlowParser(object):
             if detail.get('ID') is not None:
                 self.__block_ids.append(detail['ID'])
             elif detail.get('Flow') is not None:
-                self.__block_ids.append(detail['Flow'][0]['ID'])
-                        
+                self.__block_ids.append(detail['Flow'][0]['ID'])           
+           
 class QSFBlocksParser(object):
 
     def __init__(self):
@@ -95,7 +95,8 @@ class QSFQuestionsParser(object):
             question_payload = question_element['Payload']
             question = self.question_details(question_payload)
             
-            if question_payload.get('DynamicChoices') and question.type != 'Matrix':
+            if question_payload.get('DynamicChoices') and \
+               question.type != 'Matrix':
                 self.carryforwardparser.assign_carry_forward(question, question_payload)
 
             if question.type == 'Matrix':
@@ -115,7 +116,8 @@ class QSFQuestionsParser(object):
         question = Question()
         question.id = question_payload['QuestionID']
         question.name = question_payload['DataExportTag']
-        question.prompt = self.strip_tags(question_payload['QuestionText'].encode('ascii', 'ignore'))
+        question.prompt = self.strip_tags( \
+                          question_payload['QuestionText'].encode('ascii', 'ignore'))
         question.type = question_payload['QuestionType']
         return question
 
@@ -143,7 +145,8 @@ class QSFQuestionsMatrixParser(object):
         carry_forward_match = re.match('q://(QID\d+).+', carry_forward_locator)
         matrix_question.carry_forward_question_id = carry_forward_match.group(1)
         for code, response in responses.iteritems():
-            response_name = self.strip_tags(response['Display'].encode('ascii','ignore'))
+            response_name = self.strip_tags( \
+                            response['Display'].encode('ascii','ignore'))
             matrix_question.add_response(response_name, code)
             
     def basic_matrix(self, question_payload, matrix_question):
@@ -168,14 +171,16 @@ class QSFQuestionsMatrixParser(object):
         question.prompt = self.strip_tags(prompt['Display'].encode('ascii', 'ignore'))
         question.response_order = question_payload['AnswerOrder']
         for code, response in responses.iteritems():
-            response_name = self.strip_tags(response['Display'].encode('ascii','ignore'))
+            response_name = self.strip_tags(response['Display'] \
+                            .encode('ascii','ignore'))
             question.add_response(response_name, code)
         return question
         
     def matrix_details(self, matrix_question, question_payload):
         matrix_question.id = question_payload['QuestionID']
         matrix_question.name = question_payload['DataExportTag']
-        matrix_question.prompt = self.strip_tags(question_payload['QuestionText'].encode('ascii', 'ignore'))
+        matrix_question.prompt = self.strip_tags( \
+                                 question_payload['QuestionText'].encode('ascii', 'ignore'))
         matrix_question.subtype = question_payload['SubSelector']
 
     def strip_tags(self, html):
@@ -188,7 +193,8 @@ class QSFResponsesParser(object):
     def parse(object, question, question_payload, question_element):
         question.subtype = question_payload['Selector']
         if question_payload.get('Choices') and len(question_payload['Choices']) > 0:
-            if question_payload.get('ChoiceOrder') and len(question_payload['ChoiceOrder']) > 0: 
+            if question_payload.get('ChoiceOrder') and \
+               len(question_payload['ChoiceOrder']) > 0: 
                 question.response_order = question_payload['ChoiceOrder']
             if question.subtype == 'NPS':
                 for iteration in question_payload['Choices']:
@@ -208,14 +214,20 @@ class QSFCarryForwardParser(object):
         question.carry_forward_question_id = carry_forward_match.group(1)
 
     def carry_forward_prompts(self, questions):
-        dynamic_questions = [question for question in questions if question.has_carry_forward_prompts == True]
+        dynamic_questions = [question for question in questions \
+                            if question.has_carry_forward_prompts == True]
         carried_forward_questions = []
         for dynamic_question in dynamic_questions:
-            matching_question = next((question for question in questions if question.id == dynamic_question.carry_forward_question_id), None)
+            matching_question = next((question for question in questions \
+                                if question.id == dynamic_question.carry_forward_question_id), None)
             if matching_question.type == 'Composite':
-                self.composite_prompts(matching_question, dynamic_question, carried_forward_questions)
+                self.composite_prompts(matching_question, \
+                                       dynamic_question,  \
+                                       carried_forward_questions)
             else:
-                self.basic_prompts(matching_question, dynamic_question, carried_forward_questions)                
+                self.basic_prompts(matching_question, \
+                                   dynamic_question,  \
+                                   carried_forward_questions)                
         return questions        
 
     def composite_prompts(self, matching_question, dynamic_question, carried_forward_questions):
@@ -247,9 +259,11 @@ class QSFCarryForwardParser(object):
             carried_forward_questions.append(question)
 
     def carry_forward_responses(self, questions):
-        dynamic_questions = [question for question in questions if question.has_carry_forward_responses == True]
+        dynamic_questions = [question for question in questions \
+                            if question.has_carry_forward_responses == True]
         for dynamic_question in dynamic_questions:
-            matching_question = next((question for question in questions if question.id == dynamic_question.carry_forward_question_id), None)
+            matching_question = next((question for question in questions \
+                                    if question.id == dynamic_question.carry_forward_question_id), None)
             dynamic_question.response_order = matching_question.response_order
             for response in matching_question.responses:
                 dynamic_question.add_response(response.response, response.code)
@@ -260,8 +274,8 @@ class MLStripper(HTMLParser):
         self.reset()
         self.fed = []
     
-    def handle_data(self, d):
-        self.fed.append(d)
+    def handle_data(self, data):
+        self.fed.append(data)
     
     def get_data(self):
         return ' '.join(self.fed)

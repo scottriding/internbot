@@ -14,7 +14,7 @@ class SPSSTranslator(object):
             if question.type == 'MC' and question.subtype in ['SAVR','SAHR','DL']:
                 result += 'VARIABLE LEVEL  %s(ORDINAL).\n' % question.name
             elif question.type == 'Slider':
-                result += 'VARIABLE LEVEL  %s_%sSCALE).\n' % (question.name, question.code)
+                result += 'VARIABLE LEVEL  %s_1(SCALE).\n' % question.name
             elif question.type == 'Composite' and question.subtype == 'SingleAnswer':
                 grouped_questions.append(self.translate_composite(question, group_names))
             elif question.type == 'MC' and question.subtype == 'MAVR' and question.has_carry_forward_responses is False:
@@ -27,9 +27,6 @@ class SPSSTranslator(object):
     def translate_composite(self, question, name):
         label = '$%s' % question.name
         name.append(label)
-        select_prompt = question.prompt.split('(', 2)[1]
-        if 'Select' not in select_prompt:
-            select_prompt = 'Select all that apply'
         result = "  /MDGROUP NAME=$%s LABEL='%s'" % (question.name, question.prompt)
         result += "CATEGORYLABELS=VARLABELS\n"
         result+= "    VARIABLES="
