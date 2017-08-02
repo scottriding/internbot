@@ -143,7 +143,8 @@ class QSFQuestionsMatrixParser(object):
         carry_forward_match = re.match('q://(QID\d+).+', carry_forward_locator)
         matrix_question.carry_forward_question_id = carry_forward_match.group(1)
         for code, response in responses.iteritems():
-            matrix_question.add_response(response['Display'], code)
+            response_name = self.strip_tags(response['Display'].encode('ascii','ignore'))
+            matrix_question.add_response(response_name, code)
             
     def basic_matrix(self, question_payload, matrix_question):
         prompts = question_payload['Choices']
@@ -164,17 +165,23 @@ class QSFQuestionsMatrixParser(object):
             question.name = question_payload['ChoiceDataExportTags'][code]    
         else:
             question.name = '%s_%s' % (str(question_payload['DataExportTag']), code)
-        question.prompt = prompt['Display'].encode('ascii', 'ignore')
+        question.prompt = self.strip_tags(prompt['Display'].encode('ascii', 'ignore'))
         question.response_order = question_payload['AnswerOrder']
         for code, response in responses.iteritems():
-            question.add_response(response['Display'], code)
+            response_name = self.strip_tags(response['Display'].encode('ascii','ignore'))
+            question.add_response(response_name, code)
         return question
         
     def matrix_details(self, matrix_question, question_payload):
         matrix_question.id = question_payload['QuestionID']
         matrix_question.name = question_payload['DataExportTag']
-        matrix_question.prompt = question_payload['QuestionText'].encode('ascii', 'ignore')
+        matrix_question.prompt = self.strip_tags(question_payload['QuestionText'].encode('ascii', 'ignore'))
         matrix_question.subtype = question_payload['SubSelector']
+
+    def strip_tags(self, html):
+        html_parser = MLStripper()
+        html_parser.feed(html)
+        return html_parser.get_data()
         
 class QSFResponsesParser(object):
 
