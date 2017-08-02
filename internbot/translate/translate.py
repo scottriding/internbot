@@ -1,7 +1,7 @@
 class SPSSTranslator(object):
     
     def define_variables(self, survey, path_to_output):
-        questions = survey.questions
+        questions = survey.get_questions()
         file = open(path_to_output, "w+")
         file.write(self.translate_questions(questions))
         
@@ -13,7 +13,7 @@ class SPSSTranslator(object):
             if question.type == 'MC' and question.subtype in ['SAVR','SAHR','DL']:
                 result += 'VARIABLE LEVEL  %s(ORDINAL).\n' % question.name
             elif question.type == 'Slider':
-                result += 'VARIABLE LEVEL  %s_1(SCALE).\n' % question.name
+                result += 'VARIABLE LEVEL  %s_%sSCALE).\n' % (question.name, question.code)
             elif question.type == 'Composite' and question.subtype == 'SingleAnswer':
                 grouped_questions.append(self.translate_composite(question, group_names))
             elif question.type == 'MC' and question.subtype == 'MAVR':
