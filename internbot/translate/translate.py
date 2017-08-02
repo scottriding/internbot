@@ -27,7 +27,10 @@ class SPSSTranslator(object):
     def translate_composite(self, question, name):
         label = '$%s' % question.name
         name.append(label)
-        result = "  /MDGROUP NAME=$%s LABEL='Select all that apply.'" % question.name
+        select_prompt = question.prompt.split('(', 2)[1]
+        if 'Select' not in select_prompt:
+            select_prompt = 'Select all that apply'
+        result = "  /MDGROUP NAME=$%s LABEL='%s'" % (question.name, question.prompt)
         result += "CATEGORYLABELS=VARLABELS\n"
         result+= "    VARIABLES="
         for sub_question in question.questions:
@@ -38,7 +41,7 @@ class SPSSTranslator(object):
     def translate_mc_multiple(self, question, name):
         label = '$%s' % question.name
         name.append(label)
-        result = "  /MDGROUP NAME=$%s LABEL='Select all that apply.'" % question.name
+        result = "  /MDGROUP NAME=$%s LABEL='%s'" % (question.name, question.prompt)
         result += "CATEGORYLABELS=VARLABELS\n"
         result+= "    VARIABLES="
         for response in question.responses:
@@ -49,7 +52,7 @@ class SPSSTranslator(object):
     def translate_mc_multiple_cf(self, question, name):
         label = '$%s' % question.name
         name.append(label)
-        result = "  /MDGROUP NAME=$%s LABEL='Select all that apply.'" % question.name
+        result = "  /MDGROUP NAME=$%s LABEL='%s'" % (question.name, question.prompt)
         result += "CATEGORYLABELS=VARLABELS\n"
         result+= "    VARIABLES="
         for response in question.responses:
