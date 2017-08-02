@@ -43,9 +43,10 @@ class QSFBlockFlowParser(object):
         for detail in layer_details:
             if detail.get('ID') is not None:
                 self.__block_ids.append(detail['ID'])
-            elif detail.get('Flow') is not None:
-                self.__block_ids.append(detail['Flow'][0]['ID'])           
-           
+            elif detail.get('Flow') is not None and \
+                 detail['Flow'][0].get('ID') is not None:
+                self.__block_ids.append(detail['Flow'][0]['ID']) 
+
 class QSFBlocksParser(object):
 
     def __init__(self):
@@ -235,7 +236,7 @@ class QSFCarryForwardParser(object):
         for sub_question in matching_question.questions:
             question = Question()
             question.prompt = sub_question.prompt
-            question.ocde = sub_question.code
+            question.code = sub_question.code
             question.id = '%s_%s' % (dynamic_question.id, sub_question.code)
             question.name = '%s_%s' % (dynamic_question.name, sub_question.code)
             question.response_order = sub_question.response_order
