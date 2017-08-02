@@ -20,7 +20,6 @@ class SPSSTranslator(object):
             elif question.type == 'MC' and question.subtype == 'MAVR' and question.has_carry_forward_responses is False:
                 grouped_questions.append(self.translate_mc_multiple(question, group_names))
             elif question.type == 'MC' and question.subtype == 'MAVR' and question.has_carry_forward_responses is True:
-                print question.name
                 grouped_questions.append(self.translate_mc_multiple_cf(question, group_names))
         result += self.add_groups(grouped_questions, group_names)
         return result
