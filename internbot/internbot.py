@@ -14,8 +14,8 @@ if __name__ == '__main__':
     parser.add_argument('qsf', help='path to the Qualtrics QSF file')
     parser.add_argument('report', help='Report to be generated (either topline, powerpoint, or SPSS)')
     parser.add_argument('output', help='path to output file')
-    #parser.add_argument('template', help='path to topline template')
-    #parser.add_argument('csv',help='path to frequency csv')
+    parser.add_argument('template', help='path to topline template')
+    parser.add_argument('csv',help='path to frequency csv')
     
 
     args = parser.parse_args()
