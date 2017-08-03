@@ -14,9 +14,9 @@ if __name__ == '__main__':
     parser.add_argument('qsf', help='path to the Qualtrics QSF file')
     parser.add_argument('report', help='Report to be generated (either basic topline, full topline, appendix, powerpoint, or SPSS)')
     parser.add_argument('output', help='path to output file')
-    parser.add_argument('template', help='path to topline template')
-    parser.add_argument('freq_csv',help='path to frequency csv')
-    parser.add_argument('oe_csv',help='path to open ended responses csv')
+    parser.add_argument('-temp','--template', help='path to topline template')
+    parser.add_argument('-freq','--freq_csv', help='path to frequency csv')
+    parser.add_argument('-app','--oe_csv', help='path to open ended responses csv')
     
 
     args = parser.parse_args()
@@ -33,10 +33,10 @@ if __name__ == '__main__':
         translator = translate.SPSSTranslator()
         translator.define_variables(survey, args.output)
         
-    if args.report == 'basic topline':
+    if args.report == 'basic':
         report.generate_basic_topline(args.freq_csv, args.template, args.output)
 
-    if args.report == 'full topline':
+    if args.report == 'full':
         report.generate_full_topline(args.freq_csv, args.template, args.output, args.oe_csv)
 
     if args.report == 'appendix':
