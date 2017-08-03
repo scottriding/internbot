@@ -15,6 +15,8 @@ class ToplineReport(object):
         for question in self.questions:
             if question.type == 'Composite':
                 self.write_composite_question(question)
+            elif question.type == 'TE':
+                self.write_open_ended(question)
             else:
                 self.write_question(question)
 
@@ -33,6 +35,13 @@ class ToplineReport(object):
         self.write_name(question.name, paragraph)
         self.write_prompt(question.prompt, paragraph)
         self.write_sub_questions(question.questions)
+        self.doc.add_paragraph("") # space between questions
+
+    def write_open_ended(self, question):
+        paragraph = self.doc.add_paragraph() # each question starts a new paragraph
+        self.write_name(question.name, paragraph)
+        self.write_prompt(question.prompt, paragraph)
+        paragraph.add_run(' (OPEN-ENDED RESPONSES VERBATIM IN APPENDIX)')
         self.doc.add_paragraph("") # space between questions
 
     def write_name(self, name, paragraph):

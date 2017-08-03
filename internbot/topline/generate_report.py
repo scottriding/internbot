@@ -10,21 +10,28 @@ class ReportGenerator(object):
         self.survey = survey
 
     def generate_basic_topline(self, path_to_csv, path_to_template, path_to_output):
-        self.generate_report(path_to_csv)
+        self.assign_frequencies(path_to_csv)
         report = ToplineReport(self.survey.get_questions(), path_to_template)
         report.save(path_to_output)
 
     def generate_full_topline(self, path_to_csv, path_to_template, path_to_output, path_to_appendix):
-        pass
+        self.assign_text_responses(path_to_appendix)
 
     def generate_appendix(self, path_to_appendix, path_to_output):
-        pass     
+        self.assign_text_responses(path_to_appendix)
 
     def generate_ppt(self, path_to_template, path_to_output):
         report = ToplinePPT(self.survey.get_questions(), path_to_template)
         report.save(path_to_output)
 
-    def generate_report(self, path_to_csv):
+    def assign_text_responses(self, path_to_appendix):
+        with open(path_to_appendix, 'rb') as appendix_file:
+            file = csv.DictReader(appendix_file, quotechar = '"')
+            for response in file:
+                matching_question = self.find_question(response['name'], self.survey)
+                matching_question.add_response(response['response'], 0)
+
+    def assign_frequencies(self, path_to_csv):
         with open(path_to_csv, 'rb') as csvfile:
             file = csv.DictReader(csvfile, quotechar = '"')
             for question_data in file:

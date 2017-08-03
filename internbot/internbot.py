@@ -33,10 +33,10 @@ if __name__ == '__main__':
         translator = translate.SPSSTranslator()
         translator.define_variables(survey, args.output)
         
-    if args.report == 'basic':
+    if args.report == 'basic_topline':
         report.generate_basic_topline(args.freq_csv, args.template, args.output)
 
-    if args.report == 'full':
+    if args.report == 'full_topline':
         report.generate_full_topline(args.freq_csv, args.template, args.output, args.oe_csv)
 
     if args.report == 'appendix':
