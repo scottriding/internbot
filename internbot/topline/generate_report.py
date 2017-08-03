@@ -9,10 +9,16 @@ class ReportGenerator(object):
         self.__questions = []
         self.survey = survey
 
-    def generate_docx(self, path_to_csv, path_to_template, path_to_output):
+    def generate_basic_topline(self, path_to_csv, path_to_template, path_to_output):
         self.generate_report(path_to_csv)
         report = ToplineReport(self.survey.get_questions(), path_to_template)
-        report.save(path_to_output)        
+        report.save(path_to_output)
+
+    def generate_full_topline(self, path_to_csv, path_to_template, path_to_output, path_to_appendix):
+        pass
+
+    def generate_appendix(self, path_to_appendix, path_to_output):
+        pass     
 
     def generate_ppt(self, path_to_template, path_to_output):
         report = ToplinePPT(self.survey.get_questions(), path_to_template)
