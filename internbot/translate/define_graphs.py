@@ -10,22 +10,33 @@ class GraphDefiner(object):
         grouped_questions = []
         group_names = []
         for question in questions:
-            if question.type == 'MC' and question.subtype in ['SAVR','SAHR','DL']:
+            if question.type == 'MC':
                 result += self.multiple_choice(question)
             elif question.type == 'Slider':
                 result += self.numeric_scale(question)
-            elif question.type == 'Composite' and question.subtype == 'SingleAnswer':
+            elif question.type == 'Composite':
                 result += self.composite_single(question)
+            elif question.type == 'TE':
+                result += self.open_ended(question)
         return result  
 
     def multiple_choice(self, question):
         mc_graph = ''
         if len(question.response_order) == 2:
-            mc_graph += 'Pie chart \n'
+            mc_graph += '%s:\t Pie chart \n' % question.name
+        elif len(question.response_order) == 5:
+            mc_graph += self.define_bar_chart(question)
         return mc_graph
 
-    def numeric_scale(self, question):
+    def define_bar_chart(self, question):
         return ''
 
+    def numeric_scale(self, question):
+        scale_graph = '%s:\t Histogram \n' % question.name
+        return scale_graph
+
     def composite_single(self, question):
+        return ''
+
+    def open_ended(self, question):
         return ''
