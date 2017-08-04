@@ -43,5 +43,16 @@ class GraphDefiner(object):
     def composite_single(self, composite_question):
         composite_graph = ''
         for sub_question in composite_question:
-            composite_graph += self.define_bar_chart(sub_question)
+            if self.are_related(sub_question.responses) == True:
+                composite_graph += '%s: \t Stacked bar \n' % composite_question.name
+                break
         return composite_graph
+
+    def are_related(self, responses):
+        relation = False
+        for response in responses:
+            text = response.response.lower()
+            text.strip()
+            if 'very' in text:
+                return True
+                
