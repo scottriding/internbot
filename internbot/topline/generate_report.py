@@ -15,10 +15,11 @@ class ReportGenerator(object):
         report.save(path_to_output)
 
     def generate_full_topline(self, path_to_csv, path_to_template, path_to_output, path_to_appendix):
-        self.assign_text_responses(path_to_appendix)
-        self.generate_basic_topline(path_to_csv, path_to_template, path_to_output)
         open_ended_questions = [question for question in self.survey.get_questions() \
                                 if question.type == 'TE']
+        self.assign_text_responses(path_to_appendix)
+        self.generate_basic_topline(path_to_csv, path_to_template, path_to_output)
+        self.assign_frequencies(path_to_csv)
         report = ToplineAppendix()
         report.write_with_topline(open_ended_questions, path_to_output)
         report.save(path_to_output)
