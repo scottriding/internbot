@@ -32,6 +32,10 @@ if __name__ == '__main__':
     if args.report == 'SPSS':
         translator = translate.SPSSTranslator()
         translator.define_variables(survey, args.output)
+
+    elif args.report == 'graphs':
+        define = translate.GraphDefiner()
+        define.define_graphs(survey, args.output)
         
     elif args.report == 'basic_topline':
         report.generate_basic_topline(args.freq_csv, args.template, args.output)
