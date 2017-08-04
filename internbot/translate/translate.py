@@ -70,4 +70,4 @@ class SPSSTranslator(object):
             iteration += 1
         result += '].'
         return result
-      
+
