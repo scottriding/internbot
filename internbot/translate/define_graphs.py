@@ -7,8 +7,7 @@ class GraphDefiner(object):
         
     def define_questions(self, questions):
         result = ''
-        grouped_questions = []
-        group_names = []
+        cannot_determine = []
         for question in questions:
             if question.type == 'MC':
                 result += self.multiple_choice(question)
@@ -17,26 +16,32 @@ class GraphDefiner(object):
             elif question.type == 'Composite':
                 result += self.composite_single(question)
             elif question.type == 'TE':
-                result += self.open_ended(question)
+                result += self.define_bar_chart(question)
+            elif question.type == 'CS':
+                result += self.define_bar_chart(question)
+            else:
+                cannot_determine.append('%s: \t Cannot define - %s' % (question.name, question.type))
+        for reason in cannot_determine:
+            result += reason + '\n'
         return result  
 
     def multiple_choice(self, question):
         mc_graph = ''
         if len(question.response_order) == 2:
-            mc_graph += '%s:\t Pie chart \n' % question.name
+            mc_graph += '%s: \t Pie chart \n' % question.name
         elif len(question.response_order) == 5:
             mc_graph += self.define_bar_chart(question)
         return mc_graph
 
     def define_bar_chart(self, question):
-        return ''
+        return '%s: \t bar chart \n' % question.name
 
     def numeric_scale(self, question):
         scale_graph = '%s:\t Histogram \n' % question.name
         return scale_graph
 
-    def composite_single(self, question):
-        return ''
-
-    def open_ended(self, question):
-        return ''
+    def composite_single(self, composite_question):
+        composite_graph = ''
+        for sub_question in composite_question:
+            composite_graph += self.define_bar_chart(sub_question)
+        return composite_graph
