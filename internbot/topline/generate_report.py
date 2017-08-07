@@ -41,8 +41,9 @@ class ReportGenerator(object):
             file = csv.DictReader(appendix_file, quotechar = '"')
             for response in file:
                 matching_question = self.find_question(response['name'], self.survey)
-                matching_question.add_response(response['response'], 0)
-
+                if matching_question is not None:
+                    matching_question.add_response(response['response'], 0)
+                
     def assign_frequencies(self, path_to_csv):
         with open(path_to_csv, 'rb') as csvfile:
             file = csv.DictReader(csvfile, quotechar = '"')
@@ -54,6 +55,8 @@ class ReportGenerator(object):
             
     def find_question(self, question_to_find, survey):
         matching_question = survey.blocks.find_question_by_name(question_to_find)
+        if matching_question is None:
+            return None
         if matching_question.type == 'Composite':
             matching_question = self.find_sub_question(matching_question, question_to_find)
         if matching_question not in self.__questions:

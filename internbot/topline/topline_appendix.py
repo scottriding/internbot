@@ -47,4 +47,7 @@ class ToplineAppendix(object):
         for response in responses:
             response_cells = table.add_row().cells
             response_cells[0].merge(response_cells[4])
-            response_cells[0].text = response.response
+            try:
+                response_cells[0].text = response.response
+            except ValueError:
+                pass
