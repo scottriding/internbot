@@ -49,7 +49,8 @@ class ReportGenerator(object):
             file = csv.DictReader(csvfile, quotechar = '"')
             for question_data in file:
                 matching_question = self.find_question(question_data['name'], self.survey)
-                matching_response = self.find_response(question_data['response'], matching_question)
+                if matching_question is not None:
+                    matching_response = self.find_response(question_data['response'], matching_question)
                 if matching_response is not None:
                     self.add_frequency(matching_response, question_data['frequency'])
             

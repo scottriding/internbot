@@ -90,6 +90,7 @@ class QSFQuestionsParser(object):
         self.response_parser = QSFResponsesParser()
         self.carryforwardparser = QSFCarryForwardParser()
         self.hotspot_parser = QSFQuestionHotSpotParser()
+        self.multiple_parser = QSFMultipleSelectParser()
         self.__questions = []
 
     def parse(self, question_elements):
@@ -107,6 +108,8 @@ class QSFQuestionsParser(object):
             elif question.type == 'HotSpot':
                 hotspot_question = self.hotspot_parser.parse(question, question_payload)
                 self.__questions.append(hotspot_question)
+            elif question.type == 'MC' and question.subtype == 'MAVR':
+                multiple_select = self.multiple_parser.parse(question, question_payload)
             elif question.type == 'Meta':
                 pass
             else:
@@ -124,6 +127,8 @@ class QSFQuestionsParser(object):
         question.prompt = self.strip_tags( \
                           question_payload['QuestionText'].encode('ascii', 'ignore'))
         question.type = question_payload['QuestionType']
+        if question_payload.get('Selector') is not None:
+            question.subtype = question_payload['Selector']
         return question
 
     def strip_tags(self, html):
@@ -220,11 +225,15 @@ class QSFQuestionHotSpotParser(object):
                 sub_question.add_response('1',2)
                 sub_question.add_response('NA',3)
                 hotspot_question.add_question(sub_question)
+
+class QSFMultipleSelectParser(object):
+
+    def parse(self, question, question_payload):
+        pass
         
 class QSFResponsesParser(object):
 
     def parse(object, question, question_payload, question_element):
-        question.subtype = question_payload['Selector']
         if question_payload.get('Choices') and len(question_payload['Choices']) > 0:
             if question_payload.get('ChoiceOrder') and \
                len(question_payload['ChoiceOrder']) > 0: 
