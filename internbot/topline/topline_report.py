@@ -63,7 +63,10 @@ class ToplineReport(object):
         for response in responses:
             response_cells = table.add_row().cells
             response_cells[1].merge(response_cells[2])
-            response_cells[1].text = response.response
+            if response.response == 'NA':
+                response_cells[1].text = 'Don\'t know/Skipped'
+            else:
+                response_cells[1].text = response.response
             if response.has_frequency is True and first_row is True:
                 response_cells[3].text = self.freqs_percent(response.frequency) + "%"
                 first_row = False

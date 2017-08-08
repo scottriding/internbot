@@ -216,8 +216,9 @@ class QSFQuestionHotSpotParser(object):
                 sub_question.subtype = question_payload['Selector']
                 sub_question.name = '%s_%s' % (hotspot_question.name, code)
                 sub_question.prompt = question['Display']
-                sub_question.add_response('0',0)
-                sub_question.add_response('1',1)
+                sub_question.add_response('0',1)
+                sub_question.add_response('1',2)
+                sub_question.add_response('NA',3)
                 hotspot_question.add_question(sub_question)
         
 class QSFResponsesParser(object):
@@ -235,6 +236,8 @@ class QSFResponsesParser(object):
             else:
                 for code, response in question_payload['Choices'].iteritems():
                     question.add_response(response['Display'], code)
+            code = len(question.responses) + 1
+            question.add_response('NA', code)
                                    
 
 class QSFCarryForwardParser(object):
