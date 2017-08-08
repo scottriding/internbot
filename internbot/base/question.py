@@ -136,6 +136,7 @@ class Question(object):
         self.__response_order = []
         self.has_carry_forward_responses = False
         self.has_carry_forward_prompts = False
+        self.__text_entry = False
 
     @property
     def id(self):
@@ -221,6 +222,14 @@ class Question(object):
     def response_order(self, response_order):
         for response_location in response_order:
             self.__response_order.append(str(response_location))
+
+    @property
+    def text_entry(self):
+        return self.__text_entry
+
+    @text_entry.setter
+    def text_entry(self, entry):
+        self.__text_entry = bool(entry)
 
     def add_response(self, response, code=None):
         self.__responses.add(response, code)

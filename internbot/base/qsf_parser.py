@@ -110,6 +110,7 @@ class QSFQuestionsParser(object):
                 self.__questions.append(hotspot_question)
             elif question.type == 'MC' and question.subtype == 'MAVR':
                 multiple_select = self.multiple_parser.parse(question, question_payload)
+                self.__questions.append(multiple_select)
             elif question.type == 'Meta':
                 pass
             else:
@@ -129,6 +130,8 @@ class QSFQuestionsParser(object):
         question.type = question_payload['QuestionType']
         if question_payload.get('Selector') is not None:
             question.subtype = question_payload['Selector']
+        if question_payload.get('SubSelector') is not None:
+            question.text_entry = True
         return question
 
     def strip_tags(self, html):
@@ -233,7 +236,7 @@ class QSFMultipleSelectParser(object):
         multiple_select.name = question.name
         multiple_select.prompt = question.prompt
         multiple_select.id = question_payload['QuestionID']
-        self.basic_multiple(question_payload, multiple_select)    
+        self.basic_multiple(question_payload, multiple_select)
         return multiple_select
 
     def basic_multiple(self, question_payload, multiple_select):
@@ -247,11 +250,12 @@ class QSFMultipleSelectParser(object):
                 sub_question.code = code
                 sub_question.type = question_payload['QuestionType']
                 sub_question.subtype = question_payload['Selector']
+                if question_payload.get('SubSelector') is not None:
+                    sub_question.text_entry = True
                 sub_question.name = '%s_%s' % (multiple_select.name, code)
                 sub_question.prompt = question['Display']
-                sub_question.add_response('0',1)
-                sub_question.add_response('1',2)
-                sub_question.add_response('NA',3)
+                sub_question.add_response('1',1)
+                sub_question.add_response('NA',2)
                 multiple_select.add_question(sub_question)
         
 class QSFResponsesParser(object):
