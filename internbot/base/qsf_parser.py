@@ -229,7 +229,30 @@ class QSFQuestionHotSpotParser(object):
 class QSFMultipleSelectParser(object):
 
     def parse(self, question, question_payload):
-        pass
+        multiple_select = CompositeQuestion()
+        multiple_select.name = question.name
+        multiple_select.prompt = question.prompt
+        multiple_select.id = question_payload['QuestionID']
+        self.basic_multiple(question_payload, multiple_select)    
+        return multiple_select
+
+    def basic_multiple(self, question_payload, multiple_select):
+        if question_payload.get('Choices') and len(question_payload['Choices']) > 0:
+            if question_payload.get('ChoiceOrder') and \
+               len(question_payload['ChoiceOrder']) > 0: 
+                multiple_select.question_order = question_payload['ChoiceOrder']
+            for code, question in question_payload['Choices'].iteritems():
+                sub_question = Question()
+                sub_question.id = '%s_%s' % (multiple_select.id, code)
+                sub_question.code = code
+                sub_question.type = question_payload['QuestionType']
+                sub_question.subtype = question_payload['Selector']
+                sub_question.name = '%s_%s' % (multiple_select.name, code)
+                sub_question.prompt = question['Display']
+                sub_question.add_response('0',1)
+                sub_question.add_response('1',2)
+                sub_question.add_response('NA',3)
+                multiple_select.add_question(sub_question)
         
 class QSFResponsesParser(object):
 
