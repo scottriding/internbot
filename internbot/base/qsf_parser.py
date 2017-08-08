@@ -89,6 +89,7 @@ class QSFQuestionsParser(object):
         self.matrix_parser = QSFQuestionsMatrixParser()
         self.response_parser = QSFResponsesParser()
         self.carryforwardparser = QSFCarryForwardParser()
+        self.hotspot_parser = QSFQuestionHotSpotParser()
         self.__questions = []
 
     def parse(self, question_elements):
@@ -103,6 +104,9 @@ class QSFQuestionsParser(object):
             if question.type == 'Matrix':
                 matrix_question = self.matrix_parser.parse(question_payload)
                 self.__questions.append(matrix_question)
+            elif question.type == 'HotSpot':
+                hotspot_question = self.hotspot_parser.parse(question, question_payload)
+                self.__questions.append(hotspot_question)
             elif question.type == 'Meta':
                 pass
             else:
@@ -188,6 +192,33 @@ class QSFQuestionsMatrixParser(object):
         html_parser = MLStripper()
         html_parser.feed(html)
         return html_parser.get_data()
+
+class QSFQuestionHotSpotParser(object):
+
+    def parse(self, question, question_payload):
+        hotspot_question = CompositeQuestion()
+        hotspot_question.name = question.name
+        hotspot_question.prompt = question.prompt
+        hotspot_question.id = question_payload['QuestionID']
+        self.basic_hotspot(question_payload, hotspot_question)    
+        return hotspot_question
+
+    def basic_hotspot(self, question_payload, hotspot_question):
+        if question_payload.get('Choices') and len(question_payload['Choices']) > 0:
+            if question_payload.get('ChoiceOrder') and \
+               len(question_payload['ChoiceOrder']) > 0: 
+                hotspot_question.question_order = question_payload['ChoiceOrder']
+            for code, question in question_payload['Choices'].iteritems():
+                sub_question = Question()
+                sub_question.id = '%s_%s' % (hotspot_question.id, code)
+                sub_question.code = code
+                sub_question.type = question_payload['QuestionType']
+                sub_question.subtype = question_payload['Selector']
+                sub_question.name = '%s_%s' % (hotspot_question.name, code)
+                sub_question.prompt = question['Display']
+                sub_question.add_response('0',0)
+                sub_question.add_response('1',1)
+                hotspot_question.add_question(sub_question)
         
 class QSFResponsesParser(object):
 

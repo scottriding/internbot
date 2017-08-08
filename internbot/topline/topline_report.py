@@ -76,6 +76,37 @@ class ToplineReport(object):
                 response_cells[3].text = '--'
 
     def write_sub_questions(self, sub_questions):
+        for sub_question in sub_questions:
+            if sub_question.type == 'HotSpot':
+                self.write_hotspot(sub_questions)
+                break
+            elif sub_question.type == 'Matrix':
+                self.write_matrix(sub_questions)
+                break
+            else:
+                print 'Unfamiliar with this format -- topline_report.py'
+                break
+
+    def write_hotspot(self, sub_questions):
+        table = self.doc.add_table(rows = 1, cols = 5)
+        first_row = True
+        for sub_question in sub_questions:
+            region_cells = table.add_row().cells
+            region_cells[1].merge(region_cells[2])
+            response = next((response for response in sub_question.responses if response.response == '1'), None)
+            region_cells[1].text = sub_question.prompt
+            if response.has_frequency is True and first_row is True:
+                region_cells[3].text = self.freqs_percent(response.frequency) + "%"
+                first_row = False
+            elif response.has_frequency is True and first_row is False:
+                region_cells[3].text = self.freqs_percent(response.frequency)
+            elif response.has_frequency is False and first_row is True:
+                region_cells[3].text = '--%'
+                first_row = False
+            else:
+                region_cells[3].text = '--'
+
+    def write_matrix(self, sub_questions):
         table = self.doc.add_table(rows = 1, cols = 0)
         table.add_column(width = Inches(1))
         table.add_column(width = Inches(1))

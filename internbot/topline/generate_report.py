@@ -69,7 +69,9 @@ class ReportGenerator(object):
 
     def find_response(self, response_to_find, question):
         responses = question.responses
-        matching_response = matching_response = next((response for response in responses if response.response == response_to_find), None)
+        matching_response = next((response for response in responses if response.response == response_to_find), None)
+        if response_to_find == 'On':
+            matching_response = next((response for response in responses if response.response == '1'), None)
         return matching_response
         
     def add_frequency(self, response, frequency):

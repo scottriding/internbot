@@ -124,13 +124,9 @@ class CompositeQuestion(object):
 
     def __repr__(self):
         bool = True
-        result = ''
-        for question in self.__questions:
-            if bool == True:
-                result += '%s' % (str(question))
-                bool = False
-            else:    
-                result += "\t\t%s\n" % (str(question))
+        result = '%s: %s\n' % (self.name, self.prompt)
+        for question in self.__questions:    
+            result += "\n\t\t%s" % (str(question))
         return result                 
 
 class Question(object):
