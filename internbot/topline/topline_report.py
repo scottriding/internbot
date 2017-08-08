@@ -81,16 +81,19 @@ class ToplineReport(object):
     def write_sub_questions(self, sub_questions):
         for sub_question in sub_questions:
             if sub_question.type == 'HotSpot':
-                self.write_hotspot(sub_questions)
+                self.write_binary(sub_questions)
                 break
             elif sub_question.type == 'Matrix':
                 self.write_matrix(sub_questions)
+                break
+            elif sub_question.type == 'MC':
+                self.write_binary(sub_questions)
                 break
             else:
                 print 'Unfamiliar with this format -- topline_report.py'
                 break
 
-    def write_hotspot(self, sub_questions):
+    def write_binary(self, sub_questions):
         table = self.doc.add_table(rows = 1, cols = 5)
         first_row = True
         for sub_question in sub_questions:
