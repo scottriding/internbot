@@ -20,10 +20,13 @@ class SPSSTranslator(object):
             elif (question.type == 'Composite' and question.subtype == 'MAVR') or \
                  (question.type == 'Composite' and question.subtype == 'MACOL'):
                 sub_questions = question.questions
-                if sub_questions[0].has_carry_forward_responses is False:
-                   grouped_questions.append(self.translate_mc_multiple(question, group_names))
-                elif sub_questions[0].has_carry_forward_responses is True:
-                    grouped_questions.append(self.translate_mc_multiple_cf(question, group_names))
+                try:
+                    if sub_questions[0].has_carry_forward_responses is False:
+                        grouped_questions.append(self.translate_mc_multiple(question, group_names))
+                    elif sub_questions[0].has_carry_forward_responses is True:
+                        grouped_questions.append(self.translate_mc_multiple_cf(question, group_names))
+                except:
+                    print question.name
         result += self.add_groups(grouped_questions, group_names)
         return result
 

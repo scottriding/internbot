@@ -310,7 +310,7 @@ class QSFCarryForwardParser(object):
             else:
                 self.basic_prompts(matching_question, \
                                    dynamic_question,  \
-                                   carried_forward_questions)                
+                                   carried_forward_questions)            
         return questions        
 
     def composite_prompts(self, matching_question, dynamic_question, carried_forward_questions):
@@ -319,11 +319,15 @@ class QSFCarryForwardParser(object):
             question = Question()
             question.prompt = sub_question.prompt
             question.code = sub_question.code
-            question.id = '%s_%s' % (dynamic_question.id, sub_question.code)
-            question.name = '%s_%s' % (dynamic_question.name, sub_question.code)
-            question.response_order = sub_question.response_order
-            for response in sub_question.responses:
-                question.add_response(response.response, response.code)
+            if matching_question.subtype == 'MAVR' or matching_question.subtype == 'MACOL':
+                question.id = '%s_%s' % (dynamic_question.id, sub_question.code)
+                question.name = '%s_x%s' % (dynamic_question.name, sub_question.code)
+            else:
+                question.id = '%s_%s' % (dynamic_question.id, sub_question.code)
+                question.name = '%s_%s' % (dynamic_question.name, sub_question.code)
+                question.response_order = sub_question.response_order
+                for response in sub_question.responses:
+                    question.add_response(response.response, response.code)
             if dynamic_question == 'Composite':
                 dynamic_question.add_question(question)
             else:
@@ -333,28 +337,31 @@ class QSFCarryForwardParser(object):
     def basic_prompts(self, matching_question, dynamic_question, carried_forward_questions):
         dynamic_question.question_order = matching_question.response_order
         for response in matching_question.responses:
-            question = Question()
-            question.prompt = response.response
-            question.code = response.code
-            if dynamic_question.subtype == 'MAVR':
-                question.id = '%s_x%s' % (dynamic_question.id, response.code)
-                question.name = '%s_x%s' % (dynamic_question.name, response.code)
+            if response.response == 'NA':
+                pass
             else:
-                question.id = '%s_%s' % (dynamic_question.id, response.code)
-                question.name = '%s_%s' % (dynamic_question.name, response.code)
-            question.response_order = matching_question.response_order
-            for response in dynamic_question.temp_responses:
-                question.add_response(response.response, response.code)
-            dynamic_question.add_question(question)
-            carried_forward_questions.append(question)
+                question = Question()
+                question.prompt = response.response
+                question.code = response.code
+                if dynamic_question.subtype == 'MAVR' or dynamic_question.subtype == 'MACOL':
+                    question.id = '%s_%s' % (dynamic_question.id, response.code)
+                    question.name = '%s_x%s' % (dynamic_question.name, response.code)
+                else:
+                    question.id = '%s_%s' % (dynamic_question.id, response.code)
+                    question.name = '%s_%s' % (dynamic_question.name, response.code)
+                question.response_order = matching_question.response_order
+                for response in dynamic_question.temp_responses:
+                    question.add_response(response.response, response.code)
+                dynamic_question.add_question(question)
+                carried_forward_questions.append(question)
 
     def composite_responses(self, matching_question, dynamic_question, dynamic_questions):
         dynamic_question.question_order = matching_question.question_order
         for sub_question in matching_question.questions:
             dynamic_question.add_response(sub_question.prompt, sub_question.code)
         if dynamic_question.subtype == 'SACOL' or dynamic_question.subtype == 'SAVR':
-                code = len(dynamic_question.responses) + 1
-                dynamic_question.add_response('NA', code)
+            code = len(dynamic_question.responses) + 1
+            dynamic_question.add_response('NA', code)
 
     def carry_forward_responses(self, questions):
         dynamic_questions = [question for question in questions \
@@ -362,7 +369,10 @@ class QSFCarryForwardParser(object):
         for dynamic_question in dynamic_questions:
             matching_question = next((question for question in questions \
                                     if question.id == dynamic_question.carry_forward_question_id), None)
-            if matching_question.type == 'Composite':
+            if (matching_question.type == 'Composite' and matching_question.subtype == 'MACOL') or \
+               (matching_question.type == 'Composite' and matching_question.subtype == 'MAVR'):
+                self.composite_prompts(matching_question, dynamic_question, dynamic_questions)
+            elif matching_question.type == 'Composite':
                 self.composite_responses(matching_question, dynamic_question, dynamic_questions)
             else:
                 dynamic_question.response_order = matching_question.response_order
