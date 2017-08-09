@@ -98,8 +98,7 @@ class QSFQuestionsParser(object):
             question_payload = question_element['Payload']
             question = self.question_details(question_payload)
             
-            if question_payload.get('DynamicChoices') and \
-               question.type != 'Matrix':
+            if question_payload.get('DynamicChoices') and question.type != 'Matrix':
                 self.carryforwardparser.assign_carry_forward(question, question_payload)
 
             if question.type == 'Matrix':
@@ -207,6 +206,7 @@ class QSFQuestionHotSpotParser(object):
         hotspot_question = CompositeQuestion()
         hotspot_question.name = question.name
         hotspot_question.prompt = question.prompt
+        hotspot_question.subtype = question.subtype
         hotspot_question.id = question_payload['QuestionID']
         self.basic_hotspot(question_payload, hotspot_question)    
         return hotspot_question
@@ -235,8 +235,12 @@ class QSFMultipleSelectParser(object):
         multiple_select = CompositeQuestion()
         multiple_select.name = question.name
         multiple_select.prompt = question.prompt
+        multiple_select.subtype = question.subtype
         multiple_select.id = question_payload['QuestionID']
-        self.basic_multiple(question_payload, multiple_select)
+        if question_payload.get('DynamicChoices') is None:
+            self.basic_multiple(question_payload, multiple_select)       
+        else:
+            self.dynamic_multiple(question_payload, multiple_select)
         return multiple_select
 
     def basic_multiple(self, question_payload, multiple_select):
@@ -257,6 +261,9 @@ class QSFMultipleSelectParser(object):
                 sub_question.add_response('1',1)
                 sub_question.add_response('NA',2)
                 multiple_select.add_question(sub_question)
+
+    def dynamic_multiple(self, question_payload, multiple_question):
+        pass
         
 class QSFResponsesParser(object):
 
@@ -275,7 +282,6 @@ class QSFResponsesParser(object):
             code = len(question.responses) + 1
             question.add_response('NA', code)
                                    
-
 class QSFCarryForwardParser(object):
 
     def assign_carry_forward(self, question, question_payload):
@@ -312,7 +318,10 @@ class QSFCarryForwardParser(object):
             question.response_order = sub_question.response_order
             for response in sub_question.responses:
                 question.add_response(response.response, response.code)
-            dynamic_question.add_question(question)
+            if dynamic_question == 'Composite':
+                dynamic_question.add_question(question)
+            else:
+                dynamic_question.add_response(question.name, question.id)
             carried_forward_questions.append(question)
 
     def basic_prompts(self, matching_question, dynamic_question, carried_forward_questions):
@@ -335,9 +344,13 @@ class QSFCarryForwardParser(object):
         for dynamic_question in dynamic_questions:
             matching_question = next((question for question in questions \
                                     if question.id == dynamic_question.carry_forward_question_id), None)
-            dynamic_question.response_order = matching_question.response_order
-            for response in matching_question.responses:
-                dynamic_question.add_response(response.response, response.code)
+            if matching_question.type == 'Composite':
+                print 'here'
+                self.composite_prompts(matching_question, dynamic_question, dynamic_questions)
+            else:
+                dynamic_question.response_order = matching_question.response_order
+                for response in matching_question.responses:
+                    dynamic_question.add_response(response.response, response.code)
         return questions
 
 class MLStripper(HTMLParser):

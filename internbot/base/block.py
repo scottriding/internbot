@@ -15,6 +15,12 @@ class Blocks(object):
             if block.is_id_assigned(question_id):
                 return block
         return None
+
+    def get_questions(self):
+        result = []
+        for block in self.__blocks:
+            result.extend(block.questions)
+        return result
         
     def find_question_by_name(self, question_name):
         for block in self.__blocks:

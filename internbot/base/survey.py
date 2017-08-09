@@ -21,10 +21,11 @@ class Survey(object):
                 block.add_question(question)
 
     def get_questions(self):
-        for block in self.__blocks:
-            for question in block.questions:
-                self.__questions.append(question)
-        return self.__questions   
+        return self.__blocks.get_questions()
+        # for block in self.__blocks:
+#             for question in block.questions:
+#                 self.__questions.append(question)
+#         return self.__questions   
 
     def __repr__ (self):
         result = ''
