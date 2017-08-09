@@ -11,16 +11,17 @@ class SPSSTranslator(object):
         grouped_questions = []
         group_names = []
         for question in questions:
-            if question.type == 'MC' and question.subtype in ['SAVR','SAHR','DL']:
+            if question.type == 'MC' and question.subtype in ['SAVR','SAHR','DL', 'SACOL']:
                 result += 'VARIABLE LEVEL  %s(ORDINAL).\n' % question.name
             elif question.type == 'Slider':
                 result += 'VARIABLE LEVEL  %s_1(SCALE).\n' % question.name
             elif question.type == 'Composite' and question.subtype == 'SingleAnswer':
                 grouped_questions.append(self.translate_composite(question, group_names))
-            elif question.type == 'Composite' and question.subtype == 'MAVR':
+            elif (question.type == 'Composite' and question.subtype == 'MAVR') or \
+                 (question.type == 'Composite' and question.subtype == 'MACOL'):
                 sub_questions = question.questions
                 if sub_questions[0].has_carry_forward_responses is False:
-                    grouped_questions.append(self.translate_mc_multiple(question, group_names))
+                   grouped_questions.append(self.translate_mc_multiple(question, group_names))
                 elif sub_questions[0].has_carry_forward_responses is True:
                     grouped_questions.append(self.translate_mc_multiple_cf(question, group_names))
         result += self.add_groups(grouped_questions, group_names)
@@ -49,16 +50,15 @@ class SPSSTranslator(object):
         return result
 
     def translate_mc_multiple_cf(self, question, name):
-        # label = '$%s' % question.name
-#         name.append(label)
-#         result = "  /MDGROUP NAME=$%s LABEL='%s'" % (question.name, question.prompt)
-#         result += "CATEGORYLABELS=VARLABELS\n"
-#         result+= "    VARIABLES="
-#         for response in question.responses:
-#             result += "%s_x%s " % (question.name, response.code)
-#         result += "VALUE=1\n"
-#         return result
-        pass
+        label = '$%s' % question.name
+        name.append(label)
+        result = "  /MDGROUP NAME=$%s LABEL='%s'" % (question.name, question.prompt)
+        result += "CATEGORYLABELS=VARLABELS\n"
+        result+= "    VARIABLES="
+        for sub_question in question.questions:
+            result += sub_question.name
+        result += "VALUE=1\n"
+        return result
 
     def add_groups(self, grouped_questions, grouped_name):
         result = 'EXECUTE.\n\nMRSETS\n'
