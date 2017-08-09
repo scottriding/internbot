@@ -121,7 +121,6 @@ class QSFQuestionsParser(object):
 
         self.__questions = self.carryforwardparser.carry_forward_responses(self.__questions)
         self.__questions = self.carryforwardparser.carry_forward_prompts(self.__questions)
-        print self.__questions
         return self.__questions
         
     def question_details(self, question_payload):
@@ -244,7 +243,7 @@ class QSFMultipleSelectParser(object):
         if question_payload.get('DynamicChoices') is None:
             self.basic_multiple(question_payload, multiple_select)       
         else:
-            self.dynamic_multiple(multiple_select)
+            self.dynamic_multiple(question_payload, multiple_select)
         return multiple_select
 
     def basic_multiple(self, question_payload, multiple_select):
@@ -266,12 +265,11 @@ class QSFMultipleSelectParser(object):
                 sub_question.add_response('NA',2)
                 multiple_select.add_question(sub_question)
 
-    def dynamic_multiple(self, multiple_question):
-        # multiple_question.has_carry_forward_prompts = True
-#         carry_forward_locator = question_payload['DynamicChoices']['Locator']
-#         carry_forward_match = re.match('q://(QID\d+).+', carry_forward_locator)
-#         multiple_question.carry_forward_question_id = carry_forward_match.group(1)
-        pass
+    def dynamic_multiple(self, question_payload, multiple_question):
+        multiple_question.has_carry_forward_prompts = True
+        carry_forward_locator = question_payload['DynamicChoices']['Locator']
+        carry_forward_match = re.match('q://(QID\d+).+', carry_forward_locator)
+        multiple_question.carry_forward_question_id = carry_forward_match.group(1)
         
 class QSFResponsesParser(object):
 
