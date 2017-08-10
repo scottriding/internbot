@@ -135,9 +135,6 @@ class QSFQuestionsParser(object):
         question.type = question_payload['QuestionType']
         if question_payload.get('Selector') is not None:
             question.subtype = question_payload['Selector']
-        if question_payload.get('SubSelector') is not None:
-            if question_payload['SubSelector'] == 'TX':
-                question.text_entry = True
         return question
 
     def strip_tags(self, html):
@@ -280,8 +277,6 @@ class QSFMultipleSelectParser(object):
             sub_question.code = code
             sub_question.type = question_payload['QuestionType']
             sub_question.subtype = question_payload['Selector']
-            if question_payload.get('SubSelector') is not None:
-                sub_question.text_entry = True
             sub_question.name = '%s_%s' % (multiple_select.name, code)
             sub_question.prompt = question['Display']
             sub_question.add_response('1',1)
@@ -326,8 +321,6 @@ class QSFConstantSumParser(object):
             sub_question.code = code
             sub_question.type = question_payload['QuestionType']
             sub_question.subtype = question_payload['Selector']
-            if question_payload.get('SubSelector') is not None:
-                sub_question.text_entry = True
             sub_question.name = '%s_%s' % (constant_sum.name, code)
             sub_question.prompt = question['Display']
             constant_sum.add_question(sub_question)

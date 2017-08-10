@@ -45,9 +45,10 @@ class ToplineAppendix(object):
     def write_responses(self, responses, paragraph):
         table = self.doc.add_table(rows = 0, cols = 5)
         for response in responses:
-            response_cells = table.add_row().cells
-            response_cells[0].merge(response_cells[4])
-            try:
-                response_cells[0].text = response.response
-            except ValueError:
-                pass
+            if response.type == 'TextResponse':
+                response_cells = table.add_row().cells
+                response_cells[0].merge(response_cells[4])
+                try:
+                    response_cells[0].text = response.response
+                except ValueError:
+                    pass

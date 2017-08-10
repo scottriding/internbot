@@ -15,14 +15,11 @@ class ReportGenerator(object):
         report.save(path_to_output)
 
     def generate_full_topline(self, path_to_csv, path_to_template, path_to_output, path_to_appendix):
-        open_ended_questions = [question for question in self.__questions \
-                                if question.type == 'TE']
-        text_entry_questions = [question for question in self.__questions \
-                                if question.text_entry == True]
-        open_ended_questions.extend(text_entry_questions)
         self.assign_text_responses(path_to_appendix)
         self.generate_basic_topline(path_to_csv, path_to_template, path_to_output)
         self.assign_frequencies(path_to_csv)
+        open_ended_questions = [question for question in self.__questions \
+                                if question.text_entry == True]
         report = ToplineAppendix()
         report.write_with_topline(open_ended_questions, path_to_output)
         report.save(path_to_output)
@@ -31,11 +28,7 @@ class ReportGenerator(object):
         self.assign_text_responses(path_to_appendix)
         report = ToplineAppendix()
         open_ended_questions = [question for question in self.__questions \
-                                if question.type == 'TE']
-        text_entry_questions = [question for question in self.__questions \
                                 if question.text_entry == True]
-
-        open_ended_questions.extend(text_entry_questions)
         report.write_independent(open_ended_questions, path_to_template)
         report.save(path_to_output)
 
@@ -50,6 +43,7 @@ class ReportGenerator(object):
                 matching_question = self.find_question(response['name'], self.survey)
                 if matching_question is not None:
                     matching_question.add_text_response(response['response'])
+                    matching_question.text_entry = True
                 
     def assign_frequencies(self, path_to_csv):
         with open(path_to_csv, 'rb') as csvfile:
