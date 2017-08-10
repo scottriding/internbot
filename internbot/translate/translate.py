@@ -11,14 +11,13 @@ class SPSSTranslator(object):
         grouped_questions = []
         group_names = []
         for question in questions:
-            if question.type == 'MC' and question.subtype in ['SAVR','SAHR','DL', 'SACOL']:
+            if question.type == 'MC':
                 result += 'VARIABLE LEVEL  %s(ORDINAL).\n' % question.name
             elif question.type == 'Slider':
                 result += 'VARIABLE LEVEL  %s_1(SCALE).\n' % question.name
-            elif question.type == 'Composite' and question.subtype == 'SingleAnswer':
+            elif question.type == 'CompositeMatrix' and question.subtype == 'SingleAnswer':
                 grouped_questions.append(self.translate_composite(question, group_names))
-            elif (question.type == 'Composite' and question.subtype == 'MAVR') or \
-                 (question.type == 'Composite' and question.subtype == 'MACOL'):
+            elif question.type == 'CompositeMultipleSelect':
                 sub_questions = question.questions
                 try:
                     if sub_questions[0].has_carry_forward_responses is False:
@@ -27,6 +26,8 @@ class SPSSTranslator(object):
                         grouped_questions.append(self.translate_mc_multiple_cf(question, group_names))
                 except:
                     print question.name
+            else:
+                question.type
         result += self.add_groups(grouped_questions, group_names)
         return result
 

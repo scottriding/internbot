@@ -30,7 +30,6 @@ class CompositeQuestion(object):
     def __init__(self):
         self.__questions = []
         self.__question_order = []
-        self.__type = 'Composite'
         self.__temp_responses = Responses()
         self.has_carry_forward_prompts = False
         self.has_carry_forward_responses = False 
@@ -58,11 +57,7 @@ class CompositeQuestion(object):
     @prompt.setter
     def prompt(self, prompt):
         self.__prompt = str(prompt)
-    
-    @property
-    def type(self):
-        return self.__type
-   
+     
     @property
     def subtype(self):
         return self.__subtype
@@ -127,7 +122,34 @@ class CompositeQuestion(object):
         result = '%s: %s\n' % (self.name, self.prompt)
         for question in self.__questions:    
             result += "\n\t\t%s" % (str(question))
-        return result                 
+        return result
+
+class CompositeMatrix(CompositeQuestion):
+
+    def __init__(self):
+        super(CompositeMatrix, self).__init__()
+
+    @property
+    def type(self):
+        return 'CompositeMatrix'
+
+class CompositeMultipleSelect(CompositeQuestion):
+
+    def __init__(self):
+        super(CompositeMultipleSelect, self).__init__()
+
+    @property
+    def type(self):
+        return 'CompositeMultipleSelect'
+        
+class CompositeHotSpot(CompositeQuestion):
+
+    def __init__(self):
+        super(CompositeHotSpot, self).__init__()    
+
+    @property
+    def type(self):
+        return 'CompositeHotSpot'   
 
 class Question(object):
 
