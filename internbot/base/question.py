@@ -71,6 +71,10 @@ class CompositeQuestion(object):
         return self.__questions
 
     @property
+    def text_entry(self):
+        return False
+
+    @property
     def question_order(self):
         return self.__question_order
 
@@ -149,7 +153,16 @@ class CompositeHotSpot(CompositeQuestion):
 
     @property
     def type(self):
-        return 'CompositeHotSpot'   
+        return 'CompositeHotSpot'
+
+class CompositeConstantSum(CompositeQuestion):
+
+    def __init__(self):
+        super(CompositeConstantSum, self).__init__()    
+
+    @property
+    def type(self):
+        return 'CompositeConstantSum'
 
 class Question(object):
 
@@ -256,6 +269,9 @@ class Question(object):
     def add_response(self, response, code=None):
         self.__responses.add(response, code)
         self.__responses.sort(self.__response_order)
+
+    def add_text_response(self, response):
+        self.__responses.add_text(response)
 
     def __repr__(self):
         result = ''

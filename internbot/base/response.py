@@ -11,6 +11,11 @@ class Responses(object):
             Response(response, code)
         )
 
+    def add_text(self, response):
+        self.__responses.append(
+            TextResponse(response)
+        )
+
     def sort(self, response_order):
         sorter = ResponseSorter(response_order)
         self.__responses = sorter.sort(self.__responses)
@@ -33,6 +38,10 @@ class Response(object):
         self.response = response
         self.code = code
         self.__has_frequency = False
+
+    @property
+    def type(self):
+        return 'Response'
 
     @property
     def response(self):
@@ -67,3 +76,12 @@ class Response(object):
         result = ""
         result += "%s: %s" % (self.code, self.response)
         return result
+
+class TextResponse(Response):
+
+    def __init__(self, response):
+        super(TextResponse, self).__init__(response)
+
+    @property
+    def type(self):
+        return 'TextResponse'

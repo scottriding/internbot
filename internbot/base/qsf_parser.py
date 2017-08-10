@@ -1,7 +1,7 @@
 import re
 from survey import Survey
 from block import Blocks, Block
-from question import Questions, Question, CompositeQuestion, CompositeMatrix, CompositeMultipleSelect, CompositeHotSpot
+from question import Questions, Question, CompositeQuestion, CompositeMatrix, CompositeMultipleSelect, CompositeHotSpot, CompositeConstantSum
 from HTMLParser import HTMLParser
 
 class QSFSurveyParser(object):
@@ -91,6 +91,7 @@ class QSFQuestionsParser(object):
         self.carryforwardparser = QSFCarryForwardParser()
         self.hotspot_parser = QSFQuestionHotSpotParser()
         self.multiple_parser = QSFMultipleSelectParser()
+        self.constant_parser = QSFConstantSumParser()
         self.__questions = []
 
     def parse(self, question_elements):
@@ -113,6 +114,9 @@ class QSFQuestionsParser(object):
             elif question.type == 'MC' and question.subtype == 'MACOL':
                 multiple_select = self.multiple_parser.parse(question, question_payload)
                 self.__questions.append(multiple_select)
+            elif question.type == 'CS':
+                constant_sum = self.constant_parser.parse(question, question_payload)
+                self.__questions.append(constant_sum)
             elif question.type == 'Meta':
                 pass
             else:
@@ -132,7 +136,8 @@ class QSFQuestionsParser(object):
         if question_payload.get('Selector') is not None:
             question.subtype = question_payload['Selector']
         if question_payload.get('SubSelector') is not None:
-            question.text_entry = True
+            if question_payload['SubSelector'] == 'TX':
+                question.text_entry = True
         return question
 
     def strip_tags(self, html):
@@ -140,7 +145,6 @@ class QSFQuestionsParser(object):
         html_parser.feed(html)
         return html_parser.get_data()
         
-
 class QSFQuestionsMatrixParser(object):
 
     def __init__(self):
@@ -205,11 +209,7 @@ class QSFQuestionsMatrixParser(object):
 class QSFQuestionHotSpotParser(object):
 
     def parse(self, question, question_payload):
-        hotspot_question = CompositeHotSpot()
-        hotspot_question.name = question.name
-        hotspot_question.prompt = question.prompt
-        hotspot_question.subtype = question.subtype
-        hotspot_question.id = question_payload['QuestionID']
+        hotspot_question = self.hotspot_details(question, question_payload)
         self.basic_hotspot(question_payload, hotspot_question)    
         return hotspot_question
 
@@ -218,18 +218,29 @@ class QSFQuestionHotSpotParser(object):
             if question_payload.get('ChoiceOrder') and \
                len(question_payload['ChoiceOrder']) > 0: 
                 hotspot_question.question_order = question_payload['ChoiceOrder']
-            for code, question in question_payload['Choices'].iteritems():
-                sub_question = Question()
-                sub_question.id = '%s_%s' % (hotspot_question.id, code)
-                sub_question.code = code
-                sub_question.type = question_payload['QuestionType']
-                sub_question.subtype = question_payload['Selector']
-                sub_question.name = '%s_%s' % (hotspot_question.name, code)
-                sub_question.prompt = question['Display']
-                sub_question.add_response('0',1)
-                sub_question.add_response('1',2)
-                sub_question.add_response('NA',3)
-                hotspot_question.add_question(sub_question)
+            self.question_details(hotspot_question, question_payload)
+
+    def hotspot_details(self, question, question_payload):
+        hotspot = CompositeHotSpot()
+        hotspot.name = question.name
+        hotspot.prompt = question.prompt
+        hotspot.subtype = question.subtype
+        hotspot.id = question_payload['QuestionID']
+        return hotspot
+
+    def question_details(self, hotspot, question_payload):
+        for code, question in question_payload['Choices'].iteritems():
+            sub_question = Question()
+            sub_question.id = '%s_%s' % (hotspot.id, code)
+            sub_question.code = code
+            sub_question.type = question_payload['QuestionType']
+            sub_question.subtype = question_payload['Selector']
+            sub_question.name = '%s_%s' % (hotspot.name, code)
+            sub_question.prompt = question['Display']
+            sub_question.add_response('0',1)
+            sub_question.add_response('1',2)
+            sub_question.add_response('NA',3)
+            hotspot.add_question(sub_question)
 
 class QSFMultipleSelectParser(object):
 
@@ -277,7 +288,50 @@ class QSFMultipleSelectParser(object):
             sub_question.add_response('NA',2)
             multiple_select.add_question(sub_question)
             
-        
+class QSFConstantSumParser(object):
+
+    def __init__(self):
+        self.carryforward = QSFCarryForwardParser()
+
+    def parse(self, question, question_payload):
+        constant_sum = self.constantsum_details(question_payload, question)
+        if question_payload.get('DynamicChoices') is None:
+            self.basic_constant(constant_sum, question_payload)       
+        else:
+            self.dynamic_constant(constant_sum, question_payload)
+        return constant_sum
+
+    def basic_constant(self, constant_sum, question_payload):
+        if question_payload.get('Choices') and len(question_payload['Choices']) > 0:
+            if question_payload.get('ChoiceOrder') and \
+               len(question_payload['ChoiceOrder']) > 0: 
+                constant_sum.question_order = question_payload['ChoiceOrder']
+            self.question_details(question_payload, constant_sum)
+
+    def constantsum_details(self, question_payload, question):
+        constantsum = CompositeConstantSum()
+        constantsum.name = question.name
+        constantsum.prompt = question.prompt
+        constantsum.subtype = question.subtype
+        constantsum.id = question_payload['QuestionID']
+        return constantsum
+
+    def dynamic_constant(self, constant_sum, question_payload):
+        self.carryforward.assign_carry_forward(constant_sum, question_payload)
+
+    def question_details(self, question_payload, constant_sum):
+        for code, question in question_payload['Choices'].iteritems():
+            sub_question = Question()
+            sub_question.id = '%s_%s' % (constant_sum.id, code)
+            sub_question.code = code
+            sub_question.type = question_payload['QuestionType']
+            sub_question.subtype = question_payload['Selector']
+            if question_payload.get('SubSelector') is not None:
+                sub_question.text_entry = True
+            sub_question.name = '%s_%s' % (constant_sum.name, code)
+            sub_question.prompt = question['Display']
+            constant_sum.add_question(sub_question)
+      
 class QSFResponsesParser(object):
 
     def parse(object, question, question_payload, question_element):

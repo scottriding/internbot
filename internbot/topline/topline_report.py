@@ -13,7 +13,10 @@ class ToplineReport(object):
 
     def write_questions(self):
         for question in self.questions:
-            if question.type == 'Composite':
+            if question.type == 'CompositeMatrix' or \
+               question.type == 'CompositeMultipleSelect' or \
+               question.type == 'CompositeHotSpot' or \
+               question.type == 'CompositeConstantSum':
                 self.write_composite_question(question)
             elif question.type == 'TE':
                 self.write_open_ended(question)
@@ -34,7 +37,12 @@ class ToplineReport(object):
         paragraph = self.doc.add_paragraph() # each question starts a new paragraph
         self.write_name(question.name, paragraph)
         self.write_prompt(question.prompt, paragraph)
-        self.write_sub_questions(question.questions)
+        if question.type == 'CompositeMatrix':
+            self.write_matrix(question.questions)
+        elif question.type == 'CompositeConstantSum':
+            self.write_allocate(question.questions)
+        else:
+            self.write_binary(question.questions)
         self.doc.add_paragraph("") # space between questions
 
     def write_open_ended(self, question):
@@ -65,33 +73,19 @@ class ToplineReport(object):
             response_cells[1].merge(response_cells[2])
             if response.response == 'NA':
                 response_cells[1].text = 'Don\'t know / Skipped'
-            else:
+            elif response.type == 'Response':
+                print response.type
                 response_cells[1].text = response.response
-            if response.has_frequency is True and first_row is True:
-                response_cells[3].text = self.freqs_percent(response.frequency) + "%"
-                first_row = False
-            elif response.has_frequency is True and first_row is False:
-                response_cells[3].text = self.freqs_percent(response.frequency)
-            elif response.has_frequency is False and first_row is True:
-                response_cells[3].text = '--%'
-                first_row = False
-            else:
-                response_cells[3].text = '--'
-
-    def write_sub_questions(self, sub_questions):
-        for sub_question in sub_questions:
-            if sub_question.type == 'HotSpot':
-                self.write_binary(sub_questions)
-                break
-            elif sub_question.type == 'Matrix':
-                self.write_matrix(sub_questions)
-                break
-            elif sub_question.type == 'MC':
-                self.write_binary(sub_questions)
-                break
-            else:
-                print 'Unfamiliar with this format -- topline_report.py'
-                break
+                if response.has_frequency is True and first_row is True:
+                    response_cells[3].text = self.freqs_percent(response.frequency) + "%"
+                    first_row = False
+                elif response.has_frequency is True and first_row is False:
+                    response_cells[3].text = self.freqs_percent(response.frequency)
+                elif response.has_frequency is False and first_row is True:
+                    response_cells[3].text = '--%'
+                    first_row = False
+                else:
+                    response_cells[3].text = '--'
 
     def write_binary(self, sub_questions):
         table = self.doc.add_table(rows = 1, cols = 5)
@@ -108,6 +102,20 @@ class ToplineReport(object):
                 region_cells[3].text = self.freqs_percent(response.frequency)
             elif response.has_frequency is False and first_row is True:
                 region_cells[3].text = '--%'
+                first_row = False
+            else:
+                region_cells[3].text = '--'
+
+    def write_allocate(self, sub_questions):
+        table = self.doc.add_table(rows = 1, cols = 5)
+        first_row = True
+        for sub_question in sub_questions:
+            region_cells = table.add_row().cells
+            region_cells[1].merge(region_cells[2])
+            response = next((response for response in sub_question.responses if response.response == '1'), None)
+            region_cells[1].text = sub_question.prompt
+            if first_row is True:
+                region_cells[3].text = '$--'
                 first_row = False
             else:
                 region_cells[3].text = '--'
