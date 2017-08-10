@@ -73,6 +73,9 @@ class ReportGenerator(object):
         return absolute_match
 
     def find_response(self, response_to_find, question):
+        if response_to_find == 'NA':
+            question.add_NA()
+            return question.get_NA()
         responses = question.responses
         matching_response = next((response for response in responses if response.response == response_to_find), None)
         if response_to_find == 'On':

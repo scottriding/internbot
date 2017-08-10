@@ -16,6 +16,14 @@ class Responses(object):
             TextResponse(response)
         )
 
+    def add_NA(self):
+        self.__responses.append(
+            NAResponse()
+        )
+
+    def get_NA(self):
+        return next((response for response in self.__responses if response.type == 'NAResponse'), None)
+
     def sort(self, response_order):
         sorter = ResponseSorter(response_order)
         self.__responses = sorter.sort(self.__responses)
@@ -85,3 +93,12 @@ class TextResponse(Response):
     @property
     def type(self):
         return 'TextResponse'
+
+class NAResponse(Response):
+
+    def __init__(self):
+        super(NAResponse, self).__init__('NA')
+
+    @property
+    def type(self):
+        return 'NAResponse'

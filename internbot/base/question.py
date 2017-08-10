@@ -273,6 +273,12 @@ class Question(object):
     def add_text_response(self, response):
         self.__responses.add_text(response)
 
+    def add_NA(self):
+        self.__responses.add_NA()
+
+    def get_NA(self):
+        return self.__responses.get_NA()
+
     def __repr__(self):
         result = ''
         result += "%s: %s\n" % (self.name, self.prompt)

@@ -236,7 +236,6 @@ class QSFQuestionHotSpotParser(object):
             sub_question.prompt = question['Display']
             sub_question.add_response('0',1)
             sub_question.add_response('1',2)
-            sub_question.add_response('NA',3)
             hotspot.add_question(sub_question)
 
 class QSFMultipleSelectParser(object):
@@ -280,7 +279,6 @@ class QSFMultipleSelectParser(object):
             sub_question.name = '%s_%s' % (multiple_select.name, code)
             sub_question.prompt = question['Display']
             sub_question.add_response('1',1)
-            sub_question.add_response('NA',2)
             multiple_select.add_question(sub_question)
             
 class QSFConstantSumParser(object):
@@ -339,8 +337,6 @@ class QSFResponsesParser(object):
             else:
                 for code, response in question_payload['Choices'].iteritems():
                     question.add_response(response['Display'].encode('ascii','ignore'), code)
-            code = len(question.responses) + 1
-            question.add_response('NA', code)
                                    
 class QSFCarryForwardParser(object):
 
@@ -452,7 +448,6 @@ class QSFCarryForwardParser(object):
             sub_question.code = response.code
             sub_question.prompt = response.response
             sub_question.add_response('1',1)
-            sub_question.add_response('NA',2)
             multiselect_question.add_question(sub_question)
 
     def matrix_into_singleMulti(self, dynamic_MC, matching_matrix):
