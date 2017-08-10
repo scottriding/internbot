@@ -16,14 +16,14 @@ class SPSSTranslator(object):
             elif question.type == 'Slider':
                 result += 'VARIABLE LEVEL  %s_1(SCALE).\n' % question.name
             elif question.type == 'CompositeMatrix' and question.subtype == 'SingleAnswer':
-                grouped_questions.append(self.translate_composite(question, group_names))
+                grouped_questions.append(self.translate_matrix(question, group_names))
             elif question.type == 'CompositeMultipleSelect':
                 sub_questions = question.questions
                 try:
                     if sub_questions[0].has_carry_forward_responses is False:
-                        grouped_questions.append(self.translate_mc_multiple(question, group_names))
+                        grouped_questions.append(self.translate_multiselect(question, group_names))
                     elif sub_questions[0].has_carry_forward_responses is True:
-                        grouped_questions.append(self.translate_mc_multiple_cf(question, group_names))
+                        grouped_questions.append(self.translate_multiselect_cf(question, group_names))
                 except:
                     print question.name
             else:
@@ -31,7 +31,7 @@ class SPSSTranslator(object):
         result += self.add_groups(grouped_questions, group_names)
         return result
 
-    def translate_composite(self, question, name):
+    def translate_matrix(self, question, name):
         label = '$%s' % question.name
         name.append(label)
         result = "  /MDGROUP NAME=$%s LABEL='%s'" % (question.name, question.prompt)
@@ -42,7 +42,7 @@ class SPSSTranslator(object):
         result += "VALUE=1\n"
         return result
 
-    def translate_mc_multiple(self, question, name):
+    def translate_multiselect(self, question, name):
         label = '$%s' % question.name
         name.append(label)
         result = "  /MDGROUP NAME=$%s LABEL='%s'" % (question.name, question.prompt)
@@ -53,7 +53,7 @@ class SPSSTranslator(object):
         result += "VALUE=1\n"
         return result
 
-    def translate_mc_multiple_cf(self, question, name):
+    def translate_multiselect_cf(self, question, name):
         label = '$%s' % question.name
         name.append(label)
         result = "  /MDGROUP NAME=$%s LABEL='%s'" % (question.name, question.prompt)
