@@ -74,6 +74,10 @@ class CompositeQuestion(object):
         return False
 
     @property
+    def parent(self):
+        return 'CompositeQuestion'
+
+    @property
     def question_order(self):
         return self.__question_order
 
@@ -255,6 +259,10 @@ class Question(object):
     @text_entry.setter
     def text_entry(self, entry):
         self.__text_entry = bool(entry)
+    
+    @property
+    def parent(self):
+        return None
 
     def add_response(self, response, code=None):
         self.__responses.add(response, code)

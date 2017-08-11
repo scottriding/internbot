@@ -17,7 +17,7 @@ class QSFSurveyParser(object):
         
     def parse_name(self, survey_element):
         return survey_element['SurveyName']
-        
+ 
 class QSFBlockFlowParser(object):
 
     def __init__(self):
@@ -146,7 +146,7 @@ class QSFQuestionsParser(object):
         html_parser = MLStripper()
         html_parser.feed(html)
         return html_parser.get_data()
-       
+
 class QSFQuestionsMatrixParser(object):
 
     def __init__(self):
@@ -183,7 +183,10 @@ class QSFQuestionsMatrixParser(object):
         question.id = '%s_%s' % (str(question_payload['QuestionID']), code)
         question.code = code
         question.type = question_payload['QuestionType']
-        question.subtype = question_payload['SubSelector']
+        if question_payload.get('SubSelector') is None:
+            print question_payload
+        else:
+            question.subtype = question_payload['SubSelector']
         if question_payload['ChoiceDataExportTags']:
             question.name = question_payload['ChoiceDataExportTags'][code]    
         else:
@@ -201,7 +204,10 @@ class QSFQuestionsMatrixParser(object):
         matrix_question.name = question_payload['DataExportTag']
         matrix_question.prompt = self.strip_tags( \
                                  question_payload['QuestionText'].encode('ascii', 'ignore'))
-        matrix_question.subtype = question_payload['SubSelector']
+        if question_payload.get('SubSelector') is None:
+            print question_payload
+        else:
+            matrix_question.subtype = question_payload['SubSelector']
 
     def strip_tags(self, html):
         html_parser = MLStripper()
@@ -285,7 +291,7 @@ class QSFMultipleSelectParser(object):
             sub_question.prompt = question['Display']
             sub_question.add_response('1',1)
             multiple_select.add_question(sub_question)
-            
+
 class QSFConstantSumParser(object):
 
     def __init__(self):
@@ -327,7 +333,7 @@ class QSFConstantSumParser(object):
             sub_question.name = '%s_%s' % (constant_sum.name, code)
             sub_question.prompt = question['Display']
             constant_sum.add_question(sub_question)
-      
+
 class QSFResponsesParser(object):
 
     def parse(self, question, question_payload, question_element):
@@ -351,7 +357,7 @@ class QSFResponsesParser(object):
     def parse_basic(self, question, question_payload):
         for code, response in question_payload['Choices'].iteritems():
                 question.add_response(response['Display'].encode('ascii','ignore'), code)
-                                   
+                 
 class QSFCarryForwardParser(object):
 
     def assign_carry_forward(self, question, question_payload):
@@ -439,7 +445,15 @@ class QSFCarryForwardParser(object):
             dynamic_matrix.add_question(sub_question)
 
     def matrix_into_multiselect(self, multiselect, matrix):
-        pass
+        multiselect.question_order = matrix.question_order
+        for question in matrix.questions:
+            sub_question = Question()
+            sub_question.name = '%s_x%s' % (matrix.name, question.code)
+            sub_question.id = '%s_%s' % (multiselect.id, question.code)
+            sub_question.code = question.code
+            sub_question.prompt = question.prompt
+            sub_question.add_response('1', 1)
+            multiselect.add_question(sub_question)
 
     def multiselect_into_multiselect(self, dynamic_multi, matching_multi):
         dynamic_multi.question_order = matching_multi.question_order
@@ -461,11 +475,13 @@ class QSFCarryForwardParser(object):
             sub_question.id = '%s_%s' % (multiselect_question.id, response.code)
             sub_question.code = response.code
             sub_question.prompt = response.response
-            sub_question.add_response('1',1)
+            sub_question.add_response('1', 1)
             multiselect_question.add_question(sub_question)
 
     def matrix_into_singleMulti(self, dynamic_MC, matching_matrix):
-        pass
+        dynamic_MC.response_order = matching_matrix.question_order
+        for question in matching_matrix.questions:
+            dynamic_MC.add_response(question.name, question.code)
 
     def multiselect_into_singleMulti(self, dynamic_MC, matching_multiselect):
         dynamic_MC.response_order = matching_multiselect.question_order

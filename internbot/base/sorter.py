@@ -7,7 +7,7 @@ class Sorter(object):
 
     def sort(self, list_to_sort):
         return sorted(list_to_sort, cmp=self.compare)
-        
+
 class BlockSorter(Sorter):
 
     def __init__(self, sort_order):
@@ -43,7 +43,7 @@ class QuestionSorter(Sorter):
             return -1
         else:
             return 0
-    
+
 class CompositeQuestionSorter(Sorter):
     
     def __init__(self, sort_order):
@@ -61,7 +61,7 @@ class CompositeQuestionSorter(Sorter):
                 return 0    
         except ValueError:
             return 0
-            
+
 class ResponseSorter(Sorter):
     
     def __init__(self, sort_order):
@@ -79,4 +79,3 @@ class ResponseSorter(Sorter):
                 return 0
         except ValueError:
             return 0
-        

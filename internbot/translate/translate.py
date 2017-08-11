@@ -15,7 +15,7 @@ class SPSSTranslator(object):
                 result += 'VARIABLE LEVEL  %s(ORDINAL).\n' % question.name
             elif question.type == 'Slider':
                 result += 'VARIABLE LEVEL  %s_1(SCALE).\n' % question.name
-            elif question.type == 'CompositeMatrix' and question.subtype == 'SingleAnswer':
+            elif question.type == 'CompositeMatrix':
                 grouped_questions.append(self.translate_matrix(question, group_names))
             elif question.type == 'CompositeMultipleSelect':
                 sub_questions = question.questions
