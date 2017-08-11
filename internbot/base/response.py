@@ -22,7 +22,8 @@ class Responses(object):
         )
 
     def get_NA(self):
-        return next((response for response in self.__responses if response.type == 'NAResponse'), None)
+        return next((response for response in self.__responses \
+                     if response.type == 'NAResponse'), None)
 
     def sort(self, response_order):
         sorter = ResponseSorter(response_order)

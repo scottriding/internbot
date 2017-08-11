@@ -31,17 +31,8 @@ class CompositeQuestion(object):
         self.__questions = []
         self.__question_order = []
         self.__temp_responses = Responses()
-        self.has_carry_forward_prompts = False
         self.has_carry_forward_responses = False 
-        
-    @property
-    def id(self):
-        return self.__id
-        
-    @id.setter
-    def id(self, id):
-        self.__id = str(id)
-    
+
     @property
     def name(self):
         return self.__name
@@ -57,7 +48,15 @@ class CompositeQuestion(object):
     @prompt.setter
     def prompt(self, prompt):
         self.__prompt = str(prompt)
-     
+             
+    @property
+    def id(self):
+        return self.__id
+        
+    @id.setter
+    def id(self, id):
+        self.__id = str(id)
+
     @property
     def subtype(self):
         return self.__subtype
@@ -81,14 +80,6 @@ class CompositeQuestion(object):
     @question_order.setter    
     def question_order(self, order):
         self.__question_order = order
-
-    @property
-    def has_carry_forward_prompts(self):
-        return self.__has_carry_forward_prompts
-
-    @has_carry_forward_prompts.setter
-    def has_carry_forward_prompts(self, has_carry_forward_prompts):
-        self.__has_carry_forward_prompts = bool(has_carry_forward_prompts)
         
     @property
     def carry_forward_question_id(self):
@@ -170,7 +161,6 @@ class Question(object):
         self.__responses = Responses()
         self.__response_order = []
         self.has_carry_forward_responses = False
-        self.has_carry_forward_prompts = False
         self.__text_entry = False
 
     @property

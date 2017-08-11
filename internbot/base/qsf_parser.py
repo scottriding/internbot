@@ -1,7 +1,9 @@
 import re
 from survey import Survey
 from block import Blocks, Block
-from question import Questions, Question, CompositeQuestion, CompositeMatrix, CompositeMultipleSelect, CompositeHotSpot, CompositeConstantSum
+from question import Questions, Question 
+from question import CompositeQuestion, CompositeMatrix, CompositeMultipleSelect
+from question import CompositeHotSpot, CompositeConstantSum
 from HTMLParser import HTMLParser
 
 class QSFSurveyParser(object):
@@ -87,44 +89,47 @@ class QSFQuestionsParser(object):
 
     def __init__(self):
         self.matrix_parser = QSFQuestionsMatrixParser()
-        self.response_parser = QSFResponsesParser()
-        self.carryforwardparser = QSFCarryForwardParser()
         self.hotspot_parser = QSFQuestionHotSpotParser()
         self.multiple_parser = QSFMultipleSelectParser()
         self.constant_parser = QSFConstantSumParser()
+        self.carryforwardparser = QSFCarryForwardParser()
+        self.response_parser = QSFResponsesParser()
         self.__questions = []
 
     def parse(self, question_elements):
         for question_element in question_elements:
             question_payload = question_element['Payload']
             question = self.question_details(question_payload)
-            
-            if question_payload.get('DynamicChoices') and question.type != 'Matrix':
-                self.carryforwardparser.assign_carry_forward(question, question_payload)
-
-            if question.type == 'Matrix':
-                matrix_question = self.matrix_parser.parse(question_payload)
-                self.__questions.append(matrix_question)
-            elif question.type == 'HotSpot':
-                hotspot_question = self.hotspot_parser.parse(question, question_payload)
-                self.__questions.append(hotspot_question)
-            elif question.type == 'MC' and question.subtype == 'MAVR':
-                multiple_select = self.multiple_parser.parse(question, question_payload)
-                self.__questions.append(multiple_select)
-            elif question.type == 'MC' and question.subtype == 'MACOL':
-                multiple_select = self.multiple_parser.parse(question, question_payload)
-                self.__questions.append(multiple_select)
-            elif question.type == 'CS':
-                constant_sum = self.constant_parser.parse(question, question_payload)
-                self.__questions.append(constant_sum)
-            elif question.type == 'Meta':
-                pass
-            else:
-                self.response_parser.parse(question, question_payload, question_element)
-                self.__questions.append(question)
-
+            self.parse_dynamic(question, question_payload)
+            self.parse_type(question, question_payload, question_element)
         self.__questions = self.carryforwardparser.carry_forward(self.__questions)
         return self.__questions
+
+    def parse_dynamic(self, question, question_payload):
+        if question_payload.get('DynamicChoices') and question.type != 'Matrix':
+                self.carryforwardparser.assign_carry_forward(question, question_payload)
+
+    def parse_type(self, question, question_payload, question_element):
+        if question.type == 'Matrix':
+            matrix_question = self.matrix_parser.parse(question_payload)
+            self.__questions.append(matrix_question)
+        elif question.type == 'HotSpot':
+            hotspot_question = self.hotspot_parser.parse(question, question_payload)
+            self.__questions.append(hotspot_question)
+        elif question.type == 'MC' and question.subtype == 'MAVR':
+            multiple_select = self.multiple_parser.parse(question, question_payload)
+            self.__questions.append(multiple_select)
+        elif question.type == 'MC' and question.subtype == 'MACOL':
+            multiple_select = self.multiple_parser.parse(question, question_payload)
+            self.__questions.append(multiple_select)
+        elif question.type == 'CS':
+            constant_sum = self.constant_parser.parse(question, question_payload)
+            self.__questions.append(constant_sum)
+        elif question.type == 'Meta':
+            pass
+        else:
+            self.response_parser.parse(question, question_payload, question_element)
+            self.__questions.append(question)
         
     def question_details(self, question_payload):
         question = Question()
@@ -141,7 +146,7 @@ class QSFQuestionsParser(object):
         html_parser = MLStripper()
         html_parser.feed(html)
         return html_parser.get_data()
-        
+       
 class QSFQuestionsMatrixParser(object):
 
     def __init__(self):
@@ -325,18 +330,27 @@ class QSFConstantSumParser(object):
       
 class QSFResponsesParser(object):
 
-    def parse(object, question, question_payload, question_element):
+    def parse(self, question, question_payload, question_element):
         if question_payload.get('Choices') and len(question_payload['Choices']) > 0:
-            if question_payload.get('ChoiceOrder') and \
-               len(question_payload['ChoiceOrder']) > 0: 
-                question.response_order = question_payload['ChoiceOrder']
+            self.parse_response_order(question, question_payload)
             if question.subtype == 'NPS':
-                for iteration in question_payload['Choices']:
-                    for response, code in iteration.iteritems():
-                        question.add_response(code, code)
+                self.parse_NPS(question, question_payload)
             else:
-                for code, response in question_payload['Choices'].iteritems():
-                    question.add_response(response['Display'].encode('ascii','ignore'), code)
+                self.parse_basic(question, question_payload)
+                
+    def parse_response_order(self, question, question_payload):
+        if question_payload.get('ChoiceOrder') and \
+           len(question_payload['ChoiceOrder']) > 0: 
+            question.response_order = question_payload['ChoiceOrder']
+
+    def parse_NPS(self, question, question_payload):
+        for iteration in question_payload['Choices']:
+            for response, code in iteration.iteritems():
+                question.add_response(code, code)
+
+    def parse_basic(self, question, question_payload):
+        for code, response in question_payload['Choices'].iteritems():
+                question.add_response(response['Display'].encode('ascii','ignore'), code)
                                    
 class QSFCarryForwardParser(object):
 
