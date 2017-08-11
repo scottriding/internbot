@@ -481,7 +481,7 @@ class QSFCarryForwardParser(object):
     def matrix_into_singleMulti(self, dynamic_MC, matching_matrix):
         dynamic_MC.response_order = matching_matrix.question_order
         for question in matching_matrix.questions:
-            dynamic_MC.add_response(question.name, question.code)
+            dynamic_MC.add_response(question.prompt, question.code)
 
     def multiselect_into_singleMulti(self, dynamic_MC, matching_multiselect):
         dynamic_MC.response_order = matching_multiselect.question_order
