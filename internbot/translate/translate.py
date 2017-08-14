@@ -14,7 +14,11 @@ class SPSSTranslator(object):
             if question.type == 'MC':
                 result += 'VARIABLE LEVEL  %s(ORDINAL).\n' % question.name
             elif question.type == 'Slider':
-                result += 'VARIABLE LEVEL  %s_1(SCALE).\n' % question.name
+                if len(question.responses) > 1:
+                    grouped_questions.append(self.translate_slider_group(question, group_names))
+                else:
+                    for response in question.responses:
+                        result += 'VARIABLE LEVEL  %s_%s(SCALE).\n' % (question.name, response.code)
             elif question.type == 'CompositeMatrix':
                 grouped_questions.append(self.translate_matrix(question, group_names))
             elif question.type == 'CompositeMultipleSelect':
@@ -30,6 +34,17 @@ class SPSSTranslator(object):
                 question.type
         result += self.add_groups(grouped_questions, group_names)
         return result
+
+    def translate_slider_group(self, question, name):
+        label = '$%s' % question.name
+        name.append(label)
+        result = "  /MDGROUP NAME=$%s LABEL='%s'" % (question.name, question.prompt)
+        result += "CATEGORYLABELS=VARLABELS\n"
+        result+= "    VARIABLES="
+        for response in question.responses:
+            result += "%s_%s " % (question.name, response.code)
+        result += "VALUE=1\n"
+        return result 
 
     def translate_matrix(self, question, name):
         label = '$%s' % question.name
