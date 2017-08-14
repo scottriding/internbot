@@ -52,9 +52,9 @@ class ReportGenerator(object):
                 matching_question = self.find_question(question_data['name'], self.survey)
                 if matching_question is not None:
                     matching_response = self.find_response(question_data['response'], matching_question)
-                if matching_response is not None:
-                    self.add_frequency(matching_response, question_data['frequency'])
-
+                    if matching_response is not None:
+                        self.add_frequency(matching_response, question_data['frequency'])
+                
     def find_question(self, question_to_find, survey):
         matching_question = survey.blocks.find_question_by_name(question_to_find)
         if matching_question is None:

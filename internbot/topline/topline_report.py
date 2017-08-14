@@ -112,13 +112,18 @@ class ToplineReport(object):
         for sub_question in sub_questions:
             region_cells = table.add_row().cells
             region_cells[1].merge(region_cells[2])
-            response = next((response for response in sub_question.responses if response.response == '1'), None)
-            region_cells[1].text = sub_question.prompt
-            if first_row is True:
-                region_cells[3].text = '$--'
-                first_row = False
-            else:
-                region_cells[3].text = '--'
+            for response in sub_question.responses:
+                region_cells[1].text = sub_question.prompt
+                if first_row is True and response.has_frequency is True:
+                    region_cells[3].text = '$%s' % self.avgs_percent(response.frequency)
+                    first_row = False
+                elif first_row is True and response.has_frequency is False:
+                    region_cells[3].text = '$--'
+                    first_row = False
+                elif first_row is False and response.has_frequency is True:
+                    region_cells[3].text = self.avgs_percent(response.frequency)
+                else:
+                    region_cells[3].text = '--'
 
     def write_matrix(self, sub_questions):
         table = self.doc.add_table(rows = 1, cols = 0)
@@ -157,4 +162,12 @@ class ToplineReport(object):
         elif percent == 0:
             return "*"
         result = int(round(percent))
+        return str(result)
+
+    def avgs_percent(self, average):
+        if average > 0 and average < 1:
+            return '<1'
+        elif average == 0:
+            return '*'
+        result = int(round(average))
         return str(result)

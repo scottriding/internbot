@@ -332,6 +332,7 @@ class QSFConstantSumParser(object):
             sub_question.subtype = question_payload['Selector']
             sub_question.name = '%s_%s' % (constant_sum.name, code)
             sub_question.prompt = question['Display']
+            sub_question.add_response(sub_question.prompt, sub_question.code)
             constant_sum.add_question(sub_question)
 
 class QSFResponsesParser(object):
