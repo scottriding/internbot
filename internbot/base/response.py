@@ -47,7 +47,6 @@ class Response(object):
         self.response = response
         self.code = code
         self.__has_frequency = False
-        self.__has_carry_forward = False
 
     @property
     def type(self):
@@ -81,14 +80,6 @@ class Response(object):
     @property
     def has_frequency(self):
         return self.__has_frequency
-
-    @property
-    def has_carry_forward(self):
-        return self.__carry_forward
-
-    @has_carry_forward.setter
-    def has_carry_forward(self, cf):
-        self.__has_carry_forward = bool(cf)
 
     def __repr__(self):
         result = ""
