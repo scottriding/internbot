@@ -11,6 +11,11 @@ class Responses(object):
             Response(response, code)
         )
 
+    def add_dynamic(self, response, code=None):
+        response = Response(response, code)
+        response.is_dynamic = True
+        self.__responses.append(response)
+
     def add_text(self, response):
         self.__responses.append(
             TextResponse(response)
@@ -47,6 +52,7 @@ class Response(object):
         self.response = response
         self.code = code
         self.__has_frequency = False
+        self.__is_dynamic = False
 
     @property
     def type(self):
@@ -80,6 +86,14 @@ class Response(object):
     @property
     def has_frequency(self):
         return self.__has_frequency
+
+    @property
+    def is_dynamic(self):
+        return self.__is_dynamic
+
+    @is_dynamic.setter
+    def is_dynamic(self, type):
+        self.__is_dynamic = bool(type)
 
     def __repr__(self):
         result = ""

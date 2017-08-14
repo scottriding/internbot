@@ -31,7 +31,8 @@ class CompositeQuestion(object):
         self.__questions = []
         self.__question_order = []
         self.__temp_responses = Responses()
-        self.has_carry_forward_responses = False 
+        self.__has_carry_forward_responses = False 
+        self.__has_mixed_responses = False
 
     @property
     def name(self):
@@ -94,8 +95,24 @@ class CompositeQuestion(object):
         self.__carry_forward_question_id = str(carry_forward_question_id)
 
     @property
+    def has_carry_forward_responses(self):
+        return self.__has_carry_forward_responses
+
+    @has_carry_forward_responses.setter
+    def has_carry_forward_responses(self, type):
+        self.__has_carry_forward_responses = bool(type)
+
+    @property
     def temp_responses(self):
         return self.__temp_responses
+
+    @property
+    def has_mixed_responses(self):
+        return self.__has_mixed_responses
+
+    @has_mixed_responses.setter
+    def has_mixed_responses(self, type):
+        self.__has_mixed_responses = bool(type)
         
     def add_response(self, response, code):
         self.__temp_responses.add(response, code)
@@ -166,6 +183,7 @@ class Question(object):
         self.__response_order = []
         self.has_carry_forward_responses = False
         self.__text_entry = False
+        self.__has_mixed_responses = False
 
     @property
     def id(self):
@@ -264,8 +282,20 @@ class Question(object):
     def parent(self):
         return None
 
+    @property
+    def has_mixed_responses(self):
+        return self.__has_mixed_responses
+
+    @has_mixed_responses.setter
+    def has_mixed_responses(self, type):
+        self.__has_mixed_responses = bool(type)
+
     def add_response(self, response, code=None):
         self.__responses.add(response, code)
+        self.__responses.sort(self.__response_order)
+
+    def add_dynamic_response(self, response, code=None):
+        self.__responses.add_dynamic(response, code)
         self.__responses.sort(self.__response_order)
 
     def add_text_response(self, response):
