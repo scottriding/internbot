@@ -12,13 +12,12 @@ class SPSSTranslator(object):
         group_names = []
         for question in questions:
             if question.type == 'MC':
-                result += 'VARIABLE LEVEL  %s(ORDINAL).\n' % question.name
+                result += self.translate_MC(question)
             elif question.type == 'Slider':
                 if len(question.responses) > 1:
                     grouped_questions.append(self.translate_slider_group(question, group_names))
                 else:
-                    for response in question.responses:
-                        result += 'VARIABLE LEVEL  %s_%s(SCALE).\n' % (question.name, response.code)
+                    result += self.translate_slider(question)
             elif question.type == 'CompositeMatrix':
                 grouped_questions.append(self.translate_matrix(question, group_names))
             elif question.type == 'CompositeMultipleSelect':
@@ -35,6 +34,19 @@ class SPSSTranslator(object):
         result += self.add_groups(grouped_questions, group_names)
         return result
 
+    def translate_MC(self, question):
+        result = 'VARIABLE LEVEL  %s(ORDINAL).\n' % question.name
+        return result
+
+    def translate_slider(self, question):
+        result = ''
+        for response in question.responses:
+            if response.is_dynamic is True:
+                result += 'VARIABLE LEVEL  %s_x%s(SCALE).\n' % (question.name, response.code)
+            else:
+                result += 'VARIABLE LEVEL  %s_%s(SCALE).\n' % (question.name, response.code)
+        return result
+
     def translate_slider_group(self, question, name):
         label = '$%s' % question.name
         name.append(label)
@@ -42,7 +54,10 @@ class SPSSTranslator(object):
         result += "CATEGORYLABELS=VARLABELS\n"
         result+= "    VARIABLES="
         for response in question.responses:
-            result += "%s_%s " % (question.name, response.code)
+            if response.is_dynamic is True:
+                result += "%s_x%s " % (question.name, response.code)
+            else:
+                result += "%s_%s " % (question.name, response.code)
         result += "VALUE=1\n"
         return result 
 
