@@ -1,2 +1,3 @@
 from translate import SPSSTranslator
 from define_graphs import GraphDefiner
+from define_tables import TableDefiner

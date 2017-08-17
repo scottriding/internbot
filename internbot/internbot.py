@@ -29,13 +29,17 @@ if __name__ == '__main__':
     survey = compiler.compile(args.qsf)
     report = topline.ReportGenerator(survey)
     
-    if args.report == 'SPSS':
+    if args.report == 'SPSS':    
         translator = translate.SPSSTranslator()
         translator.define_variables(survey, args.output)
 
+    elif args.report == 'SPSSTables':
+        translator = translate.TableDefiner()
+        translator.define_tables(survey, args.output)
+
     elif args.report == 'graphs':
-        define = translate.GraphDefiner()
-        define.define_graphs(survey, args.output)
+        translator = translate.GraphDefiner()
+        translator.define_graphs(survey, args.output)
         
     elif args.report == 'basic_topline':
         report.generate_basic_topline(args.freq_csv, args.template, args.output)

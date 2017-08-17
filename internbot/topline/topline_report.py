@@ -13,10 +13,7 @@ class ToplineReport(object):
 
     def write_questions(self):
         for question in self.questions:
-            if question.type == 'CompositeMatrix' or \
-               question.type == 'CompositeMultipleSelect' or \
-               question.type == 'CompositeHotSpot' or \
-               question.type == 'CompositeConstantSum':
+            if question.parent == 'CompositeQuestion':
                 self.write_composite_question(question)
             elif question.type == 'TE':
                 self.write_open_ended(question)
