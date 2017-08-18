@@ -14,6 +14,7 @@ if __name__ == '__main__':
     parser.add_argument('qsf', help='path to the Qualtrics QSF file')
     parser.add_argument('report', help='Report to be generated (either basic topline, full topline, appendix, powerpoint, or SPSS)')
     parser.add_argument('output', help='path to output file')
+    parser.add_argument('-tables','--table_csv',help='path to tables to run csv')
     parser.add_argument('-temp','--template', help='path to topline/powerpoint/appendix template')
     parser.add_argument('-freq','--freq_csv', help='path to frequency csv')
     parser.add_argument('-app','--oe_csv', help='path to open ended responses csv')
@@ -36,6 +37,10 @@ if __name__ == '__main__':
     elif args.report == 'SPSSTables':
         translator = translate.TableDefiner()
         translator.define_tables(survey, args.output)
+
+    elif args.report == 'SPSSTableScript':
+        translator = translate.TableScript()
+        translator.compile_scripts(args.table_csv, args.output)
 
     elif args.report == 'graphs':
         translator = translate.GraphDefiner()

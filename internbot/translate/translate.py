@@ -50,7 +50,7 @@ class SPSSTranslator(object):
     def translate_slider_group(self, question, name):
         label = '$%s' % question.name
         name.append(label)
-        result = "  /MDGROUP NAME=$%s LABEL='%s'" % (question.name, question.prompt)
+        result = "  /MDGROUP NAME=$%s LABEL='%s'" % (question.name, self.clean_prompt(question.prompt))
         result += "CATEGORYLABELS=VARLABELS\n"
         result+= "    VARIABLES="
         for response in question.responses:
@@ -64,7 +64,7 @@ class SPSSTranslator(object):
     def translate_matrix(self, question, name):
         label = '$%s' % question.name
         name.append(label)
-        result = "  /MDGROUP NAME=$%s LABEL='%s'" % (question.name, question.prompt)
+        result = "  /MDGROUP NAME=$%s LABEL='%s'" % (question.name, self.clean_prompt(question.prompt))
         result += "CATEGORYLABELS=VARLABELS\n"
         result+= "    VARIABLES="
         for sub_question in question.questions:
@@ -75,8 +75,7 @@ class SPSSTranslator(object):
     def translate_multiselect(self, question, name):
         label = '$%s' % question.name
         name.append(label)
-        result = "  /MDGROUP NAME=$%s LABEL='%s'" % (question.name, question.prompt)
-        result += "CATEGORYLABELS=VARLABELS\n"
+        result = "  /MDGROUP NAME=$%s LABEL='%s'" % (question.name, self.clean_prompt(question.prompt))
         result+= "    VARIABLES="
         for sub_question in question.questions:
             result += sub_question.name + ' '
@@ -86,7 +85,7 @@ class SPSSTranslator(object):
     def translate_multiselect_cf(self, question, name):
         label = '$%s' % question.name
         name.append(label)
-        result = "  /MDGROUP NAME=$%s LABEL='%s'" % (question.name, question.prompt)
+        result = "  /MDGROUP NAME=$%s LABEL='%s'" % (question.name, self.clean_prompt(question.prompt))
         result += "CATEGORYLABELS=VARLABELS\n"
         result+= "    VARIABLES="
         for sub_question in question.questions:
@@ -106,5 +105,9 @@ class SPSSTranslator(object):
                 result += " "
             iteration += 1
         result += '].'
+        return result
+
+    def clean_prompt(self, prompt):
+        result = prompt.translate(None,",'\n\t\r")
         return result
 
