@@ -12,7 +12,7 @@ class ReportGenerator(object):
     def generate_basic_topline(self, path_to_csv, path_to_template, path_to_output):
         self.assign_frequencies(path_to_csv)
         report = ToplineReport(self.__questions, path_to_template)
-        report.save(path_to_output)
+        report.save(str(path_to_output) + '/basic_topline.docx')
 
     def generate_full_topline(self, path_to_csv, path_to_template, path_to_output, path_to_appendix):
         self.assign_text_responses(path_to_appendix)
@@ -21,8 +21,8 @@ class ReportGenerator(object):
         open_ended_questions = [question for question in self.__questions \
                                 if question.text_entry == True]
         report = ToplineAppendix()
-        report.write_with_topline(open_ended_questions, path_to_output)
-        report.save(path_to_output)
+        report.write_with_topline(open_ended_questions, str(path_to_output) + '/basic_topline.docx')
+        report.save(str(path_to_output) + '/full_topline.docx')
 
     def generate_appendix(self, path_to_template, path_to_appendix, path_to_output):
         self.assign_text_responses(path_to_appendix)
@@ -30,11 +30,11 @@ class ReportGenerator(object):
         open_ended_questions = [question for question in self.__questions \
                                 if question.text_entry == True]
         report.write_independent(open_ended_questions, path_to_template)
-        report.save(path_to_output)
+        report.save(str(path_to_output) + '/appendix.docx')
 
     def generate_ppt(self, path_to_template, path_to_output):
         report = ToplinePPT(self.__questions, path_to_template)
-        report.save(path_to_output)
+        report.save(str(path_to_output) + '/topline.pptx')
 
     def assign_text_responses(self, path_to_appendix):
         with open(path_to_appendix, 'rb') as appendix_file:

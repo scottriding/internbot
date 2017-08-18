@@ -2,6 +2,7 @@ class GraphDefiner(object):
 
     def define_graphs(self, survey, path_to_output):
         questions = survey.get_questions()
+        output = str(path_to_output) + '\typesofgraphs.txt'
         file = open(path_to_output, "w+")
         file.write(self.define_questions(questions))
         

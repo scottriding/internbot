@@ -3,6 +3,7 @@ class SPSSTranslator(object):
     
     def define_variables(self, survey, path_to_output):
         questions = survey.get_questions()
+        output = str(path_to_output) + '\rename variables.txt'
         file = open(path_to_output, "w+")
         file.write(self.translate_questions(questions))
         
