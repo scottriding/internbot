@@ -305,7 +305,7 @@ class QSFMultipleSelectParser(object):
             sub_question.type = question_payload['QuestionType']
             sub_question.subtype = question_payload['Selector']
             sub_question.name = '%s_%s' % (multiple_select.name, code)
-            sub_question.prompt = question['Display']
+            sub_question.prompt = question['Display'].encode('ascii', 'ignore')
             sub_question.add_response('1',1)
             multiple_select.add_question(sub_question)
 

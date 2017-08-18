@@ -25,7 +25,7 @@ class TableDefiner(object):
             if question.type == 'TE' or question.type == 'DB' or question.type == 'Timing':
                 pass
             else:
-                variable_name = question.name
+                variable_name = self.define_name(question)
                 title = self.clean_prompt(question.prompt)
                 base = ''
                 table_index = count
@@ -37,6 +37,12 @@ class TableDefiner(object):
                     table_index
                 ])
                 count += 1
+
+    def define_name(self, question):
+        if question.parent == 'CompositeQuestion':
+            return '$%s' % question.name
+        else:
+            return question.name
 
     def clean_prompt(self, prompt):
         result = prompt.translate(None,",'\n\t\r")
