@@ -3,12 +3,14 @@ import csv
 class TableScript(object):
     
     def compile_scripts(self, path_to_tables, path_to_output):
-        path = str(path_to_output) + '/table script.txt'
-        output = open(path, "w+")
-        script = self.write_script(path_to_tables, path_to_output)
+        table_path = str(path_to_tables) + '/Tables to run.csv'
+        output_path = str(path_to_output) + '/table script.txt'
+        output = open(output_path, "w+")
+        script = self.write_script(table_path, output_path)
         output.write(script)
                 
     def write_script(self, path_to_tables, path_to_output):
+        
         result = ''
         with open(path_to_tables, 'rb') as table_file:
             file = csv.DictReader(table_file, quotechar = '"')

@@ -3,7 +3,7 @@ import csv
 class TableDefiner(object):
     
     def define_tables(self, survey, path_to_output):
-        output = str(path_to_output) + '\Tables to run.csv'
+        output = str(path_to_output) + '/Tables to run.csv'
         questions = survey.get_questions()
         with open(output, 'wb') as csvfile:
             csvwriter = csv.writer(csvfile, delimiter=',',
