@@ -17,7 +17,8 @@ class TableDefiner(object):
             ['VariableName'] + 
             ['Title'] + 
             ['Base'] + 
-            ['TableIndex']
+            ['TableIndex'] +
+            ['Column specs']
         )   
     
     def write_tables(self, csvwriter, questions):
@@ -35,7 +36,8 @@ class TableDefiner(object):
                     variable_name,
                     title,
                     base,
-                    table_index
+                    table_index,
+                    ''
                 ])
                 count += 1
 

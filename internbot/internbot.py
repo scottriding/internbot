@@ -37,15 +37,10 @@ if __name__ == '__main__':
         
         variables.define_variables(survey, args.output)
         tables.define_tables(survey, args.output)
-        script.compile_scripts(args.output, args.output)
 
-#     elif args.report == 'SPSSTables':
-#         translator = translate.TableDefiner()
-#         translator.define_tables(survey, args.output)
-# 
-#     elif args.report == 'SPSSTableScript':
-#         translator = translate.TableScript()
-#         translator.compile_scripts(args.table_csv, args.output)
+    if args.report == 'table_script':
+        script = translate.TableScript()
+        script.compile_scripts(args.table_csv, args.output)
 
     elif args.report == 'graphs':
         translator = translate.GraphDefiner()
