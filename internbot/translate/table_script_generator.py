@@ -44,9 +44,13 @@ class TableScript(object):
         for spec in column_specs:
             result += 'C%s ' % spec
         result += 'DISPLAY=DEFAULT\n'
-        result += "  /TABLE %s [C][COUNT F40.0, COLPCT.COUNT PCT40.0] BY Total [C] "
+        result += "  /TABLE %s [C][COUNT F40.0, COLPCT.COUNT PCT40.0] BY Total [C] " % question['VariableName']
         for spec in column_specs:
-            result+= '+ C%s [C] ' %spec
+            if '$' in spec:
+                temp = spec.replace("$", "")
+                result += '+ $C%s [C] ' %temp
+            else:
+                result+= '+ C%s [C] ' %spec
         result += '\n  /SLABELS POSITION=ROW VISIBLE=NO\n'
         result += "  /CATEGORIES VARIABLES=%s " % question['VariableName']
         result += 'ORDER=A KEY=VALUE EMPTY=INCLUDE TOTAL=YES POSITION=AFTER\n'
