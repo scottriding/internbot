@@ -1,0 +1,2 @@
+class Highlighter(object):
+    pass

@@ -3,6 +3,7 @@ import base
 import sys
 import translate
 import topline
+import highlight
 
 
 if __name__ == '__main__':
