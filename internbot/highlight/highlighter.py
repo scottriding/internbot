@@ -1,2 +1,5 @@
+
 class Highlighter(object):
-    pass
+    
+    def highlight(self, cells_to_highlight):
+        pass
