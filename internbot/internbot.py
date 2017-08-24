@@ -38,7 +38,7 @@ if __name__ == '__main__':
         variables.define_variables(survey, args.output)
         tables.define_tables(survey, args.output)
 
-    if args.report == 'table_script':
+    elif args.report == 'table_script':
         script = translate.TableScript()
         script.compile_scripts(args.table_csv, args.output)
 
