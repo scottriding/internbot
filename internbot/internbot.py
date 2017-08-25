@@ -41,6 +41,10 @@ if __name__ == '__main__':
         script = crosstabs.TableScript()
         script.compile_scripts(args.table_csv, args.output)
 
+    elif args.report == 'merge':
+        merger = crosstabs.XLSXMerger()
+        merger.merge(args.output, args.output, args.template)
+
     elif args.report == 'highlight':
         highlighter = crosstabs.Highlighter(args.table_csv)
         highlighter.highlight()

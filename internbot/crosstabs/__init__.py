@@ -2,3 +2,4 @@ from highlighter import Highlighter
 from translate_variables import SPSSTranslator
 from table_script_generator import TableScript
 from define_tables import TableDefiner
+from merge import XLSXMerger
