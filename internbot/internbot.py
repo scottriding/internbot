@@ -1,10 +1,9 @@
 import argparse
 import base
 import sys
-import translate
+import crosstabs
 import topline
-import highlight
-
+import data_analysis
 
 if __name__ == '__main__':
 
@@ -14,12 +13,11 @@ if __name__ == '__main__':
 
     parser.add_argument('qsf', help='path to the Qualtrics QSF file')
     parser.add_argument('report', help='Report to be generated (either basic topline, full topline, appendix, powerpoint, or SPSS)')
-    parser.add_argument('output', help='path to output file')
+    parser.add_argument('output', help='path to output folder')
     parser.add_argument('-tables','--table_csv',help='path to tables to run csv')
     parser.add_argument('-temp','--template', help='path to topline/powerpoint/appendix template')
     parser.add_argument('-freq','--freq_csv', help='path to frequency csv')
     parser.add_argument('-app','--oe_csv', help='path to open ended responses csv')
-    
 
     args = parser.parse_args()
 
@@ -32,23 +30,23 @@ if __name__ == '__main__':
     report = topline.ReportGenerator(survey)
     
     if args.report == 'SPSS':    
-        variables = translate.SPSSTranslator()
-        tables = translate.TableDefiner()
-        script = translate.TableScript()
+        variables = crosstabs.SPSSTranslator()
+        tables = crosstabs.TableDefiner()
+        script = crosstabs.TableScript()
         
         variables.define_variables(survey, args.output)
         tables.define_tables(survey, args.output)
 
     elif args.report == 'table_script':
-        script = translate.TableScript()
+        script = crosstabs.TableScript()
         script.compile_scripts(args.table_csv, args.output)
 
     elif args.report == 'highlight':
-        highlighter = highlight.Highlighter(args.table_csv)
+        highlighter = crosstabs.Highlighter(args.table_csv)
         highlighter.highlight()
 
     elif args.report == 'graphs':
-        translator = translate.GraphDefiner()
+        translator = data_analysis.GraphDefiner()
         translator.define_graphs(survey, args.output)
         
     elif args.report == 'basic_topline':
