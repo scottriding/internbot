@@ -43,6 +43,10 @@ if __name__ == '__main__':
         script = translate.TableScript()
         script.compile_scripts(args.table_csv, args.output)
 
+    elif args.report == 'highlight':
+        highlighter = highlight.Highlighter(args.table_csv)
+        highlighter.highlight()
+
     elif args.report == 'graphs':
         translator = translate.GraphDefiner()
         translator.define_graphs(survey, args.output)
