@@ -29,32 +29,39 @@ class Cells(object):
 
 class Cell(object):
 
-    def __init__(self, row_name, column_name, location):
-        self.row = row_name
-        self.column = column_name
-        self.location = location
-        self.is_significant = False
+    def __init__(self, row, column):
+        self.__row = row
+        self.__column = column
+        self.__is_significant = False
 
     @property
     def row(self):
-        return self.row
+        return self.__row
 
     @property
     def column(self):
-        return self.column
+        return self.__column
 
     @property
     def location(self):
-        return self.location
+        return self.__location
 
     @property
     def is_significant(self):
-        return self.is_significant
+        return self.__is_significant
+
+    @is_significant.setter
+    def is_significant(self, boolean):
+        self.__is_significant = bool(boolean)
+
+    @location.setter
+    def location(self, location):
+        self.__location = str(location)
 
 class FrequencyCell(Cell):
 
     def __init__(self, row, column):
-        super(Cell, self).__init__(row, column)
+        super(FrequencyCell, self).__init__(row, column)
 
     @property
     def type(self):
@@ -68,14 +75,10 @@ class FrequencyCell(Cell):
     def frequency(self, frequency):
         self.frequency = str(frequency)
 
-    @is_significant.setter
-    def is_significant(self, boolean):
-        self.is_significant = bool(boolean)
-
 class PopulationCell(Cell):
 
     def __init__(self, row, column):
-        super(Cell, self).__init__(row, column)
+        super(PopulationCell, self).__init__(row, column)
 
     @property
     def type(self):
@@ -92,12 +95,8 @@ class PopulationCell(Cell):
 class SignificantMarker(Cell):
 
     def __init__(self, row, column):
-        super(Cell, self).__init__(row, column)
+        super(SignificantMarker, self).__init__(row, column)
 
     @property
     def type(self):
         return 'SignificantMarker'
-
-    @is_significant.setter
-    def is_significant(self, boolean):
-        self.is_significant = bool(boolean)
