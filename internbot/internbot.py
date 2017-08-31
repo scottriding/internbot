@@ -12,8 +12,9 @@ if __name__ == '__main__':
     )
 
     parser.add_argument('qsf', help='path to the Qualtrics QSF file')
-    parser.add_argument('report', help='Report to be generated (either basic topline, full topline, appendix, powerpoint, or SPSS)')
+    parser.add_argument('report', help='Report to be generated (either basic topline, full topline, appendix, powerpoint, and SPSS)')
     parser.add_argument('output', help='path to output folder')
+    parser.add_argument('-xtabs', '--xlsx',help='path to crosstabs xlsx file')
     parser.add_argument('-tables','--table_csv',help='path to tables to run csv')
     parser.add_argument('-temp','--template', help='path to topline/powerpoint/appendix template')
     parser.add_argument('-freq','--freq_csv', help='path to frequency csv')
@@ -41,9 +42,9 @@ if __name__ == '__main__':
         script = crosstabs.TableScript()
         script.compile_scripts(args.table_csv, args.output)
 
-    elif args.report == 'merge':
-        merger = crosstabs.XLSXMerger()
-        merger.merge(args.output, args.output, args.template)
+    elif args.report == 'tabs':
+        renamer = crosstabs.RenameTabs()
+        renamer.rename(args.xlsx, args.table_csv, args.output)
 
     elif args.report == 'highlight':
         highlighter = crosstabs.Highlighter(args.table_csv)
