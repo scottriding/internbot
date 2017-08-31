@@ -33,7 +33,7 @@ class RenameTabs(object):
 
     def rename_worksheets(self, workbook):
         index = 0
-        for sheet in output_workbook.worksheets:
+        for sheet in workbook.worksheets:
             if sheet.title != 'TOC':
-                sheet.title = self.__sheet_names[iteration]
+                sheet.title = self.__sheet_names[index]
                 index += 1

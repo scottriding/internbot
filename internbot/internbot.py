@@ -42,13 +42,12 @@ if __name__ == '__main__':
         script = crosstabs.TableScript()
         script.compile_scripts(args.table_csv, args.output)
 
-    elif args.report == 'tabs':
+    elif args.report == 'final_touches':
         renamer = crosstabs.RenameTabs()
         renamer.rename(args.xlsx, args.table_csv, args.output)
 
-    elif args.report == 'highlight':
-        highlighter = crosstabs.Highlighter(args.table_csv)
-        highlighter.highlight()
+        highlighter = crosstabs.Highlighter(args.output)
+        highlighter.highlight(args.output)
 
     elif args.report == 'graphs':
         translator = data_analysis.GraphDefiner()

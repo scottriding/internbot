@@ -5,21 +5,24 @@ from cell import Cells, Cell, FrequencyCell, PopulationCell, SignificantMarker
 class Highlighter(object):
 
     def __init__(self, path_to_xlsx):
-        self.workbook = load_workbook(path_to_xlsx)
+        self.workbook = load_workbook(path_to_xlsx + '/Unhighlighted.xlsx')
         self.groups = {}
         self.responses = {}
         self.__cells = Cells()
-        self.highlight_style = PatternFill("solid", fgColor="DDDDDD")
+        self.highlight_style = PatternFill("solid", fgColor="C00201")
     
-    def highlight(self):
+    def highlight(self, path_to_output):
         for sheet in self.workbook.worksheets:
-            if sheet.title == 'Country':
+            if sheet.title != 'TOC':
                 self.parse_rows(sheet)
                 self.parse_columns(sheet)
                 self.create_cells()
                 self.assign_significant(sheet)
                 self.highlight_significant(sheet)
-        self.workbook.save('/Users/y2analytics/Desktop/Highlighted.xlsx')
+            self.groups = {}
+            self.responses = {}
+            self.__cells = Cells()
+        self.workbook.save(path_to_output + '/Highlighted.xlsx')
         
     def parse_rows(self, sheet):
         response_column = sheet['B']
@@ -63,6 +66,3 @@ class Highlighter(object):
         for cell in self.__cells:
             if cell.is_significant is True:
                 sheet[cell.location].fill = self.highlight_style
-        
-highlighter = Highlighter('/Users/y2analytics/Documents/1.xlsx')
-highlighter.highlight()
