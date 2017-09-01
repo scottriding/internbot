@@ -1,5 +1,5 @@
 from openpyxl import load_workbook
-from openpyxl.styles import PatternFill
+from openpyxl.styles import PatternFill, Font
 from cell import Cells, Cell, FrequencyCell, PopulationCell, SignificantMarker
 
 class Highlighter(object):
@@ -10,6 +10,14 @@ class Highlighter(object):
         self.responses = {}
         self.__cells = Cells()
         self.highlight_style = PatternFill("solid", fgColor="C00201")
+        self.font_style = Font( name='Arial', 
+                                size=12, 
+                                bold=False, 
+                                italic=False, 
+                                vertAlign=None, 
+                                underline='none', 
+                                strike=False, 
+                                color='ffffff')
     
     def highlight(self, path_to_output):
         for sheet in self.workbook.worksheets:
@@ -66,3 +74,4 @@ class Highlighter(object):
         for cell in self.__cells:
             if cell.is_significant is True:
                 sheet[cell.location].fill = self.highlight_style
+                sheet[cell.location].font = self.font_style
