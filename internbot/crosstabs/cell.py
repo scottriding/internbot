@@ -6,27 +6,6 @@ class Cells(object):
     def add(self, cell):
         self.__cells.append(cell)
 
-    def cells_to_highlight(self):
-        to_highlight = []
-        significant_values = self.find_significant_values()
-        for value in significant_values:
-            match = self.match_cells(value)
-            if match is not None:
-                to_highlight.append(match)
-
-    def find_significant_values(self):
-        result = [cell for cell in self.__cells \
-                                if cell.is_significant == True]
-        return result
-
-    def matching_cells(self, value_to_match):
-        for cell in self.__cells:
-            if cell.row == value_to_match.row and \
-               cell.column == value_to_match.column and \
-               cell.location != value_to_match.location:
-                match = cell
-        return match
-
     def __iter__(self):
         return iter(self.__cells)
 
@@ -58,22 +37,30 @@ class Cell(object):
     def is_significant(self, boolean):
         self.__is_significant = bool(boolean)
 
-class FrequencyCell(Cell):
+    @property
+    def needs_highlight(self):
+        return self.__needs_highlight
+
+    @needs_highlight.setter
+    def needs_highlight(self, boolean):
+        self.__needs_highlight = bool(boolean)
+
+class PercentageCell(Cell):
 
     def __init__(self, row, column, location):
-        super(FrequencyCell, self).__init__(row, column, location)
+        super(PercentageCell, self).__init__(row, column, location)
 
     @property
     def type(self):
-        return 'FrequencyCell'
+        return 'PercentageCell'
 
     @property
-    def frequency(self):
-        return self.frequency
+    def percentage(self):
+        return self.percentage
 
-    @frequency.setter
-    def frequency(self, frequency):
-        self.frequency = str(frequency)
+    @percentage.setter
+    def percentage(self, percentage):
+        self.percentage = str(percentage)
 
 class PopulationCell(Cell):
 
