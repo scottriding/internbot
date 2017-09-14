@@ -1,0 +1,1 @@
+from table_script_generator import TableScript

@@ -31,22 +31,21 @@ if __name__ == '__main__':
     report = topline.ReportGenerator(survey)
     
     if args.report == 'SPSS':    
-        variables = crosstabs.SPSSTranslator()
-        tables = crosstabs.TableDefiner()
-        script = crosstabs.TableScript()
+        variables = crosstabs.Generate_Prelim_SPSS_Script.SPSSTranslator()
+        tables = crosstabs.Generate_Prelim_SPSS_Script.TableDefiner()
         
         variables.define_variables(survey, args.output)
         tables.define_tables(survey, args.output)
 
     elif args.report == 'table_script':
-        script = crosstabs.TableScript()
+        script = crosstabs.Generate_Table_Script.TableScript()
         script.compile_scripts(args.table_csv, args.output)
 
     elif args.report == 'final_touches':
-        renamer = crosstabs.RenameTabs()
+        renamer = crosstabs.Polish_Final_Report.RenameTabs()
         renamer.rename(args.xlsx, args.table_csv, args.output)
 
-        highlighter = crosstabs.Highlighter(args.output)
+        highlighter = crosstabs.Polish_Final_Report.Highlighter(args.output)
         highlighter.highlight(args.output)
 
     elif args.report == 'graphs':

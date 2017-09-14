@@ -1,0 +1,2 @@
+from translate_variables import SPSSTranslator
+from define_tables import TableDefiner

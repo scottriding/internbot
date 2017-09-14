@@ -1,6 +1,6 @@
 from openpyxl import load_workbook
 from openpyxl.styles import PatternFill, Font
-from cell import Cells, Cell, FrequencyCell, PopulationCell, SignificantMarker
+from cell import Cells, Cell, PercentageCell, PopulationCell, SignificantMarker
 
 class Highlighter(object):
 
@@ -59,7 +59,7 @@ class Highlighter(object):
                 location2 = str(self.groups[group]) + str(self.responses[label][0] + 1)
                 location3 = str(self.groups[group]) + str(self.responses[label][1])
                 self.__cells.add(PopulationCell(label, group, location1))
-                self.__cells.add(FrequencyCell(label, group, location2))
+                self.__cells.add(PercentageCell(label, group, location2))
                 self.__cells.add(SignificantMarker(label, group, location3))
 
     def assign_significant(self, sheet):

@@ -1,6 +1,3 @@
-from highlighter import Highlighter
-from translate_variables import SPSSTranslator
-from table_script_generator import TableScript
-from define_tables import TableDefiner
-from merge import XLSXMerger
-from rename_xlsx_tabs import RenameTabs
+import Generate_Prelim_SPSS_Script
+import Generate_Table_Script
+import Polish_Final_Report
