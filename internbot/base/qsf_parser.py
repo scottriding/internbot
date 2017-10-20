@@ -215,7 +215,8 @@ class QSFQuestionsMatrixParser(object):
         matrix_question.prompt = self.strip_tags( \
                                  question_payload['QuestionText'].encode('ascii', 'ignore'))
         if question_payload.get('SubSelector') is None:
-            print question_payload
+            pass
+            #print question_payload
         else:
             matrix_question.subtype = question_payload['SubSelector']
 
