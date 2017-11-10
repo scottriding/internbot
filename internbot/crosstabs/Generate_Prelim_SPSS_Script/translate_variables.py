@@ -20,7 +20,10 @@ class SPSSTranslator(object):
                 else:
                     result += self.translate_slider(question)
             elif question.type == 'CompositeMatrix':
-                grouped_questions.append(self.translate_matrix(question, group_names))
+                if self.group(question) == True:
+                    grouped_questions.append(self.translate_matrix(question, group_names))
+                else:
+                    self.separate_matrix(result, question)
             elif question.type == 'CompositeMultipleSelect':
                 sub_questions = question.questions
                 try:
@@ -62,6 +65,13 @@ class SPSSTranslator(object):
         result += "VALUE=1\n"
         return result 
 
+    def group(self, question):
+        for sub_question in question.questions:
+            for response in sub_question.responses:
+                if "agree" in response.response or "Agree" in response.response:
+                    return False
+        return True
+
     def translate_matrix(self, question, name):
         label = '$%s' % question.name
         name.append(label)
@@ -72,6 +82,10 @@ class SPSSTranslator(object):
             result += "%s " % sub_question.name
         result += "VALUE=1\n"
         return result
+
+    def separate_matrix(self, result, question):
+        for sub_question in question:
+            result += 'VARIABLE LEVEL  %s(ORDINAL).\n' % sub_question.name
 
     def translate_multiselect(self, question, name):
         label = '$%s' % question.name

@@ -114,8 +114,11 @@ class QSFQuestionsParser(object):
 
     def parse_type(self, question, question_payload, question_element):
         if question.type == 'Matrix':
-            matrix_question = self.matrix_parser.parse(question_payload)
-            self.__questions.append(matrix_question)
+            if question_payload['Selector'] == 'MaxDiff':
+                pass
+            else:
+                matrix_question = self.matrix_parser.parse(question_payload)
+                self.__questions.append(matrix_question)
         elif question.type == 'HotSpot':
             hotspot_question = self.hotspot_parser.parse(question, question_payload)
             self.__questions.append(hotspot_question)
