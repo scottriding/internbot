@@ -6,10 +6,7 @@ import data_analysis
 
 if __name__ == '__main__':
 
-    parser = argparse.ArgumentParser
-    (
-        description='Automates Y2 Analytics reports.'
-    )
+    parser = argparse.ArgumentParser(description='Automates Y2 Analytics reports.')
 
     parser.add_argument('qsf', help='path to the Qualtrics QSF file')
     parser.add_argument('report', help='Report to be generated (either basic topline, full topline, appendix, powerpoint, and SPSS)')
@@ -28,7 +25,7 @@ if __name__ == '__main__':
     survey = compiler.compile(args.qsf)
     report = topline.ReportGenerator(survey)
 
-    elif args.report == 'graphs':
+    if args.report == 'graphs':
         translator = data_analysis.GraphDefiner()
         translator.define_graphs(survey, args.output)
         
