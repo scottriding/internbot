@@ -6,15 +6,15 @@ class Questions(object):
             self.add(question_data)
         
     def add(self, question_data):
-        if self.already_exists(question_data['Name']):
-            question = self.get(question_data['Name'])
-            question.add_response(question_data['Response'], question_data['Frequency'])
+        if self.already_exists(question_data['variable']):
+            question = self.get(question_data['variable'])
+            question.add_response(question_data['label'], question_data['percent'])
         else:
             self.add_new(question_data)
     
     def add_new(self, question_data):
-        q = Question(question_data['Name'], question_data['Prompt'], question_data['n'])
-        q.add_response(question_data['Response'], question_data['Frequency'])
+        q = Question(question_data['variable'], question_data['prompt'], question_data['n'])
+        q.add_response(question_data['label'], question_data['percent'])
         self.__questions[q.name] = q
     
     def get(self, question_name):
