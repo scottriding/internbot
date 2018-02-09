@@ -6,31 +6,41 @@ import data_analysis
 
 if __name__ == '__main__':
 
-    parser = argparse.ArgumentParser(description='Automates Y2 Analytics reports.')
+    parser = argparse.ArgumentParser(description='Automates Y2 Analytics topline reports.')
 
-    parser.add_argument('qsf', help='path to the Qualtrics QSF file')
-    parser.add_argument('report', help='Report to be generated (either basic topline, full topline, appendix, powerpoint, and SPSS)')
-    parser.add_argument('output', help='path to output folder')
-    parser.add_argument('-temp','--template', help='path to topline/powerpoint/appendix template')
-    parser.add_argument('-freq','--freq_csv', help='path to frequency csv')
-    parser.add_argument('-app','--oe_csv', help='path to open ended responses csv')
+    parser.add_argument('report', help='Report to be generated: basic_topline/full_topline/appendix/powerpoint/graphs.')
+    parser.add_argument('output', help='Path to output folder.')
+    parser.add_argument('template', help='Path to topline/powerpoint/appendix templates.')
+    parser.add_argument('-qsf', help='Path to Qualtrics QSF file.')
+    parser.add_argument('-csv', help='Path to question/frequencies csv.')
+    parser.add_argument('-app', help='Path to open ended responses csv.')
 
     args = parser.parse_args()
 
-    if not args.qsf and not args.report and not args.output:
+    if not args.report and not args.temp and not args.output:
         parser.print_help()
         sys.exit()
 
-    compiler = base.QSFSurveyCompiler()
-    survey = compiler.compile(args.qsf)
-    report = topline.ReportGenerator(survey)
+    isQSF = False
+
+    if args.qsf:
+        compiler = base.QSFSurveyCompiler()
+        survey = compiler.compile(args.qsf)
+        report = topline.QSF.ReportGenerator(survey)
+        isQSF = True
+
+    if args.csv:
+        report = topline.CSV.ReportGenerator(args.csv)
 
     if args.report == 'graphs':
         translator = data_analysis.GraphDefiner()
         translator.define_graphs(survey, args.output)
         
     elif args.report == 'basic_topline':
-        report.generate_basic_topline(args.freq_csv, args.template, args.output)
+        if isQSF is True:
+            report.generate_basic_topline(args.freq_csv, args.template, args.output)
+        else:
+            report.generate_basic_topline(args.template, args.output)
 
     elif args.report == 'full_topline':
         report.generate_full_topline(args.freq_csv, args.template, args.output, args.oe_csv)

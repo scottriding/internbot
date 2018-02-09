@@ -32,7 +32,7 @@ class SPSSTranslator(object):
                     elif sub_questions[0].has_carry_forward_responses is True:
                         grouped_questions.append(self.translate_multiselect_cf(question, group_names))
                 except:
-                    print question.name
+                    pass
             else:
                 question.type
         result += self.add_groups(grouped_questions, group_names)

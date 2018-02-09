@@ -34,7 +34,7 @@ class TableScript(object):
 
     def write_table(self, question, path_to_output):
         output = str(path_to_output) + '/%s' % question['TableIndex']
-        result = '* Table %s.\n\n' % question['TableIndex']
+        result = '\n\n* Table %s.\n\n' % question['TableIndex']
         result += "OMS /SELECT TABLES\n    /IF SUBTYPES = ['Custom Table','Comparisons of Proportions']\n"
         result += '    /DESTINATION FORMAT = XLSX\n'
         result += "     OUTFILE = '%s'\n\n" % (output)
@@ -74,6 +74,9 @@ class TableScript(object):
         result += 'ORDER=A KEY=VALUE EMPTY=INCLUDE\n'
         result += '  /CRITERIA CILEVEL=95\n'
         result += '  /TITLES\n'
+
+        ## double quote title
+
         result += "    TITLE='Table %s - %s: %s'\n" % (question['TableIndex'], question['VariableName'], question['Title'])
         if question['Base'] is not '':
             result += "    CORNER='%s - %s'\n" % ('Base', question['Base'])

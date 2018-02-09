@@ -9,7 +9,7 @@ if __name__ == '__main__':
         description='Automates Y2 Analytics reports.'
     )
 
-    parser.add_argument('qsf', help='path to the Qualtrics QSF file')
+    #parser.add_argument('qsf', help='path to the Qualtrics QSF file')
     parser.add_argument('report', help='Report to be generated (either basic topline, full topline, appendix, powerpoint, and SPSS)')
     parser.add_argument('output', help='path to output folder')
     parser.add_argument('-xtabs', '--xlsx',help='path to crosstabs xlsx file')
@@ -17,12 +17,12 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
-    if not args.qsf and not args.report and not args.output:
+    if not args.report and not args.output:
         parser.print_help()
         sys.exit()
 
-    compiler = base.QSFSurveyCompiler()
-    survey = compiler.compile(args.qsf)
+    #compiler = base.QSFSurveyCompiler()
+    #survey = compiler.compile(args.qsf)
     
     if args.report == 'SPSS':    
         variables = crosstabs.Generate_Prelim_SPSS_Script.SPSSTranslator()
