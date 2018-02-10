@@ -457,12 +457,12 @@ class QSFCarryForwardParser(object):
         dynamic_matrix.question_order = matching_multiselect.question_order
         for question in matching_multiselect.questions:
             sub_question = Question()
-            sub_question.name = '%s_%s' % (dynamic_matrix.name, response.code)
-            sub_question.id = '%s_%s' % (dynamic_matrix.id, response.code)
+            sub_question.name = '%s_%s' % (dynamic_matrix.name, question.code)
+            sub_question.id = '%s_%s' % (dynamic_matrix.id, question.code)
             sub_question.code = question.code
             sub_question.prompt = question.prompt
             for sub_responses in dynamic_matrix.temp_responses:
-                sub_question.add_dynamic_response(sub_response.response, sub_response.code)
+                sub_question.add_dynamic_response(sub_responses.response, sub_responses.code)
             dynamic_matrix.add_question(sub_question)
 
     def singleMulti_into_matrix(self, dynamic_matrix, matching_MC):

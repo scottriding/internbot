@@ -3,7 +3,7 @@ class SPSSTranslator(object):
     
     def define_variables(self, survey, path_to_output):
         questions = survey.get_questions()
-        output = str(path_to_output) + '/rename variables.sps'
+        output = str(path_to_output) + '/rename variables.txt'
         file = open(output, "w+")
         file.write(self.translate_questions(questions))
         
@@ -20,10 +20,10 @@ class SPSSTranslator(object):
                 else:
                     result += self.translate_slider(question)
             elif question.type == 'CompositeMatrix':
-                if self.group(question) == True:
+                if question.subtype == 'SingleAnswer':
+                    result += self.separate_matrix(question)
+                elif question.subtype == 'MultipleAnswer':
                     grouped_questions.append(self.translate_matrix(question, group_names))
-                else:
-                    self.separate_matrix(result, question)
             elif question.type == 'CompositeMultipleSelect':
                 sub_questions = question.questions
                 try:
@@ -63,14 +63,7 @@ class SPSSTranslator(object):
             else:
                 result += "%s_%s " % (question.name, response.code)
         result += "VALUE=1\n"
-        return result 
-
-    def group(self, question):
-        for sub_question in question.questions:
-            for response in sub_question.responses:
-                if "agree" in response.response or "Agree" in response.response:
-                    return False
-        return True
+        return result
 
     def translate_matrix(self, question, name):
         label = '$%s' % question.name
@@ -83,9 +76,11 @@ class SPSSTranslator(object):
         result += "VALUE=1\n"
         return result
 
-    def separate_matrix(self, result, question):
-        for sub_question in question:
+    def separate_matrix(self, question):
+        result = ""
+        for sub_question in question.questions:
             result += 'VARIABLE LEVEL  %s(ORDINAL).\n' % sub_question.name
+        return result
 
     def translate_multiselect(self, question, name):
         label = '$%s' % question.name
