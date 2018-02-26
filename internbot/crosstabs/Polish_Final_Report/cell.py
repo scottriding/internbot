@@ -9,6 +9,14 @@ class Cells(object):
     def __iter__(self):
         return iter(self.__cells)
 
+    def matching_cells(self, value_to_match):
+        for cell in self.__cells:
+            if cell.row == value_to_match.row and \
+            cell. column == value_to_match.column and \
+            cell.location != value_to_match.location:
+                match = cell
+        return match
+
 class Cell(object):
 
     def __init__(self, row, column, location):

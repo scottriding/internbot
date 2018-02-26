@@ -11,7 +11,7 @@ class Highlighter(object):
         self.__cells = Cells()
         self.highlight_style = PatternFill("solid", fgColor="C00201")
         self.font_style = Font( name='Arial', 
-                                size=12, 
+                                size=10, 
                                 bold=False, 
                                 italic=False, 
                                 vertAlign=None, 
