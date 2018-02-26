@@ -76,7 +76,7 @@ class TableScript(object):
         result += '  /TITLES\n'
 
         title = question['Title']
-        title = prompt.replace('"', '')
+        title = title.replace('"', '')
         result += "    TITLE='Table %s - %s: %s'\n" % (question['TableIndex'], question['VariableName'], title)
         if question['Base'] is not '':
             result += "    CORNER='%s - %s'\n" % ('Base', question['Base'])
