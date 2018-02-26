@@ -75,9 +75,9 @@ class TableScript(object):
         result += '  /CRITERIA CILEVEL=95\n'
         result += '  /TITLES\n'
 
-        ## double quote title
-
-        result += "    TITLE='Table %s - %s: %s'\n" % (question['TableIndex'], question['VariableName'], question['Title'])
+        title = question['Title']
+        title = prompt.replace('"', '')
+        result += "    TITLE='Table %s - %s: %s'\n" % (question['TableIndex'], question['VariableName'], title)
         if question['Base'] is not '':
             result += "    CORNER='%s - %s'\n" % ('Base', question['Base'])
         result += '  /COMPARETEST TYPE=PROP ALPHA=0.05 ADJUST=BONFERRONI ORIGIN=COLUMN INCLUDEMRSETS=YES\n'
