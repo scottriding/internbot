@@ -128,6 +128,10 @@ class QSFQuestionsParser(object):
         elif question.type == 'MC' and question.subtype == 'MACOL':
             multiple_select = self.multiple_parser.parse(question, question_payload)
             self.__questions.append(multiple_select)
+        elif question.type == 'TE':
+            if question_payload['Validation'].get('Settings') is not None:
+                if question_payload['Validation']['Settings'].get('ContentType') is not None:
+                    question.subtype = question_payload['Validation']['Settings']['ContentType']
         elif question.type == 'CS':
             constant_sum = self.constant_parser.parse(question, question_payload)
             self.__questions.append(constant_sum)

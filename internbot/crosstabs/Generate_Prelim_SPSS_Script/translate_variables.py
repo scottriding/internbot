@@ -3,7 +3,7 @@ class SPSSTranslator(object):
     
     def define_variables(self, survey, path_to_output):
         questions = survey.get_questions()
-        output = str(path_to_output) + '/rename variables.txt'
+        output = str(path_to_output) + '/rename variables.sps'
         file = open(output, "w+")
         file.write(self.translate_questions(questions))
         
@@ -12,7 +12,11 @@ class SPSSTranslator(object):
         grouped_questions = []
         group_names = []
         for question in questions:
-            if question.type == 'MC':
+            if question.type == 'TE':
+                print question.subtype
+                if question.subtype == 'ValidNumber':
+                    result += self.translate_text(question)
+            elif question.type == 'MC':
                 result += self.translate_MC(question)
             elif question.type == 'Slider':
                 if len(question.responses) > 1:
@@ -36,6 +40,10 @@ class SPSSTranslator(object):
             else:
                 question.type
         result += self.add_groups(grouped_questions, group_names)
+        return result
+
+    def translate_text(self, question):
+        result = 'VARIABLE LEVEL  %s(NUMERIC).\n' % question.name
         return result
 
     def translate_MC(self, question):
