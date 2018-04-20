@@ -24,7 +24,9 @@ class SPSSTranslator(object):
                 else:
                     result += self.translate_slider(question)
             elif question.type == 'CompositeMatrix':
-                if question.subtype == 'SingleAnswer':
+                if question.subtype == 'SingleAnswer' and question.has_carry_forward_responses == True:
+                    result+= self.carry_forward_matrix(question)
+                elif question.subtype == 'SingleAnswer':
                     result += self.separate_matrix(question)
                 elif question.subtype == 'MultipleAnswer':
                     grouped_questions.append(self.translate_matrix(question, group_names))
@@ -44,6 +46,12 @@ class SPSSTranslator(object):
 
     def translate_text(self, question):
         result = 'VARIABLE LEVEL  %s(NUMERIC).\n' % question.name
+        return result
+
+    def carry_forward_matrix(self, question):
+        result = ""
+        for sub_question in question.questions:
+            result += 'VARIABLE LEVEL  %s_x%s(ORDINAL).\n' % (question.name, sub_question.code)
         return result
 
     def translate_MC(self, question):

@@ -1,6 +1,7 @@
 import re
 from survey import Survey
 from block import Blocks, Block
+from scoring import Scorings
 from question import Questions, Question 
 from question import CompositeQuestion, CompositeMatrix, CompositeMultipleSelect
 from question import CompositeHotSpot, CompositeConstantSum
@@ -17,6 +18,17 @@ class QSFSurveyParser(object):
         
     def parse_name(self, survey_element):
         return survey_element['SurveyName']
+
+class QSFScoringParser(object):
+
+    def __init__(self):
+        self.__scoring_ids = Scorings()
+
+    def parse(self, sco_element):
+        sco_payload = sco_element[0]['Payload']['ScoringCategories']
+        for score in sco_payload:
+            self.__scoring_ids.add(score["ID"], score["Name"], score["Description"])
+        return self.__scoring_ids
  
 class QSFBlockFlowParser(object):
 

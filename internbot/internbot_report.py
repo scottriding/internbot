@@ -11,9 +11,9 @@ if __name__ == '__main__':
     parser.add_argument('report', help='Report to be generated: basic_topline/full_topline/appendix/powerpoint/graphs.')
     parser.add_argument('output', help='Path to output folder.')
     parser.add_argument('template', help='Path to topline/powerpoint/appendix templates.')
-    parser.add_argument('-qsf', help='Path to Qualtrics QSF file.')
-    parser.add_argument('-csv', help='Path to question/frequencies csv.')
-    parser.add_argument('-app', help='Path to open ended responses csv.')
+    parser.add_argument('-qsf','--qsf', help='Path to Qualtrics QSF file.')
+    parser.add_argument('-csv','--csv', help='Path to question/frequencies csv.')
+    parser.add_argument('-app','--oe_csv', help='Path to open ended responses csv.')
 
     args = parser.parse_args()
 
@@ -29,21 +29,24 @@ if __name__ == '__main__':
         report = topline.QSF.ReportGenerator(survey)
         isQSF = True
 
-    if args.csv:
+    elif args.csv:
         report = topline.CSV.ReportGenerator(args.csv)
 
     if args.report == 'graphs':
         translator = data_analysis.GraphDefiner()
         translator.define_graphs(survey, args.output)
+
+    elif args.report = 'automate_MS':
+        pass
         
     elif args.report == 'basic_topline':
         if isQSF is True:
-            report.generate_basic_topline(args.freq_csv, args.template, args.output)
+            report.generate_basic_topline(args.csv, args.template, args.output)
         else:
             report.generate_basic_topline(args.template, args.output)
 
     elif args.report == 'full_topline':
-        report.generate_full_topline(args.freq_csv, args.template, args.output, args.oe_csv)
+        report.generate_full_topline(args.csv, args.template, args.output, args.oe_csv)
 
     elif args.report == 'appendix':
         report.generate_appendix(args.template, args.oe_csv, args.output)
