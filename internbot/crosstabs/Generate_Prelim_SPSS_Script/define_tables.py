@@ -27,7 +27,7 @@ class TableDefiner(object):
             if question.type == 'TE' or question.type == 'DB' or question.type == 'Timing':
                 pass
             else:
-                if question.parent == 'CompositeQuestion' and self.group(question) == False:
+                if question.parent == 'CompositeQuestion':
                     self.likert(csvwriter, self.count, question)
                 else:
                     variable_name = self.define_name(question)

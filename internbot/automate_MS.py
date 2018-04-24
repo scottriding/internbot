@@ -1,6 +1,7 @@
 import argparse
 import base
 import sys
+import automate
 
 if __name__ == '__main__':
 
