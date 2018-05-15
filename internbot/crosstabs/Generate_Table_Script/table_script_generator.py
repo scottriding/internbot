@@ -6,7 +6,7 @@ class TableScript(object):
         self.grouped_question = []
     
     def compile_scripts(self, path_to_tables, path_to_output):
-        table_path = str(path_to_tables) + '/Tables to run.csv'
+        table_path = path_to_tables
         output_path = str(path_to_output) + '/table script.sps'
         output = open(output_path, "w+")
         script = self.write_script(table_path, path_to_output)
