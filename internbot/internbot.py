@@ -16,6 +16,7 @@ import Tkinter
 import tkMessageBox
 import tkFileDialog
 import os
+from PIL import Image, ImageTk
 
 """variable_script button event
 
@@ -155,24 +156,29 @@ Creates a new window with buttons to redirect user to topline-centric automation
 def redirect_topline():
     redirect_window = Tkinter.Toplevel()
     redirect_window.title("Y2 Topline Report Automation")
-    message = "Please open survey file to use."
+    message = "Please open a survey file."
     Tkinter.Label(redirect_window, text = message).pack()
     btn_open = Tkinter.Button(redirect_window, text = "Open", command = open_topline)
     btn_cancel = Tkinter.Button(redirect_window, text = "Cancel", command = redirect_window.destroy)
-    btn_open.pack(padx = 10, side = Tkinter.LEFT)
-    btn_cancel.pack(padx = 10, side = Tkinter.LEFT)
+    btn_open.pack(padx = 15, side = Tkinter.LEFT)
+    btn_cancel.pack(padx = 15, side = Tkinter.LEFT)
 
 ### main window ###
 window = Tkinter.Tk()
 window.title("Internbot: 01011001 00000010") # Internbot: Y2
 
+### load up the Y2 Logo ###
+y2_logo = Image.open("Y2Logo.jpg")
+render = ImageTk.PhotoImage(y2_logo)
+Tkinter.Label(window, image=render).pack()
+
 ### main window buttons ###
-btn_xtabs = Tkinter.Button(window, text="Run crosstabs", command=redirect_xtabs)
-btn_report = Tkinter.Button(window, text="Run topline report", command=redirect_topline)
-btn_quit = Tkinter.Button(window, text="Quit", command=window.destroy)
-btn_xtabs.pack(padx=10,side=Tkinter.LEFT)
-btn_report.pack(padx=10,side=Tkinter.LEFT)
-btn_quit.pack(padx=10,side=Tkinter.LEFT)
+btn_xtabs = Tkinter.Button(window, text = "Run crosstabs", command = redirect_xtabs)
+btn_report = Tkinter.Button(window, text = "Run topline report", command = redirect_topline)
+btn_quit = Tkinter.Button(window, text = "Quit", command = window.destroy)
+btn_xtabs.pack(padx = 10, side = Tkinter.LEFT)
+btn_report.pack(padx = 10, side = Tkinter.LEFT)
+btn_quit.pack(padx = 10, side = Tkinter.LEFT)
 
 ### end - loop it all ###
 window.mainloop()
