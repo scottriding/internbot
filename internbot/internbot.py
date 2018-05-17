@@ -77,6 +77,7 @@ def highlight():
     fpath = os.path.join(os.path.expanduser("~"), "Desktop")
     ask_xlsx = tkMessageBox.askokcancel("Select Tables Microsoft Excel File", "Please select the combined table .xlsx file.")
     if ask_xlsx is True: # user selected ok
+        tabsfilename = tkFileDialog.askopenfilename(initialdir = fpath,title = "Select combined Crosstabs report.",filetypes = (("Microsoft Excel","*.xlsx"),("all files","*.*")))
         renamer = crosstabs.Polish_Final_Report.RenameTabs()
         ask_tables = tkMessageBox.askokcancel("Select Tables .csv File", "Please select the Tables to run.csv file.")
         if ask_tables is True: # user selected ok
