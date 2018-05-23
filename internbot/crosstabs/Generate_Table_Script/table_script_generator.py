@@ -5,17 +5,17 @@ class TableScript(object):
     def __init__(self):
         self.grouped_question = []
     
-    def compile_scripts(self, path_to_tables, path_to_output):
+    def compile_scripts(self, path_to_tables, path_to_output, banners):
         table_path = path_to_tables
         output_path = str(path_to_output) + '/table script.sps'
         output = open(output_path, "w+")
-        script = self.write_script(table_path, path_to_output)
+        script = self.write_script(table_path, path_to_output, banners)
         output.write(script)
                 
-    def write_script(self, path_to_tables, path_to_output):
+    def write_script(self, path_to_tables, path_to_output, banners):
         result = ''
         with open(path_to_tables, 'rb') as table_file:
-            column_specs = self.compile_specs(path_to_tables)
+            column_specs = banners
             result += self.add_column_recode(column_specs)
             file = csv.DictReader(table_file, quotechar = '"')
             for table in file:
@@ -23,14 +23,14 @@ class TableScript(object):
                 result += self.write_ctable(table, column_specs)
         return result
 
-    def compile_specs(self, path_to_tables):
-        with open(path_to_tables, 'rb') as table_file:
-            file = csv.DictReader(table_file, quotechar = '"')
-            column_specs = []
-            for row in file:
-                if row['Column specs'] is not '':
-                    column_specs.append(row['VariableName'])
-        return column_specs
+#     def compile_specs(self, path_to_tables):
+#         with open(path_to_tables, 'rb') as table_file:
+#             file = csv.DictReader(table_file, quotechar = '"')
+#             column_specs = []
+#             for row in file:
+#                 if row['Column specs'] is not '':
+#                     column_specs.append(row['VariableName'])
+#         return column_specs
 
     def write_table(self, question, path_to_output):
         output = str(path_to_output) + '/%s' % question['TableIndex']

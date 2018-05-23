@@ -1,1 +1,2 @@
 from table_script_generator import TableScript
+from table_files_parser import TablesParser
