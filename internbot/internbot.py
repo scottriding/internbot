@@ -14,7 +14,7 @@ class Internbot:
         self.__window = root
         self.main_buttons()
         self.fpath = os.path.join(os.path.expanduser("~"), "Desktop")
-        self.__embedded_fields = []
+        self.__tables = OrderedDict()
 
     def main_buttons(self):
         btn_xtabs = Tkinter.Button(self.__window, text = "Run crosstabs", command = self.tabs_menu)
@@ -71,6 +71,10 @@ class Internbot:
             if ask_banners is True:
                 names = crosstabs.Generate_Table_Script.TablesParser().pull_table_names(self.tablesfilename)
                 titles = crosstabs.Generate_Table_Script.TablesParser().pull_table_titles(self.tablesfilename)
+                index = 0
+                while index < len(names):
+                    self.__tables[names[index]] = titles[index]
+                    index += 1
                 self.banner_window(names, titles)
 
     def banner_window(self, names, titles):
@@ -93,7 +97,7 @@ class Internbot:
         scrollbar_tables_horiz = Tkinter.Scrollbar(table_frame, orient="horizontal")
         scrollbar_tables_horiz.pack(side=Tkinter.BOTTOM, fill=Tkinter.X)
 
-        self.tables_box = Tkinter.Listbox(table_frame, selectmode="multiple", width=80, height=15, \
+        self.tables_box = Tkinter.Listbox(table_frame, selectmode='multiple', width=80, height=15, \
                                          yscrollcommand=scrollbar_tables_vert.set, \
                                          xscrollcommand=scrollbar_tables_horiz.set)
         
@@ -122,8 +126,8 @@ class Internbot:
         scrollbar_banner_vert.config(command=self.banners_box.yview)
         scrollbar_banner_horiz.config(command=self.banners_box.xview)
 
-        btn_up = Tkinter.Button(self.edit_window, text = "Up", command = self.shift_up).grid(row = 3, column = 1)
-        btn_down = Tkinter.Button(self.edit_window, text = "Down", command = self.shift_down).grid(row = 4, column = 1)
+        btn_up = Tkinter.Button(self.edit_window, text = "Up", command = self.shift_banner_up).grid(row = 3, column = 1)
+        btn_down = Tkinter.Button(self.edit_window, text = "Down", command = self.shift_banner_down).grid(row = 4, column = 1)
         btn_insert = Tkinter.Button(self.edit_window, text = "Insert", command = self.insert_banner).grid(row = 9, column = 1)
         btn_edit = Tkinter.Button(self.edit_window, text =   "Edit", command = self.parse_selection).grid(row = 10, column = 1)
         btn_create = Tkinter.Button(self.edit_window, text = "Create", command = self.create_banner).grid(row = 11, column = 1)
@@ -131,22 +135,19 @@ class Internbot:
 
         btn_done = Tkinter.Button(self.edit_window, text = "Done", command = self.finish_banner).grid(row = 15, column = 3)
 
-    def shift_up(self):
-        current_banners = []
-        for banner in self.banners_box.curselection():
-            current_banners.append(banner)
+    def shift_banner_up(self):
+        old_index = -1
+        new_index = -1
+        for index in self.tables_box.curselection():
+            table = self.tables_box.get(int(index))
+            old_index = index
+            new_index = old_index - 1
+            if old_index > -1 and new_index > -1:
+                self.tables_box.delete(old_index)
+                self.tables_box.insert(new_index, table)
+                self.tables_box.selection_clear(old_index, old_index)
+                self.tables_box.selection_set(new_index)
 
-        if len(current_banners) > 0:
-            self.shift_banners_up()
-
-        current_tables = []
-        for table in self.tables_box.curselection():
-            current_tables.append(table)
-
-        if len(current_tables) > 0:
-            self.shift_tables_up(current_tables)
-
-    def shift_banners_up(self):
         old_index = -1
         new_index = -1
         for index in self.banners_box.curselection():
@@ -159,94 +160,30 @@ class Internbot:
                 self.banners_box.selection_clear(old_index, old_index)
                 self.banners_box.selection_set(new_index)
 
-    def shift_tables_up(self, current_tables):
-        shifted_indexes = []
-        index = 0
-        while index < len(current_tables):
-            selection_index = current_tables[index]
-            new_index = selection_index - 1
-            if new_index > -1:
-                if new_index not in shifted_indexes:
-                    shifted_indexes.append(new_index)
-                else:
-                    shifted_indexes.append(selection_index)
-            else:
-                shifted_indexes.append(selection_index)
-            index += 1
-        
-        iteration = 0
-        self.tables_box.selection_clear(0, Tkinter.END)
-        for table_index in current_tables:
-            is_highlighted = False
-            current_table = self.tables_box.get(table_index)
-            if '#C00201' in self.tables_box.itemconfig(table_index)['foreground']:
-                is_highlighted = True
-            self.tables_box.delete(table_index)
-            self.tables_box.insert(shifted_indexes[iteration], current_table)
-            if is_highlighted:
-                self.tables_box.itemconfig(shifted_indexes[iteration], {'fg': '#C00201'})
-            self.tables_box.selection_set(shifted_indexes[iteration])
-            iteration += 1
+    def shift_banner_down(self):
+        old_index = -1
+        new_index = -1
+        for index in self.tables_box.curselection():
+            table = self.tables_box.get(int(index))
+            old_index = index
+            new_index = old_index + 1
+            if new_index < len(self.__tables):
+                self.tables_box.delete(old_index)
+                self.tables_box.insert(new_index, table)
+                self.tables_box.selection_clear(old_index, old_index)
+                self.tables_box.selection_set(new_index)
 
-    def shift_down(self):
-        current_banners = []
-        for banner in self.banners_box.curselection():
-            current_banners.append(banner)
-
-        if len(current_banners) > 0:
-            self.shift_banners_down()
-
-        current_tables = []
-        for table in self.tables_box.curselection():
-            current_tables.append(table)
-
-        if len(current_tables) > 0:
-            self.shift_tables_down(current_tables)
-        
-    def shift_banners_down(self):
         old_index = -1
         new_index = -1
         for index in self.banners_box.curselection():
             table = self.banners_box.get(int(index))
             old_index = index
             new_index = old_index + 1
-            if new_index < self.banners_box.size():
+            if new_index < len(self.__tables):
                 self.banners_box.delete(old_index)
                 self.banners_box.insert(new_index, table)
                 self.banners_box.selection_clear(old_index, old_index)
                 self.banners_box.selection_set(new_index)
-
-    def shift_tables_down(self, current_tables):
-        shifted_indexes = []
-        index = len(current_tables) - 1
-        while index >= 0:
-            selection_index = current_tables[index]
-            new_index = selection_index + 1
-            if new_index < self.tables_box.size():
-                if new_index not in shifted_indexes:
-                    shifted_indexes.append(new_index)
-                else:
-                    shifted_indexes.append(selection_index)
-            else:
-                shifted_indexes.append(selection_index)
-            index -= 1
-
-        current_tables.sort(reverse=True)
-        shifted_indexes.sort(reverse=True)
-
-        iteration = 0
-        self.tables_box.selection_clear(0, Tkinter.END)
-        for table_index in current_tables:
-            is_highlighted = False
-            current_table = self.tables_box.get(table_index)
-            if '#C00201' in self.tables_box.itemconfig(table_index)['foreground']:
-                is_highlighted = True
-            self.tables_box.delete(table_index)
-            self.tables_box.insert(shifted_indexes[iteration], current_table)
-            if is_highlighted:
-                self.tables_box.itemconfig(shifted_indexes[iteration], {'fg': '#C00201'})
-            self.tables_box.selection_set(shifted_indexes[iteration])
-            iteration += 1
 
     def insert_banner(self):
         indexes_to_clear = []
@@ -256,9 +193,11 @@ class Internbot:
             name = question[0]
             title = question[1]
             self.banners_box.insert(Tkinter.END, name + ": " + title)
-            self.tables_box.itemconfig(index, {'fg': '#C00201'})
-            self.tables_box.selection_clear(index, index)
-        
+            indexes_to_clear.append(index)
+        indexes_to_clear.sort(reverse=True)
+        for index in indexes_to_clear:
+            self.tables_box.delete(index)
+
     def create_banner(self, initial_name='', intial_title=''):
         create_window = Tkinter.Toplevel()
         create_window.title("Create banner")
@@ -272,9 +211,7 @@ class Internbot:
             name = entry_name.get()
             title = entry_title.get()
             self.banners_box.insert(Tkinter.END, name + ": " + title)
-            self.__embedded_fields.append(name)
-            self.tables_box.insert(0, name + ": " + title)
-            self.tables_box.itemconfig(0, {'fg': '#C00201'})
+            self.__tables[name] = title
             create_window.destroy()
         
         createButton = Tkinter.Button(create_window, text="Create", command=create)
@@ -360,37 +297,28 @@ class Internbot:
         btn_cancel.grid(row = 2, column = 1)
 
     def remove_banner(self):
-        indexes_to_delete = []
         for index in self.tables_box.curselection():
-            item = self.tables_box.get(index)
-            indexes_to_delete.append(index)
-            question = item.split(": ")
-            self.deleted_tables(item)
-        indexes_to_delete.sort(reverse=True)
-        for index in indexes_to_delete:
             self.tables_box.delete(int(index))
         for index in self.banners_box.curselection():
             item = self.banners_box.get(int(index))
             self.banners_box.delete(int(index))
-            banner_to_remove = item.split(": ")
-            index = 0
-            while index < self.tables_box.size():
-                to_compare = self.tables_box.get(index).split(": ")
-                if to_compare[0] == banner_to_remove[0]:
-                    self.tables_box.itemconfig(index, {'fg': '#000000'})
-                index += 1
+            question = item.split(": ")
+            count = 0
+            for key in self.__tables:
+                if key in question[0]:
+                    index = count
+                else:
+                    count += 1
+            self.tables_box.insert(index, question[0] + ": " + question[1])
 
     def finish_banner(self):
-        table_order = OrderedDict()
-        banner_list = OrderedDict()
-        for item in list(self.tables_box.get(0, Tkinter.END)):
-            question = item.split(": ")
-            table_order[question[0]] = question[1]
+        to_return = OrderedDict()
         for item in list(self.banners_box.get(0, Tkinter.END)):
             question = item.split(": ")
-            banner_list[question[0]] = question[1]
+            to_return[question[0]] = question[1]
         self.edit_window.destroy()
-        banners = banner_list.keys()
+        banners = []
+        banners = to_return.keys()
         ask_output = tkMessageBox.askokcancel("Output directory", "Please select the directory for finished table script.")
         if ask_output is True:
             savedirectory = tkFileDialog.askdirectory()
@@ -420,12 +348,12 @@ class Internbot:
             survey = compiler.compile(filename)
             report = topline.QSF.ReportGenerator(survey)
             isQSF = True
-            self.build_report(isQSF, report)
+            build_report(isQSF, report)
         elif ".csv" in filename:
             report = topline.CSV.ReportGenerator(filename)
-            self.build_report(isQSF, report)
+            build_report(isQSF, report)
 
-    def build_report(self, isQSF, report):
+    def build_report(isQSF, report):
         template_file = open("topline_template.docx", "r")
         ask_output = tkMessageBox.askokcancel("Output directory", "Please select the directory for finished report.")
         if ask_output is True:
