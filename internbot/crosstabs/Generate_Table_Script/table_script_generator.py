@@ -5,32 +5,23 @@ class TableScript(object):
     def __init__(self):
         self.grouped_question = []
     
-    def compile_scripts(self, path_to_tables, path_to_output, banners):
+    def compile_scripts(self, path_to_tables, path_to_output, banners, embedded_variables):
         table_path = path_to_tables
         output_path = str(path_to_output) + '/table script.sps'
         output = open(output_path, "w+")
-        script = self.write_script(table_path, path_to_output, banners)
+        script = self.write_script(table_path, path_to_output, banners, embedded_variables)
         output.write(script)
                 
-    def write_script(self, path_to_tables, path_to_output, banners):
+    def write_script(self, path_to_tables, path_to_output, banners, embedded_variables):
         result = ''
         with open(path_to_tables, 'rb') as table_file:
             column_specs = banners
-            result += self.add_column_recode(column_specs)
+            result += self.add_column_recode(column_specs, embedded_variables)
             file = csv.DictReader(table_file, quotechar = '"')
             for table in file:
                 result += self.write_table(table, path_to_output)
                 result += self.write_ctable(table, column_specs)
         return result
-
-#     def compile_specs(self, path_to_tables):
-#         with open(path_to_tables, 'rb') as table_file:
-#             file = csv.DictReader(table_file, quotechar = '"')
-#             column_specs = []
-#             for row in file:
-#                 if row['Column specs'] is not '':
-#                     column_specs.append(row['VariableName'])
-#         return column_specs
 
     def write_table(self, question, path_to_output):
         output = str(path_to_output) + '/%s' % question['TableIndex']
@@ -85,17 +76,19 @@ class TableScript(object):
         result += 'OMSEND.'
         return result
 
-    def add_column_recode(self, column_specs):
-        result = "* CODE FOR RECODING COLUMN VARIABLES IN DATA SCRUB SCRIPT.\n\n"
+    def add_column_recode(self, column_specs, column_variables):
         for spec in column_specs:
             if "$" in spec:
                 column = spec.replace("$","")
             else:
                 column = spec
+            if column in column_variables:
+                result += "string C%s (A16).\n" % (column)
             result += "compute C%s = %s. \n" % (column, column)
             result += "APPLY DICTIONARY \n  /FROM *\n  /SOURCE VARIABLES="
             result += "%s\n  /TARGET VARIABLES=C%s\n" % (column, column)
             result += "  /FILEINFO\n  /VARINFO LEVEL VALLABELS=REPLACE VARLABEL."
             result += "\n  freq C%s %s.\n\n" % (column, column)
-        result += "\n"
+            result += "variable labels C%s '%s'.\n\n" % (column, column)
+        result += "compute Total = 1.\n"
         return result

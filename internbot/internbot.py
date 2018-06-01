@@ -25,8 +25,7 @@ class Internbot:
         btn_quit.pack(padx = 10, side = Tkinter.LEFT)
 
     def tabs_menu(self):
-        redirect_window = Tkinter.Tk()
-        redirect_window.title("Y2 Crosstab Automation")
+        redirect_window = Tkinter.Toplevel(self.__window)
         message = "Please select the files to produce."
         Tkinter.Label(redirect_window, text = message).pack()
         btn_var = Tkinter.Button(redirect_window, text = "Variable script", command = self.variable_script)
@@ -39,7 +38,7 @@ class Internbot:
         btn_cancel.pack(padx = 5, side = Tkinter.LEFT)
 
     def topline_menu(self):
-        redirect_window = Tkinter.Toplevel()
+        redirect_window = Tkinter.Toplevel(self.__window)
         redirect_window.title("Y2 Topline Report Automation")
         message = "Please open a survey file."
         Tkinter.Label(redirect_window, text = message).pack()
@@ -74,7 +73,8 @@ class Internbot:
                 self.banner_window(names, titles)
 
     def banner_window(self, names, titles):
-        self.edit_window = Tkinter.Toplevel()
+        self.edit_window = Tkinter.Toplevel(self.__window)
+        self.edit_window.title("Banner selection")
         table_frame = Tkinter.Frame(self.edit_window)
         banner_frame = Tkinter.Frame(self.edit_window)
 
@@ -260,7 +260,7 @@ class Internbot:
             self.tables_box.selection_clear(index, index)
         
     def create_banner(self, initial_name='', intial_title=''):
-        create_window = Tkinter.Toplevel()
+        create_window = Tkinter.Toplevel(self.edit_window)
         create_window.title("Create banner")
         lbl_name = Tkinter.Label(create_window, text="Banner name:")
         lbl_title = Tkinter.Label(create_window, text="Banner title:")
@@ -306,7 +306,7 @@ class Internbot:
                 self.edit_banner(name, title, index)
 
     def edit_table(self, initial_names='', initial_title='', index=-1):
-        edit_window = Tkinter.Toplevel()
+        edit_window = Tkinter.Toplevel(self.edit_window)
         edit_window.title("Edit banner")
         lbl_banner = Tkinter.Label(edit_window, text="Banner name:")
         entry_banner = Tkinter.Entry(edit_window)
@@ -333,7 +333,7 @@ class Internbot:
         btn_cancel.grid(row = 2, column = 1)
 
     def edit_banner(self, initial_names='', initial_title='', index=-1):
-        edit_window = Tkinter.Toplevel()
+        edit_window = Tkinter.Toplevel(self.edit_window)
         edit_window.title("Edit banner")
         lbl_banner = Tkinter.Label(edit_window, text="Banner name:")
         entry_banner = Tkinter.Entry(edit_window)
@@ -394,7 +394,7 @@ class Internbot:
         ask_output = tkMessageBox.askokcancel("Output directory", "Please select the directory for finished table script.")
         if ask_output is True:
             savedirectory = tkFileDialog.askdirectory()
-            crosstabs.Generate_Table_Script.TableScript().compile_scripts(self.tablesfilename, savedirectory, banners)
+            crosstabs.Generate_Table_Script.TableScript().compile_scripts(self.tablesfilename, savedirectory, banners, self.__embedded_fields)
 
     def highlight(self):
         ask_xlsx = tkMessageBox.askokcancel("Select Tables Microsoft Excel File", "Please select the combined table .xlsx file.")
