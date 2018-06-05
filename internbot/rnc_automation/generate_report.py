@@ -13,6 +13,6 @@ class ScoresToplineGenerator(object):
             for model_data in file:
                 self.__models.add(model_data)
 
-    def generate_rnc_topline(self, path_to_output):
-        report = RNCReport(self.__models)
+    def generate_rnc_topline(self, statename, path_to_output):
+        report = RNCReport(self.__models, statename)
         report.save(str(path_to_output) + '/scores_topline.xlsx')

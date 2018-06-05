@@ -48,8 +48,8 @@ class Internbot:
         Tkinter.Label(redirect_window, text = message).pack(expand=True)
         btn_open = Tkinter.Button(redirect_window, text = "Open", command = self.open_topline)
         btn_cancel = Tkinter.Button(redirect_window, text = "Cancel", command = redirect_window.destroy)
-        btn_open.pack(padx = 10, side = Tkinter.LEFT, expand=True)
-        btn_cancel.pack(padx = 10, side = Tkinter.LEFT, expand=True)
+        btn_open.pack(ipadx = 10, side = Tkinter.LEFT, expand=True)
+        btn_cancel.pack(ipadx = 10, side = Tkinter.LEFT, expand=True)
 
     def rnc_menu(self):
         redirect_window = Tkinter.Toplevel(self.__window)
@@ -58,8 +58,8 @@ class Internbot:
         Tkinter.Label(redirect_window, text = message).pack(expand=True)
         btn_open = Tkinter.Button(redirect_window, text = "Open", command = self.open_rnc)
         btn_cancel = Tkinter.Button(redirect_window, text = "Cancel", command = redirect_window.destroy)
-        btn_open.pack(padx = 10, side = Tkinter.LEFT, expand=True)
-        btn_cancel.pack(padx = 10, side = Tkinter.LEFT, expand=True)
+        btn_open.pack(ipadx = 10, side = Tkinter.LEFT, expand=True)
+        btn_cancel.pack(ipadx = 10, side = Tkinter.LEFT, expand=True)
 
     def variable_script(self):
         ask_qsf = tkMessageBox.askokcancel("Select Qualtrics File", "Please select the Qualtrics survey .qsf file.")
@@ -91,61 +91,48 @@ class Internbot:
         self.edit_window = Tkinter.Toplevel(self.__window)
         self.edit_window.title("Banner selection")
 
-        table_frame = Tkinter.Frame(self.edit_window)
-        banner_frame = Tkinter.Frame(self.edit_window)
+        titles_frame = Tkinter.Frame(self.edit_window)
+        titles_frame.pack()
 
-        table_frame.pack(fill=Tkinter.BOTH, expand=True)
-        banner_frame.pack(fill=Tkinter.BOTH, expand=True)
+        w = Tkinter.Label(self.edit_window, text="Red", bg="red", fg="white")
+        w.pack(side=Tkinter.LEFT)
+        w = Tkinter.Label(self.edit_window, text="Green", bg="green", fg="black")
+        w.pack(side=Tkinter.LEFT)
+        w = Tkinter.Label(self.edit_window, text="Blue", bg="blue", fg="white")
+        w.pack(side=Tkinter.LEFT)
 
-        table_frame.grid(row = 0, column = 0, rowspan = 15)
-        banner_frame.grid(row = 0, column = 2, rowspan = 15)
+        self.boxes_frame = Tkinter.Frame(self.edit_window)
+        self.boxes_frame.pack(fill=Tkinter.BOTH)
 
-        Tkinter.Label(table_frame, text = "Table name").pack(expand=True)
-        Tkinter.Label(banner_frame, text = "Banners").pack(expand=True)
+        self.tables_box = Tkinter.Listbox(self.edit_window, selectmode="multiple", width=80, height=15)
 
-        scrollbar_tables_vert = Tkinter.Scrollbar(table_frame, orient="vertical")
-        scrollbar_tables_vert.pack(side=Tkinter.RIGHT, fill=Tkinter.Y, expand=True)
+        self.tables_box.pack(padx = 15, pady=10,expand=True, side = Tkinter.LEFT, fill=Tkinter.BOTH)
 
-        scrollbar_tables_horiz = Tkinter.Scrollbar(table_frame, orient="horizontal")
-        scrollbar_tables_horiz.pack(side=Tkinter.BOTTOM, fill=Tkinter.X, expand=True)
-
-        self.tables_box = Tkinter.Listbox(table_frame, selectmode="multiple", width=80, height=15, \
-                                         yscrollcommand=scrollbar_tables_vert.set, \
-                                         xscrollcommand=scrollbar_tables_horiz.set)
-        
-        self.tables_box.pack(expand=True, fill=Tkinter.Y)
-
-        scrollbar_tables_vert.config(command=self.tables_box.yview)
-        scrollbar_tables_horiz.config(command=self.tables_box.xview)
+        self.banners_box = Tkinter.Listbox(self.edit_window)
+        self.banners_box.pack(padx = 15, pady=10, expand=True, side=Tkinter.RIGHT, fill=Tkinter.BOTH)
 
         index = 0
         while index < len(names):
             self.tables_box.insert(Tkinter.END, names[index] + ": " + titles[index])
             index += 1
 
-        scrollbar_banner_vert = Tkinter.Scrollbar(banner_frame, orient="vertical")
-        scrollbar_banner_vert.pack(side=Tkinter.RIGHT, fill=Tkinter.Y, expand=True)
+        btn_up = Tkinter.Button(self.edit_window, text = "Up", command = self.shift_up)
+        btn_down = Tkinter.Button(self.edit_window, text = "Down", command = self.shift_down)
+        btn_insert = Tkinter.Button(self.edit_window, text = "Insert", command = self.insert_banner)
+        btn_edit = Tkinter.Button(self.edit_window, text =   "Edit", command = self.parse_selection)
+        btn_create = Tkinter.Button(self.edit_window, text = "Create", command = self.create_banner)
+        btn_remove = Tkinter.Button(self.edit_window, text = "Remove", command = self.remove_banner)
 
-        scrollbar_banner_horiz = Tkinter.Scrollbar(banner_frame, orient="horizontal")
-        scrollbar_banner_horiz.pack(side=Tkinter.BOTTOM, fill=Tkinter.X)
+        btn_done = Tkinter.Button(self.edit_window, text = "Done", command = self.finish_banner)
 
-        self.banners_box = Tkinter.Listbox(banner_frame, width=20, height=15, \
-                                           yscrollcommand=scrollbar_banner_vert.set, \
-                                           xscrollcommand=scrollbar_banner_horiz.set)
+        btn_done.pack(side=Tkinter.BOTTOM, pady=15)
+        btn_remove.pack(side=Tkinter.BOTTOM)
+        btn_create.pack(side=Tkinter.BOTTOM)
+        btn_edit.pack(side=Tkinter.BOTTOM)
 
-        self.banners_box.pack(expand=True, fill=Tkinter.Y)
-
-        scrollbar_banner_vert.config(command=self.banners_box.yview)
-        scrollbar_banner_horiz.config(command=self.banners_box.xview)
-
-        btn_up = Tkinter.Button(self.edit_window, text = "Up", command = self.shift_up).grid(row = 3, column = 1)
-        btn_down = Tkinter.Button(self.edit_window, text = "Down", command = self.shift_down).grid(row = 4, column = 1)
-        btn_insert = Tkinter.Button(self.edit_window, text = "Insert", command = self.insert_banner).grid(row = 9, column = 1)
-        btn_edit = Tkinter.Button(self.edit_window, text =   "Edit", command = self.parse_selection).grid(row = 10, column = 1)
-        btn_create = Tkinter.Button(self.edit_window, text = "Create", command = self.create_banner).grid(row = 11, column = 1)
-        btn_remove = Tkinter.Button(self.edit_window, text = "Remove", command = self.remove_banner).grid(row = 12, column = 1)
-
-        btn_done = Tkinter.Button(self.edit_window, text = "Done", command = self.finish_banner).grid(row = 15, column = 3)
+        btn_insert.pack(side=Tkinter.BOTTOM, pady=5)
+        btn_down.pack(side=Tkinter.BOTTOM)
+        btn_up.pack(side=Tkinter.BOTTOM)
 
     def shift_up(self):
         current_banners = []
@@ -465,7 +452,7 @@ class Internbot:
         if ask_output is True:
             savedirectory = tkFileDialog.askdirectory()
             if savedirectory is not "":
-                report.generate_rnc_topline(savedirectory)
+                report.generate_rnc_topline("Pennsylvania", savedirectory)
         
 
 window = Tkinter.Tk()

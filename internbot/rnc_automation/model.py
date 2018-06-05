@@ -28,6 +28,9 @@ class Models(object):
         else:
             return True
 
+    def __iter__(self):
+        return iter(self.__models)
+
     def __len__(self):
         return len(self.__models)
 
