@@ -1,10 +1,12 @@
 import base
 import crosstabs
 import topline
+import rnc_automation
 import Tkinter
 import tkMessageBox
 import tkFileDialog
 import os
+import csv
 from PIL import Image, ImageTk
 from collections import OrderedDict
 
@@ -19,10 +21,12 @@ class Internbot:
     def main_buttons(self):
         btn_xtabs = Tkinter.Button(self.__window, text = "Run crosstabs", command = self.tabs_menu)
         btn_report = Tkinter.Button(self.__window, text = "Run topline report", command = self.topline_menu)
+        btn_rnc = Tkinter.Button(self.__window, text = "Run RNC", command = self.rnc_menu)
         btn_quit = Tkinter.Button(self.__window, text = "Quit", command = self.__window.destroy)
-        btn_xtabs.pack(padx = 10, side = Tkinter.LEFT)
-        btn_report.pack(padx = 10, side = Tkinter.LEFT)
-        btn_quit.pack(padx = 10, side = Tkinter.LEFT)
+        btn_xtabs.pack(padx = 5, side = Tkinter.LEFT, expand=True)
+        btn_report.pack(padx = 5, side = Tkinter.LEFT, expand=True)
+        btn_rnc.pack(padx = 5, side = Tkinter.LEFT, expand=True)
+        btn_quit.pack(padx = 5, side = Tkinter.LEFT, expand=True)
 
     def tabs_menu(self):
         redirect_window = Tkinter.Toplevel(self.__window)
@@ -32,20 +36,30 @@ class Internbot:
         btn_tab = Tkinter.Button(redirect_window, text = "Table script", command = self.table_script)
         btn_high = Tkinter.Button(redirect_window, text = "Highlight", command = self.highlight)
         btn_cancel = Tkinter.Button(redirect_window, text = "Cancel", command = redirect_window.destroy)
-        btn_var.pack(padx = 5, side = Tkinter.LEFT)
-        btn_tab.pack(padx = 5, side = Tkinter.LEFT)
-        btn_high.pack(padx = 5, side = Tkinter.LEFT)
-        btn_cancel.pack(padx = 5, side = Tkinter.LEFT)
+        btn_var.pack(padx = 5, side = Tkinter.LEFT, expand=True)
+        btn_tab.pack(padx = 5, side = Tkinter.LEFT, expand=True)
+        btn_high.pack(padx = 5, side = Tkinter.LEFT, expand=True)
+        btn_cancel.pack(padx = 5, side = Tkinter.LEFT, expand=True)
 
     def topline_menu(self):
         redirect_window = Tkinter.Toplevel(self.__window)
         redirect_window.title("Y2 Topline Report Automation")
         message = "Please open a survey file."
-        Tkinter.Label(redirect_window, text = message).pack()
+        Tkinter.Label(redirect_window, text = message).pack(expand=True)
         btn_open = Tkinter.Button(redirect_window, text = "Open", command = self.open_topline)
         btn_cancel = Tkinter.Button(redirect_window, text = "Cancel", command = redirect_window.destroy)
-        btn_open.pack(padx = 15, side = Tkinter.LEFT)
-        btn_cancel.pack(padx = 15, side = Tkinter.LEFT)
+        btn_open.pack(padx = 10, side = Tkinter.LEFT, expand=True)
+        btn_cancel.pack(padx = 10, side = Tkinter.LEFT, expand=True)
+
+    def rnc_menu(self):
+        redirect_window = Tkinter.Toplevel(self.__window)
+        redirect_window.title("RNC Scores Topline Automation")
+        message = "Please open a model scores file."
+        Tkinter.Label(redirect_window, text = message).pack(expand=True)
+        btn_open = Tkinter.Button(redirect_window, text = "Open", command = self.open_rnc)
+        btn_cancel = Tkinter.Button(redirect_window, text = "Cancel", command = redirect_window.destroy)
+        btn_open.pack(padx = 10, side = Tkinter.LEFT, expand=True)
+        btn_cancel.pack(padx = 10, side = Tkinter.LEFT, expand=True)
 
     def variable_script(self):
         ask_qsf = tkMessageBox.askokcancel("Select Qualtrics File", "Please select the Qualtrics survey .qsf file.")
@@ -70,28 +84,30 @@ class Internbot:
             if ask_banners is True:
                 names = crosstabs.Generate_Table_Script.TablesParser().pull_table_names(self.tablesfilename)
                 titles = crosstabs.Generate_Table_Script.TablesParser().pull_table_titles(self.tablesfilename)
-                self.banner_window(names, titles)
+                bases = crosstabs.Generate_Table_Script.TablesParser().pull_table_bases(self.tablesfilename)
+                self.banner_window(names, titles, bases)
 
-    def banner_window(self, names, titles):
+    def banner_window(self, names, titles, bases):
         self.edit_window = Tkinter.Toplevel(self.__window)
         self.edit_window.title("Banner selection")
+
         table_frame = Tkinter.Frame(self.edit_window)
         banner_frame = Tkinter.Frame(self.edit_window)
 
-        table_frame.pack(fill=Tkinter.BOTH, expand=Tkinter.YES)
-        banner_frame.pack(fill=Tkinter.BOTH, expand=Tkinter.YES)
+        table_frame.pack(fill=Tkinter.BOTH, expand=True)
+        banner_frame.pack(fill=Tkinter.BOTH, expand=True)
 
-        Tkinter.Label(table_frame, text = "Table name").pack()
-        Tkinter.Label(banner_frame, text = "Banners").pack()
+        table_frame.grid(row = 0, column = 0, rowspan = 15)
+        banner_frame.grid(row = 0, column = 2, rowspan = 15)
 
-        table_frame.grid(row = 0, column = 0, rowspan = 15, sticky="nsew")
-        banner_frame.grid(row = 0, column = 2, rowspan = 15, sticky="nsew")
+        Tkinter.Label(table_frame, text = "Table name").pack(expand=True)
+        Tkinter.Label(banner_frame, text = "Banners").pack(expand=True)
 
         scrollbar_tables_vert = Tkinter.Scrollbar(table_frame, orient="vertical")
-        scrollbar_tables_vert.pack(side=Tkinter.RIGHT, fill=Tkinter.Y)
+        scrollbar_tables_vert.pack(side=Tkinter.RIGHT, fill=Tkinter.Y, expand=True)
 
         scrollbar_tables_horiz = Tkinter.Scrollbar(table_frame, orient="horizontal")
-        scrollbar_tables_horiz.pack(side=Tkinter.BOTTOM, fill=Tkinter.X)
+        scrollbar_tables_horiz.pack(side=Tkinter.BOTTOM, fill=Tkinter.X, expand=True)
 
         self.tables_box = Tkinter.Listbox(table_frame, selectmode="multiple", width=80, height=15, \
                                          yscrollcommand=scrollbar_tables_vert.set, \
@@ -108,7 +124,7 @@ class Internbot:
             index += 1
 
         scrollbar_banner_vert = Tkinter.Scrollbar(banner_frame, orient="vertical")
-        scrollbar_banner_vert.pack(side=Tkinter.RIGHT, fill=Tkinter.Y)
+        scrollbar_banner_vert.pack(side=Tkinter.RIGHT, fill=Tkinter.Y, expand=True)
 
         scrollbar_banner_horiz = Tkinter.Scrollbar(banner_frame, orient="horizontal")
         scrollbar_banner_horiz.pack(side=Tkinter.BOTTOM, fill=Tkinter.X)
@@ -362,10 +378,10 @@ class Internbot:
     def remove_banner(self):
         indexes_to_delete = []
         for index in self.tables_box.curselection():
-            item = self.tables_box.get(index)
-            indexes_to_delete.append(index)
-            question = item.split(": ")
-            self.deleted_tables(item)
+            if '#C00201' not in self.tables_box.itemconfig(index)['foreground']:
+                item = self.tables_box.get(index)
+                indexes_to_delete.append(index)
+                question = item.split(": ")
         indexes_to_delete.sort(reverse=True)
         for index in indexes_to_delete:
             self.tables_box.delete(int(index))
@@ -395,6 +411,10 @@ class Internbot:
         if ask_output is True:
             savedirectory = tkFileDialog.askdirectory()
             crosstabs.Generate_Table_Script.TableScript().compile_scripts(self.tablesfilename, savedirectory, banners, self.__embedded_fields)
+            self.reorder_tablesfile(savedirectory, table_order)
+
+    def reorder_tablesfile(self, savedirectory, table_order):
+        pass
 
     def highlight(self):
         ask_xlsx = tkMessageBox.askokcancel("Select Tables Microsoft Excel File", "Please select the combined table .xlsx file.")
@@ -437,6 +457,16 @@ class Internbot:
                     report.generate_basic_topline(freqfilename, template_file, savedirectory)
             else:
                 report.generate_basic_topline(template_file, savedirectory)
+
+    def open_rnc(self):
+        filename = tkFileDialog.askopenfilename(initialdir = self.fpath, title = "Select model file", filetypes = (("comma seperated files","*.csv"),("all files","*.*")))
+        report = rnc_automation.ScoresToplineGenerator(filename)
+        ask_output = tkMessageBox.askokcancel("Output directory", "Please select the directory for finished report.")
+        if ask_output is True:
+            savedirectory = tkFileDialog.askdirectory()
+            if savedirectory is not "":
+                report.generate_rnc_topline(savedirectory)
+        
 
 window = Tkinter.Tk()
 window.title("Internbot: 01011001 00000010") # Internbot: Y2

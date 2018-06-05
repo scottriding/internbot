@@ -77,6 +77,7 @@ class TableScript(object):
         return result
 
     def add_column_recode(self, column_specs, column_variables):
+        result = ""
         for spec in column_specs:
             if "$" in spec:
                 column = spec.replace("$","")
