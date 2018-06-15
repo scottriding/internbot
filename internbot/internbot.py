@@ -56,10 +56,12 @@ class Internbot:
         redirect_window.title("RNC Scores Topline Automation")
         message = "Please open a model scores file."
         Tkinter.Label(redirect_window, text = message).pack(expand=True)
-        btn_open = Tkinter.Button(redirect_window, text = "Open", command = self.open_rnc)
+        btn_topline = Tkinter.Button(redirect_window, text = "Topline", command = self.open_rnc)
+        btn_trended = Tkinter.Button(redirect_window, text = "Trended", command = self.trended_rnc)
         btn_cancel = Tkinter.Button(redirect_window, text = "Cancel", command = redirect_window.destroy)
-        btn_open.pack(ipadx = 10, side = Tkinter.LEFT, expand=True)
-        btn_cancel.pack(ipadx = 10, side = Tkinter.LEFT, expand=True)
+        btn_topline.pack(ipadx = 5, side = Tkinter.LEFT, expand=True)
+        btn_trended.pack(ipadx = 5, side = Tkinter.LEFT, expand=True)
+        btn_cancel.pack(ipadx = 5, side = Tkinter.LEFT, expand=True)
 
     def variable_script(self):
         ask_qsf = tkMessageBox.askokcancel("Select Qualtrics File", "Please select the Qualtrics survey .qsf file.")
@@ -453,6 +455,15 @@ class Internbot:
             savedirectory = tkFileDialog.askdirectory()
             if savedirectory is not "":
                 report.generate_rnc_topline("Pennsylvania", savedirectory)
+
+    def trended_rnc(self):
+        filename = tkFileDialog.askopenfilename(initialdir = self.fpath, title = "Select model file", filetypes = (("comma seperated files", "*.csv"), ("all files", "*.*")))
+        report = rnc_automation.ScoresTrendedGenerator(filename)
+        ask_output = tkMessageBox.askokcancel("Output directory", "Please select the directory for finished report.")
+        if ask_output is True:
+            savedirectory = tkFileDialog.askdirectory()
+            if savedirectory is not "":
+                report.generate_rnc_trended(savedirectory)
         
 
 window = Tkinter.Tk()
