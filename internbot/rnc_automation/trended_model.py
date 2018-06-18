@@ -10,13 +10,13 @@ class TrendedModels(object):
     def add(self, model_data):
         if self.already_exists(model_data['Model']):
             model = self.get(model_data['Model'])
-            model.add_field(model_data['Field Name'], model_data['Grouping'], model_data['Count'], model_data['Percent'])
+            model.add_field(model_data['Field Name'], model_data['Grouping'], model_data['Count'], model_data['Round frequencies'])
         else:
             self.add_new(model_data)
 
     def add_new(self, model_data):
         new_model = Model(model_data['Model'])
-        new_model.add_field(model_data['Field Name'], model_data['Grouping'], model_data['Count'], model_data['Percent'])
+        new_model.add_field(model_data['Field Name'], model_data['Grouping'], model_data['Count'], model_data['Round frequencies'])
         self.__models[new_model.name] = new_model
 
     def get(self, model_name):
@@ -66,16 +66,16 @@ class Model(object):
     def name(self, name):
         self.__name = str(name)
 
-    def add_field(self, field, grouping, count, percent):
+    def add_field(self, field, grouping, count, frequency):
         if self.already_exists(field):
             add_field = self.get(field)
-            add_field.add_grouping(grouping, count, percent)
+            add_field.add_grouping(grouping, count, frequency)
         else:
-            self.add_new(field, grouping, count, percent)
+            self.add_new(field, grouping, count, frequency)
 
-    def add_new(self, field, grouping, count, percent):
+    def add_new(self, field, grouping, count, frequency):
         new_field = Field(field)
-        new_field.add_grouping(grouping, count, percent)
+        new_field.add_grouping(grouping, count, frequency)
         self.fields[new_field.get_name()] = new_field
 
     def get(self, field_name):
@@ -108,12 +108,6 @@ class Model(object):
     def return_variable(self):
         return self.variables
 
-    def get_weighted_freq(self, variable):
-        result = self.variables[variable].weighted_frequency
-
-    def get_unweighted_freq(self, variable):
-        result = self.variables[variable].unweighted_frequency
-
 class Field(object):
 
     def __init__(self, name):
@@ -123,15 +117,15 @@ class Field(object):
     def get_name(self):
         return self.name
 
-    def add_grouping(self, grouping, count, percent):
-        freqs = Frequencies(count, percent)
+    def add_grouping(self, grouping, count, frequency):
+        freqs = Frequencies(count, frequency)
         self.groupings[str(grouping)] = freqs
 
     def get_count(self, grouping):
         return self.groupings[grouping].count
 
-    def get_percent(self, grouping):
-        return self.groupings[grouping].percent
+    def get_frequency(self, grouping):
+        return self.groupings[grouping].frequency
 
     def get_groupings(self):
         return self.groupings.keys()
@@ -141,14 +135,14 @@ class Field(object):
 
 class Frequencies(object):
 
-    def __init__ (self, count, percent):
+    def __init__(self, count, frequency):
         self.__count = long(count)
-        self.__percent = float(percent)
+        self.__frequency = float(frequency)
 
     @property
     def count(self):
         return self.__count
 
     @property
-    def percent(self):
-        return self.__percent
+    def frequency(self):
+        return self.__frequency

@@ -13,6 +13,8 @@ class RNCTrendedReport(object):
             self.workbook = Workbook()
             first_round = True
 
+        self.total_count = 0
+
         self.titles_style = Font( name='Arial', 
                                 size=11, 
                                 bold=True, 
@@ -137,6 +139,13 @@ class RNCTrendedReport(object):
 
         current_sheet.column_dimensions["D"].width = 11
 
+        current_sheet["E1"].value = "Round 1 6/11/18"
+        current_sheet["E1"].font = self.titles_style
+        current_sheet["E1"].border = self.border
+        current_sheet["E1"].alignment = Alignment(horizontal="center", wrap_text = True)
+
+        current_sheet.column_dimensions["E"].width = 11
+
     def write_fields(self, current_sheet, model_name):
         current_cell_A = 2
         current_cell_B = 2
@@ -169,15 +178,10 @@ class RNCTrendedReport(object):
             location_b = "B%s" % (current_cell)
             location_c = "C%s" % (current_cell)
             location_d = "D%s" % (current_cell)
-
-            current_sheet[location_b].value = field_group
-            current_sheet[location_b].font = self.titles_style
-            current_sheet[location_c].value = field_object.get_count(field_group)
-            current_sheet[location_c].number_format = '#,##0'
-            current_sheet[location_d].value = field_object.get_percent(field_group)
-            current_sheet[location_d].number_format = '0%'
+            location_e = "E%s" % (current_cell)
 
             if field_group in "All Voters":
+                self.total_count = field_object.get_count(field_group)
                 current_sheet[location_a].fill = self.grey
                 current_sheet[location_a].font = self.second_row
                 current_sheet[location_b].fill = self.grey
@@ -186,18 +190,31 @@ class RNCTrendedReport(object):
                 current_sheet[location_c].font = self.second_row
                 current_sheet[location_d].fill = self.grey
                 current_sheet[location_d].font = self.second_row
+                current_sheet[location_e].fill = self.grey
+                current_sheet[location_e].font = self.second_row
+
+            current_sheet[location_b].value = field_group
+            current_sheet[location_b].font = self.titles_style
+            current_sheet[location_c].value = field_object.get_count(field_group)
+            current_sheet[location_d].value = (float(field_object.get_count(field_group))/float(self.total_count))
+            current_sheet[location_e].value = field_object.get_frequency(field_group)
+            current_sheet[location_d].number_format = '0%'
+            current_sheet[location_e].number_format = '0%'
+            current_sheet[location_c].number_format = '#,##0'
 
             if top_border is True:
                 current_sheet[location_a].border = self.top_border
                 current_sheet[location_b].border = self.top_border
                 current_sheet[location_c].border = self.top_border
                 current_sheet[location_d].border = self.top_border
+                current_sheet[location_e].border = self.top_border
                 top_border = False
             elif middle_border is True:
                 current_sheet[location_a].border = self.middle_border
                 current_sheet[location_b].border = self.middle_border
                 current_sheet[location_c].border = self.middle_border
                 current_sheet[location_d].border = self.middle_border
+                current_sheet[location_e].border = self.middle_border
 
             current_cell += 1
 
@@ -205,10 +222,12 @@ class RNCTrendedReport(object):
         location_b = "B%s" % (current_cell - 1)
         location_c = "C%s" % (current_cell - 1)
         location_d = "D%s" % (current_cell - 1)
+        location_e = "E%s" % (current_cell - 1)
         current_sheet[location_a].border = self.bottom_border
         current_sheet[location_b].border = self.bottom_border
         current_sheet[location_c].border = self.bottom_border
         current_sheet[location_d].border = self.bottom_border
+        current_sheet[location_e].border = self.bottom_border
 
         return current_cell
 
