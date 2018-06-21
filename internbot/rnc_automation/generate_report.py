@@ -1,12 +1,15 @@
 import csv
-from topline_model import ToplineModels
-from trended_model import TrendedModels
-from rnc_topline import RNCToplineReport
-from rnc_trended import RNCTrendedReport
+from issue_trended_score_model import IssueTrendedModels
+from issue_trended_score_report import IssueTrendedReport
+from scores_topline_model import ScoreToplineModels
+from scores_topline_report import ScoresToplineReport
+from trended_score_model import TrendedModelWorkbooks
+from trended_score_report import TrendedScoreReport
 
-class ScoresToplineGenerator(object):
+class IssueTrendedReportGenerator(object):
+
     def __init__(self, path_to_csv):
-        self.__models = ToplineModels()
+        self.__models = IssueTrendedModels()
         self.read_csv(path_to_csv)
 
     def read_csv(self, path_to_csv):
@@ -15,22 +18,38 @@ class ScoresToplineGenerator(object):
             for model_data in file:
                 self.__models.add(model_data)
 
-    def generate_rnc_topline(self, statename, path_to_output):
-        report = RNCToplineReport(self.__models, statename)
+    def generate_issue_trended(self, path_to_output):
+        report = IssueTrendedReport(self.__models)
+        report.save(str(path_to_output) + '/trended.xlsx')
+
+class ScoresToplineReportGenerator(object):
+
+    def __init__(self, path_to_csv):
+        self.__models = ScoreToplineModels()
+        self.read_csv(path_to_csv)
+
+    def read_csv(self, path_to_csv):
+        with open(path_to_csv, 'rb') as csvfile:
+            file = csv.DictReader(csvfile, quotechar = '"')
+            for model_data in file:
+                self.__models.add(model_data)
+
+    def generate_scores_topline(self, statename, path_to_output):
+        report = ScoresToplineReport(self.__models, statename)
         report.save(str(path_to_output) + '/scores_topline.xlsx')
 
-class ScoresTrendedGenerator(object):
+class TrendedScoresReportGenerator(object):
+
     def __init__(self, path_to_csv):
-        self.__models = TrendedModels()
+        self.__workbooks = TrendedModelWorkbooks()
         self.read_csv(path_to_csv)
 
     def read_csv(self, path_to_csv):
         with open(path_to_csv, 'rb') as csvfile:
             file = csv.DictReader(csvfile, quotechar = '"')
-            for model_data in file:
-                self.__models.add(model_data)
+            for workbook_data in file:
+                self.__workbooks.add(workbook_data)
 
-    def generate_rnc_trended(self, path_to_output):
-        report = RNCTrendedReport(self.__models)
-        report.save(str(path_to_output) + '/trended.xlsx')
+    def generate_trended_scores(self, path_to_output):
+        report = TrendedScoreReport(self.__workbooks, path_to_output)
         

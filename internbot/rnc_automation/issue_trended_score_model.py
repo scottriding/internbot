@@ -1,6 +1,6 @@
 from collections import OrderedDict
 
-class TrendedModels(object):
+class IssueTrendedModels(object):
 
     def __init__(self, models_data = []):
         self.__models = OrderedDict()

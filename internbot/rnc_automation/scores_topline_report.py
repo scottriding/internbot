@@ -3,7 +3,7 @@ from openpyxl.styles.borders import Border, Side
 from openpyxl.styles import PatternFill, Font, Alignment
 from collections import OrderedDict
    
-class RNCToplineReport(object):
+class ScoresToplineReport(object):
 
     def __init__ (self, models, state_name, path_to_topline=None):
         if path_to_topline != None:

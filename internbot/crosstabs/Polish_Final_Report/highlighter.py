@@ -55,12 +55,15 @@ class Highlighter(object):
     def create_cells(self):
         for group in self.groups:
             for label in self.responses:
-                location1 = str(self.groups[group]) + str(self.responses[label][0])
-                location2 = str(self.groups[group]) + str(self.responses[label][0] + 1)
-                location3 = str(self.groups[group]) + str(self.responses[label][1])
-                self.__cells.add(PopulationCell(label, group, location1))
-                self.__cells.add(PercentageCell(label, group, location2))
-                self.__cells.add(SignificantMarker(label, group, location3))
+                try:
+                    location1 = str(self.groups[group]) + str(self.responses[label][0])
+                    location2 = str(self.groups[group]) + str(self.responses[label][0] + 1)
+                    location3 = str(self.groups[group]) + str(self.responses[label][1])
+                    self.__cells.add(PopulationCell(label, group, location1))
+                    self.__cells.add(PercentageCell(label, group, location2))
+                    self.__cells.add(SignificantMarker(label, group, location3))
+                except TypeError:
+                    print group
 
     def assign_significant(self, sheet):
         for cell in self.__cells:

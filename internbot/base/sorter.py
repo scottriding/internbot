@@ -14,13 +14,16 @@ class BlockSorter(Sorter):
         super(BlockSorter, self).__init__(sort_order)
     
     def compare(self, block1, block2):
-        block1_location = self.sort_order.index(block1.blockid)
-        block2_location = self.sort_order.index(block2.blockid)
-        if block1_location > block2_location:
-            return 1
-        elif block1_location < block2_location:
-            return -1
-        else:
+        try:
+            block1_location = self.sort_order.index(block1.blockid)
+            block2_location = self.sort_order.index(block2.blockid)
+            if block1_location > block2_location:
+                return 1
+            elif block1_location < block2_location:
+                return -1
+            else:
+                return 0
+        except:
             return 0     
 
 class QuestionSorter(Sorter):

@@ -1,6 +1,6 @@
 from collections import OrderedDict
 
-class ToplineModels(object):
+class ScoreToplineModels(object):
 
     def __init__(self, models_data = []):
         self.__models = OrderedDict()

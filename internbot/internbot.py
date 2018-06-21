@@ -56,11 +56,13 @@ class Internbot:
         redirect_window.title("RNC Scores Topline Automation")
         message = "Please open a model scores file."
         Tkinter.Label(redirect_window, text = message).pack(expand=True)
-        btn_topline = Tkinter.Button(redirect_window, text = "Topline", command = self.open_rnc)
-        btn_trended = Tkinter.Button(redirect_window, text = "Trended", command = self.trended_rnc)
+        btn_topline = Tkinter.Button(redirect_window, text = "Score Topline", command = self.scores_topline)
+        btn_trended = Tkinter.Button(redirect_window, text = "Issue Trended", command = self.issue_trended)
+        brn_ind_trended = Tkinter.Button(redirect_window, text = "Trended Score", command = self.trended_scores)
         btn_cancel = Tkinter.Button(redirect_window, text = "Cancel", command = redirect_window.destroy)
         btn_topline.pack(ipadx = 5, side = Tkinter.LEFT, expand=True)
         btn_trended.pack(ipadx = 5, side = Tkinter.LEFT, expand=True)
+        brn_ind_trended.pack(ipadx = 5, side = Tkinter.LEFT, expand=True)
         btn_cancel.pack(ipadx = 5, side = Tkinter.LEFT, expand=True)
 
     def variable_script(self):
@@ -447,32 +449,40 @@ class Internbot:
             else:
                 report.generate_basic_topline(template_file, savedirectory)
 
-    def open_rnc(self):
+    def scores_topline(self):
         ask_xlsx_file = tkMessageBox.askyesno("Previous rounds", "Do you already have a topline score file and need to add a round?")
         if ask_xlsx_file is "Yes":
             pass
         else:
             filename = tkFileDialog.askopenfilename(initialdir = self.fpath, title = "Select model file", filetypes = (("comma seperated files","*.csv"),("all files","*.*")))
-            report = rnc_automation.ScoresToplineGenerator(filename)
+            report = rnc_automation.ScoresToplineReportGenerator(filename)
             ask_output = tkMessageBox.askokcancel("Output directory", "Please select the directory for finished report.")
             if ask_output is True:
                 savedirectory = tkFileDialog.askdirectory()
                 if savedirectory is not "":
-                    report.generate_rnc_topline("Pennsylvania", savedirectory)
+                    report.generate_scores_topline("Montana", savedirectory)
 
-    def trended_rnc(self):
+    def issue_trended(self):
         ask_xlsx_file = tkMessageBox.askyesno("Previous rounds", "Do you already have a trended file and need to add a round?")
         if ask_xlsx_file is "Yes":
             pass
         else:
             filename = tkFileDialog.askopenfilename(initialdir = self.fpath, title = "Select model file", filetypes = (("comma seperated files", "*.csv"), ("all files", "*.*")))
-            report = rnc_automation.ScoresTrendedGenerator(filename)
+            report = rnc_automation.IssueTrendedReportGenerator(filename)
             ask_output = tkMessageBox.askokcancel("Output directory", "Please select the directory for finished report.")
             if ask_output is True:
                 savedirectory = tkFileDialog.askdirectory()
                 if savedirectory is not "":
-                    report.generate_rnc_trended(savedirectory)
-        
+                    report.generate_issue_trended(savedirectory)
+
+    def trended_scores(self):
+        filename = tkFileDialog.askopenfilename(initialdir = self.fpath, title = "Select model file", filetypes = (("comma seperated files", "*.csv"), ("all files", "*.*")))
+        report = rnc_automation.TrendedScoresReportGenerator(filename)
+        ask_output = tkMessageBox.askokcancel("Output directory", "Please select the directory for finished report.")
+        if ask_output is True:
+            savedirectory = tkFileDialog.askdirectory()
+            if savedirectory is not "":
+                report.generate_trended_scores(savedirectory)
 
 window = Tkinter.Tk()
 window.title("Internbot: 01011001 00000010") # Internbot: Y2
