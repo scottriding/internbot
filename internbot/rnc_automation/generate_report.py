@@ -24,18 +24,18 @@ class IssueTrendedReportGenerator(object):
 
 class ScoresToplineReportGenerator(object):
 
-    def __init__(self, path_to_csv):
-        self.__models = ScoreToplineModels()
+    def __init__(self, path_to_csv, round_number):
+        self.__models = ScoreToplineModels(round_number)
         self.read_csv(path_to_csv)
 
     def read_csv(self, path_to_csv):
         with open(path_to_csv, 'rb') as csvfile:
             file = csv.DictReader(csvfile, quotechar = '"')
             for model_data in file:
-                self.__models.add(model_data)
+                self.__models.add_model(model_data)
 
-    def generate_scores_topline(self, statename, path_to_output):
-        report = ScoresToplineReport(self.__models, statename)
+    def generate_scores_topline(self, path_to_output, report_location, report_date, number_of_rounds):
+        report = ScoresToplineReport(self.__models, report_location, report_date, number_of_rounds)
         report.save(str(path_to_output) + '/scores_topline.xlsx')
 
 class TrendedScoresReportGenerator(object):

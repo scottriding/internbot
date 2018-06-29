@@ -2,105 +2,89 @@ from collections import OrderedDict
 
 class ScoreToplineModels(object):
 
-    def __init__(self, models_data = []):
+    def __init__(self, round_count):
+        self.rounds = round_count
         self.__models = OrderedDict()
-        for model_data in models_data:
-            self.add(model_data)
 
-    def add(self, model_data):
-        if self.already_exists(model_data['Model']):
-            model = self.get(model_data['Model'])
-            model.add_variable(model_data['Variable'], model_data['Frequency'], model_data['TOW Frequency'])
+    def add_model(self, model_data):
+        model_name = model_data["Model"]
+        model_desc = model_data["Survey question reference"]
+        
+        if self.already_exists(model_name):
+            model = self.__models.get(model_name)
+            model.add_variable(model_data)
         else:
-            self.add_new(model_data)
-
-    def add_new(self, model_data):
-        new_model = Model(model_data['Model'], model_data['Survey question reference'])
-        new_model.add_variable(model_data['Variable'], model_data['Frequency'], model_data['TOW Frequency'])
-        self.__models[new_model.name] = new_model
-
-    def get(self, model_name):
-        return self.__models.get(model_name)
+            new_model = ScoreToplineModel(self.rounds, model_name, model_desc)
+            new_model.add_variable(model_data)
+            self.__models[model_name] = new_model
 
     def already_exists(self, model_name):
-        if self.get(model_name) is None:
+        if self.__models.get(model_name) is None:
             return False
         else:
             return True
 
-    def __iter__(self):
-        return iter(self.__models)
+    def list_model_names(self):
+        return self.__models.keys()
 
-    def __len__(self):
-        return len(self.__models)
+    def get_model(self, model_name):
+        return self.__models.get(model_name)
 
-    def __repr__(self):
-        result = ''
-        for name, model in self.__models.iteritems():
-            result += str(model)
-            result += '\n'
-        return result
+class ScoreToplineModel(object):
 
-    def list_names(self):
-        result = self.__models.keys()
-        return result
+    def __init__(self, rounds, model_name, model_desc):
+        self.rounds = rounds
+        self.__name = str(model_name)
+        self.__description = str(model_desc)
+        self.__variables = OrderedDict()
 
-    def description(self, model_name):
-        result = self.__models[model_name].description
-        return result
+    def add_variable(self, model_data):
+        model_variable = model_data["Variable"]
 
-    def return_variables(self, model_name):
-        result = self.__models[model_name].return_variable
-        return result
+        weighted_frequencies = []
+        unweighted_frequencies = []
 
+        round_iteration = 1
+        while round_iteration <= self.rounds:
+            round_header_unweighted = "Round %s Frequency" % round_iteration
+            round_header_weighted = "Round %s TOW Frequency" % round_iteration
+            unweighted = model_data[round_header_unweighted]
+            weighted = model_data[round_header_weighted]
+            unweighted_frequencies.append(float(unweighted))
+            weighted_frequencies.append(float(weighted))
+            round_iteration += 1
 
-class Model(object):
+        new_variable = Variable(weighted_frequencies, unweighted_frequencies)
+        self.__variables[model_variable] = new_variable
 
-    def __init__(self, name, description=None):
-        self.name = name
-        self.description = description
-        self.variables = OrderedDict()
+    def list_variable_names(self):
+        return self.__variables.keys()
+
+    def get_variable(self, variable_name):
+        return self.__variables.get(variable_name)
 
     @property
     def name(self):
         return self.__name
 
-    @name.setter
-    def name(self, name):
-        self.__name = str(name)
-
     @property
     def description(self):
         return self.__description
 
-    @description.setter
-    def description(self, description):
-        self.__description = str(description)
+class Variable(object):
 
-    def add_variable(self, variable, unweighted_freq, weighted_freq):
-        freqs = Frequencies(weighted_freq, unweighted_freq)
-        self.variables[str(variable)] = freqs
+    def __init__ (self, weighted_frequencies, unweighted_frequencies):
+        self.__weighted_frequencies = weighted_frequencies
+        self.__unweighted_frequencies = unweighted_frequencies
 
-    @property
-    def return_variable(self):
-        return self.variables
+    def round_weighted_freq(self, round):
+        return self.__weighted_frequencies[round]
 
-    def get_weighted_freq(self, variable):
-        result = self.variables[variable].weighted_frequency
+    def round_unweighted_freq(self, round):
+        return self.__unweighted_frequencies[round]
 
-    def get_unweighted_freq(self, variable):
-        result = self.variables[variable].unweighted_frequency
+    def weighted_frequencies(self):
+        return self.__weighted_frequencies
 
-class Frequencies(object):
-
-    def __init__ (self, weighted_frequency, unweighted_frequency):
-        self.__weighted_frequency = float(weighted_frequency)
-        self.__unweighted_frequency = float(unweighted_frequency)
-
-    @property
-    def weighted_frequency(self):
-        return self.__weighted_frequency
-
-    @property
-    def unweighted_frequency(self):
-        return self.__unweighted_frequency
+    def unweighted_frequencies(self):
+        return self.__unweighted_frequencies

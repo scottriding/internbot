@@ -5,77 +5,30 @@ from collections import OrderedDict
    
 class TrendedScoreReport(object):
 
-    def __init__ (self, all_workbook_details, path_to_output, path_to_trended=None):
-        if path_to_trended != None:
-            self.workbook = load_workbook(path_to_trended)
-            first_round = False
-        else:
-            first_round = True
-
+    def __init__ (self, all_workbook_details, path_to_output, number_of_rounds):
         self.total_count = 0
+        rounds = int(number_of_rounds)
+        self.configure_cols(rounds)
 
-        self.titles_style = Font( name='Arial', 
-                                size=11, 
-                                bold=True, 
-                                italic=False, 
-                                vertAlign=None, 
-                                underline='none', 
-                                strike=False, 
-                                color='000000')
+        # font details
+        self.titles_style = Font(name='Arial', size=11, bold=True)
+        self.general_style = Font(name='Arial', size=11)
+        self.second_row = Font(name='Arial', size=11, bold=True, italic=True)
 
-        self.general_style = Font( name='Arial', 
-                                size=11, 
-                                bold=False, 
-                                italic=False, 
-                                vertAlign=None, 
-                                underline='none', 
-                                strike=False, 
-                                color='000000')
+        # border details
+        self.border_all = Border(left=Side(style='thick'), right=Side(style='thick'), top=Side(style='thick'), bottom=Side(style='thick'))
+        self.top_border = Border(left=Side(style='thick'), right=Side(style='thick'), top=Side(style='thick'))
+        self.middle_border = Border(left=Side(style='thick'), right=Side(style='thick'))
+        self.bottom_border = Border(left=Side(style='thick'), right=Side(style='thick'),bottom=Side(style='thick'))
 
-        self.second_row = Font( name='Arial',
-                                size=11,
-                                bold=True, 
-                                italic=True, 
-                                vertAlign=None, 
-                                underline='none', 
-                                strike=False, 
-                                color='000000')
-
-        self.border = Border(left=Side(style='thick'), 
-                     right=Side(style='thick'), 
-                     top=Side(style='thick'), 
-                     bottom=Side(style='thick'))
-
-        self.top_border = Border(left=Side(style='thick'), 
-                     right=Side(style='thick'), 
-                     top=Side(style='thick'))
-
-        self.middle_border = Border(left=Side(style='thick'), 
-                     right=Side(style='thick'))
-
-        self.bottom_border = Border(left=Side(style='thick'), 
-                     right=Side(style='thick'),
-                     bottom=Side(style='thick'))
-
+        # fill/highlight details
         self.grey = PatternFill("solid", fgColor="B7B7B7")
-        
-        self.darkest_negative = PatternFill("solid", fgColor="B80001")
-        self.medium_dark_negative = PatternFill("solid", fgColor="CD4748")
-        self.medium_negative = PatternFill("solid", fgColor="DF8A8C")
-        self.medium_light_negative = PatternFill("solid", fgColor="EAB9BB")
-        self.lightest_negative = PatternFill("solid", fgColor="F1D2D5")
 
-        self.darkest_positive = PatternFill("solid", fgColor="02A747")
-        self.medium_dark_positive = PatternFill("solid", fgColor="2AB666")
-        self.medium_positive = PatternFill("solid", fgColor="5AC88B")
-        self.medium_light_positive = PatternFill("solid", fgColor="B6E7CE")
-        self.lightest_positive = PatternFill("solid", fgColor="E6F6F0")
+        # build reports
+        self.build_workbooks(all_workbook_details, path_to_output)
 
-
-        if first_round == True:
-            self.build_workbooks(all_workbook_details, path_to_output)
-        else:
-            pass
+    def configure_cols(self, rounds):
+        pass
 
     def build_workbooks(self, all_workbook_details, path_to_output):
         workbook_names = all_workbook_details.list_workbook_names()
@@ -117,49 +70,49 @@ class TrendedScoreReport(object):
     def write_first_row(self, current_sheet):
         current_sheet["A1"].value = "Field Name"
         current_sheet["A1"].font = self.titles_style
-        current_sheet["A1"].border = self.border
+        current_sheet["A1"].border = self.border_all
         current_sheet["A1"].alignment = Alignment(horizontal="center")
 
         current_sheet.column_dimensions["A"].width = 35
 
         current_sheet["B1"].value = "Grouping"
         current_sheet["B1"].font = self.titles_style
-        current_sheet["B1"].border = self.border
+        current_sheet["B1"].border = self.border_all
         current_sheet["B1"].alignment = Alignment(horizontal="center")
 
         current_sheet.column_dimensions["B"].width = 39
 
         current_sheet["C1"].value = "Count"
         current_sheet["C1"].font = self.titles_style
-        current_sheet["C1"].border = self.border
+        current_sheet["C1"].border = self.border_all
         current_sheet["C1"].alignment = Alignment(horizontal="center")
 
         current_sheet.column_dimensions["C"].width = 11
 
         current_sheet["D1"].value = "Percent"
         current_sheet["D1"].font = self.titles_style
-        current_sheet["D1"].border = self.border
+        current_sheet["D1"].border = self.border_all
         current_sheet["D1"].alignment = Alignment(horizontal="center")
 
         current_sheet.column_dimensions["D"].width = 11
 
         current_sheet["E1"].value = "Current Round-Previous Round"
         current_sheet["E1"].font = self.titles_style
-        current_sheet["E1"].border = self.border
+        current_sheet["E1"].border = self.border_all
         current_sheet["E1"].alignment = Alignment(horizontal="center", wrap_text = True)
 
-        current_sheet.column_dimensions["E"].width = 14.5
+        current_sheet.column_dimensions["E"].width = 15.5
 
         current_sheet["F1"].value = "Current Round-First Round"
         current_sheet["F1"].font = self.titles_style
-        current_sheet["F1"].border = self.border
+        current_sheet["F1"].border = self.border_all
         current_sheet["F1"].alignment = Alignment(horizontal="center", wrap_text = True)
 
         current_sheet.column_dimensions["F"].width = 14.5
 
-        current_sheet["G1"].value = "Round 1 [DATE]"
+        current_sheet["G1"].value = "Round 1"
         current_sheet["G1"].font = self.titles_style
-        current_sheet["G1"].border = self.border
+        current_sheet["G1"].border = self.border_all
         current_sheet["G1"].alignment = Alignment(horizontal="center", wrap_text = True)
 
         current_sheet.column_dimensions["G"].width = 11
@@ -242,31 +195,39 @@ class TrendedScoreReport(object):
 
         return current_cell
 
-    def insert_cols(self):
-        for sheet in self.workbook.worksheets:
-            sheet.insert_cols(3)
-
     def highlight(self, cell):
+        darkest_negative = PatternFill("solid", fgColor="B80001")
+        medium_dark_negative = PatternFill("solid", fgColor="CD4748")
+        medium_negative = PatternFill("solid", fgColor="DF8A8C")
+        medium_light_negative = PatternFill("solid", fgColor="EAB9BB")
+        lightest_negative = PatternFill("solid", fgColor="F1D2D5")
+
+        darkest_positive = PatternFill("solid", fgColor="02A747")
+        medium_dark_positive = PatternFill("solid", fgColor="2AB666")
+        medium_positive = PatternFill("solid", fgColor="5AC88B")
+        medium_light_positive = PatternFill("solid", fgColor="B6E7CE")
+        lightest_positive = PatternFill("solid", fgColor="E6F6F0")
+
         if cell.value < 0:
             if cell.value >= -0.01:
-                cell.fill = self.lightest_negative
+                cell.fill = lightest_negative
             elif cell.value >= -0.03:
-                cell.fill = self.medium_light_negative
+                cell.fill = medium_light_negative
             elif cell.value >= -0.05:
-                cell.fill = self.medium_negative
+                cell.fill = medium_negative
             elif cell.value >= -0.07:
-                cell.fill = self.medium_dark_negative
+                cell.fill = medium_dark_negative
             else:
-                cell.fill = self.darkest_negative
+                cell.fill = darkest_negative
         elif cell.value > 0:
             if cell.value <= 0.01:
-                cell.fill = self.lightest_positive
+                cell.fill = lightest_positive
             elif cell.value <= 0.03:
-                cell.fill = self.medium_light_positive
+                cell.fill = medium_light_positive
             elif cell.value <= 0.05:
-                cell.fill = self.medium_positive
+                cell.fill = medium_positive
             elif cell.value <= 0.07:
-                cell.fill = self.medium_dark_positive
+                cell.fill = medium_dark_positive
             else:
-                cell.fill = self.darkest_positive
+                cell.fill = darkest_positive
         
