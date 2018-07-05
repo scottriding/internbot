@@ -221,7 +221,7 @@ class ScoresToplineReport(object):
     def write_report(self, scores_sheet):
         self.write_report_titles(scores_sheet)
         self.write_report_models(scores_sheet)
-        self.write_report_differences(scores_sheet)
+        self.write_net_differences(scores_sheet)
 
     def write_report_titles(self, score_sheet):
         ## hard coding the header columns
@@ -296,7 +296,7 @@ class ScoresToplineReport(object):
                     unweighted_cell = "%s%s" % (self.extend_alphabet[index + 1], current_row)
                     score_sheet[weighted_cell].fill = self.grey
                     score_sheet[weighted_cell].border = self.all_border
-                    score_sheet[unweighted_cell].value = unweighted_frequencies[iteration - 1]
+                    score_sheet[unweighted_cell].value = float(unweighted_frequencies[iteration - 1])
                     score_sheet[unweighted_cell].number_format = '0%'
                     score_sheet[unweighted_cell].border = self.all_border
                     iteration -= 1
@@ -309,8 +309,6 @@ class ScoresToplineReport(object):
                 score_sheet[description_cell].value = model_name
                 score_sheet[description_cell].font = self.net_score_style
                 score_sheet[description_cell].border = self.all_border
-            
-                # write net formulas
                 iteration = self.rounds
                 index = 0
                 while iteration > 0:
@@ -318,19 +316,24 @@ class ScoresToplineReport(object):
                     net_unweighted_cell = "%s%s" % (self.extend_alphabet[index + 1], current_row)
                     last_row = current_row + 2
                     first_row = current_row + 1
-                    weight_difference_1 = "%s%s" % (self.extend_alphabet[index], first_row)
-                    weight_difference_2 = "%s%s" % (self.extend_alphabet[index], last_row)
-                    unweight_difference_1 = "%s%s" % (self.extend_alphabet[index + 1], first_row)
-                    unweight_difference_2 = "%s%s" % (self.extend_alphabet[index + 1], last_row)
-                    score_sheet[net_weighted_cell].value = "=%s - %s" % (weight_difference_1, weight_difference_2)
+                    if self.is_na(current, iteration) == True:
+                        score_sheet[net_weighted_cell].fill = self.grey
+                        score_sheet[net_unweighted_cell].fill = self.grey
+                    else:
+                        weight_difference_1 = "%s%s" % (self.extend_alphabet[index], first_row)
+                        weight_difference_2 = "%s%s" % (self.extend_alphabet[index], last_row)
+                        unweight_difference_1 = "%s%s" % (self.extend_alphabet[index + 1], first_row)
+                        unweight_difference_2 = "%s%s" % (self.extend_alphabet[index + 1], last_row)
+                        score_sheet[net_weighted_cell].value = "=%s - %s" % (weight_difference_1, weight_difference_2)
+                        score_sheet[net_weighted_cell].number_format = '0%'
+                        score_sheet[net_unweighted_cell].value = "=%s - %s" % (unweight_difference_1, unweight_difference_2)
+                        score_sheet[net_unweighted_cell].number_format = '0%'
+                        end_column = self.extend_alphabet[index + 1]
+                    
                     score_sheet[net_weighted_cell].font = self.net_score_style
                     score_sheet[net_weighted_cell].border = self.all_border
-                    score_sheet[net_weighted_cell].number_format = '0%'
-                    score_sheet[net_unweighted_cell].value = "=%s - %s" % (unweight_difference_1, unweight_difference_2)
                     score_sheet[net_unweighted_cell].font = self.net_score_style
                     score_sheet[net_unweighted_cell].border = self.all_border
-                    score_sheet[net_unweighted_cell].number_format = '0%'
-                    end_column = self.extend_alphabet[index + 1]
                     iteration -= 1
                     index += 2
 
@@ -357,12 +360,20 @@ class ScoresToplineReport(object):
             while iteration > 0:
                 weighted_cell = "%s%s" % (self.extend_alphabet[index], current_row)
                 unweighted_cell = "%s%s" % (self.extend_alphabet[index + 1], current_row)
-                score_sheet[weighted_cell].value = variable.round_weighted_freq(iteration - 1)
-                score_sheet[weighted_cell].font = self.general_style
-                score_sheet[weighted_cell].number_format = '0%'
-                score_sheet[unweighted_cell].value = variable.round_unweighted_freq(iteration - 1)
-                score_sheet[unweighted_cell].font = self.general_style
-                score_sheet[unweighted_cell].number_format = '0%'
+                frequency_weighted = variable.round_weighted_freq(iteration - 1)
+                if frequency_weighted == "NA" or frequency_weighted == "":
+                    score_sheet[weighted_cell].fill = self.grey
+                else:
+                    score_sheet[weighted_cell].value = float(frequency_weighted)
+                    score_sheet[weighted_cell].font = self.general_style
+                    score_sheet[weighted_cell].number_format = '0%'
+                frequency_unweighted = variable.round_unweighted_freq(iteration - 1)
+                if frequency_unweighted == "NA" or frequency_unweighted == "":
+                    score_sheet[unweighted_cell].fill = self.grey
+                else:
+                    score_sheet[unweighted_cell].value = float(frequency_unweighted)
+                    score_sheet[unweighted_cell].font = self.general_style
+                    score_sheet[unweighted_cell].number_format = '0%'
                 if top_border == True:
                     score_sheet[weighted_cell].border = self.top_border
                     score_sheet[unweighted_cell].border = self.top_border
@@ -388,107 +399,209 @@ class ScoresToplineReport(object):
 
         return current_row
 
-    def write_report_differences(self, score_sheet):
-        # difference columns
+    def write_net_differences(self, score_sheet):
         current_row = 3
-        
+
         model_names = self.models.list_model_names()
         for model_name in model_names:
             prev_diff_cell = "B%s" % current_row
             first_diff_cell = "C%s" % current_row
             if model_name == "Turnout General":
                 score_sheet[prev_diff_cell].fill = self.grey
-                score_sheet[prev_diff_cell].border = self.all_border
                 score_sheet[first_diff_cell].fill = self.grey
+                score_sheet[prev_diff_cell].border = self.all_border
                 score_sheet[first_diff_cell].border = self.all_border
                 current_row += 1
-            else:
-                # current and previous columns will always be the same
-                if self.rounds > 1:
-                    current_round_cell = "E%s" % current_row
-                    previous_round_cell = "G%s" % current_row
-    
-                    # calculate end round
-                    end_column = self.extend_alphabet[(self.rounds * 2) - 1]
-                    first_round_cell = "%s%s" % (end_column, current_row)
-    
-                    # parse the current net cell for other cells
-                    formula_current = score_sheet[current_round_cell].value
-                    formula_current = formula_current.replace("=", "")
-                    cells_current = formula_current.split(" - ")
-                    cell_one = cells_current[0]
-                    cell_two = cells_current[1]
-                    cell_one_value = score_sheet[cell_one].value
-                    cell_two_value = score_sheet[cell_two].value
-                    formula_current_solution = cell_one_value - cell_two_value
-                    
-                    # parse the previous net cell for other cells
-                    formula_previous = score_sheet[previous_round_cell].value
-                    formula_previous = formula_previous.replace("=", "")
-                    cells_previous = formula_previous.split(" - ")
-                    cell_one = cells_previous[0]
-                    cell_two = cells_previous[1]
-                    cell_one_value = score_sheet[cell_one].value
-                    cell_two_value = score_sheet[cell_two].value
-                    formula_previous_solution = cell_one_value - cell_two_value
-
-                    # parse the first net cell for other cells
-                    formula_first = score_sheet[first_round_cell].value
-                    formula_first = formula_first.replace("=", "")
-                    cells_first = formula_first.split(" - ")
-                    cell_one = cells_first[0]
-                    cell_two = cells_first[1]
-                    cell_one_value = score_sheet[cell_one].value
-                    cell_two_value = score_sheet[cell_two].value
-                    formula_first_soluation = cell_one_value - cell_two_value
-
-                    # formatting
-                    score_sheet[prev_diff_cell].value = "=%s - %s" % (current_round_cell, previous_round_cell)
-                    score_sheet[prev_diff_cell].fill = self.highlight(formula_current_solution, formula_previous_solution)
-                    score_sheet[prev_diff_cell].border = self.all_border
-                    score_sheet[prev_diff_cell].number_format = '0%'
-
-                    score_sheet[first_diff_cell].value = "=%s - %s" % (current_round_cell, first_round_cell)
-                    score_sheet[first_diff_cell].fill = self.highlight(formula_current_solution, formula_first_soluation)
-                    score_sheet[first_diff_cell].border = self.all_border
-                    score_sheet[first_diff_cell].number_format = '0%'
-                else:
-                    score_sheet[prev_diff_cell].value = "--%"
-                    score_sheet[prev_diff_cell].border = self.all_border
-                    score_sheet[first_diff_cell].value = "--%"
-                    score_sheet[first_diff_cell].border = self.all_border
+            elif self.rounds == 1:
+                score_sheet[prev_diff_cell].border = self.all_border
+                score_sheet[first_diff_cell].border = self.all_border
+                score_sheet[prev_diff_cell].value = "--%"
+                score_sheet[first_diff_cell].value = "--%"
                 current_row += 1
+            else:
+                # more than 1 round and not a Turnout General
+                current_round_cell = "E%s" % current_row
+                previous_round_cell = "G%s" % current_row
+
                 current = self.models.get_model(model_name)
-                variable_names = current.list_variable_names()
-                for variable_name in variable_names:
-                    prev_diff_cell = "B%s" % current_row
-                    first_diff_cell = "C%s" % current_row
-                    if self.rounds > 1:
-                        # current and previous columns will always be the same
-                        current_round_cell = "E%s" % current_row
-                        previous_round_cell = "G%s" % current_row
-            
-                        # calculate end round
-                        end_column = self.extend_alphabet[(self.rounds * 2) - 1]
-                        first_round_cell = "%s%s" % (end_column, current_row)
-            
-                        score_sheet[prev_diff_cell].value = "=%s - %s" % (current_round_cell, previous_round_cell)
-                        score_sheet[prev_diff_cell].border = self.all_border
-                        score_sheet[prev_diff_cell].fill = self.highlight(score_sheet[current_round_cell].value, score_sheet[first_round_cell].value)
-                        score_sheet[prev_diff_cell].number_format = '0%'
-                        score_sheet[first_diff_cell].value = "=%s - %s" % (current_round_cell, first_round_cell)
-                        score_sheet[first_diff_cell].border = self.all_border
-                        score_sheet[first_diff_cell].fill = self.highlight(score_sheet[current_round_cell].value, score_sheet[first_round_cell].value)
-                        score_sheet[first_diff_cell].number_format = '0%'
-                    else:
-                        score_sheet[prev_diff_cell].value = "--%"
-                        score_sheet[prev_diff_cell].border = self.all_border
-                        score_sheet[first_diff_cell].value = "--%"
-                        score_sheet[first_diff_cell].border = self.all_border
-                    current_row += 1
+                first_round_cell = self.find_first_round(score_sheet, current, current_row)
+
+                # check if first round is nonexistent
+                no_first = False
+                if first_round_cell == previous_round_cell:
+                    no_first = True
+
+                # check if previous round is empty
+                no_prev = False
+                if score_sheet[previous_round_cell].value is None:
+                    no_prev = True
+
+                # check if current round is empty
+                no_current = False
+                if score_sheet[current_round_cell].value is None:
+                    no_current = True
+
+                ### figure out edge cases here ###
+                ## a model with no current frequency -- a model taken off current round
+                if no_current == True:
+                    score_sheet[prev_diff_cell].border = self.all_border
+                    score_sheet[first_diff_cell].border = self.all_border
+                    score_sheet[prev_diff_cell].value = "--%"
+                    score_sheet[first_diff_cell].value = "--%"
+                ## a model only added to the current round ##
+                elif no_prev == True and no_first == True:
+                    score_sheet[prev_diff_cell].border = self.all_border
+                    score_sheet[first_diff_cell].border = self.all_border
+                    score_sheet[prev_diff_cell].value = "--%"
+                    score_sheet[first_diff_cell].value = "--%"
+                ## a model in first and current round only
+                elif no_prev == True and no_first == False:
+                    score_sheet[prev_diff_cell].border = self.all_border
+                    score_sheet[prev_diff_cell].value = "--%"
+                    self.net_differences(score_sheet, current, current_row, first_diff_cell, current_round_cell, first_round_cell)
+                ## a model in previous and current round only
+                elif no_prev == False and no_first == True:
+                    self.net_differences(score_sheet, current, current_row, first_diff_cell, current_round_cell, first_round_cell)
+                    self.net_differences(score_sheet, current, current_row, prev_diff_cell, current_round_cell, previous_round_cell)
+                ## no current edge cases apply ##
+                else:
+                    self.net_differences(score_sheet, current, current_row, first_diff_cell, current_round_cell, first_round_cell)
+                    self.net_differences(score_sheet, current, current_row, prev_diff_cell, current_round_cell, previous_round_cell)
+
+                ### calculate variable differences ###
+                current_row = self.write_variable_differences(score_sheet, current, current_row)
+
+    def find_first_round(self, score_sheet, model, current_row):
+        index = (self.rounds * 2) - 1
+        first_cell = "G%s" % current_row
+        while index > 3:
+            first_column = self.extend_alphabet[index]
+            test_cell = "%s%s" % (first_column, current_row)
+            if score_sheet[test_cell].value == None:
+                index -= 2
+            else:
+                return test_cell
+        return first_cell
     
+    def net_differences(self, score_sheet, current, current_row, results_cell, current_round_cell, calculate_round_cell):
+        # calculate current round formula solution
+        formula_current = score_sheet[current_round_cell].value
+        formula_current = formula_current.replace("=", "")
+        cells_current = formula_current.split(" - ")
+        cell_one = cells_current[0]
+        cell_two = cells_current[1]
+        cell_one_value = score_sheet[cell_one].value
+        cell_two_value = score_sheet[cell_two].value
+        formula_current_solution = cell_one_value - cell_two_value
+
+        # calculate first/prev round formula solution
+        formula_first = score_sheet[calculate_round_cell].value
+        formula_first = formula_first.replace("=", "")
+        cells_first = formula_first.split(" - ")
+        cell_one = cells_first[0]
+        cell_two = cells_first[1]
+        cell_one_value = score_sheet[cell_one].value
+        cell_two_value = score_sheet[cell_two].value
+        formula_first_soluation = cell_one_value - cell_two_value
+
+        # formatting
+        score_sheet[results_cell].value = "=%s - %s" % (current_round_cell, calculate_round_cell)
+        score_sheet[results_cell].fill = self.highlight(formula_current_solution, formula_first_soluation)
+        score_sheet[results_cell].border = self.all_border
+        score_sheet[results_cell].number_format = '0%'
+
+    def write_variable_differences(self, score_sheet, model, current_row):
+        current_row += 1
+        variable_names = model.list_variable_names()
+        top_border = True
+        middle_border = False
+        if len(variable_names) > 2:
+            middle_border = True
+        for variable_name in variable_names:
+            prev_diff_cell = "B%s" % current_row
+            first_diff_cell = "C%s" % current_row
+
+            ## borders ##
+            if top_border == True:
+                score_sheet[prev_diff_cell].border = self.top_border
+                score_sheet[first_diff_cell].border = self.top_border
+                top_border = False
+            elif middle_border == True:
+                score_sheet[prev_diff_cell].border = self.middle_border
+                score_sheet[first_diff_cell].border = self.middle_border
+
+            if self.rounds == 1:
+                score_sheet[prev_diff_cell].border = self.all_border
+                score_sheet[first_diff_cell].border = self.all_border
+                score_sheet[prev_diff_cell].value = "--%"
+                score_sheet[first_diff_cell].value = "--%"
+            else:
+                # more than 1 round and not a Turnout General
+                current_round_cell = "E%s" % current_row
+                previous_round_cell = "G%s" % current_row
+
+                first_round_cell = self.find_first_round(score_sheet, model, current_row)
+                
+                # check if first round is nonexistent
+                no_first = False
+                if first_round_cell == previous_round_cell:
+                    no_first = True
+
+                # check if previous round is empty
+                no_prev = False
+                if score_sheet[previous_round_cell].value is None:
+                    no_prev = True
+
+                # check if current round is empty
+                no_current = False
+                if score_sheet[current_round_cell].value is None:
+                    no_current = True
+
+                ### figure out edge cases here ###
+                ## a variable with no current frequency -- a model taken off current round
+                if no_current == True:
+                    score_sheet[prev_diff_cell].value = "--%"
+                    score_sheet[first_diff_cell].value = "--%"
+                ## a variable only added to the current round ##
+                elif no_prev == True and no_first == True:
+                    score_sheet[prev_diff_cell].value = "--%"
+                    score_sheet[first_diff_cell].value = "--%"
+                ## a variable in first and current round only
+                elif no_prev == True and no_first == False:
+                    score_sheet[prev_diff_cell].value = "--%"
+                    score_sheet[first_diff_cell].fill = self.highlight(score_sheet[current_round_cell].value, score_sheet[first_round_cell].value)
+                    score_sheet[first_diff_cell].value = "=%s - %s" % (current_round_cell, first_round_cell)
+                    score_sheet[first_diff_cell].number_format = '0%'
+                ## a variable in previous and current round only
+                elif no_prev == False and no_first == True:
+                    score_sheet[first_diff_cell].fill = self.highlight(score_sheet[current_round_cell].value, score_sheet[first_round_cell].value)
+                    score_sheet[first_diff_cell].value = "=%s - %s" % (current_round_cell, first_round_cell)
+                    score_sheet[first_diff_cell].number_format = '0%'
+                    score_sheet[prev_diff_cell].fill = self.highlight(score_sheet[current_round_cell].value, score_sheet[previous_round_cell].value)
+                    score_sheet[prev_diff_cell].value = "=%s - %s" % (current_round_cell, previous_round_cell)
+                    score_sheet[prev_diff_cell].number_format = '0%'
+                ## no current edge cases apply ##
+                else:
+                    score_sheet[prev_diff_cell].fill = self.highlight(score_sheet[current_round_cell].value, score_sheet[previous_round_cell].value)
+                    score_sheet[prev_diff_cell].value = "=%s - %s" % (current_round_cell, previous_round_cell)
+                    score_sheet[prev_diff_cell].number_format = '0%'
+                    score_sheet[first_diff_cell].fill = self.highlight(score_sheet[current_round_cell].value, score_sheet[first_round_cell].value)
+                    score_sheet[first_diff_cell].value = "=%s - %s" % (current_round_cell, first_round_cell)
+                    score_sheet[first_diff_cell].number_format = '0%'
+            current_row += 1
+        score_sheet[prev_diff_cell].border = self.bottom_border
+        score_sheet[first_diff_cell].border = self.bottom_border
+        return current_row
+    
+    def is_na(self, model, current_round):
+        variables = model.list_variable_names()
+        unweighted_freq = model.get_variable(variables[0]).round_unweighted_freq(current_round - 1)
+        if unweighted_freq == "NA" or unweighted_freq == "":
+            return True
+        else:
+            return False
+
     def highlight(self, first_value, second_value):
-        result = first_value - second_value
         darkest_negative = PatternFill("solid", fgColor="B80001")
         medium_dark_negative = PatternFill("solid", fgColor="CD4748")
         medium_negative = PatternFill("solid", fgColor="DF8A8C")
@@ -500,7 +613,12 @@ class ScoresToplineReport(object):
         medium_positive = PatternFill("solid", fgColor="5AC88B")
         medium_light_positive = PatternFill("solid", fgColor="B6E7CE")
         lightest_positive = PatternFill("solid", fgColor="E6F6F0")
-
+        
+        grey = PatternFill("solid",fgColor="E6E6E6")
+        if first_value is None or second_value is None:
+            return grey
+        
+        result = first_value - second_value
         if result < 0:
             if result >= -0.01:
                 return lightest_negative
@@ -510,8 +628,10 @@ class ScoresToplineReport(object):
                 return medium_negative
             elif result >= -0.07:
                 return medium_dark_negative
-            else:
+            elif result < -0.07:
                 return darkest_negative
+            else:
+                return grey
         elif result > 0:
             if result <= 0.01:
                 return lightest_positive
@@ -521,8 +641,12 @@ class ScoresToplineReport(object):
                 return medium_positive
             elif result <= 0.07:
                 return medium_dark_positive
-            else:
+            elif result > 0.07:
                 return darkest_positive
+            else:
+                return grey
+        else:
+            return grey
 
     def save(self, path_to_output):
         self.workbook.save(path_to_output)

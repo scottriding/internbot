@@ -57,7 +57,7 @@ class Internbot:
         message = "Please open a model scores file."
         Tkinter.Label(self.redirect_window, text = message).pack(expand=True)
         btn_topline = Tkinter.Button(self.redirect_window, text = "Scores Topline Report", command = self.state_date_window)
-        btn_trended = Tkinter.Button(self.redirect_window, text = "Issue Trended Report", command = self.issue_trended)
+        btn_trended = Tkinter.Button(self.redirect_window, text = "Issue Trended Report", command = self.date_window)
         brn_ind_trended = Tkinter.Button(self.redirect_window, text = "Trended Score Reports", command = self.trended_scores)
         btn_cancel = Tkinter.Button(self.redirect_window, text = "Cancel", command = self.redirect_window.destroy)
         btn_topline.pack(ipadx = 5, side = Tkinter.LEFT, expand=True)
@@ -504,14 +504,50 @@ class Internbot:
                 if savedirectory is not "":
                     report.generate_scores_topline(savedirectory, report_location, report_date, round)
 
+    def date_window(self):
+        self.filename = tkFileDialog.askopenfilename(initialdir = self.fpath, title = "Select model file", filetypes = (("comma seperated files","*.csv"),("all files","*.*")))
+        self.create_window = Tkinter.Toplevel(self.redirect_window)
+        self.create_window.title("Issue Trended Report Details")
+
+        # date details
+        date_frame = Tkinter.Frame(self.create_window)
+        date_frame.pack(side = Tkinter.TOP, expand=True)
+
+        date_label = Tkinter.Label(date_frame, text="Reporting date:")
+        date_label.pack(padx = 5, side = Tkinter.LEFT, expand=True)
+        self.date_entry = Tkinter.Entry(date_frame)
+        self.date_entry.pack(padx = 7, side=Tkinter.RIGHT, expand=True)
+
+        # round details
+        round_frame = Tkinter.Frame(self.create_window)
+        round_frame.pack(side = Tkinter.TOP, expand=True)
+        
+        round_label = Tkinter.Label(round_frame, text="Round number:")
+        round_label.pack(padx = 5, side = Tkinter.LEFT, expand=True)
+        self.round_entry = Tkinter.Entry(round_frame)
+        self.round_entry.pack(padx = 7, side=Tkinter.RIGHT, expand=True)
+
+        # done and cancel buttons
+        button_frame = Tkinter.Frame(self.create_window)
+        button_frame.pack(side = Tkinter.TOP, expand=True)
+
+        btn_cancel = Tkinter.Button(self.create_window, text = "Cancel", command = self.create_window.destroy)
+        btn_cancel.pack(side = Tkinter.RIGHT, expand=True)
+        btn_done = Tkinter.Button(self.create_window, text = "Done", command = self.issue_trended)
+        btn_done.pack(side = Tkinter.RIGHT, expand=True)
+
     def issue_trended(self):
-        filename = tkFileDialog.askopenfilename(initialdir = self.fpath, title = "Select model file", filetypes = (("comma seperated files", "*.csv"), ("all files", "*.*")))
-        report = rnc_automation.IssueTrendedReportGenerator(filename)
-        ask_output = tkMessageBox.askokcancel("Output directory", "Please select the directory for finished report.")
-        if ask_output is True:
-            savedirectory = tkFileDialog.askdirectory()
-            if savedirectory is not "":
-                report.generate_issue_trended(savedirectory)
+        filename = self.filename
+        report_date = self.date_entry.get()
+        round = self.round_entry.get()
+        if round is not "":
+            self.create_window.destroy()
+            report = rnc_automation.IssueTrendedReportGenerator(filename, int(round))
+            ask_output = tkMessageBox.askokcancel("Output directory", "Please select the directory for finished report.")
+            if ask_output is True:
+                savedirectory = tkFileDialog.askdirectory()
+                if savedirectory is not "":
+                    report.generate_issue_trended(savedirectory, report_date, round)
 
     def trended_scores(self):
         filename = tkFileDialog.askopenfilename(initialdir = self.fpath, title = "Select model file", filetypes = (("comma seperated files", "*.csv"), ("all files", "*.*")))

@@ -50,8 +50,8 @@ class ScoreToplineModel(object):
             round_header_weighted = "Round %s TOW Frequency" % round_iteration
             unweighted = model_data[round_header_unweighted]
             weighted = model_data[round_header_weighted]
-            unweighted_frequencies.append(float(unweighted))
-            weighted_frequencies.append(float(weighted))
+            unweighted_frequencies.append(unweighted)
+            weighted_frequencies.append(weighted)
             round_iteration += 1
 
         new_variable = Variable(weighted_frequencies, unweighted_frequencies)

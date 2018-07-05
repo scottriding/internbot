@@ -1,148 +1,113 @@
 from collections import OrderedDict
 
-class IssueTrendedModels(object):
+class IssueTrendedNetModel(object):
 
-    def __init__(self, models_data = []):
+    def __init__(self, round_count):
+        self.rounds = round_count
         self.__models = OrderedDict()
-        for model_data in models_data:
-            self.add(model_data)
 
-    def add(self, model_data):
-        if self.already_exists(model_data['Model']):
-            model = self.get(model_data['Model'])
-            model.add_field(model_data['Field Name'], model_data['Grouping'], model_data['Count'], model_data['Round frequencies'])
+    def add_model(self, model_data):
+        model_name = model_data["Model"]
+
+        if self.already_exists(model_name):
+            net_model = self.__models.get(model_name)
+            net_model.add_field(model_data)
         else:
-            self.add_new(model_data)
-
-    def add_new(self, model_data):
-        new_model = Model(model_data['Model'])
-        new_model.add_field(model_data['Field Name'], model_data['Grouping'], model_data['Count'], model_data['Round frequencies'])
-        self.__models[new_model.name] = new_model
-
-    def get(self, model_name):
-        return self.__models.get(model_name)
+            new_model = IssueTrendedModel(self.rounds, model_name)
+            new_model.add_field(model_data)
+            self.__models[model_name] = new_model
 
     def already_exists(self, model_name):
-        if self.get(model_name) is None:
+        if self.__models.get(model_name) is None:
             return False
         else:
             return True
 
-    def __iter__(self):
-        return iter(self.__models)
+    def list_model_names(self):
+        return self.__models.keys()
 
-    def __len__(self):
-        return len(self.__models)
-
-    def __repr__(self):
-        result = ''
-        for name, model in self.__models.iteritems():
-            result += str(model)
-            result += '\n'
-        return result
-
-    def list_names(self):
-        result = self.__models.keys()
-        return result
-
-    def get_fields(self, model_name):
-        result = self.__models.get(model_name)
-        return result.list_names()
-
-    def model(self, model_name):
+    def get_model(self, model_name):
         return self.__models.get(model_name)
 
-class Model(object):
+class IssueTrendedModel(object):
 
-    def __init__(self, name):
-        self.name = name
-        self.fields = OrderedDict()
+    def __init__(self, rounds, model_name):
+        self.rounds = rounds
+        self.__name = str(model_name)
+        self.__fields = OrderedDict()
+
+    def add_field(self, model_data):
+        field_name = model_data["Field Name"]
+        if self.already_exists(field_name):
+            field = self.__fields.get(field_name)
+            field.add_grouping(model_data)
+        else:
+            new_field = IssueTrendedField(self.rounds, field_name)
+            new_field.add_grouping(model_data)
+            self.__fields[field_name] = new_field
+
+    def already_exists(self, field_name):
+        if self.__fields.get(field_name) is None:
+            return False
+        else:
+            return True
+
+    def list_field_names(self):
+        return self.__fields.keys()
+
+    def get_field(self, field_name):
+        return self.__fields.get(field_name)
 
     @property
     def name(self):
         return self.__name
 
-    @name.setter
-    def name(self, name):
-        self.__name = str(name)
+class IssueTrendedField(object):
 
-    def add_field(self, field, grouping, count, frequency):
-        if self.already_exists(field):
-            add_field = self.get(field)
-            add_field.add_grouping(grouping, count, frequency)
-        else:
-            self.add_new(field, grouping, count, frequency)
+    def __init__(self, rounds, field_name):
+        self.rounds = rounds
+        self.__name = str(field_name)
+        self.__groupings = OrderedDict()
 
-    def add_new(self, field, grouping, count, frequency):
-        new_field = Field(field)
-        new_field.add_grouping(grouping, count, frequency)
-        self.fields[new_field.get_name()] = new_field
+    def add_grouping(self, field_data):
+        grouping_name = field_data["Grouping"]
+        count = field_data["Count"]
 
-    def get(self, field_name):
-        return self.fields.get(field_name)
+        frequencies = []
 
-    def already_exists(self, field_name):
-        if self.get(field_name) is None:
-            return False
-        else:
-            return True
+        round_iteration = 1
+        while round_iteration <= self.rounds:
+            frequency_header = "Round %s Frequency" % round_iteration
+            frequency = float(field_data[frequency_header])
+            frequencies.append(frequency)
+            round_iteration += 1
 
-    def __iter__(self):
-        return iter(self.fields)
+        new_grouping = Grouping(count, frequencies)
+        self.__groupings[grouping_name] = new_grouping
 
-    def __len__(self):
-        return len(self.fields)
+    def list_grouping_names(self):
+        return self.__groupings.keys()
 
-    def __repr__(self):
-        result = ''
-        for name, field in self.fields.iteritems():
-            result += str(field)
-            result += '\n'
-        return result
-
-    def list_names(self):
-        result = self.fields.keys()
-        return result
+    def get_grouping(self, grouping_name):
+        return self.__groupings.get(grouping_name)
 
     @property
-    def return_variable(self):
-        return self.variables
+    def name(self):
+        return self.__name
 
-class Field(object):
+class Grouping(object):
 
-    def __init__(self, name):
-        self.name = name
-        self.groupings = OrderedDict()
-
-    def get_name(self):
-        return self.name
-
-    def add_grouping(self, grouping, count, frequency):
-        freqs = Frequencies(count, frequency)
-        self.groupings[str(grouping)] = freqs
-
-    def get_count(self, grouping):
-        return self.groupings[grouping].count
-
-    def get_frequency(self, grouping):
-        return self.groupings[grouping].frequency
-
-    def get_groupings(self):
-        return self.groupings.keys()
-
-    def length_groups(self):
-        return len(self.groupings.keys())
-
-class Frequencies(object):
-
-    def __init__(self, count, frequency):
+    def __init__(self, count, frequencies):
         self.__count = long(count)
-        self.__frequency = float(frequency)
+        self.__frequencies = frequencies
+
+    def round_frequency(self, round):
+        return self.__frequencies[round]
+
+    @property
+    def frequencies(self):
+        return self.__frequencies
 
     @property
     def count(self):
         return self.__count
-
-    @property
-    def frequency(self):
-        return self.__frequency
