@@ -2,10 +2,9 @@ from collections import OrderedDict
 
 class TrendedModelWorkbooks(object):
     
-    def __init__(self, workbook_data = []):
+    def __init__(self, rounds):
         self.__workbooks = OrderedDict()
-        for workbook_details in workbook_data:
-            self.add(workbook_details)
+        self.rounds = rounds
 
     def add(self, workbook_details):
         ## grab row details
@@ -13,16 +12,24 @@ class TrendedModelWorkbooks(object):
         sheet_name = workbook_details['Sheet']
         field_name = workbook_details['FieldName']
         grouping_name = workbook_details['Grouping']
-        count = workbook_details['Count']
-        percent = workbook_details['Percent']
+        count = int(workbook_details['Count'])
+
+        frequencies = []
+
+        round_iteration = 1
+        while round_iteration <= self.rounds:
+            round_header = "Round %s Frequency" % round_iteration
+            frequency = float(workbook_details[round_header])
+            frequencies.append(frequency)
+            round_iteration += 1
 
         ## add or update
         if self.already_exists(workbook_name):
             workbook = self.__workbooks.get(workbook_name)
-            workbook.add_sheet(sheet_name, field_name, grouping_name, count, percent)
+            workbook.add_sheet(sheet_name, field_name, grouping_name, count, frequencies)
         else:
             new_workbook = TrendedModelWorkbook(workbook_name)
-            new_workbook.add_sheet(sheet_name, field_name, grouping_name, count, percent)
+            new_workbook.add_sheet(sheet_name, field_name, grouping_name, count, frequencies)
             self.__workbooks[workbook_name] = new_workbook
 
     def already_exists(self, workbook_name):
@@ -43,13 +50,13 @@ class TrendedModelWorkbook(object):
         self.__name = name
         self.__sheets = OrderedDict()
 
-    def add_sheet(self, sheet_name, field_name, grouping_name, count, percent):
+    def add_sheet(self, sheet_name, field_name, grouping_name, count, frequencies):
         if self.already_exists(sheet_name):
             sheet = self.__sheets.get(sheet_name)
-            sheet.add_field(field_name, grouping_name, count, percent)
+            sheet.add_field(field_name, grouping_name, count, frequencies)
         else:
             new_sheet = TrendedModelSheet(sheet_name)
-            new_sheet.add_field(field_name, grouping_name, count, percent)
+            new_sheet.add_field(field_name, grouping_name, count, frequencies)
             self.__sheets[sheet_name] = new_sheet
 
     def already_exists(self, sheet_name):
@@ -74,13 +81,13 @@ class TrendedModelSheet(object):
         self.__name = name
         self.__fields = OrderedDict()
 
-    def add_field(self, field_name, grouping_name, count, percent):
+    def add_field(self, field_name, grouping_name, count, frequencies):
         if self.already_exists(field_name):
             field = self.get_field(field_name)
-            field.add_grouping(grouping_name, count, percent)
+            field.add_grouping(grouping_name, count, frequencies)
         else:
             new_field = TrendedModelField(field_name)
-            new_field.add_grouping(grouping_name, count, percent)
+            new_field.add_grouping(grouping_name, count, frequencies)
             self.__fields[field_name] = new_field
 
     def already_exists(self, field_name):
@@ -105,8 +112,8 @@ class TrendedModelField(object):
         self.__name = name
         self.__groupings = OrderedDict()
 
-    def add_grouping(self, grouping_name, grouping_count, grouping_percent):
-        new_grouping = TrendedModelGrouping(grouping_name, grouping_count, grouping_percent)
+    def add_grouping(self, grouping_name, grouping_count, grouping_frequencies):
+        new_grouping = TrendedModelGrouping(grouping_name, grouping_count, grouping_frequencies)
         self.__groupings[grouping_name] = new_grouping
 
     def get_grouping(self, grouping_name):
@@ -124,10 +131,10 @@ class TrendedModelField(object):
 
 class TrendedModelGrouping(object):
     
-    def __init__(self, name, count, percent):
+    def __init__(self, name, count, frequencies):
         self.__name = name
         self.__count = float(count)
-        self.__percent = float(percent)
+        self.__frequencies = frequencies
 
     @property
     def name(self):
@@ -138,5 +145,8 @@ class TrendedModelGrouping(object):
         return self.__count
 
     @property
-    def percent(self):
-        return self.__percent
+    def frequencies(self):
+        return self.__frequencies
+
+    def round_frequency(self, round):
+        return self.__frequencies[round]

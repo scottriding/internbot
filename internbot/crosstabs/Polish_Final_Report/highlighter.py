@@ -37,6 +37,7 @@ class Highlighter(object):
         for cell in response_column:
             if cell.value is not None and \
                cell.value != 'Sigma' and \
+               cell.value != 'Total' and \
                cell.value not in self.responses.keys():
                 self.responses[cell.value] = cell.row
             elif cell.value is not None and \
@@ -48,22 +49,22 @@ class Highlighter(object):
     def parse_columns(self, sheet):
         group_row = sheet['3']
         for cell in group_row:
-            if cell.value is not None and \
-               cell.value not in self.groups.keys():
-                self.groups[cell.value] = cell.column
+            if cell.value is not None:
+                if cell.value in self.groups.keys():
+                    new_name = "%s_copy" % cell.value
+                    self.groups[new_name] = cell.column
+                else:
+                    self.groups[cell.value] = cell.column
 
     def create_cells(self):
         for group in self.groups:
             for label in self.responses:
-                try:
-                    location1 = str(self.groups[group]) + str(self.responses[label][0])
-                    location2 = str(self.groups[group]) + str(self.responses[label][0] + 1)
-                    location3 = str(self.groups[group]) + str(self.responses[label][1])
-                    self.__cells.add(PopulationCell(label, group, location1))
-                    self.__cells.add(PercentageCell(label, group, location2))
-                    self.__cells.add(SignificantMarker(label, group, location3))
-                except TypeError:
-                    print group
+                location1 = str(self.groups[group]) + str(self.responses[label][0])
+                location2 = str(self.groups[group]) + str(self.responses[label][0] + 1)
+                location3 = str(self.groups[group]) + str(self.responses[label][1])
+                self.__cells.add(PopulationCell(label, group, location1))
+                self.__cells.add(PercentageCell(label, group, location2))
+                self.__cells.add(SignificantMarker(label, group, location3))
 
     def assign_significant(self, sheet):
         for cell in self.__cells:

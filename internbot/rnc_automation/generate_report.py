@@ -40,8 +40,8 @@ class ScoresToplineReportGenerator(object):
 
 class TrendedScoresReportGenerator(object):
 
-    def __init__(self, path_to_csv):
-        self.__workbooks = TrendedModelWorkbooks()
+    def __init__(self, path_to_csv, round_number):
+        self.__workbooks = TrendedModelWorkbooks(round_number)
         self.read_csv(path_to_csv)
 
     def read_csv(self, path_to_csv):
@@ -50,6 +50,6 @@ class TrendedScoresReportGenerator(object):
             for workbook_data in file:
                 self.__workbooks.add(workbook_data)
 
-    def generate_trended_scores(self, path_to_output):
-        report = TrendedScoreReport(self.__workbooks, path_to_output)
+    def generate_trended_scores(self, path_to_output, number_of_rounds, report_date):
+        report = TrendedScoreReport(self.__workbooks, path_to_output, number_of_rounds, report_date)
         
