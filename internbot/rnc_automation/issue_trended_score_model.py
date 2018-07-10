@@ -5,9 +5,17 @@ class IssueTrendedNetModel(object):
     def __init__(self, round_count):
         self.rounds = round_count
         self.__models = OrderedDict()
+        self.__round_dates = []
 
     def add_model(self, model_data):
         model_name = model_data["Model"]
+        
+        round_iteration = 1
+        while round_iteration <= self.rounds:
+            date_header = "Round %s Date" % round_iteration
+            date = model_data[date_header]
+            self.__round_dates.append(date)
+            round_iteration += 1
 
         if self.already_exists(model_name):
             net_model = self.__models.get(model_name)
@@ -28,6 +36,9 @@ class IssueTrendedNetModel(object):
 
     def get_model(self, model_name):
         return self.__models.get(model_name)
+
+    def round_date(self, round_number):
+        return self.__round_dates[round_number - 1]
 
 class IssueTrendedModel(object):
 
@@ -101,8 +112,8 @@ class Grouping(object):
         self.__count = long(count)
         self.__frequencies = frequencies
 
-    def round_frequency(self, round):
-        return self.__frequencies[round]
+    def round_frequency(self, round_number):
+        return self.__frequencies[round_number - 1]
 
     @property
     def frequencies(self):

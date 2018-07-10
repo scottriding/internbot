@@ -5,10 +5,18 @@ class ScoreToplineModels(object):
     def __init__(self, round_count):
         self.rounds = round_count
         self.__models = OrderedDict()
+        self.__round_dates = []
 
     def add_model(self, model_data):
         model_name = model_data["Model"]
         model_desc = model_data["Survey question reference"]
+
+        round_iteration = 1
+        while round_iteration <= self.rounds:
+            date_header = "Round %s Date" % round_iteration
+            date = model_data[date_header]
+            self.__round_dates.append(date)
+            round_iteration += 1
         
         if self.already_exists(model_name):
             model = self.__models.get(model_name)
@@ -29,6 +37,9 @@ class ScoreToplineModels(object):
 
     def get_model(self, model_name):
         return self.__models.get(model_name)
+
+    def round_date(self, round_number):
+        return self.__round_dates[round_number - 1]
 
 class ScoreToplineModel(object):
 
@@ -78,10 +89,10 @@ class Variable(object):
         self.__unweighted_frequencies = unweighted_frequencies
 
     def round_weighted_freq(self, round):
-        return self.__weighted_frequencies[round]
+        return self.__weighted_frequencies[round - 1]
 
     def round_unweighted_freq(self, round):
-        return self.__unweighted_frequencies[round]
+        return self.__unweighted_frequencies[round - 1]
 
     def weighted_frequencies(self):
         return self.__weighted_frequencies

@@ -5,6 +5,7 @@ class TrendedModelWorkbooks(object):
     def __init__(self, rounds):
         self.__workbooks = OrderedDict()
         self.rounds = rounds
+        self.__round_dates = []
 
     def add(self, workbook_details):
         ## grab row details
@@ -19,8 +20,11 @@ class TrendedModelWorkbooks(object):
         round_iteration = 1
         while round_iteration <= self.rounds:
             round_header = "Round %s Frequency" % round_iteration
+            date_header = "Round %s Date" % round_iteration
             frequency = float(workbook_details[round_header])
+            date = workbook_details[date_header]
             frequencies.append(frequency)
+            self.__round_dates.append(date)
             round_iteration += 1
 
         ## add or update
@@ -43,6 +47,9 @@ class TrendedModelWorkbooks(object):
 
     def list_workbook_names(self):
         return self.__workbooks.keys()
+
+    def round_date(self, round_number):
+        return self.__round_dates[round_number - 1]
 
 class TrendedModelWorkbook(object):
     
@@ -149,4 +156,4 @@ class TrendedModelGrouping(object):
         return self.__frequencies
 
     def round_frequency(self, round):
-        return self.__frequencies[round]
+        return self.__frequencies[round - 1]

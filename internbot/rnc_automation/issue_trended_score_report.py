@@ -5,10 +5,9 @@ from collections import OrderedDict
    
 class IssueTrendedReport(object):
 
-    def __init__ (self, models, report_date, number_of_rounds):
+    def __init__ (self, models, number_of_rounds):
         # create final workbook
         self.models = models
-        self.date = report_date
         self.workbook = Workbook()
         self.total_count = 0
         self.rounds = int(number_of_rounds)
@@ -121,7 +120,7 @@ class IssueTrendedReport(object):
         round_iteration = self.rounds
         index = 0
         while round_iteration > 0:
-            header = "Round %s %s" % (round_iteration, self.date)
+            header = "Round %s %s" % (round_iteration, self.models.round_date(round_iteration))
             column = self.extend_alphabet[index]
             cell = "%s1" % column
             current_sheet[cell].value = header
@@ -193,7 +192,7 @@ class IssueTrendedReport(object):
             round_iteration = self.rounds
             while round_iteration > 0:
                 round_cell = "%s%s" % (self.extend_alphabet[index], current_row)
-                current_sheet[round_cell].value = grouping.round_frequency(round_iteration - 1)
+                current_sheet[round_cell].value = grouping.round_frequency(round_iteration)
                 current_sheet[round_cell].number_format = '0%'
                 if current_row == 2:
                     current_sheet[round_cell].font = self.second_row

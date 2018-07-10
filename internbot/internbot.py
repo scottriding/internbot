@@ -56,9 +56,9 @@ class Internbot:
         self.redirect_window.title("RNC Scores Topline Automation")
         message = "Please open a model scores file."
         Tkinter.Label(self.redirect_window, text = message).pack(expand=True)
-        btn_topline = Tkinter.Button(self.redirect_window, text = "Scores Topline Report", command = self.state_date_window)
-        btn_trended = Tkinter.Button(self.redirect_window, text = "Issue Trended Report", command = self.date_window)
-        brn_ind_trended = Tkinter.Button(self.redirect_window, text = "Trended Score Reports", command = self.date_window_again)
+        btn_topline = Tkinter.Button(self.redirect_window, text = "Scores Topline Report", command = self.scores_window)
+        btn_trended = Tkinter.Button(self.redirect_window, text = "Issue Trended Report", command = self.issue_trended_window)
+        brn_ind_trended = Tkinter.Button(self.redirect_window, text = "Trended Score Reports", command = self.trended_scores_window)
         btn_cancel = Tkinter.Button(self.redirect_window, text = "Cancel", command = self.redirect_window.destroy)
         btn_topline.pack(ipadx = 5, side = Tkinter.LEFT, expand=True)
         btn_trended.pack(ipadx = 5, side = Tkinter.LEFT, expand=True)
@@ -449,7 +449,7 @@ class Internbot:
             else:
                 report.generate_basic_topline(template_file, savedirectory)
 
-    def state_date_window(self):
+    def scores_window(self):
         self.filename = tkFileDialog.askopenfilename(initialdir = self.fpath, title = "Select model file", filetypes = (("comma seperated files","*.csv"),("all files","*.*")))
         self.create_window = Tkinter.Toplevel(self.redirect_window)
         self.create_window.title("Scores Topline Report Details")
@@ -462,15 +462,6 @@ class Internbot:
         location_label.pack (side = Tkinter.LEFT, expand=True)
         self.location_entry = Tkinter.Entry(location_frame)
         self.location_entry.pack(side=Tkinter.RIGHT, expand=True)
-
-        # date details
-        date_frame = Tkinter.Frame(self.create_window)
-        date_frame.pack(side = Tkinter.TOP, expand=True)
-
-        date_label = Tkinter.Label(date_frame, text="Reporting date:")
-        date_label.pack(padx = 5, side = Tkinter.LEFT, expand=True)
-        self.date_entry = Tkinter.Entry(date_frame)
-        self.date_entry.pack(padx = 7, side=Tkinter.RIGHT, expand=True)
 
         # round details
         round_frame = Tkinter.Frame(self.create_window)
@@ -493,7 +484,6 @@ class Internbot:
     def scores_topline(self):
         filename = self.filename
         report_location = self.location_entry.get()
-        report_date = self.date_entry.get()
         round = self.round_entry.get()
         if round is not "":
             self.create_window.destroy()
@@ -502,21 +492,12 @@ class Internbot:
             if ask_output is True:
                 savedirectory = tkFileDialog.askdirectory()
                 if savedirectory is not "":
-                    report.generate_scores_topline(savedirectory, report_location, report_date, round)
+                    report.generate_scores_topline(savedirectory, report_location, round)
 
-    def date_window(self):
+    def issue_trended_window(self):
         self.filename = tkFileDialog.askopenfilename(initialdir = self.fpath, title = "Select model file", filetypes = (("comma seperated files","*.csv"),("all files","*.*")))
         self.create_window = Tkinter.Toplevel(self.redirect_window)
         self.create_window.title("Issue Trended Report Details")
-
-        # date details
-        date_frame = Tkinter.Frame(self.create_window)
-        date_frame.pack(side = Tkinter.TOP, expand=True)
-
-        date_label = Tkinter.Label(date_frame, text="Reporting date:")
-        date_label.pack(padx = 5, side = Tkinter.LEFT, expand=True)
-        self.date_entry = Tkinter.Entry(date_frame)
-        self.date_entry.pack(padx = 7, side=Tkinter.RIGHT, expand=True)
 
         # round details
         round_frame = Tkinter.Frame(self.create_window)
@@ -538,7 +519,6 @@ class Internbot:
 
     def issue_trended(self):
         filename = self.filename
-        report_date = self.date_entry.get()
         round = self.round_entry.get()
         if round is not "":
             self.create_window.destroy()
@@ -547,21 +527,12 @@ class Internbot:
             if ask_output is True:
                 savedirectory = tkFileDialog.askdirectory()
                 if savedirectory is not "":
-                    report.generate_issue_trended(savedirectory, report_date, round)
+                    report.generate_issue_trended(savedirectory, round)
 
-    def date_window_again(self):
+    def trended_scores_window(self):
         self.filename = tkFileDialog.askopenfilename(initialdir = self.fpath, title = "Select model file", filetypes = (("comma seperated files","*.csv"),("all files","*.*")))
         self.create_window = Tkinter.Toplevel(self.redirect_window)
         self.create_window.title("Trended Issue Reports Details")
-
-        # date details
-        date_frame = Tkinter.Frame(self.create_window)
-        date_frame.pack(side = Tkinter.TOP, expand=True)
-
-        date_label = Tkinter.Label(date_frame, text="Reporting date:")
-        date_label.pack(padx = 5, side = Tkinter.LEFT, expand=True)
-        self.date_entry = Tkinter.Entry(date_frame)
-        self.date_entry.pack(padx = 7, side=Tkinter.RIGHT, expand=True)
 
         # round details
         round_frame = Tkinter.Frame(self.create_window)
@@ -583,7 +554,6 @@ class Internbot:
 
     def trended_scores(self):
         filename = self.filename
-        report_date = self.date_entry.get()
         round = self.round_entry.get()
         if round is not "":
             self.create_window.destroy()
@@ -592,7 +562,7 @@ class Internbot:
             if ask_output is True:
                 savedirectory = tkFileDialog.askdirectory()
                 if savedirectory is not "":
-                    report.generate_trended_scores(savedirectory, round, report_date)
+                    report.generate_trended_scores(savedirectory, round)
 
 window = Tkinter.Tk()
 window.title("Internbot: 01011001 00000010") # Internbot: Y2

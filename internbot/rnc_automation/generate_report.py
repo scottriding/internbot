@@ -18,8 +18,8 @@ class IssueTrendedReportGenerator(object):
             for model_data in file:
                 self.__models.add_model(model_data)
 
-    def generate_issue_trended(self, path_to_output, report_date, number_of_rounds):
-        report = IssueTrendedReport(self.__models, report_date, number_of_rounds)
+    def generate_issue_trended(self, path_to_output, number_of_rounds):
+        report = IssueTrendedReport(self.__models, number_of_rounds)
         report.save(str(path_to_output) + '/trended.xlsx')
 
 class ScoresToplineReportGenerator(object):
@@ -34,8 +34,8 @@ class ScoresToplineReportGenerator(object):
             for model_data in file:
                 self.__models.add_model(model_data)
 
-    def generate_scores_topline(self, path_to_output, report_location, report_date, number_of_rounds):
-        report = ScoresToplineReport(self.__models, report_location, report_date, number_of_rounds)
+    def generate_scores_topline(self, path_to_output, report_location, number_of_rounds):
+        report = ScoresToplineReport(self.__models, report_location, number_of_rounds)
         report.save(str(path_to_output) + '/scores_topline.xlsx')
 
 class TrendedScoresReportGenerator(object):
@@ -50,6 +50,6 @@ class TrendedScoresReportGenerator(object):
             for workbook_data in file:
                 self.__workbooks.add(workbook_data)
 
-    def generate_trended_scores(self, path_to_output, number_of_rounds, report_date):
-        report = TrendedScoreReport(self.__workbooks, path_to_output, number_of_rounds, report_date)
+    def generate_trended_scores(self, path_to_output, number_of_rounds):
+        report = TrendedScoreReport(self.__workbooks, path_to_output, number_of_rounds)
         

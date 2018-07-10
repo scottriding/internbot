@@ -5,11 +5,10 @@ from collections import OrderedDict
    
 class ScoresToplineReport(object):
 
-    def __init__ (self, models, report_location, report_dates, number_of_rounds):
+    def __init__ (self, models, report_location, number_of_rounds):
         # create final workbook
         self.models = models
         self.report_location = report_location
-        self.report_date = report_dates
         self.rounds = int(number_of_rounds)
         self.workbook = Workbook()
 
@@ -262,7 +261,7 @@ class ScoresToplineReport(object):
             score_sheet[weighted_cell].value = "Round %s TOW" % iteration
             score_sheet[weighted_cell].font = self.titles_style
             score_sheet[weighted_cell].border = self.all_border
-            score_sheet[unweighted_cell].value = "Round %s %s" % (iteration, self.report_date)
+            score_sheet[unweighted_cell].value = "Round %s %s" % (iteration, self.models.round_date(iteration))
             score_sheet[unweighted_cell].font = self.titles_style
             score_sheet[unweighted_cell].border = self.all_border
             score_sheet.column_dimensions[self.extend_alphabet[index]].width = 13
@@ -360,14 +359,14 @@ class ScoresToplineReport(object):
             while iteration > 0:
                 weighted_cell = "%s%s" % (self.extend_alphabet[index], current_row)
                 unweighted_cell = "%s%s" % (self.extend_alphabet[index + 1], current_row)
-                frequency_weighted = variable.round_weighted_freq(iteration - 1)
+                frequency_weighted = variable.round_weighted_freq(iteration)
                 if frequency_weighted == "NA" or frequency_weighted == "":
                     score_sheet[weighted_cell].fill = self.grey
                 else:
                     score_sheet[weighted_cell].value = float(frequency_weighted)
                     score_sheet[weighted_cell].font = self.general_style
                     score_sheet[weighted_cell].number_format = '0%'
-                frequency_unweighted = variable.round_unweighted_freq(iteration - 1)
+                frequency_unweighted = variable.round_unweighted_freq(iteration)
                 if frequency_unweighted == "NA" or frequency_unweighted == "":
                     score_sheet[unweighted_cell].fill = self.grey
                 else:
@@ -595,7 +594,7 @@ class ScoresToplineReport(object):
     
     def is_na(self, model, current_round):
         variables = model.list_variable_names()
-        unweighted_freq = model.get_variable(variables[0]).round_unweighted_freq(current_round - 1)
+        unweighted_freq = model.get_variable(variables[0]).round_unweighted_freq(current_round)
         if unweighted_freq == "NA" or unweighted_freq == "":
             return True
         else:
