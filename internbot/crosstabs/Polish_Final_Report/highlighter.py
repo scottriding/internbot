@@ -47,7 +47,7 @@ class Highlighter(object):
                 self.responses[cell.value].append(cell.row)
 
     def parse_columns(self, sheet):
-        group_row = sheet['4']
+        group_row = sheet['5']
         iteration = 1
         for cell in group_row:
             if cell.value is not None:
