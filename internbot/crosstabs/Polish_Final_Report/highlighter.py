@@ -48,10 +48,12 @@ class Highlighter(object):
 
     def parse_columns(self, sheet):
         group_row = sheet['3']
+        iteration = 1
         for cell in group_row:
             if cell.value is not None:
                 if cell.value in self.groups.keys():
-                    new_name = "%s_copy" % cell.value
+                    new_name = "%s_%s" % (cell.value, iteration)
+                    iteration += 1
                     self.groups[new_name] = cell.column
                 else:
                     self.groups[cell.value] = cell.column
