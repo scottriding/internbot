@@ -41,14 +41,10 @@ class Highlighter(object):
                 self.responses[cell.value].append(cell.row)
 
     def parse_columns(self, sheet):
-<<<<<<< HEAD
         if self.trended == True:
             group_row = sheet['5']
         else:
             group_row = sheet['3']
-=======
-        group_row = sheet['5']
->>>>>>> e873951cb938948f1b5a8689bb00842fbee03e36
         iteration = 1
         for cell in group_row:
             if cell.value is not None:
