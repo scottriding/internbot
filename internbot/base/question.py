@@ -301,6 +301,7 @@ class Question(object):
     def add_text_response(self, response):
         self.__responses.add_text(response)
 
+
     def add_NA(self):
         self.__responses.add_NA()
 

@@ -13,7 +13,6 @@ class SPSSTranslator(object):
         group_names = []
         for question in questions:
             if question.type == 'TE':
-                print question.subtype
                 if question.subtype == 'ValidNumber':
                     result += self.translate_text(question)
             elif question.type == 'MC':
@@ -45,7 +44,7 @@ class SPSSTranslator(object):
         return result
 
     def translate_text(self, question):
-        result = 'VARIABLE LEVEL  %s(NUMERIC).\n' % question.name
+        result = 'VARIABLE LEVEL  %s(SCALE).\n' % question.name
         return result
 
     def carry_forward_matrix(self, question):

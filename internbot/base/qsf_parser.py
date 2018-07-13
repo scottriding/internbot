@@ -144,6 +144,7 @@ class QSFQuestionsParser(object):
             if question_payload['Validation'].get('Settings') is not None:
                 if question_payload['Validation']['Settings'].get('ContentType') is not None:
                     question.subtype = question_payload['Validation']['Settings']['ContentType']
+            self.__questions.append(question)
         elif question.type == 'CS':
             constant_sum = self.constant_parser.parse(question, question_payload)
             self.__questions.append(constant_sum)

@@ -24,11 +24,14 @@ class TableDefiner(object):
     
     def write_tables(self, csvwriter, questions):
         for question in questions:
-            if question.type == 'TE' or question.type == 'DB' or question.type == 'Timing':
+            if question.type == 'DB' or question.type == 'Timing':
                 pass
-            else:
+            else:        
                 if question.parent == 'CompositeQuestion' and question.type != "CompositeMultipleSelect":
                     self.likert(csvwriter, self.count, question)
+                elif question.type == 'TE':
+                    if question.subtype == 'ValidNumber':
+                        self.text(csvwriter, self.count, question)
                 else:
                     variable_name = self.define_name(question)
                     title = self.clean_prompt(question.prompt)
@@ -73,6 +76,21 @@ class TableDefiner(object):
                 ''
             ])
             self.count += 1
+
+    def text(self, csvwriter, count, question):
+        variable_name = self.define_name(question)
+        title = self.clean_prompt(question.prompt)
+        base = ''
+        table_index = self.count
+        csvwriter.writerow([
+            '',
+            variable_name,
+            title,
+            base,
+            table_index,
+            ''
+            ])
+        self.count += 1
 
     def clean_prompt(self, prompt):
         result = prompt.translate(None,",'\n\t\r")
