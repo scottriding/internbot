@@ -4,20 +4,14 @@ from cell import Cells, Cell, PercentageCell, PopulationCell, SignificantMarker
 
 class Highlighter(object):
 
-    def __init__(self, path_to_xlsx):
+    def __init__(self, path_to_xlsx, is_trended_amazon = False):
+        self.trended = is_trended_amazon
         self.workbook = load_workbook(path_to_xlsx + '/Unhighlighted.xlsx')
         self.groups = {}
         self.responses = {}
         self.__cells = Cells()
         self.highlight_style = PatternFill("solid", fgColor="C00201")
-        self.font_style = Font( name='Arial', 
-                                size=10, 
-                                bold=False, 
-                                italic=False, 
-                                vertAlign=None, 
-                                underline='none', 
-                                strike=False, 
-                                color='ffffff')
+        self.font_style = Font(name='Arial', size=10, color='ffffff')
     
     def highlight(self, path_to_output):
         for sheet in self.workbook.worksheets:
@@ -47,7 +41,10 @@ class Highlighter(object):
                 self.responses[cell.value].append(cell.row)
 
     def parse_columns(self, sheet):
-        group_row = sheet['4']
+        if self.trended == True:
+            group_row = sheet['5']
+        else:
+            group_row = sheet['3']
         iteration = 1
         for cell in group_row:
             if cell.value is not None:
