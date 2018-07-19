@@ -8,16 +8,18 @@ class Questions(object):
             self.add(question_data)
 
     def add(self, question_data):
+        display_logic = question_data['logic']
         if self.already_exists(question_data['variable']):
             question = self.get(question_data['variable'])
             question.add_response(question_data['label'], question_data['percent'])
+            if display_logic != "":
+                question.add_display(display_logic)
         else:
-            self.add_new(question_data)
-
-    def add_new(self, question_data):
-        q = Question(question_data['variable'], question_data['prompt'], question_data['n'])
-        q.add_response(question_data['label'], question_data['percent'])
-        self.__questions[q.name] = q
+            question = Question(question_data['variable'], question_data['prompt'], question_data['n'])
+            question.add_response(question_data['label'], question_data['percent'])
+            if display_logic != "":
+                question.add_display(display_logic)
+            self.__questions[question.name] = question
 
     def get(self, question_name):
         return self.__questions.get(question_name)
@@ -54,14 +56,19 @@ class Questions(object):
         result = self.__questions[question_name].return_response
         return result
 
+    def display_logic(self, question_name):
+        result = self.__questions[question_name].display_logic
+        return result
+
 
 class Question(object):
 
     def __init__(self, name, prompt, n):
-        self.name      = name
-        self.prompt    = prompt
-        self.n         = n
+        self.name = name
+        self.prompt = prompt
+        self.n = n
         self.responses = OrderedDict()
+        self.__display_logic = ""
 
     @property
     def name(self):
@@ -90,10 +97,16 @@ class Question(object):
     def add_response(self, response, freq):
         self.responses[str(response)] = float(freq)
 
+    def add_display(self, logic):
+        self.__display_logic = logic
+
     @property
     def return_response(self):
         return self.responses
 
+    @property
+    def display_logic(self):
+        return self.__display_logic
 
     def __repr__(self):
         result = ""

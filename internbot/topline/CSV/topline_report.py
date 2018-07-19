@@ -12,6 +12,10 @@ class ToplineReport(object):
             self.write_question(name)
         
     def write_question(self, name):
+        if self.questions.display_logic(name) != "":
+            display_prompt = self.doc.add_paragraph()
+            display_prompt.add_run(self.questions.display_logic(name))
+            self.doc.add_paragraph()
         paragraph = self.doc.add_paragraph() # each question starts a new paragraph
         self.write_name(name, paragraph)
         self.write_prompt(self.questions.prompt(name), paragraph)
