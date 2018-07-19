@@ -31,8 +31,12 @@ class CompositeQuestion(object):
         self.__questions = []
         self.__question_order = []
         self.__temp_responses = Responses()
-        self.__has_carry_forward_responses = False 
+        self.__has_carry_forward_responses = False
         self.__has_mixed_responses = False
+        self.__has_mixed_answers = False
+        self.__has_mixed_statements = False
+        self.__has_carry_forward_statements = False
+        self.__has_carry_forward_answers = False
 
     @property
     def name(self):
@@ -113,6 +117,54 @@ class CompositeQuestion(object):
     @has_mixed_responses.setter
     def has_mixed_responses(self, type):
         self.__has_mixed_responses = bool(type)
+
+    @property
+    def carry_forward_answers_id(self):
+        return self.__carry_forward_answers_id
+
+    @carry_forward_answers_id.setter
+    def carry_forward_answers_id(self, carry_forward_answers_id):
+        self.__carry_forward_answers_id = str(carry_forward_answers_id)
+
+    @property
+    def carry_forward_statements_id(self):
+        return self.__carry_forward_statements_id
+
+    @carry_forward_statements_id.setter
+    def carry_forward_statements_id(self, carry_forward_statements_id):
+        self.__carry_forward_statements_id = str(carry_forward_statements_id)
+
+    @property
+    def has_mixed_answers(self):
+        return self.__has_mixed_answers
+
+    @has_mixed_answers.setter
+    def has_mixed_answers(self, type):
+        self.__has_mixed_answers = bool(type)
+
+    @property
+    def has_mixed_statements(self):
+        return self.__has_mixed_statements
+
+    @has_mixed_statements.setter
+    def has_mixed_statements(self, type):
+        self.__has_mixed_statements = bool(type)
+
+    @property
+    def has_carry_forward_answers(self):
+        return self.__has_carry_forward_answers
+
+    @has_carry_forward_answers.setter
+    def has_carry_forward_answers(self, type):
+        self.__has_carry_forward_answers = bool(type)
+
+    @property
+    def has_carry_forward_statements(self):
+        return self.__has_carry_forward_statements
+
+    @has_carry_forward_statements.setter
+    def has_carry_forward_statements(self, type):
+        self.__has_carry_forward_statements = bool(type)
         
     def add_response(self, response, code):
         self.__temp_responses.add(response, code)

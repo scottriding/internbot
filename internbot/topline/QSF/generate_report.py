@@ -74,9 +74,9 @@ class ReportGenerator(object):
             question.add_NA()
             return question.get_NA()
         responses = question.responses
-        matching_response = next((response for response in responses if response.code == response_to_find), None)
+        matching_response = next((response for response in responses if response.response == response_to_find), None)
         if response_to_find == 'On':
-            matching_response = next((response for response in responses if response.code == '1'), None)
+            matching_response = next((response for response in responses if response.response == '1'), None)
         return matching_response
 
     def add_frequency(self, response, frequency):

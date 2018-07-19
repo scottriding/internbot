@@ -23,7 +23,7 @@ class SPSSTranslator(object):
                 else:
                     result += self.translate_slider(question)
             elif question.type == 'CompositeMatrix':
-                if question.subtype == 'SingleAnswer' and question.has_carry_forward_responses == True:
+                if question.subtype == 'SingleAnswer' and question.has_carry_forward_statements == True:
                     result+= self.carry_forward_matrix(question)
                 elif question.subtype == 'SingleAnswer':
                     result += self.separate_matrix(question)
