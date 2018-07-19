@@ -5,6 +5,7 @@ class ToplineReport(object):
 
     def __init__ (self, questions, path_to_template):
         self.doc = Document(path_to_template)
+        self.line_break = self.doc.styles['LineBreak']
         self.questions = questions
         names = questions.list_names()
         for name in names:
@@ -15,12 +16,15 @@ class ToplineReport(object):
         self.write_name(name, paragraph)
         self.write_prompt(self.questions.prompt(name), paragraph)
         self.write_responses(self.questions.return_responses(name))
+        new = self.doc.add_paragraph("") # space between questions
+        new.style = self.line_break
         self.doc.add_paragraph("") # space between questions
         
     def write_name(self, name, paragraph):
         paragraph.add_run(name + ".")
     
     def write_prompt(self, prompt, paragraph):
+        print prompt
         paragraph_format = paragraph.paragraph_format
         paragraph_format.keep_together = True           # question prompt will all be fit in one page
         paragraph_format.left_indent = Inches(1)        

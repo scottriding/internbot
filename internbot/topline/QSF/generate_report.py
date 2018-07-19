@@ -40,20 +40,20 @@ class ReportGenerator(object):
         with open(path_to_appendix, 'rb') as appendix_file:
             file = csv.DictReader(appendix_file, quotechar = '"')
             for response in file:
-                matching_question = self.find_question(response['name'], self.survey)
+                matching_question = self.find_question(response['variable'], self.survey)
                 if matching_question is not None:
-                    matching_question.add_text_response(response['response'])
+                    matching_question.add_text_response(response['label'])
                     matching_question.text_entry = True
 
     def assign_frequencies(self, path_to_csv):
         with open(path_to_csv, 'rb') as csvfile:
             file = csv.DictReader(csvfile, quotechar = '"')
             for question_data in file:
-                matching_question = self.find_question(question_data['name'], self.survey)
+                matching_question = self.find_question(question_data['variable'], self.survey)
                 if matching_question is not None:
-                    matching_response = self.find_response(question_data['response'], matching_question)
+                    matching_response = self.find_response(question_data['label'], matching_question)
                     if matching_response is not None:
-                        self.add_frequency(matching_response, question_data['frequency'])
+                        self.add_frequency(matching_response, question_data['percent'])
                 
     def find_question(self, question_to_find, survey):
         matching_question = survey.blocks.find_question_by_name(question_to_find)
@@ -74,9 +74,9 @@ class ReportGenerator(object):
             question.add_NA()
             return question.get_NA()
         responses = question.responses
-        matching_response = next((response for response in responses if response.response == response_to_find), None)
+        matching_response = next((response for response in responses if response.code == response_to_find), None)
         if response_to_find == 'On':
-            matching_response = next((response for response in responses if response.response == '1'), None)
+            matching_response = next((response for response in responses if response.code == '1'), None)
         return matching_response
 
     def add_frequency(self, response, frequency):

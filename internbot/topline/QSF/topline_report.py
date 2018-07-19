@@ -5,6 +5,7 @@ class ToplineReport(object):
 
     def __init__ (self, questions, path_to_template):
         self.doc = Document(path_to_template)
+        self.line_break = self.doc.styles['LineBreak']
         self.questions = questions
 
     def save(self, path_to_output):
@@ -28,6 +29,8 @@ class ToplineReport(object):
         self.write_name(question.name, paragraph)
         self.write_prompt(question.prompt, paragraph)
         self.write_responses(question.responses)
+        new = self.doc.add_paragraph("") # space between questions
+        new.style = self.line_break
         self.doc.add_paragraph("") # space between questions
 
     def write_composite_question(self, question):
@@ -40,6 +43,8 @@ class ToplineReport(object):
             self.write_allocate(question.questions)
         else:
             self.write_binary(question.questions)
+        new = self.doc.add_paragraph("") # space between questions
+        new.style = self.line_break
         self.doc.add_paragraph("") # space between questions
 
     def write_open_ended(self, question):
@@ -47,6 +52,8 @@ class ToplineReport(object):
         self.write_name(question.name, paragraph)
         self.write_prompt(question.prompt, paragraph)
         paragraph.add_run(' (OPEN-ENDED RESPONSES VERBATIM IN APPENDIX)')
+        new = self.doc.add_paragraph("") # space between questions
+        new.style = self.line_break
         self.doc.add_paragraph("") # space between questions
 
     def write_name(self, name, paragraph):

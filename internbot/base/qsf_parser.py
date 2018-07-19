@@ -177,16 +177,49 @@ class QSFQuestionsMatrixParser(object):
 
     def parse(self, question_payload):
         matrix_question = CompositeMatrix()
-        if question_payload.get('DynamicChoices') is None:
-            self.basic_matrix(question_payload, matrix_question)      
-        elif question_payload.get('DynamicChoices') and \
-             len(question_payload['Choices']) > 0:
+        dynamic_statements = False
+        mixed_statements = False
+        dynamic_answers = False
+        mixed_answers = False
+
+        if question_payload.get('DynamicChoices') is not None:
+            dynamic_statements = True
+
+        if question_payload.get('DynamicAnswers') is not None:
+            dynamic_answers = True
+
+        if question_payload.get('DynamicChoices') and len(question_payload['Choices']) > 0:
+            mixed_statements = True
+            dynamic_statements = False
+
+        if question_payload.get('DynamicAnswers') and len(question_payload['Answers']) > 0:
+            mixed_anwers = True
+            dynamic_answers = False
+
+        ## figure out mixed stuff here
+        if mixed_answers == True and mixed_statements == True:
+            pass
+        elif mixed_answers == True:
+            pass
+        elif mixed_statements == True:
             self.mixed_matrix(question_payload, matrix_question)
         else:
-            self.dynamic_matrix(question_payload, matrix_question)          
+            ## figure out normal dynamics here
+            if dynamic_statements == True and dynamic_answers == True:
+                self.both_dynamic_matrix(question_payload, matrix_question)
+            elif dynamic_statements == True:
+                self.dynamic_statements_matrix(question_payload, matrix_question)
+            elif dynamic_answers == True:
+                self.dynamic_answers_matrix(question_payload, matrix_question)
+            else:
+                self.basic_matrix(question_payload, matrix_question)
+      
         return matrix_question
        
-    def dynamic_matrix(self, question_payload, matrix_question):
+    def both_dynamic_matrix(self, question_payload, matrix_question):
+        pass
+
+    def dynamic_statements_matrix(self, question_payload, matrix_question):
         responses = question_payload['Answers']
         self.matrix_details(matrix_question, question_payload)
         self.carry_forward.assign_carry_forward(matrix_question, question_payload)
@@ -194,6 +227,15 @@ class QSFQuestionsMatrixParser(object):
             response_name = self.strip_tags( \
                             response['Display'].encode('ascii','ignore'))
             matrix_question.add_response(response_name, code)
+
+    def dynamic_answers_matrix(self, question_payload, matrix_question):
+        prompts = question_payload['Choices']
+        for code, prompt in prompts.iteritems():
+            question = self.question_details(code, prompt, question_payload, responses)
+            matrix_question.add_question(question)
+            matrix_question.question_order = question_payload['ChoiceOrder']
+            self.matrix_details(matrix_question, question_payload)
+        #self.carry_forward.assign_carry_forward(matrix_question, question_payload)
 
     def mixed_matrix(self, question_payload, matrix_question):
         self.basic_matrix(question_payload, matrix_question)
@@ -409,6 +451,12 @@ class QSFResponsesParser(object):
                 question.add_response(response['Display'].encode('ascii','ignore'), code)
                  
 class QSFCarryForwardParser(object):
+
+    def assign_answer_forward(self, question, question_payload):
+        question.has_carry_forward_responses = True
+        carry_forward_locator = question_payload['DynamicAnswers']['Locator']
+        carry_forward_match = re.match('q://(QID\d+).+', carry_forward_locator)
+        question.carry_forward_question_id = carry_forward_match.group(1)
 
     def assign_carry_forward(self, question, question_payload):
         question.has_carry_forward_responses = True
