@@ -63,7 +63,7 @@ class TableDefiner(object):
     def likert(self, csvwriter, count, question):
         for sub_question in question:
             variable_name = sub_question.name
-            title = '%s %s' % (self.clean_prompt(question.prompt), \
+            title = '%s - %s' % (self.clean_prompt(question.prompt), \
                                self.clean_prompt(sub_question.prompt))
             base = ''
             table_index = self.count

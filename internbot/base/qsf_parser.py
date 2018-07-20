@@ -177,54 +177,94 @@ class QSFQuestionsMatrixParser(object):
 
     def parse(self, question_payload):
         matrix_question = CompositeMatrix()
+        self.matrix_details(matrix_question, question_payload)
+
         dynamic_statements = False
         mixed_statements = False
         dynamic_answers = False
         mixed_answers = False
 
-        if question_payload.get('DynamicChoices') is not None:
-            dynamic_statements = True
-
         if question_payload.get('DynamicAnswers') is not None:
-            dynamic_answers = True
-
-        if question_payload.get('DynamicChoices') and len(question_payload['Choices']) > 0:
-            mixed_statements = True
-            dynamic_statements = False
-
-        if question_payload.get('DynamicAnswers') and len(question_payload['Answers']) > 0:
-            mixed_anwers = True
-            dynamic_answers = False
-
-        ## figure out mixed stuff here
-        if mixed_answers == True and mixed_statements == True:
-            pass
-        elif mixed_answers == True:
-            pass
-        elif mixed_statements == True:
-            matrix_question = self.mixed_matrix(question_payload, matrix_question)
-        else:
-            ## figure out normal dynamics here
-            if dynamic_statements == True and dynamic_answers == True:
-                matrix_question = self.both_dynamic_matrix(question_payload, matrix_question)
-            elif dynamic_statements == True:
-                matrix_question = self.dynamic_statements_matrix(question_payload, matrix_question)
-            elif dynamic_answers == True:
-                matrix_question = self.dynamic_answers_matrix(question_payload, matrix_question)
+            if len(question_payload['Answers']) > 0:
+                mixed_answers = True
             else:
-                matrix_question = self.basic_matrix(question_payload, matrix_question)
+                dynamic_answers = True
+
+        if question_payload.get('DynamicChoices') is not None:
+            if len(question_payload['Choices']) > 0:
+                mixed_statements = True
+            else:
+                dynamic_statements = True
+
+        #### figure out what kind of carry_forward madness is happening here
+
+        # both statements and answers are a mix of carry_forward and additional content
+        if mixed_answers == True and mixed_statements == True:
+            matrix_question = self.both_mixed_matrix(question_payload, matrix_question)
+        # both statements and answers are ONLY carry_forward
+        elif dynamic_statements and dynamic_answers == True:
+            matrix_question = self.both_dynamic_matrix(question_load, matrix_question)
+        # JUST carry_forward statements and a mix in the answers
+        elif dynamic_statements and mixed_answers == True:
+            matrix_question = self.dynamic_statements_mixed_answers_matrix(question_payload, matrix_question)
+        # A mix of old and new statements and carry_forward answers
+        elif mixed_statements == True and dynamic_answers == True:
+            matrix_question = self.mixed_statements_dynamic_answers_matrix(question_payload, matrix_question)
+        
+        #### at this point just check statements
+        # carry_forward statements ONLY
+        elif dynamic_statements == True:
+            matrix_question = self.dynamic_statements_matrix(question_payload, matrix_question)
+        # mixed statements ONLY
+        elif mixed_statements == True:
+            matrix_question = self.mixed_statements_matrix(question_payload, matrix_question)
+
+        #### at this point just check answers
+        # carry_forward answers ONLY
+        elif dynamic_answers == True:
+            matrix_question = self.dynamic_answers_matrix(question_payload, matrix_question)
+        # mixed answers ONLY
+        elif mixed_answers == True:
+            matrix_question = self.mixed_answers_matrix(question_payload, matrix_question)
+
+        #### all edge cases have been checked -- this should be a basic matrix
+        else:
+            matrix_question = self.basic_matrix(question_payload, matrix_question)
       
         return matrix_question
        
+    def both_mixed_matrix(self, question_payload, matrix_question):
+        matrix_question = self.basic_matrix(question_payload, matrix_question)
+        matrix_question = self.both_dynamic_matrix(question_payload, matrix_question)
+        return matrix_question
+
+    def dynamic_statements_mixed_answers_matrix(self, question_payload, matrix_question):
+        self.carry_forward.assign_carry_forward_statements(matrix_question, question_payload)
+        self.carry_forward.assign_carry_forward_answers(matrix_question, question_payload)
+        responses = question_payload['Answers']
+        for code, response in responses.iteritems():
+            response_name = self.strip_tags( \
+                            response['Display'].encode('ascii','ignore'))
+            matrix_question.add_response(response_name, code)
+        return matrix_question
+
+    def mixed_statements_dynamic_answers_matrix(self, question_payload, matrix_question):
+        self.carry_forward.assign_carry_forward_answers(matrix_question, question_payload)
+        self.carry_forward.assign_carry_forward_statements(matrix_question, question_payload)
+        prompts = question_payload['Choices']
+        for code, prompt in prompts.iteritems():
+            question = self.question_details(code, prompt, question_payload, prompts)
+            matrix_question.add_question(question)
+            matrix_question.question_order = question_payload['ChoiceOrder']
+        return matrix_question
+
     def both_dynamic_matrix(self, question_payload, matrix_question):
-        self.matrix_details(matrix_question, question_payload)
         self.carry_forward.assign_carry_forward_answers(matrix_question, question_payload)
         self.carry_forward.assign_carry_forward_statements(matrix_question, question_payload)
         return matrix_question
 
     def dynamic_statements_matrix(self, question_payload, matrix_question):
         responses = question_payload['Answers']
-        self.matrix_details(matrix_question, question_payload)
         self.carry_forward.assign_carry_forward_statements(matrix_question, question_payload)
         for code, response in responses.iteritems():
             response_name = self.strip_tags( \
@@ -234,7 +274,6 @@ class QSFQuestionsMatrixParser(object):
 
     def dynamic_answers_matrix(self, question_payload, matrix_question):
         prompts = question_payload['Choices']
-        self.matrix_details(matrix_question, question_payload)
         self.carry_forward.assign_carry_forward_answers(matrix_question, question_payload)
         for code, prompt in prompts.iteritems():
             question = self.question_details(code, prompt, question_payload, prompts)
@@ -242,8 +281,15 @@ class QSFQuestionsMatrixParser(object):
             matrix_question.question_order = question_payload['ChoiceOrder']
         return matrix_question
 
-    def mixed_matrix(self, question_payload, matrix_question):
-        pass
+    def mixed_statements_matrix(self, question_payload, matrix_question):
+        matrix_question = self.basic_matrix(question_payload, matrix_question)
+        matrix_question = self.dynamic_statements_matrix(question_payload, matrix_question)
+        return matrix_question
+
+    def mixed_answers_matrix(self, question_payload, matrix_question):
+        matrix_question = self.basic_matrix(question_payload, matrix_question)
+        matrix_question = self.dynamic_answers_matrix(question_payload, matrix_question)
+        return matrix_question
             
     def basic_matrix(self, question_payload, matrix_question):
         prompts = question_payload['Choices']
@@ -477,11 +523,6 @@ class QSFCarryForwardParser(object):
         question.carry_forward_question_id = carry_forward_match.group(1)
 
     def carry_forward(self, questions):
-        for question in questions:
-            if question is not None:
-                print question.name
-                print question.id
-                print question.type
         dynamic_questions = [question for question in questions \
                             if question.has_carry_forward_responses == True]
 
@@ -491,9 +532,7 @@ class QSFCarryForwardParser(object):
         answer_questions = [question for question in questions \
                             if question.has_carry_forward_answers == True]
         for dynamic_question in dynamic_questions:
-            if dynamic_question.type == 'CompositeMatrix':
-                self.matrix_match(dynamic_question, questions)
-            elif dynamic_question.type == 'CompositeMultipleSelect':
+            if dynamic_question.type == 'CompositeMultipleSelect':
                 self.multiselect_match(dynamic_question, questions)
             elif dynamic_question.type == 'MC':
                 self.singleMulti_match(dynamic_question, questions)
@@ -510,38 +549,11 @@ class QSFCarryForwardParser(object):
         matching_question = next((question for question in questions \
                             if question.id == dynamic_question.carry_forward_statements_id), None)
         if matching_question.type == 'CompositeMatrix':
-            dynamic_question.question_order = matching_question.question_order
-            for question in matching_question.questions:
-                sub_question = Question()
-                sub_question.name ='%s_%s' % (dynamic_question.name, question.code)
-                sub_question.id = '%s_%s' % (dynamic_question.name, question.code)
-                sub_question.code = question.code
-                sub_question.prompt = question.prompt
-                for response in question.responses:
-                    sub_question.add_dynamic_response(response.response, response.code)
-                dynamic_question.add_question(sub_question)
+            self.matrix_into_matrix(dynamic_question, matching_question)
         elif matching_question.type == 'CompositeMultipleSelect':
-            dynamic_question.question_order = matching_question.question_order
-            for question in matching_question.questions:
-                sub_question = Question()
-                sub_question.name = '%s_%s' % (dynamic_question.name, question.code)
-                sub_question.id = '%s_%s' % (dynamic_question.id, question.code)
-                sub_question.code = question.code
-                sub_question.prompt = question.prompt
-                for sub_responses in dynamic_question.temp_responses:
-                    sub_question.add_dynamic_response(sub_responses.response, sub_responses.code)
-                dynamic_question.add_question(sub_question)
+            self.multiselect_into_matrix(dynamic_question, matching_question)
         elif matching_question.type == 'MC':
-            dynamic_question.question_order = matching_question.response_order
-            for response in matching_question.responses:
-                sub_question = Question()
-                sub_question.name = '%s_%s' % (dynamic_question.name, response.code)
-                sub_question.id = '%s_%s' % (dynamic_question.id, response.code)
-                sub_question.code = response.code
-                sub_question.prompt = response.response
-                for sub_response in dynamic_question.temp_responses:
-                    sub_question.add_dynamic_response(sub_response.response, sub_response.code)
-                dynamic_question.add_question(sub_question)
+            self.singleMulti_into_matrix(dynamic_question, matching_question)
 
     def answer_match(self, dynamic_question, questions):
         matching_question = next((question for question in questions \
@@ -563,16 +575,6 @@ class QSFCarryForwardParser(object):
                 question.response_order = matching_question.response_order
                 for response in matching_question.responses:
                     question.add_dynamic_response(response.response, response.code)
-
-    def matrix_match(self, dynamic_question, questions):
-        matching_question = next((question for question in questions \
-                            if question.id == dynamic_question.carry_forward_question_id), None)
-        if matching_question.type == 'CompositeMatrix':
-            self.matrix_into_matrix(dynamic_question, matching_question)
-        elif matching_question.type == 'CompositeMultipleSelect':
-            self.multiselect_into_matrix(dynamic_question, matching_question)
-        elif matching_question.type == 'MC':
-            self.singleMulti_into_matrix(dynamic_question, matching_question)
 
     def multiselect_match(self, dynamic_question, questions):
         matching_question = next((question for question in questions \
@@ -598,7 +600,7 @@ class QSFCarryForwardParser(object):
         dynamic_matrix.question_order = matching_matrix.question_order
         for question in matching_matrix.questions:
             sub_question = Question()
-            sub_question.name ='%s_%s' % (dynamic_matrix.name, question.code)
+            sub_question.name ='%s_x%s' % (dynamic_matrix.name, question.code)
             sub_question.id = '%s_%s' % (dynamic_matrix.name, question.code)
             sub_question.code = question.code
             sub_question.prompt = question.prompt
@@ -610,7 +612,7 @@ class QSFCarryForwardParser(object):
         dynamic_matrix.question_order = matching_multiselect.question_order
         for question in matching_multiselect.questions:
             sub_question = Question()
-            sub_question.name = '%s_%s' % (dynamic_matrix.name, question.code)
+            sub_question.name = '%s_x%s' % (dynamic_matrix.name, question.code)
             sub_question.id = '%s_%s' % (dynamic_matrix.id, question.code)
             sub_question.code = question.code
             sub_question.prompt = question.prompt
@@ -622,7 +624,7 @@ class QSFCarryForwardParser(object):
         dynamic_matrix.question_order = matching_MC.response_order
         for response in matching_MC.responses:
             sub_question = Question()
-            sub_question.name = '%s_%s' % (dynamic_matrix.name, response.code)
+            sub_question.name = '%s_x%s' % (dynamic_matrix.name, response.code)
             sub_question.id = '%s_%s' % (dynamic_matrix.id, response.code)
             sub_question.code = response.code
             sub_question.prompt = response.response
