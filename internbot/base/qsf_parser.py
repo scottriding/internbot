@@ -531,6 +531,7 @@ class QSFCarryForwardParser(object):
 
         answer_questions = [question for question in questions \
                             if question.has_carry_forward_answers == True]
+
         for dynamic_question in dynamic_questions:
             if dynamic_question.type == 'CompositeMultipleSelect':
                 self.multiselect_match(dynamic_question, questions)

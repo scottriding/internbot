@@ -236,6 +236,16 @@ class Question(object):
         self.has_carry_forward_responses = False
         self.__text_entry = False
         self.__has_mixed_responses = False
+        self.__has_carry_forward_statements = False
+        self.__has_carry_forward_answers = False
+
+    @property
+    def has_carry_forward_statements(self):
+        return self.__has_carry_forward_statements
+
+    @property
+    def has_carry_forward_answers(self):
+        return self.__has_carry_forward_answers
 
     @property
     def id(self):
