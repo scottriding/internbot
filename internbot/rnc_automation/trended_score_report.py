@@ -53,7 +53,10 @@ class TrendedScoreReport(object):
             new_workbook.save(save_path)
 
     def build_sheets(self, workbook, workbook_details):
-        default_sheet = True
+        default_sheet = False
+        if self.workbook.get_sheet_by_name("Sheet") is not None:
+            default_sheet = True
+
         sheet_names = workbook_details.list_sheet_names()
         for sheet_name in sheet_names:
             if default_sheet is True:

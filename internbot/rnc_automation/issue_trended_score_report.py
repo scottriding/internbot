@@ -50,7 +50,10 @@ class IssueTrendedReport(object):
 
     def build_sheets(self):
         model_names = self.models.list_model_names()
-        default_sheet = True
+        default_sheet = False
+        if self.workbook.get_sheet_by_name("Sheet") is not None:
+            default_sheet = True
+
         alternate_tabs = True
         for model_name in model_names:
             if default_sheet is True:

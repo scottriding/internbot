@@ -52,9 +52,13 @@ class ScoresToplineReport(object):
         self.build_sheets()
 
     def build_sheets(self):
-        sheet = self.workbook.get_sheet_by_name('Sheet')
         new_title = "Key-%s" % (self.report_location)
-        sheet.title = new_title
+        if self.workbook.get_sheet_by_name("Sheet") is not None:
+            sheet = self.workbook.get_sheet_by_name('Sheet')
+            sheet.title = new_title
+        else:
+            sheet = self.workbook.create_sheet(str(new_title))
+
         new_sheet = self.report_location
         self.workbook.create_sheet(str(new_sheet))
         self.write_key(sheet)
