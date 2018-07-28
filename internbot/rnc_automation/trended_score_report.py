@@ -53,19 +53,17 @@ class TrendedScoreReport(object):
             new_workbook.save(save_path)
 
     def build_sheets(self, workbook, workbook_details):
-        default_sheet = False
-        if self.workbook.get_sheet_by_name("Sheet") is not None:
-            default_sheet = True
-
         sheet_names = workbook_details.list_sheet_names()
         for sheet_name in sheet_names:
-            if default_sheet is True:
+            try:
                 sheet = workbook.get_sheet_by_name("Sheet")
                 sheet.title = sheet_name
                 default_sheet = False
-            else:
+            except KeyError:
                 sheet = workbook.create_sheet(sheet_name)
-            self.write_sheet(sheet, workbook_details.get_sheet(sheet_name))
+            finally:
+                self.write_sheet(sheet, workbook_details.get_sheet(sheet_name))
+
 
     def write_sheet(self, sheet, sheet_details):
         self.write_first_row(sheet)
@@ -83,7 +81,7 @@ class TrendedScoreReport(object):
             sheet.merge_cells(start_column=1, end_column=1, start_row=current_row_field, end_row=end)
             current_row_field += group_count
             current_row_grouping = self.write_groupings(sheet, current_row_grouping, field_object)
-        self.write_difference(sheet, sheet_details)
+        self.write_differences(sheet, sheet_details)
             
 
     def write_first_row(self, current_sheet):
@@ -193,8 +191,12 @@ class TrendedScoreReport(object):
             round_iteration = self.rounds
             while round_iteration > 0:
                 round_cell = "%s%s" % (self.extend_alphabet[index], current_row)
-                current_sheet[round_cell].value = grouping.round_frequency(round_iteration)
-                current_sheet[round_cell].number_format = '0%'
+                frequency = grouping.round_frequency(round_iteration)
+                if frequency != "NA" and frequency != "":
+                    current_sheet[round_cell].value = float(frequency)
+                    current_sheet[round_cell].number_format = '0%'
+                else:
+                    current_sheet[round_cell].fill = self.grey
                 if current_row == 2:
                     current_sheet[round_cell].font = self.second_row
                     current_sheet[round_cell].fill = self.grey
@@ -202,8 +204,9 @@ class TrendedScoreReport(object):
                     current_sheet[round_cell].border = self.top_border
                 elif middle_border is True:
                     current_sheet[round_cell].border = self.middle_border
-                round_iteration -= 1
                 index += 1
+                round_iteration -= 1
+                    
 
             # borders
             if top_border is True:
@@ -249,7 +252,7 @@ class TrendedScoreReport(object):
 
         return current_row
 
-    def write_difference(self, sheet, current):
+    def write_differences(self, score_sheet, current):
         current_row = 2
         field_names = current.list_field_names()
         for field_name in field_names:
@@ -259,19 +262,73 @@ class TrendedScoreReport(object):
                 prev_diff_cell = "E%s" % (current_row)
                 first_diff_cell = "F%s" % (current_row)
 
-                current_round_cell = "G%s" % (current_row)
-                prev_round_cell = "H%s" % (current_row)
-                first_round_cell = "%s%s" % (self.extend_alphabet[self.rounds - 1], current_row)
-
                 if self.rounds == 1:
-                    sheet[prev_diff_cell].value = "--%"
-                    sheet[first_diff_cell].value = "--%"
+                    score_sheet[prev_diff_cell].value = "--%"
+                    score_sheet[first_diff_cell].value = "--%"
                 else:
-                    sheet[prev_diff_cell].value = "=%s - %s" % (current_round_cell, prev_round_cell)
-                    sheet[prev_diff_cell].fill = self.highlight(sheet[current_round_cell].value, sheet[prev_round_cell].value)
-                    sheet[first_diff_cell].value = "=%s - %s" % (current_round_cell, first_round_cell)
-                    sheet[first_diff_cell].fill = self.highlight(sheet[current_round_cell].value, sheet[first_round_cell].value)
+                    current_round_cell = "G%s" % (current_row)
+                    previous_round_cell = "H%s" % (current_row)
+                    first_round_cell = self.find_first_round(score_sheet, current, current_row)
+                    
+                    # check if first round is nonexistent
+                    no_first = False
+                    if first_round_cell == previous_round_cell:
+                        no_first = True
+
+                    # check if previous round is empty
+                    no_prev = False
+                    if score_sheet[previous_round_cell].value is None:
+                        no_prev = True
+
+                    # check if current round is empty
+                    no_current = False
+                    if score_sheet[current_round_cell].value is None:
+                        no_current = True
+
+                    ### figure out edge cases here ###
+                    ## a model with no current frequency -- a model taken off current round
+                    if no_current == True:
+                        score_sheet[prev_diff_cell].value = "--%"
+                        score_sheet[first_diff_cell].value = "--%"
+                    ## a model only added to the current round ##
+                    elif no_prev == True and no_first == True:
+                        score_sheet[prev_diff_cell].value = "--%"
+                        score_sheet[first_diff_cell].value = "--%"
+                    ## a model in first and current round only ##
+                    elif no_prev == True and no_first == False:
+                        score_sheet[prev_diff_cell].value = "--%"
+                        score_sheet[first_diff_cell].fill = self.highlight(score_sheet[current_round_cell].value, score_sheet[first_round_cell].value)
+                        score_sheet[first_diff_cell].value = "=%s - %s" % (current_round_cell, first_round_cell)
+                        score_sheet[first_diff_cell].number_format = '0%'
+                    ## a model in previous and current round only
+                    elif no_prev == False and no_first == True:
+                        score_sheet[first_diff_cell].fill = self.highlight(score_sheet[current_round_cell].value, score_sheet[first_round_cell].value)
+                        score_sheet[first_diff_cell].value = "=%s - %s" % (current_round_cell, first_round_cell)
+                        score_sheet[first_diff_cell].number_format = '0%'
+                        score_sheet[prev_diff_cell].fill = self.highlight(score_sheet[current_round_cell].value, score_sheet[previous_round_cell].value)
+                        score_sheet[prev_diff_cell].value = "=%s - %s" % (current_round_cell, previous_round_cell)
+                        score_sheet[prev_diff_cell].number_format = '0%'
+                    ## no current edge cases apply ##
+                    else:
+                        score_sheet[prev_diff_cell].fill = self.highlight(score_sheet[current_round_cell].value, score_sheet[previous_round_cell].value)
+                        score_sheet[prev_diff_cell].value = "=%s - %s" % (current_round_cell, previous_round_cell)
+                        score_sheet[prev_diff_cell].number_format = '0%'
+                        score_sheet[first_diff_cell].fill = self.highlight(score_sheet[current_round_cell].value, score_sheet[first_round_cell].value)
+                        score_sheet[first_diff_cell].value = "=%s - %s" % (current_round_cell, first_round_cell)
+                        score_sheet[first_diff_cell].number_format = '0%'
                 current_row += 1
+
+    def find_first_round(self, score_sheet, model, current_row):
+        index = self.rounds - 1
+        first_cell = "H%s" % current_row
+        while index > 1:
+            first_column = self.extend_alphabet[index]
+            test_cell = "%s%s" % (first_column, current_row)
+            if score_sheet[test_cell].value == None:
+                index -= 1
+            else:
+                return test_cell
+        return first_cell 
 
     def highlight(self, first_value, second_value):
         darkest_negative = PatternFill("solid", fgColor="B80001")

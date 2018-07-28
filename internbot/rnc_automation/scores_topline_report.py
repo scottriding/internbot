@@ -52,7 +52,7 @@ class ScoresToplineReport(object):
         self.build_sheets()
 
     def build_sheets(self):
-        new_title = "Key-%s" % (self.report_location)
+        new_title = "Key %s" % (self.report_location)
         if self.workbook.get_sheet_by_name("Sheet") is not None:
             sheet = self.workbook.get_sheet_by_name('Sheet')
             sheet.title = new_title
@@ -104,16 +104,17 @@ class ScoresToplineReport(object):
             key_sheet.column_dimensions["E"].width = 220
 
     def write_key_models(self, key_sheet):
-        current_row = 3
+        current_round_row = 3
+        previous_round_row = 3
         model_names = self.models.list_model_names()
         for model_name in model_names:
-            current_model_cell = "A%s" % current_row
-            current_refer_cell = "B%s" % current_row
-            previous_model_cell = "D%s" % current_row
-            previous_refer_cell = "E%s" % current_row
+            current_model_cell = "A%s" % current_round_row
+            current_refer_cell = "B%s" % current_round_row
+            previous_model_cell = "D%s" % previous_round_row
+            previous_refer_cell = "E%s" % previous_round_row
         
             current = self.models.get_model(model_name)
-        
+            
             # net model name
             key_sheet[current_model_cell].value = current.name
             key_sheet[current_model_cell].font = self.net_style
@@ -125,21 +126,26 @@ class ScoresToplineReport(object):
             key_sheet[current_refer_cell].border = self.all_border
             key_sheet[current_refer_cell].fill = self.key_models
 
+            current_round_row = self.write_current_key_variables(key_sheet, current, current_round_row)
+
             if self.rounds > 1:
-                # net model name
-                key_sheet[previous_model_cell].value = current.name
-                key_sheet[previous_model_cell].font = self.net_style
-                key_sheet[previous_model_cell].border = self.all_border
-                key_sheet[previous_model_cell].fill = self.key_models
-        
-                # net model survey question reference
-                key_sheet[previous_refer_cell].font = self.net_style
-                key_sheet[previous_refer_cell].border = self.all_border
-                key_sheet[previous_refer_cell].fill = self.key_models
+                # check if model is NA or not in this particular round
+                variable_names = current.list_variable_names()
+                freq_to_check = current.get_variable(variable_names[0]).round_weighted_freq(self.rounds-1)
+                if freq_to_check != "NA" and freq_to_check != "":
+                    # net model name
+                    key_sheet[previous_model_cell].value = current.name
+                    key_sheet[previous_model_cell].font = self.net_style
+                    key_sheet[previous_model_cell].border = self.all_border
+                    key_sheet[previous_model_cell].fill = self.key_models
+    
+                    # net model survey question reference
+                    key_sheet[previous_refer_cell].font = self.net_style
+                    key_sheet[previous_refer_cell].border = self.all_border
+                    key_sheet[previous_refer_cell].fill = self.key_models
+                    previous_round_row = self.write_previous_key_variables(key_sheet, current, previous_round_row)
 
-            current_row = self.write_key_variables(key_sheet, current, current_row)
-
-    def write_key_variables(self, key_sheet, model, current_row):
+    def write_current_key_variables(self, key_sheet, model, current_row):
         current_row += 1
         start = current_row
         variable_names = model.list_variable_names()
@@ -149,8 +155,7 @@ class ScoresToplineReport(object):
             middle_border = True
         for variable_name in variable_names:
             current_model_cell = "A%s" % current_row
-            previous_model_cell = "D%s" % current_row
-
+            
             # variable name
             key_sheet[current_model_cell].value = variable_name
             key_sheet[current_model_cell].font = self.key_style
@@ -160,30 +165,49 @@ class ScoresToplineReport(object):
             elif middle_border == True:
                 key_sheet[current_model_cell].border = self.middle_border
 
-            if self.rounds > 1:
-                # variable name
-                key_sheet[previous_model_cell].value = variable_name
-                key_sheet[previous_model_cell].font = self.key_style
-                key_sheet[previous_model_cell].fill = self.key_variables
-                if first_border == True:
-                    key_sheet[previous_model_cell].border = self.top_border
-                elif middle_border == True:
-                    key_sheet[previous_model_cell].border = self.middle_border
-
             first_border = False
             current_row += 1
         
         key_sheet[current_model_cell].border = self.bottom_border
-        if self.rounds > 1:
-            key_sheet[previous_model_cell].border = self.bottom_border
 
         end = current_row - 1
         length = len(variable_names)
-        self.write_key_reference(key_sheet, model, start, end, length)
+        self.write_current_key_reference(key_sheet, model, start, end, length)
+
+        return current_row
+
+    def write_previous_key_variables(self, key_sheet, model, current_row):
+        current_row += 1
+        start = current_row
+        variable_names = model.list_variable_names()
+        middle_border = False
+        first_border = True
+        if len(variable_names) > 2:
+            middle_border = True
+        for variable_name in variable_names:
+            previous_model_cell = "D%s" % current_row
+
+            # variable name
+            key_sheet[previous_model_cell].value = variable_name
+            key_sheet[previous_model_cell].font = self.key_style
+            key_sheet[previous_model_cell].fill = self.key_variables
+            if first_border == True:
+                key_sheet[previous_model_cell].border = self.top_border
+            elif middle_border == True:
+                key_sheet[previous_model_cell].border = self.middle_border
+
+            first_border = False
+            current_row += 1
+        
+        key_sheet[previous_model_cell].border = self.bottom_border
+        
+        end = current_row - 1
+        length = len(variable_names)
+        self.write_previous_key_reference(key_sheet, model, start, end, length)
 
         return current_row
         
-    def write_key_reference(self, key_sheet, model, start, end, length):
+    def write_current_key_reference(self, key_sheet, model, start, end, length):
         # model survey question reference
         current_refer_cell = "B%s" % start
         key_sheet.merge_cells(start_column=2, end_column=2, start_row=start, end_row = end)
@@ -191,35 +215,43 @@ class ScoresToplineReport(object):
         key_sheet[current_refer_cell].font = self.key_style
         key_sheet[current_refer_cell].fill = self.key_variables
 
-        # model survey question reference
-        if self.rounds > 1:
-            previous_refer_cell = "E%s" % start
-            key_sheet.merge_cells(start_column=5, end_column=5, start_row=start, end_row = end)
-            key_sheet[previous_refer_cell].value = model.description
-            key_sheet[previous_refer_cell].font = self.key_style
-            key_sheet[previous_refer_cell].fill = self.key_variables
-
         first_border = True
         middle_border = False
         if length > 2:
             middle_border = True
         while start <= end:
             current_refer_cell = "B%s" % start
-            previous_refer_cell = "E%s" % start
             if first_border == True:
                 key_sheet[current_refer_cell].border = self.top_border
-                if self.rounds > 1:
-                    key_sheet[previous_refer_cell].border = self.top_border
                 first_border = False
             elif middle_border == True:
                 key_sheet[current_refer_cell].border = self.middle_border
-                if self.rounds > 1:
-                    key_sheet[previous_refer_cell].border = self.middle_border
                 middle_border = False
             start += 1
         key_sheet[current_refer_cell].border = self.bottom_border
-        if self.rounds > 1:
-            key_sheet[previous_refer_cell].border = self.bottom_border
+
+    def write_previous_key_reference(self, key_sheet, model, start, end, length):
+        # model survey question reference
+        previous_refer_cell = "E%s" % start
+        key_sheet.merge_cells(start_column=5, end_column=5, start_row=start, end_row = end)
+        key_sheet[previous_refer_cell].value = model.description
+        key_sheet[previous_refer_cell].font = self.key_style
+        key_sheet[previous_refer_cell].fill = self.key_variables
+
+        first_border = True
+        middle_border = False
+        if length > 2:
+            middle_border = True
+        while start <= end:
+            previous_refer_cell = "E%s" % start
+            if first_border == True:
+                key_sheet[previous_refer_cell].border = self.top_border
+                first_border = False
+            elif middle_border == True:
+                key_sheet[previous_refer_cell].border = self.middle_border
+                middle_border = False
+            start += 1
+        key_sheet[previous_refer_cell].border = self.bottom_border
 
     def write_report(self, scores_sheet):
         self.write_report_titles(scores_sheet)
@@ -238,7 +270,7 @@ class ScoresToplineReport(object):
         score_sheet[current_prev_location].alignment = Alignment(horizontal='left', vertical='bottom', wrap_text=True)
         score_sheet["B2"].border = self.all_border
 
-        score_sheet.column_dimensions["B"].width = 13
+        score_sheet.column_dimensions["B"].width = 14
 
         score_sheet[current_first_location].value = "Current Round - First Round"
         score_sheet[current_first_location].font = self.titles_style
@@ -246,7 +278,7 @@ class ScoresToplineReport(object):
         score_sheet[current_first_location].alignment = Alignment(horizontal='left', vertical='bottom', wrap_text=True)
         score_sheet["C2"].border = self.all_border
 
-        score_sheet.column_dimensions["C"].width = 13
+        score_sheet.column_dimensions["C"].width = 14
 
         score_sheet[model_header_location].value = "Model"
         score_sheet[model_header_location].font = self.titles_style
@@ -268,15 +300,16 @@ class ScoresToplineReport(object):
             score_sheet[unweighted_cell].value = "Round %s %s" % (iteration, self.models.round_date(iteration))
             score_sheet[unweighted_cell].font = self.titles_style
             score_sheet[unweighted_cell].border = self.all_border
-            score_sheet.column_dimensions[self.extend_alphabet[index]].width = 13
-            score_sheet.column_dimensions[self.extend_alphabet[index + 1]].width = 13
+            score_sheet.column_dimensions[self.extend_alphabet[index]].width = 14
+            score_sheet.column_dimensions[self.extend_alphabet[index + 1]].width = 14
             end += 2
             iteration -= 1
             index += 2
 
         # merge for state name
-        score_sheet["D1"].value = "[REPORTING LOCATION]"
-        score_sheet["D1"].font = self.titles_style
+        score_sheet["D1"].value = self.report_location.upper()
+        score_sheet["D1"].font = Font(name = 'Calibri (Body)', size = 12, bold = True)
+        score_sheet["D1"].alignment = Alignment(horizontal='center', vertical='center')
         score_sheet.merge_cells(start_column=start, end_column=end - 1, start_row=1, end_row = 1)
 
     def write_report_models(self, score_sheet):
@@ -420,7 +453,7 @@ class ScoresToplineReport(object):
                 score_sheet[first_diff_cell].border = self.all_border
                 score_sheet[prev_diff_cell].value = "--%"
                 score_sheet[first_diff_cell].value = "--%"
-                current_row += 1
+                current_row = self.write_variable_differences(score_sheet, current, current_row)
             else:
                 # more than 1 round and not a Turnout General
                 current_round_cell = "E%s" % current_row
@@ -544,6 +577,7 @@ class ScoresToplineReport(object):
                 previous_round_cell = "G%s" % current_row
 
                 first_round_cell = self.find_first_round(score_sheet, model, current_row)
+                print first_round_cell
                 
                 # check if first round is nonexistent
                 no_first = False

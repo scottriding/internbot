@@ -21,7 +21,7 @@ class TrendedModelWorkbooks(object):
         while round_iteration <= self.rounds:
             round_header = "Round %s Frequency" % round_iteration
             date_header = "Round %s Date" % round_iteration
-            frequency = float(workbook_details[round_header])
+            frequency = workbook_details[round_header]
             date = workbook_details[date_header]
             frequencies.append(frequency)
             self.__round_dates.append(date)

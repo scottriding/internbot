@@ -90,10 +90,7 @@ class IssueTrendedField(object):
         while round_iteration <= self.rounds:
             frequency_header = "Round %s Frequency" % round_iteration
             frequency = field_data[frequency_header]
-            if frequency == "NA" or "":
-                frequencies.append("")
-            else:
-                frequencies.append(float(frequency))
+            frequencies.append(frequency)
             round_iteration += 1
 
         new_grouping = Grouping(count, frequencies)
