@@ -577,7 +577,6 @@ class ScoresToplineReport(object):
                 previous_round_cell = "G%s" % current_row
 
                 first_round_cell = self.find_first_round(score_sheet, model, current_row)
-                print first_round_cell
                 
                 # check if first round is nonexistent
                 no_first = False
