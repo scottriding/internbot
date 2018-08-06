@@ -440,7 +440,6 @@ class ScoresToplineReport(object):
 
         model_names = self.models.list_model_names()
         for model_name in model_names:
-            print(model_name)
             prev_diff_cell = "B%s" % current_row
             first_diff_cell = "C%s" % current_row
             if model_name == "Turnout General":
@@ -480,6 +479,7 @@ class ScoresToplineReport(object):
                     no_current = True
 
                 ### figure out edge cases here ###
+                ## a netmodel with no models
                 if len(current.list_variable_names()) == 1:
                     pass
                 ## a model with no current frequency -- a model taken off current round
@@ -532,8 +532,6 @@ class ScoresToplineReport(object):
         cell_two = cells_current[1]
         cell_one_value = score_sheet[cell_one].value
         cell_two_value = score_sheet[cell_two].value
-        print(cell_one_value)
-        print(cell_two_value)
         formula_current_solution = cell_one_value - cell_two_value
 
         # calculate first/prev round formula solution
@@ -573,8 +571,6 @@ class ScoresToplineReport(object):
                 score_sheet[first_diff_cell].border = self.middle_border
 
             if self.rounds == 1:
-                score_sheet[prev_diff_cell].border = self.all_border
-                score_sheet[first_diff_cell].border = self.all_border
                 score_sheet[prev_diff_cell].value = "--%"
                 score_sheet[first_diff_cell].value = "--%"
             else:
