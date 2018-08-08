@@ -54,6 +54,7 @@ class ReportGenerator(object):
                     matching_response = self.find_response(question_data['label'], matching_question)
                     if matching_response is not None:
                         self.add_frequency(matching_response, question_data['percent'])
+                        self.add_n(matching_question, question_data['n'])
                 
     def find_question(self, question_to_find, survey):
         matching_question = survey.blocks.find_question_by_name(question_to_find)
@@ -81,3 +82,7 @@ class ReportGenerator(object):
 
     def add_frequency(self, response, frequency):
         response.frequency = frequency
+
+    def add_n(self, question, n):
+        current_n = question.n
+        question.n = current_n + n

@@ -28,6 +28,7 @@ class ToplineReport(object):
         paragraph = self.doc.add_paragraph() # each question starts a new paragraph
         self.write_name(question.name, paragraph)
         self.write_prompt(question.prompt, paragraph)
+        self.write_n(question.n, paragraph)
         self.write_responses(question.responses)
         new = self.doc.add_paragraph("") # space between questions
         new.style = self.line_break
@@ -67,7 +68,10 @@ class ToplineReport(object):
         paragraph_format.first_line_indent = Inches(-1) # hanging indent if necessary
 
     def write_n(self, n, paragraph):
-        paragraph.add_run("(n = " + str(n) + ")")
+        if n != 0:
+            paragraph.add_run(" (n = " + str(n) + ")")
+        else:
+            paragraph.add_run(" (n = ADD HERE)")
 
     def write_responses(self, responses):
         table = self.doc.add_table(rows = 1, cols = 5)

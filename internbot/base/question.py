@@ -238,6 +238,7 @@ class Question(object):
         self.__has_mixed_responses = False
         self.__has_carry_forward_statements = False
         self.__has_carry_forward_answers = False
+        self.__n = 0
 
     @property
     def has_carry_forward_statements(self):

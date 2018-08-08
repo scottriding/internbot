@@ -64,7 +64,6 @@ class TrendedScoreReport(object):
             finally:
                 self.write_sheet(sheet, workbook_details.get_sheet(sheet_name))
 
-
     def write_sheet(self, sheet, sheet_details):
         print(sheet_details.name)
         self.write_first_row(sheet)
