@@ -34,10 +34,12 @@ class Internbot:
         Tkinter.Label(redirect_window, text = message).pack()
         btn_var = Tkinter.Button(redirect_window, text = "Variable script", command = self.variable_script)
         btn_tab = Tkinter.Button(redirect_window, text = "Table script", command = self.table_script)
+        btn_tab_2 = Tkinter.Button(redirect_window, text = "Trended table script", command = self.trended_table_script)
         btn_high = Tkinter.Button(redirect_window, text = "Highlight", command = self.highlight)
         btn_cancel = Tkinter.Button(redirect_window, text = "Cancel", command = redirect_window.destroy)
         btn_var.pack(padx = 5, side = Tkinter.LEFT, expand=True)
         btn_tab.pack(padx = 5, side = Tkinter.LEFT, expand=True)
+        btn_tab_2.pack(padx = 5, side = Tkinter.LEFT, expand=True)
         btn_high.pack(padx = 5, side = Tkinter.LEFT, expand=True)
         btn_cancel.pack(padx = 5, side = Tkinter.LEFT, expand=True)
 
@@ -91,19 +93,80 @@ class Internbot:
                 bases = crosstabs.Generate_Table_Script.TablesParser().pull_table_bases(self.tablesfilename)
                 self.banner_window(names, titles, bases)
 
-    def banner_window(self, names, titles, bases):
+    def trended_table_script(self):
+        script = crosstabs.Generate_Table_Script.TrendedTableScript()
+        ask_tables = tkMessageBox.askokcancel("Select Tables to Run.csv File", "Please select the tables to run .csv file.")
+        if ask_tables is True:
+            self.tablesfilename = tkFileDialog.askopenfilename(initialdir = self.fpath, title = "Select tables file",filetypes = (("comma seperated files","*.csv"),("all files","*.*")))
+            ask_banners = tkMessageBox.askokcancel("Banner selection", "Please insert/select the banners for this report.")
+            if ask_banners is True:
+                names = crosstabs.Generate_Table_Script.TablesParser().pull_table_names(self.tablesfilename)
+                titles = crosstabs.Generate_Table_Script.TablesParser().pull_table_titles(self.tablesfilename)
+                bases = crosstabs.Generate_Table_Script.TablesParser().pull_table_bases(self.tablesfilename)
+                self.trended_banner_window(names, titles, bases)
+
+    def trended_banner_window(self, names, titles, bases):
         self.edit_window = Tkinter.Toplevel(self.__window)
         self.edit_window.title("Banner selection")
 
         titles_frame = Tkinter.Frame(self.edit_window)
         titles_frame.pack()
 
-        #w = Tkinter.Label(self.edit_window, text="Red", bg="red", fg="white")
-        #w.pack(side=Tkinter.LEFT)
-        #w = Tkinter.Label(self.edit_window, text="Green", bg="green", fg="black")
-        #w.pack(side=Tkinter.LEFT)
-        #w = Tkinter.Label(self.edit_window, text="Blue", bg="blue", fg="white")
-        #w.pack(side=Tkinter.LEFT)
+        self.boxes_frame = Tkinter.Frame(self.edit_window)
+        self.boxes_frame.pack(fill=Tkinter.BOTH)
+
+        self.tables_box = Tkinter.Listbox(self.edit_window, selectmode="multiple", width=80, height=15)
+
+        self.tables_box.pack(padx = 15, pady=10,expand=True, side = Tkinter.LEFT, fill=Tkinter.BOTH)
+
+        self.banners_box = Tkinter.Listbox(self.edit_window)
+        self.banners_box.pack(padx = 15, pady=10, expand=True, side=Tkinter.RIGHT, fill=Tkinter.BOTH)
+
+        index = 0
+        while index < len(names):
+            self.tables_box.insert(Tkinter.END, names[index] + ": " + titles[index])
+            index += 1
+
+        btn_up = Tkinter.Button(self.edit_window, text = "Up", command = self.shift_up)
+        btn_down = Tkinter.Button(self.edit_window, text = "Down", command = self.shift_down)
+        btn_insert = Tkinter.Button(self.edit_window, text = "Insert", command = self.insert_banner)
+        btn_edit = Tkinter.Button(self.edit_window, text =   "Edit", command = self.parse_selection)
+        btn_create = Tkinter.Button(self.edit_window, text = "Create", command = self.create_banner)
+        btn_remove = Tkinter.Button(self.edit_window, text = "Remove", command = self.remove_banner)
+
+        btn_done = Tkinter.Button(self.edit_window, text = "Done", command = self.finish_trended_banner)
+
+        btn_done.pack(side=Tkinter.BOTTOM, pady=15)
+        btn_remove.pack(side=Tkinter.BOTTOM)
+        btn_create.pack(side=Tkinter.BOTTOM)
+        btn_edit.pack(side=Tkinter.BOTTOM)
+
+        btn_insert.pack(side=Tkinter.BOTTOM, pady=5)
+        btn_down.pack(side=Tkinter.BOTTOM)
+        btn_up.pack(side=Tkinter.BOTTOM)
+
+    def finish_trended_banner(self):
+        table_order = OrderedDict()
+        banner_list = OrderedDict()
+        for item in list(self.tables_box.get(0, Tkinter.END)):
+            question = item.split(": ")
+            table_order[question[0]] = question[1]
+        for item in list(self.banners_box.get(0, Tkinter.END)):
+            question = item.split(": ")
+            banner_list[question[0]] = question[1]
+        self.edit_window.destroy()
+        banners = banner_list.keys()
+        ask_output = tkMessageBox.askokcancel("Output directory", "Please select the directory for finished table script.")
+        if ask_output is True:
+            savedirectory = tkFileDialog.askdirectory()
+            crosstabs.Generate_Table_Script.TrendedTableScript().compile_scripts(self.tablesfilename, savedirectory, banners, self.__embedded_fields)
+
+    def banner_window(self, names, titles, bases):
+        self.edit_window = Tkinter.Toplevel(self.__window)
+        self.edit_window.title("Banner selection")
+
+        titles_frame = Tkinter.Frame(self.edit_window)
+        titles_frame.pack()
 
         self.boxes_frame = Tkinter.Frame(self.edit_window)
         self.boxes_frame.pack(fill=Tkinter.BOTH)
@@ -442,6 +505,7 @@ class Internbot:
 
     def build_report(self, isQSF, report):
         template_file = open("topline_template.docx", "r")
+        appendix_file = open("appendix.docx", "r")
         ask_output = tkMessageBox.askokcancel("Output directory", "Please select the directory for finished report.")
         if ask_output is True:
             savedirectory = tkFileDialog.askdirectory()
@@ -449,7 +513,12 @@ class Internbot:
                 ask_freq = tkMessageBox.askokcancel("Frequency file", "Please select the topline .csv frequency file.")
                 if ask_freq is True:
                     freqfilename = tkFileDialog.askopenfilename(initialdir = self.fpath, title = "Select frequency file",filetypes = (("comma seperated files","*.csv"),("all files","*.*")))
-                    report.generate_basic_topline(freqfilename, template_file, savedirectory)
+                    ask_open_ends = tkMessageBox.askokcancel("Open ends", "Please select the open-ends .csv file.")
+                    if ask_open_ends is True:
+                        open_ends_file = tkFileDialog.askopenfilename(initialdir = self.fpath, title = "Select open ends file",filetypes = (("comma seperated files","*.csv"),("all files","*.*")))
+                        report.generate_appendix(template_file, open_ends_file, savedirectory)
+                    else:
+                        report.generate_basic_topline(freqfilename, template_file, savedirectory)
             else:
                 report.generate_basic_topline(template_file, savedirectory)
 

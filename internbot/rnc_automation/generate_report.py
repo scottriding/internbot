@@ -5,6 +5,7 @@ from scores_topline_model import ScoreToplineModels
 from scores_topline_report import ScoresToplineReport
 from trended_score_model import TrendedModelWorkbooks
 from trended_score_report import TrendedScoreReport
+from model_generator import ModelFileGenerator
 
 class IssueTrendedReportGenerator(object):
 
@@ -52,4 +53,15 @@ class TrendedScoresReportGenerator(object):
 
     def generate_trended_scores(self, path_to_output, number_of_rounds):
         report = TrendedScoreReport(self.__workbooks, path_to_output, number_of_rounds)
+
+class TrendedModelGenerator(object):
+
+    ## generate model files via Scores Topline Frequencies file
+    ## I do this because that's the file we get the most intimate with
+    ## and start the project with
+    def __init__(self, path_to_scores_csv):
+        with open(path_to_csv, 'rb') as csvfile:
+            file = csv.DictReader(csvfile, quotechar = '"')
+            for model_data in file:
+                pass 
         

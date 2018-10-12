@@ -85,4 +85,4 @@ class ReportGenerator(object):
 
     def add_n(self, question, n):
         current_n = question.n
-        question.n = current_n + n
+        question.n = current_n + int(n)

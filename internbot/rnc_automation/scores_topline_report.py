@@ -322,7 +322,7 @@ class ScoresToplineReport(object):
                 score_sheet[description_cell].value = model_name
                 score_sheet[description_cell].font = self.net_score_style
                 score_sheet[description_cell].border = self.all_border
-
+                
                 unweighted_frequencies = self.models.get_model(model_name).get_variable(model_name).unweighted_frequencies()
 
                 iteration = self.rounds

@@ -1,2 +1,3 @@
 from table_script_generator import TableScript
+from trended_table_script_generator import TrendedTableScript
 from table_files_parser import TablesParser

@@ -70,8 +70,6 @@ class ToplineReport(object):
     def write_n(self, n, paragraph):
         if n != 0:
             paragraph.add_run(" (n = " + str(n) + ")")
-        else:
-            paragraph.add_run(" (n = ADD HERE)")
 
     def write_responses(self, responses):
         table = self.doc.add_table(rows = 1, cols = 5)
