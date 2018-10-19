@@ -83,7 +83,7 @@ class Internbot:
 
     def table_script(self):
         script = crosstabs.Generate_Table_Script.TableScript()
-        ask_tables = tkMessageBox.askokcancel("Select Tables to Run.csv File", "Please select the tables to run.csv file.")
+        ask_tables = tkMessageBox.askokcancel("Select Tables to Run.csv File", "Please select the tables to run .csv file.")
         if ask_tables is True:
             self.tablesfilename = tkFileDialog.askopenfilename(initialdir = self.fpath, title = "Select tables file",filetypes = (("comma seperated files","*.csv"),("all files","*.*")))
             ask_banners = tkMessageBox.askokcancel("Banner selection", "Please insert/select the banners for this report.")
@@ -95,7 +95,7 @@ class Internbot:
 
     def trended_table_script(self):
         script = crosstabs.Generate_Table_Script.TrendedTableScript()
-        ask_tables = tkMessageBox.askokcancel("Select Tables to Run.csv File", "Please select the tables to run.csv file.")
+        ask_tables = tkMessageBox.askokcancel("Select Tables to Run.csv File", "Please select the tables to run .csv file.")
         if ask_tables is True:
             self.tablesfilename = tkFileDialog.askopenfilename(initialdir = self.fpath, title = "Select tables file",filetypes = (("comma seperated files","*.csv"),("all files","*.*")))
             ask_banners = tkMessageBox.askokcancel("Banner selection", "Please insert/select the banners for this report.")
@@ -156,7 +156,7 @@ class Internbot:
             banner_list[question[0]] = question[1]
         self.edit_window.destroy()
         banners = banner_list.keys()
-        ask_output = tkMessageBox.askokcancel("Output directory", "Please select the directory for finished trended table script.")
+        ask_output = tkMessageBox.askokcancel("Output directory", "Please select the directory for finished table script.")
         if ask_output is True:
             savedirectory = tkFileDialog.askdirectory()
             crosstabs.Generate_Table_Script.TrendedTableScript().compile_scripts(self.tablesfilename, savedirectory, banners, self.__embedded_fields)
@@ -471,26 +471,24 @@ class Internbot:
         pass
 
     def highlight(self):
-        highlighter = crosstabs.Polish_Final_Report.Highlighter("/Users/y2analytics/Downloads", False)
-        highlighter.highlight("/Users/y2analytics/Downloads")
-        # ask_xlsx = tkMessageBox.askokcancel("Select Tables Microsoft Excel File", "Please select the combined table .xlsx file.")
-#         if ask_xlsx is True:
-#             tabsfilename = tkFileDialog.askopenfilename(initialdir = self.fpath, title = "Select combined Crosstabs report.",filetypes = (("Microsoft Excel","*.xlsx"),("all files","*.*")))
-#             renamer = crosstabs.Polish_Final_Report.RenameTabs()
-#             ask_tables = tkMessageBox.askokcancel("Select Tables .csv File", "Please select the Tables to run.csv file.")
-#             if ask_tables is True:
-#                 trended = False
-#                 tablesfilename = tkFileDialog.askopenfilename(initialdir = self.fpath, title = "Select Comma Seperated file",filetypes = (("comma seperated files","*.csv"),("all files","*.*")))
-#                 ask_output = tkMessageBox.askokcancel("Output directory", "Please select the directory for finished report.")
-#                 if ask_output is True:
-#                     savedirectory = tkFileDialog.askdirectory()
-#                     ask_amazon_trended = tkMessageBox.askquestion("Report type", "Is this an Amazon Trended Report file?")
-#                     if ask_amazon_trended == "yes":
-#                         trended = True
-#                     #renamer.rename(tabsfilename, tablesfilename, savedirectory)
-#                     highlighter = crosstabs.Polish_Final_Report.Highlighter(savedirectory, trended)
-#                     highlighter.highlight(savedirectory)
-#                     tkMessageBox.showinfo("Finished", "The highlighted report is saved as \"Highlighted.xlsx\" in your chosen directory.")
+        ask_xlsx = tkMessageBox.askokcancel("Select Tables Microsoft Excel File", "Please select the combined table .xlsx file.")
+        if ask_xlsx is True:
+            tabsfilename = tkFileDialog.askopenfilename(initialdir = self.fpath, title = "Select combined Crosstabs report.",filetypes = (("Microsoft Excel","*.xlsx"),("all files","*.*")))
+            renamer = crosstabs.Polish_Final_Report.RenameTabs()
+            ask_tables = tkMessageBox.askokcancel("Select Tables .csv File", "Please select the Tables to run.csv file.")
+            if ask_tables is True:
+                trended = False
+                tablesfilename = tkFileDialog.askopenfilename(initialdir = self.fpath, title = "Select Comma Seperated file",filetypes = (("comma seperated files","*.csv"),("all files","*.*")))
+                ask_output = tkMessageBox.askokcancel("Output directory", "Please select the directory for finished table script.")
+                if ask_output is True:
+                    savedirectory = tkFileDialog.askdirectory()
+                    ask_amazon_trended = tkMessageBox.askquestion("Report type", "Is this an Amazon Trended Report file?")
+                    if ask_amazon_trended == "yes":
+                        trended = True
+                    renamer.rename(tabsfilename, tablesfilename, savedirectory)
+                    highlighter = crosstabs.Polish_Final_Report.Highlighter(savedirectory, trended)
+                    highlighter.highlight(savedirectory)
+                    tkMessageBox.showinfo("Finished", "The highlighted report is saved as \"Highlighted.xlsx\" in your chosen directory.")
 
     def open_topline(self):
         filename = tkFileDialog.askopenfilename(initialdir = self.fpath, title = "Select survey file",filetypes = (("Qualtrics files","*.qsf"),("comma seperated files","*.csv"),("all files","*.*")))
@@ -507,7 +505,7 @@ class Internbot:
 
     def build_report(self, isQSF, report):
         template_file = open("topline_template.docx", "r")
-        #appendix_file = open("appendix.docx", "r")
+        appendix_file = open("appendix.docx", "r")
         ask_output = tkMessageBox.askokcancel("Output directory", "Please select the directory for finished report.")
         if ask_output is True:
             savedirectory = tkFileDialog.askdirectory()

@@ -42,7 +42,6 @@ class ToplineReport(object):
         table = self.doc.add_table(rows = 1, cols = 5)
         first_row = True
         for response in responses:
-            print response
             response_cells = table.add_row().cells
             response_cells[1].merge(response_cells[2])
             response_cells[1].text = response

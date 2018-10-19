@@ -11,9 +11,9 @@ class Cells(object):
 
     def matching_cells(self, value_to_match):
         for cell in self.__cells:
-             if cell.row == value_to_match.row and \
-             cell. column == value_to_match.column and \
-             cell.location != value_to_match.location:
+            if cell.row == value_to_match.row and \
+            cell. column == value_to_match.column and \
+            cell.location != value_to_match.location:
                 match = cell
         return match
 
