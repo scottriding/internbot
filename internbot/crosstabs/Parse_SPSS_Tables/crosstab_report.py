@@ -10,6 +10,8 @@ class CrosstabReportWriter(object):
         self.__workbook = Workbook()
 
         self.highlight_style = PatternFill("solid", fgColor="2DCCD3")
+        self.shading_style = PatternFill("solid", fgColor="E7E6E6")
+
         self.__font_reg = Font(name = 'Arial', size = 8)
         self.__font_bold = Font(name = 'Arial', size = 8, bold = True)
         self.__center_align = Alignment(horizontal="left", vertical="center")
@@ -17,6 +19,11 @@ class CrosstabReportWriter(object):
 
         self.__report_header = PatternFill("solid", fgColor="1E262E")
         self.__table_liner = PatternFill("solid", fgColor="E7E6E6")
+
+        self.__thin_bottom = Border(bottom=Side(style='thin'))
+        self.__thick_bottom = Border(bottom=Side(style='thick'))
+        
+        self.__last_col = 'A'
 
         # calculate the excel alphabet from A to ZZZ
         alphabet = []
@@ -84,24 +91,28 @@ class CrosstabReportWriter(object):
             else:
                 current_table_name = "Table %s" % iteration
 
-            sheet[current_table_cell].font = self.__font_reg
-            sheet[current_table_cell].value = '=HYPERLINK("#%s!A1","%s")' % (current_table_name, current_table_name)
+            sheet[current_table_cell].font = Font(name = 'Arial', size = 8, underline = 'single')
+            sheet[current_table_cell].value = "=HYPERLINK(\"#'%s'!A1\",\"%s\")" % (current_table_name, current_table_name)
             sheet[current_table_cell].alignment = self.__center_align
+            sheet[current_table_cell].border = self.__thin_bottom
 
             sheet[current_question_title].font = self.__font_reg
             sheet[current_question_title].value = table.name
             sheet[current_question_title].alignment = self.__center_align
+            sheet[current_question_title].border = self.__thin_bottom
 
             sheet[current_base_desc].font = self.__font_reg
             sheet[current_base_desc].value = table.base_description
             sheet[current_base_desc].alignment = self.__center_align
+            sheet[current_base_desc].border = self.__thin_bottom
 
             sheet[current_base_size].font = self.__font_reg
             sheet[current_base_size].value = table.base_size
             sheet[current_base_size].alignment = self.__center_align
+            sheet[current_base_size].border = self.__thin_bottom
 
             iteration += 1
-            current_row += 1
+            current_row += 1 
         
     def write_toc_titles(self, sheet):
         sheet.row_dimensions[1].height = 35
@@ -144,6 +155,8 @@ class CrosstabReportWriter(object):
         
     def write_table_titles(self, sheet, table):
         number_of_cols = table.count_banner_pts + 3
+        self.__last_col = self.extend_alphabet[number_of_cols]
+
         sheet.row_dimensions[1].height = 35
 
         sheet["A1"].fill = self.__report_header
@@ -325,13 +338,17 @@ class CrosstabReportWriter(object):
     def write_reponse_details(self, sheet, table, current_row):
         current_cell = "A%s" % current_row
         sheet[current_cell].value = table.name
+        sheet[current_cell].fill = self.shading_style
         sheet[current_cell].font = self.__font_bold
         sheet[current_cell].alignment = Alignment(horizontal="left", vertical="top", wrapText=True)
         sheet.merge_cells(start_column=1, end_column=1, start_row = current_row, end_row=current_row+2 + len(table.responses)*3)
+        bottom_cell = "A%s" % str(current_row+2)
+        sheet[bottom_cell].border = self.__thick_bottom
         for response in table.responses:
             current_cell = "B%s" % current_row
             sheet[current_cell].value = response.name
             sheet[current_cell].font = self.__font_bold
+            sheet[current_cell].fill = self.shading_style
             sheet[current_cell].alignment = Alignment(horizontal="left", vertical="center", wrapText=True)
             sheet.merge_cells(start_column=2, end_column=2, start_row=current_row, end_row = current_row+2)
             current_row += 3
@@ -339,6 +356,8 @@ class CrosstabReportWriter(object):
         current_cell = "B%s" % current_row
         sheet[current_cell].value = "Total"
         sheet[current_cell].font = self.__font_bold
+        sheet[current_cell].border = self.__thick_bottom
+        sheet[current_cell].fill = self.shading_style
         sheet[current_cell].alignment = Alignment(horizontal="left", vertical="center", wrapText=True)
         sheet.merge_cells(start_column=2, end_column=2, start_row=current_row, end_row = current_row+2)
        
