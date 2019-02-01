@@ -171,9 +171,7 @@ class ToplineReport(object):
         return str(result)
 
     def avgs_percent(self, average):
-        if average > 0 and average < 1:
+        if average >= 0 and average < 1:
             return '<1'
-        elif average == 0:
-            return '*'
         result = int(round(average))
         return str(result)

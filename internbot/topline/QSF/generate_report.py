@@ -1,5 +1,4 @@
 from topline_report import ToplineReport
-from topline_ppt import ToplinePPT
 from topline_appendix import ToplineAppendix
 import csv
 import re
@@ -18,10 +17,10 @@ class ReportGenerator(object):
         self.assign_text_responses(path_to_appendix)
         self.generate_basic_topline(path_to_csv, path_to_template, path_to_output)
         self.assign_frequencies(path_to_csv)
-        #open_ended_questions = [question for question in self.__questions \
-        #                        if question.text_entry == True]
-        #report = ToplineAppendix()
-        #report.write_with_topline(open_ended_questions, str(path_to_output) + '/basic_topline.docx')
+        open_ended_questions = [question for question in self.__questions \
+                                if question.text_entry == True]
+        report = ToplineAppendix()
+        report.write_with_topline(open_ended_questions, str(path_to_output) + '/basic_topline.docx')
         report.save(str(path_to_output) + '/full_topline.docx')
 
     def generate_appendix(self, path_to_template, path_to_appendix, path_to_output):
@@ -31,10 +30,6 @@ class ReportGenerator(object):
                                 if question.text_entry == True]
         report.write_independent(open_ended_questions, path_to_template)
         report.save(str(path_to_output) + '/appendix.docx')
-
-    def generate_ppt(self, path_to_template, path_to_output):
-        report = ToplinePPT(self.__questions, path_to_template)
-        report.save(str(path_to_output) + '/topline.pptx')
 
     def assign_text_responses(self, path_to_appendix):
         with open(path_to_appendix, 'rb') as appendix_file:
@@ -55,6 +50,7 @@ class ReportGenerator(object):
                     if matching_response is not None:
                         self.add_frequency(matching_response, question_data['percent'])
                         self.add_n(matching_question, question_data['n'])
+                        #self.add_display_logic(matching_question, question_data['display'])
                 
     def find_question(self, question_to_find, survey):
         matching_question = survey.blocks.find_question_by_name(question_to_find)
@@ -75,7 +71,7 @@ class ReportGenerator(object):
             question.add_NA()
             return question.get_NA()
         responses = question.responses
-        matching_response = next((response for response in responses if response.code == response_to_find), None)
+        matching_response = next((response for response in responses if response.response == response_to_find), None)
         if response_to_find == 'On':
             matching_response = next((response for response in responses if response.response == '1'), None)
         return matching_response
