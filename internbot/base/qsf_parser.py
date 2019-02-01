@@ -317,9 +317,12 @@ class QSFQuestionsMatrixParser(object):
         question.prompt = self.strip_tags(prompt['Display'].encode('ascii', 'ignore'))
         question.response_order = question_payload['AnswerOrder']
         for code, response in responses.iteritems():
-            response_name = self.strip_tags(response['Display'] \
-                            .encode('ascii','ignore'))
-            question.add_response(response_name, code)
+            try:
+                response_name = self.strip_tags(response['Display'] \
+                                .encode('ascii','ignore'))
+                question.add_response(response_name, code)
+            except:
+                pass
         return question
         
     def matrix_details(self, matrix_question, question_payload):

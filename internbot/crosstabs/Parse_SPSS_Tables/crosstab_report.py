@@ -85,7 +85,7 @@ class CrosstabReportWriter(object):
                 current_table_name = "Table %s" % iteration
 
             sheet[current_table_cell].font = self.__font_reg
-            sheet[current_table_cell].value = current_table_name
+            sheet[current_table_cell].value = '=HYPERLINK("#%s!A1","%s")' % (current_table_name, current_table_name)
             sheet[current_table_cell].alignment = self.__center_align
 
             sheet[current_question_title].font = self.__font_reg
@@ -115,7 +115,7 @@ class CrosstabReportWriter(object):
         sheet["C1"].fill = self.__report_header
         sheet["D1"].fill = self.__report_header
 
-        image = Image("Picture1.png")
+        image = Image("QLogo.png")
         sheet.add_image(image, "D1")
 
         sheet["A2"].font = self.__font_bold
@@ -179,7 +179,7 @@ class CrosstabReportWriter(object):
             index += 1
 
         current_cell = "%s%s" % (self.extend_alphabet[index - 3], current_row)
-        logo = Image("Picture1.png")
+        logo = Image("QLogo.png")
         sheet.add_image(logo, current_cell)
 
         next_row_cell = "%s%s" % (self.extend_alphabet[index - 3], current_row + 1)

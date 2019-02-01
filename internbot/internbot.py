@@ -30,40 +30,17 @@ class Internbot:
 
     def tabs_menu(self):
         redirect_window = Tkinter.Toplevel(self.__window)
-        message = "Please select template to use"
-        Tkinter.Label(redirect_window, text = message).pack()
-        btn_qual = Tkinter.Button(redirect_window, text = "Qualtrics", command = self.qualtrics_tab_menu)
-        btn_gen = Tkinter.Button(redirect_window, text = "Generic", command = self.generic_tab_menu)
-        btn_cancel = Tkinter.Button(redirect_window, text = "Cancel", command = redirect_window.destroy)
-        btn_qual.pack(padx = 5, side = Tkinter.LEFT, expand=True)
-        btn_gen.pack(padx = 5, side = Tkinter.LEFT, expand=True)
-        
-    def qualtrics_tab_menu(self):
-        redirect_window = Tkinter.Toplevel(self.__window)
-        message = "Please select the files to produce."
-        Tkinter.Label(redirect_window, text = message).pack()
-        btn_var = Tkinter.Button(redirect_window, text = "SPSS scripts", command = self.spss_scripts)
-        btn_high = Tkinter.Button(redirect_window, text = "Format tables", command = self.generate_templated_xtabs)
-        btn_cancel = Tkinter.Button(redirect_window, text = "Cancel", command = redirect_window.destroy)
-        btn_var.pack(padx = 5, side = Tkinter.LEFT, expand=True)
-        btn_tab.pack(padx = 5, side = Tkinter.LEFT, expand=True)
-        btn_tab_2.pack(padx = 5, side = Tkinter.LEFT, expand=True)
-        btn_high.pack(padx = 5, side = Tkinter.LEFT, expand=True)
-        btn_cancel.pack(padx = 5, side = Tkinter.LEFT, expand=True)
-
-    def generic_tab_menu(self):
-        redirect_window = Tkinter.Toplevel(self.__window)
         message = "Please select the files to produce."
         Tkinter.Label(redirect_window, text = message).pack()
         btn_var = Tkinter.Button(redirect_window, text = "Variable script", command = self.variable_script)
         btn_tab = Tkinter.Button(redirect_window, text = "Table script", command = self.table_script)
         btn_tab_2 = Tkinter.Button(redirect_window, text = "Trended table script", command = self.trended_table_script)
-        btn_high = Tkinter.Button(redirect_window, text = "Highlight", command = self.highlight)
+        btn_compile = Tkinter.Button(redirect_window, text = "Build report", command = self.build_xtabs)
         btn_cancel = Tkinter.Button(redirect_window, text = "Cancel", command = redirect_window.destroy)
         btn_var.pack(padx = 5, side = Tkinter.LEFT, expand=True)
         btn_tab.pack(padx = 5, side = Tkinter.LEFT, expand=True)
         btn_tab_2.pack(padx = 5, side = Tkinter.LEFT, expand=True)
-        btn_high.pack(padx = 5, side = Tkinter.LEFT, expand=True)
+        btn_compile.pack(padx = 5, side = Tkinter.LEFT, expand=True)
         btn_cancel.pack(padx = 5, side = Tkinter.LEFT, expand=True)
 
     def topline_menu(self):
@@ -90,12 +67,6 @@ class Internbot:
         brn_ind_trended.pack(ipadx = 5, side = Tkinter.LEFT, expand=True)
         btn_cancel.pack(ipadx = 5, side = Tkinter.LEFT, expand=True)
 
-    def spss_scripts(self):
-        pass
-
-    def generate_templated_xtabs(self):
-        pass
-
     def variable_script(self):
         ask_qsf = tkMessageBox.askokcancel("Select Qualtrics File", "Please select the Qualtrics survey .qsf file.")
         if ask_qsf is True: # user selected ok
@@ -105,33 +76,33 @@ class Internbot:
             ask_output = tkMessageBox.askokcancel("Output directory", "Please select the directory for finished variable script.")
             if ask_output is True: # user selected ok
                 savedirectory = tkFileDialog.askdirectory()
-                variables = crosstabs.v_1.Generate_Prelim_SPSS_Script.SPSSTranslator()
-                tables = crosstabs.v_1.Generate_Prelim_SPSS_Script.TableDefiner()    
+                variables = crosstabs.Generate_Prelim_SPSS_Script.SPSSTranslator()
+                tables = crosstabs.Generate_Prelim_SPSS_Script.TableDefiner()    
                 variables.define_variables(survey, savedirectory)
                 tables.define_tables(survey, savedirectory)
 
     def table_script(self):
-        script = crosstabs.v_1.Generate_Table_Script.TableScript()
+        script = crosstabs.Generate_Table_Script.TableScript()
         ask_tables = tkMessageBox.askokcancel("Select Tables to Run.csv File", "Please select the tables to run .csv file.")
         if ask_tables is True:
             self.tablesfilename = tkFileDialog.askopenfilename(initialdir = self.fpath, title = "Select tables file",filetypes = (("comma seperated files","*.csv"),("all files","*.*")))
             ask_banners = tkMessageBox.askokcancel("Banner selection", "Please insert/select the banners for this report.")
             if ask_banners is True:
-                names = crosstabs.v_1.Generate_Table_Script.TablesParser().pull_table_names(self.tablesfilename)
-                titles = crosstabs.v_1.Generate_Table_Script.TablesParser().pull_table_titles(self.tablesfilename)
-                bases = crosstabs.v_1.Generate_Table_Script.TablesParser().pull_table_bases(self.tablesfilename)
+                names = crosstabs.Generate_Table_Script.TablesParser().pull_table_names(self.tablesfilename)
+                titles = crosstabs.Generate_Table_Script.TablesParser().pull_table_titles(self.tablesfilename)
+                bases = crosstabs.Generate_Table_Script.TablesParser().pull_table_bases(self.tablesfilename)
                 self.banner_window(names, titles, bases)
 
     def trended_table_script(self):
-        script = crosstabs.v_1.Generate_Table_Script.TrendedTableScript()
+        script = crosstabs.Generate_Table_Script.TrendedTableScript()
         ask_tables = tkMessageBox.askokcancel("Select Tables to Run.csv File", "Please select the tables to run .csv file.")
         if ask_tables is True:
             self.tablesfilename = tkFileDialog.askopenfilename(initialdir = self.fpath, title = "Select tables file",filetypes = (("comma seperated files","*.csv"),("all files","*.*")))
             ask_banners = tkMessageBox.askokcancel("Banner selection", "Please insert/select the banners for this report.")
             if ask_banners is True:
-                names = crosstabs.v_1.Generate_Table_Script.TablesParser().pull_table_names(self.tablesfilename)
-                titles = crosstabs.v_1.Generate_Table_Script.TablesParser().pull_table_titles(self.tablesfilename)
-                bases = crosstabs.v_1.Generate_Table_Script.TablesParser().pull_table_bases(self.tablesfilename)
+                names = crosstabs.Generate_Table_Script.TablesParser().pull_table_names(self.tablesfilename)
+                titles = crosstabs.Generate_Table_Script.TablesParser().pull_table_titles(self.tablesfilename)
+                bases = crosstabs.Generate_Table_Script.TablesParser().pull_table_bases(self.tablesfilename)
                 self.trended_banner_window(names, titles, bases)
 
     def trended_banner_window(self, names, titles, bases):
@@ -188,7 +159,7 @@ class Internbot:
         ask_output = tkMessageBox.askokcancel("Output directory", "Please select the directory for finished table script.")
         if ask_output is True:
             savedirectory = tkFileDialog.askdirectory()
-            crosstabs.v_1.Generate_Table_Script.TrendedTableScript().compile_scripts(self.tablesfilename, savedirectory, banners, self.__embedded_fields)
+            crosstabs.Generate_Table_Script.TrendedTableScript().compile_scripts(self.tablesfilename, savedirectory, banners, self.__embedded_fields)
 
     def banner_window(self, names, titles, bases):
         self.edit_window = Tkinter.Toplevel(self.__window)
@@ -493,31 +464,18 @@ class Internbot:
         ask_output = tkMessageBox.askokcancel("Output directory", "Please select the directory for finished table script.")
         if ask_output is True:
             savedirectory = tkFileDialog.askdirectory()
-            crosstabs.v_1.Generate_Table_Script.TableScript().compile_scripts(self.tablesfilename, savedirectory, banners, self.__embedded_fields)
+            crosstabs.Generate_Table_Script.TableScript().compile_scripts(self.tablesfilename, savedirectory, banners, self.__embedded_fields)
             self.reorder_tablesfile(savedirectory, table_order)
 
-    def reorder_tablesfile(self, savedirectory, table_order):
-        pass
-
-    def highlight(self):
-        ask_xlsx = tkMessageBox.askokcancel("Select Tables Microsoft Excel File", "Please select the combined table .xlsx file.")
-        if ask_xlsx is True:
-            tabsfilename = tkFileDialog.askopenfilename(initialdir = self.fpath, title = "Select combined Crosstabs report.",filetypes = (("Microsoft Excel","*.xlsx"),("all files","*.*")))
-            renamer = crosstabs.v_1.Polish_Final_Report.RenameTabs()
-            ask_tables = tkMessageBox.askokcancel("Select Tables .csv File", "Please select the Tables to run.csv file.")
-            if ask_tables is True:
-                trended = False
-                tablesfilename = tkFileDialog.askopenfilename(initialdir = self.fpath, title = "Select Comma Seperated file",filetypes = (("comma seperated files","*.csv"),("all files","*.*")))
-                ask_output = tkMessageBox.askokcancel("Output directory", "Please select the directory for finished table script.")
-                if ask_output is True:
-                    savedirectory = tkFileDialog.askdirectory()
-                    ask_amazon_trended = tkMessageBox.askquestion("Report type", "Is this an Amazon Trended Report file?")
-                    if ask_amazon_trended == "yes":
-                        trended = True
-                    renamer.rename(tabsfilename, tablesfilename, savedirectory)
-                    highlighter = crosstabs.v_1.Polish_Final_Report.Highlighter(savedirectory, trended)
-                    highlighter.highlight(savedirectory)
-                    tkMessageBox.showinfo("Finished", "The highlighted report is saved as \"Highlighted.xlsx\" in your chosen directory.")
+    def build_xtabs(self):
+        ask_directory = tkMessageBox.askokcancel("Select Tables Folder", "Please select the folder containing SPSS generated .xlsx table files.")
+        if ask_directory is True:
+            tablesdirectory = tkFileDialog.askdirectory()
+            builder = crosstabs.Parse_SPSS_Tables.CrosstabGenerator(tablesdirectory)
+            ask_output = tkMessageBox.askokcancel("Output directory", "Please select the directory for finished report.")
+            if ask_output is True:
+                outputdirectory = tkFileDialog.askdirectory()
+                builder.write_report(outputdirectory)
 
     def open_topline(self):
         filename = tkFileDialog.askopenfilename(initialdir = self.fpath, title = "Select survey file",filetypes = (("Qualtrics files","*.qsf"),("comma seperated files","*.csv"),("all files","*.*")))
@@ -534,7 +492,6 @@ class Internbot:
 
     def build_report(self, isQSF, report):
         template_file = open("topline_template.docx", "r")
-        #appendix_file = open("appendix.docx", "r")
         ask_output = tkMessageBox.askokcancel("Output directory", "Please select the directory for finished report.")
         if ask_output is True:
             savedirectory = tkFileDialog.askdirectory()

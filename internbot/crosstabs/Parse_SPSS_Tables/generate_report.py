@@ -27,4 +27,4 @@ class CrosstabGenerator(object):
     def write_report(self, path_to_output):
         report = CrosstabReportWriter(self.__crosstab_details)
         report.write_report()
-        report.save(path_to_output)
+        report.save(path_to_output + "/Crosstab Report.xlsx")

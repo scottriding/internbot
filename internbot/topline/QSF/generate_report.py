@@ -18,10 +18,10 @@ class ReportGenerator(object):
         self.assign_text_responses(path_to_appendix)
         self.generate_basic_topline(path_to_csv, path_to_template, path_to_output)
         self.assign_frequencies(path_to_csv)
-        open_ended_questions = [question for question in self.__questions \
-                                if question.text_entry == True]
-        report = ToplineAppendix()
-        report.write_with_topline(open_ended_questions, str(path_to_output) + '/basic_topline.docx')
+        #open_ended_questions = [question for question in self.__questions \
+        #                        if question.text_entry == True]
+        #report = ToplineAppendix()
+        #report.write_with_topline(open_ended_questions, str(path_to_output) + '/basic_topline.docx')
         report.save(str(path_to_output) + '/full_topline.docx')
 
     def generate_appendix(self, path_to_template, path_to_appendix, path_to_output):
@@ -75,7 +75,7 @@ class ReportGenerator(object):
             question.add_NA()
             return question.get_NA()
         responses = question.responses
-        matching_response = next((response for response in responses if response.response == response_to_find), None)
+        matching_response = next((response for response in responses if response.code == response_to_find), None)
         if response_to_find == 'On':
             matching_response = next((response for response in responses if response.response == '1'), None)
         return matching_response
