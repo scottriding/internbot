@@ -22,8 +22,8 @@ class CrosstabReportWriter(object):
 
         self.__thin_bottom = Border(bottom=Side(style='thin'))
         self.__thick_bottom = Border(bottom=Side(style='thick'))
-        
-        self.__last_col = 'A'
+        self.__thin_top = Border(top=Side(style='thin'))
+        self.__thin_left = Border(left=Side(style='thin'))
 
         # calculate the excel alphabet from A to ZZZ
         alphabet = []
@@ -152,11 +152,10 @@ class CrosstabReportWriter(object):
         self.write_reponse_details(sheet, table, current_row)
         current_row = self.write_cross_details(sheet, table, current_row)
         self.sig_definition(sheet, current_row, table)
+        self.place_table_border(sheet, current_row, table)
         
     def write_table_titles(self, sheet, table):
         number_of_cols = table.count_banner_pts + 3
-        self.__last_col = self.extend_alphabet[number_of_cols]
-
         sheet.row_dimensions[1].height = 35
 
         sheet["A1"].fill = self.__report_header
@@ -207,6 +206,7 @@ class CrosstabReportWriter(object):
 
         for banner in table.banners:
             current_row = 3
+            sheet.row_dimensions[current_row].height = 34
             banner_depth = len(banner)
             letter_row = 2 + banner_depth
             banner_index = 0
@@ -225,7 +225,8 @@ class CrosstabReportWriter(object):
                     sheet[banner_cell].alignment = Alignment(horizontal="center", vertical="center", wrapText=True)
                     banner_index += 1
                 current_row += 1
-            col_index += 1
+            col_index += 1        
+
         self.merge_banners(sheet, table, letter_row)
         sheet.merge_cells(start_column=1, end_column=2, start_row=3, end_row=current_row-1)
         letter_cell = "C%s" % str(letter_row)
@@ -266,6 +267,31 @@ class CrosstabReportWriter(object):
             value = to_merge.get(key)
             sheet.merge_cells(value)
 
+    def write_reponse_details(self, sheet, table, current_row):
+        current_cell = "A%s" % current_row
+        sheet[current_cell].value = table.name
+        sheet[current_cell].fill = self.shading_style
+        sheet[current_cell].font = self.__font_bold
+        sheet[current_cell].alignment = Alignment(horizontal="left", vertical="top", wrapText=True)
+        sheet.merge_cells(start_column=1, end_column=1, start_row = current_row, end_row=current_row+2 + len(table.responses)*3)
+        bottom_cell = "A%s" % str(current_row+2)
+        sheet[bottom_cell].border = self.__thick_bottom
+        for response in table.responses:
+            current_cell = "B%s" % current_row
+            sheet[current_cell].value = response.name
+            sheet[current_cell].font = self.__font_bold
+            sheet[current_cell].fill = self.shading_style
+            sheet[current_cell].alignment = Alignment(horizontal="left", vertical="center", wrapText=True)
+            sheet.merge_cells(start_column=2, end_column=2, start_row=current_row, end_row = current_row+2)
+            current_row += 3
+        
+        current_cell = "B%s" % current_row
+        sheet[current_cell].value = "Total"
+        sheet[current_cell].font = self.__font_bold
+        sheet[current_cell].fill = self.shading_style
+        sheet[current_cell].alignment = Alignment(horizontal="left", vertical="center", wrapText=True)
+        sheet.merge_cells(start_column=2, end_column=2, start_row=current_row, end_row = current_row+2)    
+
     def write_cross_details(self, sheet, table, current_row):
         self.banner_totals = {}
         for response in table.responses:
@@ -283,6 +309,7 @@ class CrosstabReportWriter(object):
             sheet[current_cell].value = response.sig_details
             sheet[current_cell].alignment = self.__align
             sheet[current_cell].font = self.__font_reg
+            sheet[current_cell].border = self.__thin_bottom
             for banner_pt in response.banner_pts:
                 current_col_index += 1
                 current_cell = "%s%s" % (self.extend_alphabet[current_col_index], str(current_row))
@@ -296,6 +323,7 @@ class CrosstabReportWriter(object):
                 sheet[current_cell].number_format = '0%'
                 current_cell = "%s%s" % (self.extend_alphabet[current_col_index], str(current_row + 2))
                 sheet[current_cell].value = banner_pt.sig_details
+                sheet[current_cell].border = self.__thin_bottom
                 if banner_pt.sig_details.isupper() is True:
                     sheet[current_cell].fill = self.highlight_style
                 sheet[current_cell].alignment = self.__align
@@ -334,33 +362,7 @@ class CrosstabReportWriter(object):
                   
         current_row += 3
         return current_row
-      
-    def write_reponse_details(self, sheet, table, current_row):
-        current_cell = "A%s" % current_row
-        sheet[current_cell].value = table.name
-        sheet[current_cell].fill = self.shading_style
-        sheet[current_cell].font = self.__font_bold
-        sheet[current_cell].alignment = Alignment(horizontal="left", vertical="top", wrapText=True)
-        sheet.merge_cells(start_column=1, end_column=1, start_row = current_row, end_row=current_row+2 + len(table.responses)*3)
-        bottom_cell = "A%s" % str(current_row+2)
-        sheet[bottom_cell].border = self.__thick_bottom
-        for response in table.responses:
-            current_cell = "B%s" % current_row
-            sheet[current_cell].value = response.name
-            sheet[current_cell].font = self.__font_bold
-            sheet[current_cell].fill = self.shading_style
-            sheet[current_cell].alignment = Alignment(horizontal="left", vertical="center", wrapText=True)
-            sheet.merge_cells(start_column=2, end_column=2, start_row=current_row, end_row = current_row+2)
-            current_row += 3
-        
-        current_cell = "B%s" % current_row
-        sheet[current_cell].value = "Total"
-        sheet[current_cell].font = self.__font_bold
-        sheet[current_cell].border = self.__thick_bottom
-        sheet[current_cell].fill = self.shading_style
-        sheet[current_cell].alignment = Alignment(horizontal="left", vertical="center", wrapText=True)
-        sheet.merge_cells(start_column=2, end_column=2, start_row=current_row, end_row = current_row+2)
-       
+             
     def sig_definition(self, sheet, current_row, table):
         significant_definitions = table.sig_desc
         for definition in significant_definitions:
@@ -368,5 +370,20 @@ class CrosstabReportWriter(object):
             sheet[current_cell].value = definition
             sheet[current_cell].font = Font(name = 'Arial', size = 6)
             current_row += 1
+
+    def place_table_border(self, sheet, current_row, table):
+        number_of_cols = table.count_banner_pts + 3
+        index = 0
+        while index < number_of_cols:
+            current_cell = "%s%s" % (self.extend_alphabet[index], current_row)
+            sheet[current_cell].border = self.__thin_top
+            index += 1
+
+        start_row = 1
+        print self.extend_alphabet[index]
+        while start_row < current_row:
+            current_cell = "%s%s" % (self.extend_alphabet[index], start_row)
+            sheet[current_cell].border = self.__thin_left
+            start_row += 1
 
     

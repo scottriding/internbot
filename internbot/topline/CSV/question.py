@@ -11,12 +11,12 @@ class Questions(object):
         display_logic = question_data['logic']
         if self.already_exists(question_data['variable']):
             question = self.get(question_data['variable'])
-            question.add_response(question_data['label'], question_data['percent'])
+            question.add_response(question_data['label'], question_data['percent'], question_data['n'])
             if display_logic != "":
                 question.add_display(display_logic)
         else:
-            question = Question(question_data['variable'], question_data['prompt'], question_data['n'])
-            question.add_response(question_data['label'], question_data['percent'])
+            question = Question(question_data['variable'], question_data['prompt'])
+            question.add_response(question_data['label'], question_data['percent'], question_data['n'])
             if display_logic != "":
                 question.add_display(display_logic)
             self.__questions[question.name] = question
@@ -63,10 +63,10 @@ class Questions(object):
 
 class Question(object):
 
-    def __init__(self, name, prompt, n):
+    def __init__(self, name, prompt):
         self.name = name
         self.prompt = prompt
-        self.n = n
+        self.n = 0
         self.responses = OrderedDict()
         self.__display_logic = ""
 
@@ -94,8 +94,9 @@ class Question(object):
     def n(self, n):
         self.__n = int(float(n))
 
-    def add_response(self, response, freq):
+    def add_response(self, response, freq, n):
         self.responses[str(response)] = float(freq)
+        self.n += float(n)
 
     def add_display(self, logic):
         self.__display_logic = logic
