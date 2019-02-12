@@ -72,6 +72,7 @@ class CrosstabReportWriter(object):
             new_sheet = self.__workbook.create_sheet(table_name)
             self.write_table(new_sheet, table)
             iteration += 1
+        print "Finished!"
 
     def write_toc(self, sheet):
         print "Writing table of contents"
@@ -112,7 +113,7 @@ class CrosstabReportWriter(object):
             sheet[current_base_size].border = self.__thin_bottom
 
             iteration += 1
-            current_row += 1 
+            current_row += 1            
         
     def write_toc_titles(self, sheet):
         sheet.row_dimensions[1].height = 35
@@ -273,7 +274,7 @@ class CrosstabReportWriter(object):
         sheet[current_cell].fill = self.shading_style
         sheet[current_cell].font = self.__font_bold
         sheet[current_cell].alignment = Alignment(horizontal="left", vertical="top", wrapText=True)
-        sheet.merge_cells(start_column=1, end_column=1, start_row = current_row, end_row=current_row+2 + len(table.responses)*3)
+        sheet.merge_cells(start_column=1, end_column=1, start_row = current_row, end_row=current_row+2 + len(table.responses)*4)
         bottom_cell = "A%s" % str(current_row+2)
         sheet[bottom_cell].border = self.__thick_bottom
         for response in table.responses:
@@ -283,7 +284,12 @@ class CrosstabReportWriter(object):
             sheet[current_cell].fill = self.shading_style
             sheet[current_cell].alignment = Alignment(horizontal="left", vertical="center", wrapText=True)
             sheet.merge_cells(start_column=2, end_column=2, start_row=current_row, end_row = current_row+2)
-            current_row += 3
+            border_row = current_row+3
+            current_cell = "B%s" % str(border_row)
+            sheet[current_cell].fill = self.shading_style
+            sheet[current_cell].border = self.__thin_bottom
+            sheet.row_dimensions[border_row].height = 0.75
+            current_row += 4
         
         current_cell = "B%s" % current_row
         sheet[current_cell].value = "Total"
@@ -309,6 +315,7 @@ class CrosstabReportWriter(object):
             sheet[current_cell].value = response.sig_details
             sheet[current_cell].alignment = self.__align
             sheet[current_cell].font = self.__font_reg
+            current_cell = "%s%s" % (self.extend_alphabet[current_col_index], str(current_row + 3))
             sheet[current_cell].border = self.__thin_bottom
             for banner_pt in response.banner_pts:
                 current_col_index += 1
@@ -323,13 +330,14 @@ class CrosstabReportWriter(object):
                 sheet[current_cell].number_format = '0%'
                 current_cell = "%s%s" % (self.extend_alphabet[current_col_index], str(current_row + 2))
                 sheet[current_cell].value = banner_pt.sig_details
-                sheet[current_cell].border = self.__thin_bottom
                 if banner_pt.sig_details.isupper() is True:
                     sheet[current_cell].fill = self.highlight_style
                 sheet[current_cell].alignment = self.__align
                 sheet[current_cell].font = self.__font_reg
+                current_cell = "%s%s" % (self.extend_alphabet[current_col_index], str(current_row + 3))
+                sheet[current_cell].border = self.__thin_bottom
 
-            current_row += 3
+            current_row += 4
 
         self.__total_row = current_row
 
