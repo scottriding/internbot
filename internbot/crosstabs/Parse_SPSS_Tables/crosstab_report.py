@@ -380,7 +380,6 @@ class CrosstabReportWriter(object):
             index += 1
 
         start_row = 1
-        print self.extend_alphabet[index]
         while start_row < current_row:
             current_cell = "%s%s" % (self.extend_alphabet[index], start_row)
             sheet[current_cell].border = self.__thin_left

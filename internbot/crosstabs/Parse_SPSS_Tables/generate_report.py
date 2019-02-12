@@ -13,7 +13,9 @@ class CrosstabGenerator(object):
         pattern = "*.xlsx"
         for entry in list_of_files:
             if fnmatch.fnmatch(entry, pattern):
-                to_add = int(entry.translate(None, ".xlsx"))
+                table_split = entry.split(".xlsx")
+                to_add = int(table_split[0])
+                #to_add = int(entry.translate(None, ".xlsx"))
                 table_files.append(to_add)
 
         table_files.sort()
