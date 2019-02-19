@@ -167,7 +167,7 @@ class CrosstabReportWriter(object):
         sheet["A2"].fill = self.__table_liner
         sheet["A2"].value = table.name
         sheet["A2"].font = self.__font_reg
-        sheet["A2"].alignment = self.__center_align
+        sheet["A2"].alignment = Alignment(horizontal="left", vertical="center", wrap_text=True)
 
         sheet["B1"].fill = self.__report_header
         sheet["B2"].fill = self.__table_liner
@@ -198,7 +198,10 @@ class CrosstabReportWriter(object):
         next_row_cell = "%s%s" % (self.extend_alphabet[index - 3], current_row + 1)
         sheet[next_row_cell].value = table.base_description
         sheet[next_row_cell].font = self.__font_reg
-        sheet[next_row_cell].alignment = self.__center_align
+        sheet[next_row_cell].alignment = Alignment(horizontal="left", vertical="center", wrap_text=True)
+
+        sheet.merge_cells(start_column=1, end_column=index-3, start_row=2, end_row=2)
+        sheet.merge_cells(start_column=index-2, end_column=index, start_row=2, end_row=2)
 
     def write_banners(self, sheet, table):
         col_index = 3
@@ -288,7 +291,7 @@ class CrosstabReportWriter(object):
             current_cell = "B%s" % str(border_row)
             sheet[current_cell].fill = self.shading_style
             sheet[current_cell].border = self.__thin_bottom
-            sheet.row_dimensions[border_row].height = 0.75
+            sheet.row_dimensions[border_row].height = 1
             current_row += 4
         
         current_cell = "B%s" % current_row
