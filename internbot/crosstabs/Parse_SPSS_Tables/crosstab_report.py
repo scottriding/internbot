@@ -158,6 +158,7 @@ class CrosstabReportWriter(object):
     def write_table_titles(self, sheet, table):
         number_of_cols = table.count_banner_pts + 3
         sheet.row_dimensions[1].height = 35
+        sheet.row_dimensions[2].height = 36
 
         sheet["A1"].fill = self.__report_header
         sheet["A1"].value = '=HYPERLINK("#TOC!A1","Return to Table of Contents")'
