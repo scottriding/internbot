@@ -1,1 +1,2 @@
-from generate_report import ReportGenerator
+import basic_topline
+import trended_topline
