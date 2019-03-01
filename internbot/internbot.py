@@ -19,8 +19,8 @@ class Internbot:
         self.__embedded_fields = []
 
     def main_buttons(self):
-        btn_xtabs = Tkinter.Button(self.__window, text = "Run crosstabs", command = self.tabs_menu)
         btn_report = Tkinter.Button(self.__window, text = "Run topline report", command = self.topline_menu)
+        btn_xtabs = Tkinter.Button(self.__window, text = "Run crosstabs", command = self.tabs_menu)
         btn_rnc = Tkinter.Button(self.__window, text = "Run RNC", command = self.rnc_menu)
         btn_quit = Tkinter.Button(self.__window, text = "Quit", command = self.__window.destroy)
         btn_xtabs.pack(padx = 5, side = Tkinter.LEFT, expand=True)
@@ -28,32 +28,69 @@ class Internbot:
         btn_rnc.pack(padx = 5, side = Tkinter.LEFT, expand=True)
         btn_quit.pack(padx = 5, side = Tkinter.LEFT, expand=True)
 
+    def topline_menu(self):
+        redirect_window = Tkinter.Toplevel(self.__window)
+        redirect_window.title("Y2 Topline Report Automation")
+        message = "Please open a survey file."
+        round_label = Tkinter.Label(redirect_window, text="Round number:")
+        round_label.pack(padx = 5, side = Tkinter.TOP, expand=True)
+        self.round_entry = Tkinter.Entry(redirect_window)
+        self.round_entry.pack(padx = 7, side=Tkinter.TOP, expand=True)
+        Tkinter.Label(redirect_window, text = message).pack(expand=True)
+        btn_open = Tkinter.Button(redirect_window, text = "Open", command = self.read_topline)
+        btn_cancel = Tkinter.Button(redirect_window, text = "Cancel", command = redirect_window.destroy)
+        btn_open.pack(ipadx = 10, side = Tkinter.LEFT, expand=True)
+        btn_cancel.pack(ipadx = 10, side = Tkinter.LEFT, expand=True)
+
+    def read_topline(self):
+        filename = tkFileDialog.askopenfilename(initialdir = self.fpath, title = "Select survey file",filetypes = (("Qualtrics files","*.qsf"),("comma seperated files","*.csv"),("all files","*.*")))
+        isQSF = False
+        if ".qsf" in filename:
+            compiler = base.QSFSurveyCompiler()
+            survey = compiler.compile(filename)
+            report = topline.QSF.ReportGenerator(survey)
+            isQSF = True
+            self.build_topline_report(isQSF, report)
+        elif ".csv" in filename:
+            round = int(self.round_entry.get())
+            if round is "":
+                report = topline.CSV.ReportGenerator(filename)
+            else:
+                report = topline.CSV.ReportGenerator(filename, round)
+            self.build_topline_report(isQSF, report)
+
+    def build_topline_report(self, isQSF, report):
+        template_file = open("topline_template.docx", "r")
+        ask_output = tkMessageBox.askokcancel("Output directory", "Please select the directory for finished report.")
+        if ask_output:
+            savedirectory = tkFileDialog.askdirectory()
+            if isQSF is False:
+                report.generate_topline(template_file, savedirectory)
+            else:
+                ask_freq = tkMessageBox.askokcancel("Frequency file", "Please select the topline .csv frequency file.")
+                if ask_freq is True:
+                    freqfilename = tkFileDialog.askopenfilename(initialdir = self.fpath, title = "Select frequency file",filetypes = (("comma seperated files","*.csv"),("all files","*.*")))
+                    ask_open_ends = tkMessageBox.askyesno("Open ends", "Does this report have an open-ends .csv file?   ")
+                    if ask_open_ends == 'yes':
+                        open_ends_file = tkFileDialog.askopenfilename(initialdir = self.fpath, title = "Select open ends file",filetypes = (("comma seperated files","*.csv"),("all files","*.*")))
+                        report.generate_appendix(template_file, open_ends_file, savedirectory)
+                    else:
+                        report.generate_basic_topline(freqfilename, template_file, savedirectory)
+        
     def tabs_menu(self):
         redirect_window = Tkinter.Toplevel(self.__window)
         message = "Please select the files to produce."
         Tkinter.Label(redirect_window, text = message).pack()
         btn_var = Tkinter.Button(redirect_window, text = "Variable script", command = self.variable_script)
-        btn_tab = Tkinter.Button(redirect_window, text = "Table script", command = self.table_script)
-        btn_tab_2 = Tkinter.Button(redirect_window, text = "Trended table script", command = self.trended_table_script)
+        btn_basic_tab = Tkinter.Button(redirect_window, text = "Table script", command = self.table_script)
+        btn_trended_tab = Tkinter.Button(redirect_window, text = "Trended table script", command = self.trended_table_script)
         btn_compile = Tkinter.Button(redirect_window, text = "Build report", command = self.build_xtabs)
         btn_cancel = Tkinter.Button(redirect_window, text = "Cancel", command = redirect_window.destroy)
         btn_var.pack(padx = 5, side = Tkinter.LEFT, expand=True)
-        btn_tab.pack(padx = 5, side = Tkinter.LEFT, expand=True)
-        btn_tab_2.pack(padx = 5, side = Tkinter.LEFT, expand=True)
+        btn_basic_tab.pack(padx = 5, side = Tkinter.LEFT, expand=True)
+        btn_trended_tab.pack(padx = 5, side = Tkinter.LEFT, expand=True)
         btn_compile.pack(padx = 5, side = Tkinter.LEFT, expand=True)
         btn_cancel.pack(padx = 5, side = Tkinter.LEFT, expand=True)
-
-    def topline_menu(self):
-        redirect_window = Tkinter.Toplevel(self.__window)
-        redirect_window.title("Y2 Topline Report Automation")
-        message = "Select a topline format."
-        Tkinter.Label(redirect_window, text = message).pack(expand=True)
-        btn_basic = Tkinter.Button(redirect_window, text = "Basic", command = self.open_basic_topline)
-        btn_trended = Tkinter.Button(redirect_window, text = "Trended", command = self.open_trended_topline)
-        btn_cancel = Tkinter.Button(redirect_window, text = "Cancel", command = redirect_window.destroy)
-        btn_basic.pack(ipadx = 10, side = Tkinter.LEFT, expand=True)
-        btn_trended.pack(ipadx = 10, side = Tkinter.LEFT, expand=True)
-        btn_cancel.pack(ipadx = 10, side = Tkinter.LEFT, expand=True)
 
     def rnc_menu(self):
         self.redirect_window = Tkinter.Toplevel(self.__window)
@@ -478,85 +515,6 @@ class Internbot:
             if ask_output is True:
                 outputdirectory = tkFileDialog.askdirectory()
                 builder.write_report(outputdirectory)
-
-    def open_basic_topline(self):
-        redirect_window = Tkinter.Toplevel(self.__window)
-        redirect_window.title("Y2 Topline Report Automation")
-        message = "Please open a survey file."
-        Tkinter.Label(redirect_window, text = message).pack(expand=True)
-        btn_open = Tkinter.Button(redirect_window, text = "Open", command = self.read_basic_topline)
-        btn_cancel = Tkinter.Button(redirect_window, text = "Cancel", command = redirect_window.destroy)
-        btn_open.pack(ipadx = 10, side = Tkinter.LEFT, expand=True)
-        btn_cancel.pack(ipadx = 10, side = Tkinter.LEFT, expand=True)
-
-
-    
-    def open_trended_topline(self):
-        redirect_window = Tkinter.Toplevel(self.__window)
-        redirect_window.title("Y2 Topline Report Automation")
-        message = "Please open a survey file."
-        round_label = Tkinter.Label(redirect_window, text="Round number:")
-        round_label.pack(padx = 5, side = Tkinter.TOP, expand=True)
-        self.round_entry = Tkinter.Entry(redirect_window)
-        self.round_entry.pack(padx = 7, side=Tkinter.TOP, expand=True)
-        Tkinter.Label(redirect_window, text = message).pack(expand=True)
-        btn_open = Tkinter.Button(redirect_window, text = "Open", command = self.read_trended_topline)
-        btn_cancel = Tkinter.Button(redirect_window, text = "Cancel", command = redirect_window.destroy)
-        btn_open.pack(ipadx = 10, side = Tkinter.LEFT, expand=True)
-        btn_cancel.pack(ipadx = 10, side = Tkinter.LEFT, expand=True)
-
-    def read_basic_topline(self):
-        filename = tkFileDialog.askopenfilename(initialdir = self.fpath, title = "Select survey file",filetypes = (("Qualtrics files","*.qsf"),("comma seperated files","*.csv"),("all files","*.*")))
-        isQSF = False
-        if ".qsf" in filename:
-            compiler = base.QSFSurveyCompiler()
-            survey = compiler.compile(filename)
-            report = topline.QSF.ReportGenerator(survey)
-            isQSF = True
-            self.build_report(isQSF, report)
-        elif ".csv" in filename:
-            report = topline.CSV.basic_topline.ReportGenerator(filename)
-            self.build_basic_topline_report(isQSF, report)
-
-    def read_trended_topline(self):
-        filename = tkFileDialog.askopenfilename(initialdir = self.fpath, title = "Select survey file",filetypes = (("Qualtrics files","*.qsf"),("comma seperated files","*.csv"),("all files","*.*")))
-        isQSF = False
-        if ".qsf" in filename:
-            pass
-        elif ".csv" in filename:
-            round = int(self.round_entry.get())
-            if round is "":
-        		round = 4
-    	    report = topline.CSV.trended_topline.ReportGenerator(filename, round)
-    	    self.build_trended_topline_report(isQSF, report)
-            
-    def build_basic_topline_report(self, isQSF, report):
-        template_file = open("topline_template.docx", "r")
-        ask_output = tkMessageBox.askokcancel("Output directory", "Please select the directory for finished report.")
-        if ask_output is True:
-            savedirectory = tkFileDialog.askdirectory()
-            if isQSF is True:
-                ask_freq = tkMessageBox.askokcancel("Frequency file", "Please select the topline .csv frequency file.")
-                if ask_freq is True:
-                    freqfilename = tkFileDialog.askopenfilename(initialdir = self.fpath, title = "Select frequency file",filetypes = (("comma seperated files","*.csv"),("all files","*.*")))
-                    ask_open_ends = tkMessageBox.askokcancel("Open ends", "Please select the open-ends .csv file.")
-                    if ask_open_ends is True:
-                        open_ends_file = tkFileDialog.askopenfilename(initialdir = self.fpath, title = "Select open ends file",filetypes = (("comma seperated files","*.csv"),("all files","*.*")))
-                        report.generate_appendix(template_file, open_ends_file, savedirectory)
-                    else:
-                        report.generate_basic_topline(freqfilename, template_file, savedirectory)
-            else:
-                report.generate_basic_topline(template_file, savedirectory)
-
-    def build_trended_topline_report(self, isQSF, report):
-        template_file = open("topline_template.docx", "r")
-        ask_output = tkMessageBox.askokcancel("Output directory", "Please select the directory for finished report.")
-        if ask_output is True:
-            savedirectory = tkFileDialog.askdirectory()
-            if isQSF is True:
-                pass
-            else:
-                report.generate_basic_topline(template_file, savedirectory)
 
     def scores_window(self):
         self.filename = tkFileDialog.askopenfilename(initialdir = self.fpath, title = "Select model file", filetypes = (("comma seperated files","*.csv"),("all files","*.*")))
