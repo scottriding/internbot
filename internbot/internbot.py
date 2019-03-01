@@ -678,8 +678,8 @@ window.title("Internbot: 01011001 00000010") # Internbot: Y2
 #filename = 'Y2Logo.jpg'
 
 #y2_logo = Image.open(filename)
-#y2_logo = Image.open("y2Logo.jpg")
-#render = ImageTk.PhotoImage(y2_logo)
-#Tkinter.Label(window, image=render).pack()
+y2_logo = Image.open("y2Logo.jpg")
+render = ImageTk.PhotoImage(y2_logo)
+Tkinter.Label(window, image=render).pack()
 Internbot(window)
 window.mainloop()
