@@ -489,10 +489,16 @@ class Internbot:
         btn_open.pack(ipadx = 10, side = Tkinter.LEFT, expand=True)
         btn_cancel.pack(ipadx = 10, side = Tkinter.LEFT, expand=True)
 
+
+    
     def open_trended_topline(self):
         redirect_window = Tkinter.Toplevel(self.__window)
         redirect_window.title("Y2 Topline Report Automation")
         message = "Please open a survey file."
+        round_label = Tkinter.Label(redirect_window, text="Round number:")
+        round_label.pack(padx = 5, side = Tkinter.TOP, expand=True)
+        self.round_entry = Tkinter.Entry(redirect_window)
+        self.round_entry.pack(padx = 7, side=Tkinter.TOP, expand=True)
         Tkinter.Label(redirect_window, text = message).pack(expand=True)
         btn_open = Tkinter.Button(redirect_window, text = "Open", command = self.read_trended_topline)
         btn_cancel = Tkinter.Button(redirect_window, text = "Cancel", command = redirect_window.destroy)
@@ -518,9 +524,12 @@ class Internbot:
         if ".qsf" in filename:
             pass
         elif ".csv" in filename:
-            report = topline.CSV.trended_topline.ReportGenerator(filename, 4)
-            self.build_trended_topline_report(isQSF, report)
-
+            round = int(self.round_entry.get())
+            if round is "":
+        		round = 4
+    	    report = topline.CSV.trended_topline.ReportGenerator(filename, round)
+    	    self.build_trended_topline_report(isQSF, report)
+            
     def build_basic_topline_report(self, isQSF, report):
         template_file = open("topline_template.docx", "r")
         ask_output = tkMessageBox.askokcancel("Output directory", "Please select the directory for finished report.")
