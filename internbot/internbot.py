@@ -666,8 +666,11 @@ class Internbot:
 
 window = Tkinter.Tk()
 window.title("Internbot: 01011001 00000010") # Internbot: Y2
-y2_logo = Image.open("y2Logo.jpg")
-render = ImageTk.PhotoImage(y2_logo)
-Tkinter.Label(window, image=render).pack()
+#filename = 'Y2Logo.jpg'
+
+#y2_logo = Image.open(filename)
+#y2_logo = Image.open("y2Logo.jpg")
+#render = ImageTk.PhotoImage(y2_logo)
+#Tkinter.Label(window, image=render).pack()
 Internbot(window)
 window.mainloop()
