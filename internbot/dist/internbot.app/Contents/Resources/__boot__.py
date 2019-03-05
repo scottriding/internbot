@@ -11,45 +11,6 @@ def _reset_sys_path():
 _reset_sys_path()
 
 
-def _site_packages():
-    import site
-    import sys
-    import os
-
-    paths = []
-    prefixes = [sys.prefix]
-    if sys.exec_prefix != sys.prefix:
-        prefixes.append(sys.exec_prefix)
-    for prefix in prefixes:
-        paths.append(
-            os.path.join(
-                prefix, 'lib', 'python' + sys.version[:3], 'site-packages'))
-
-    if os.path.join('.framework', '') in os.path.join(sys.prefix, ''):
-        home = os.environ.get('HOME')
-        if home:
-            # Sierra and later
-            paths.append(os.path.join(home, 'Library', 'Python',
-                                      sys.version[:3], 'lib', 'python',
-                                      'site-packages'))
-
-            # Before Sierra
-            paths.append(os.path.join(home, 'Library', 'Python',
-                                      sys.version[:3], 'site-packages'))
-
-    # Work around for a misfeature in setuptools: easy_install.pth places
-    # site-packages way to early on sys.path and that breaks py2app bundles.
-    # NOTE: this is hacks into an undocumented feature of setuptools and
-    # might stop to work without warning.
-    sys.__egginsert = len(sys.path)
-
-    for path in paths:
-        site.addsitedir(path)
-
-
-_site_packages()
-
-
 def _chdir_resource():
     import os
     os.chdir(os.environ['RESOURCEPATH'])
@@ -58,23 +19,17 @@ def _chdir_resource():
 _chdir_resource()
 
 
-def _setup_ctypes():
-    from ctypes.macholib import dyld
-    import os
-    frameworks = os.path.join(os.environ['RESOURCEPATH'], '..', 'Frameworks')
-    dyld.DEFAULT_FRAMEWORK_FALLBACK.insert(0, frameworks)
-    dyld.DEFAULT_LIBRARY_FALLBACK.insert(0, frameworks)
+def _disable_linecache():
+    import linecache
+
+    def fake_getline(*args, **kwargs):
+        return ''
+
+    linecache.orig_getline = linecache.getline
+    linecache.getline = fake_getline
 
 
-_setup_ctypes()
-
-
-def _path_inject(paths):
-    import sys
-    sys.path[:0] = paths
-
-
-_path_inject(['/Users/tristanbowler/Documents/Y2Repos/internbot/internbot'])
+_disable_linecache()
 
 
 import re
@@ -103,32 +58,50 @@ def _run():
     import os
     import site  # noqa: F401
     sys.frozen = 'macosx_app'
+    base = os.environ['RESOURCEPATH']
 
     argv0 = os.path.basename(os.environ['ARGVZERO'])
     script = SCRIPT_MAP.get(argv0, DEFAULT_SCRIPT)  # noqa: F821
 
-    sys.argv[0] = __file__ = script
+    path = os.path.join(base, script)
+    sys.argv[0] = __file__ = path
     if sys.version_info[0] == 2:
-        with open(script, 'rU') as fp:
+        with open(path, 'rU') as fp:
             source = fp.read() + "\n"
     else:
-        with open(script, 'rb') as fp:
+        with open(path, 'rb') as fp:
             encoding = guess_encoding(fp)
 
-        with open(script, 'r', encoding=encoding) as fp:
+        with open(path, 'r', encoding=encoding) as fp:
             source = fp.read() + '\n'
 
         BOM = b'\xef\xbb\xbf'.decode('utf-8')
-
         if source.startswith(BOM):
             source = source[1:]
 
-    exec(compile(source, script, 'exec'), globals(), globals())
+    exec(compile(source, path, 'exec'), globals(), globals())
 
 
-DEFAULT_SCRIPT='/Users/tristanbowler/Documents/Y2Repos/internbot/internbot/internbot.py'
+def _setup_ctypes():
+    from ctypes.macholib import dyld
+    import os
+    frameworks = os.path.join(os.environ['RESOURCEPATH'], '..', 'Frameworks')
+    dyld.DEFAULT_FRAMEWORK_FALLBACK.insert(0, frameworks)
+    dyld.DEFAULT_LIBRARY_FALLBACK.insert(0, frameworks)
+
+
+_setup_ctypes()
+
+
+def _boot_tkinter():
+    import os
+
+    resourcepath = os.environ["RESOURCEPATH"]
+    os.putenv("TCL_LIBRARY", os.path.join(resourcepath, "lib/tcl8"))
+    os.putenv("TK_LIBRARY", os.path.join(resourcepath, "lib/tk8.6"))
+_boot_tkinter()
+
+
+DEFAULT_SCRIPT='internbot.py'
 SCRIPT_MAP={}
-try:
-    _run()
-except KeyboardInterrupt:
-    pass
+_run()
