@@ -7,7 +7,6 @@ import tkMessageBox
 import tkFileDialog
 import os
 import csv
-from PIL import Image, ImageTk
 from collections import OrderedDict
 
 class Internbot:
@@ -675,11 +674,13 @@ class Internbot:
 
 window = Tkinter.Tk()
 window.title("Internbot: 01011001 00000010") # Internbot: Y2
-#filename = 'Y2Logo.jpg'
-
-#y2_logo = Image.open(filename)
-y2_logo = Image.open("y2Logo.jpg")
-render = ImageTk.PhotoImage(y2_logo)
+window_width = window.winfo_screenwidth()
+window_height = window.winfo_screenheight()
+x = window_width/2 - 400
+y = window_height/2 - 200
+window.geometry("800x400+%d+%d" % (x, y))
+y2_logo = "Y2Logo.gif"
+render = Tkinter.PhotoImage(file= y2_logo)
 Tkinter.Label(window, image=render).pack()
 Internbot(window)
 window.mainloop()

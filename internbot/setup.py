@@ -8,10 +8,8 @@ Usage:
 from setuptools import setup
 
 APP = ['internbot.py']
-DATA_FILES = ['Y2Logo.jpg']
-OPTIONS = {
-'iconfile':'y2.icns'
-}
+DATA_FILES = ['Y2Logo.gif', 'topline_template.docx']
+OPTIONS = {}
 
 setup(
     app=APP,
