@@ -22,10 +22,10 @@ class Internbot:
         btn_report = Tkinter.Button(self.__window, text="Run topline report", command=self.topline_menu)
         btn_rnc = Tkinter.Button(self.__window, text="Run RNC", command=self.rnc_menu)
         btn_quit = Tkinter.Button(self.__window, text="Quit", command=self.__window.destroy)
-        btn_xtabs.pack(padx=5, side=Tkinter.LEFT, expand=True)
-        btn_report.pack(padx=5, side=Tkinter.LEFT, expand=True)
-        btn_rnc.pack(padx=5, side=Tkinter.LEFT, expand=True)
-        btn_quit.pack(padx=5, side=Tkinter.LEFT, expand=True)
+        btn_xtabs.pack(padx=2, side=Tkinter.LEFT, expand=True)
+        btn_report.pack(padx=2, side=Tkinter.LEFT, expand=True)
+        btn_rnc.pack(padx=2, side=Tkinter.LEFT, expand=True)
+        btn_quit.pack(padx=2, side=Tkinter.LEFT, expand=True)
 
     def tabs_menu(self):
         redirect_window = Tkinter.Toplevel(self.__window)
