@@ -147,32 +147,43 @@ class Internbot:
 
             self.edit_window.title("Banner selection")
 
-            titles_frame = Tkinter.Frame(self.edit_window)
-            titles_frame.pack()
-
+            #titles_frame = Tkinter.Frame(self.edit_window)
+            #titles_frame.pack()
+            
             self.boxes_frame = Tkinter.Frame(self.edit_window)
-            self.boxes_frame.pack(fill=Tkinter.BOTH)
-
-            self.tables_box = Tkinter.Listbox(self.edit_window, selectmode="multiple", width=80, height=15)
-
+            self.boxes_frame.pack(side=Tkinter.LEFT, fill=Tkinter.BOTH)
+            horiz_scrollbar = Tkinter.Scrollbar(self.boxes_frame)
+            horiz_scrollbar.config(orient= Tkinter.HORIZONTAL )
+            horiz_scrollbar.pack(side=Tkinter.BOTTOM, fill=Tkinter.X)
+            vert_scrollbar = Tkinter.Scrollbar(self.boxes_frame)
+            vert_scrollbar.pack(side=Tkinter.RIGHT, fill=Tkinter.Y)
+            
+            
+            self.tables_box = Tkinter.Listbox(self.boxes_frame, selectmode="multiple", width=80, height=15, yscrollcommand=vert_scrollbar.set, xscrollcommand = horiz_scrollbar.set)
             self.tables_box.pack(padx = 15, pady=10,expand=True, side = Tkinter.LEFT, fill=Tkinter.BOTH)
-
             self.banners_box = Tkinter.Listbox(self.edit_window)
             self.banners_box.pack(padx = 15, pady=10, expand=True, side=Tkinter.RIGHT, fill=Tkinter.BOTH)
+            
+            
 
             index = 0
             while index < len(names):
                 self.tables_box.insert(Tkinter.END, names[index] + ": " + titles[index])
                 index += 1
+            
+            vert_scrollbar.config(command=self.tables_box.yview)
+            horiz_scrollbar.config(command=self.tables_box.xview)
+            
+            buttons_frame = Tkinter.Frame(self.edit_window)
+            buttons_frame.pack(side = Tkinter.RIGHT, fill=Tkinter.BOTH)
+            btn_up = Tkinter.Button(buttons_frame, text = "Up", command = self.shift_up)
+            btn_down = Tkinter.Button(buttons_frame, text = "Down", command = self.shift_down)
+            btn_insert = Tkinter.Button(buttons_frame, text = "Insert", command = self.insert_banner)
+            btn_edit = Tkinter.Button(buttons_frame, text =   "Edit", command = self.parse_selection)
+            btn_create = Tkinter.Button(buttons_frame, text = "Create", command = self.create_banner)
+            btn_remove = Tkinter.Button(buttons_frame, text = "Remove", command = self.remove_banner)
 
-            btn_up = Tkinter.Button(self.edit_window, text = "Up", command = self.shift_up)
-            btn_down = Tkinter.Button(self.edit_window, text = "Down", command = self.shift_down)
-            btn_insert = Tkinter.Button(self.edit_window, text = "Insert", command = self.insert_banner)
-            btn_edit = Tkinter.Button(self.edit_window, text =   "Edit", command = self.parse_selection)
-            btn_create = Tkinter.Button(self.edit_window, text = "Create", command = self.create_banner)
-            btn_remove = Tkinter.Button(self.edit_window, text = "Remove", command = self.remove_banner)
-
-            btn_done = Tkinter.Button(self.edit_window, text = "Done", command = self.finish_banner)
+            btn_done = Tkinter.Button(buttons_frame, text = "Done", command = self.finish_banner)
 
             btn_done.pack(side=Tkinter.BOTTOM, pady=15)
             btn_remove.pack(side=Tkinter.BOTTOM)
