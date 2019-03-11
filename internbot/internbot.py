@@ -37,12 +37,10 @@ class Internbot:
         Tkinter.Label(redirect_window, text = message).pack()
         btn_var = Tkinter.Button(redirect_window, text="Variable script", command=self.variable_script, height=1, width=15)
         btn_tab = Tkinter.Button(redirect_window, text="Table script", command=self.table_script, height=1, width=15)
-        btn_tab_2 = Tkinter.Button(redirect_window, text="Trended table script", command=self.trended_table_script, height=1, width=15)
         btn_compile = Tkinter.Button(redirect_window, text="Build report", command=self.build_xtabs, height=1, width=15)
         btn_cancel = Tkinter.Button(redirect_window, text="Cancel", command=redirect_window.destroy, height=1, width=15)
         btn_cancel.pack(padx=5, side=Tkinter.BOTTOM, expand=True)
         btn_compile.pack(padx=5, side=Tkinter.BOTTOM, expand=True)
-        btn_tab_2.pack(padx=5, side=Tkinter.BOTTOM, expand=True)
         btn_tab.pack(padx=5, side=Tkinter.BOTTOM, expand=True)
         btn_var.pack(padx=5, side=Tkinter.BOTTOM, expand=True)
         redirect_window.deiconify()
@@ -126,7 +124,6 @@ class Internbot:
 
     def table_script(self):
         try:
-            script = crosstabs.Generate_Table_Script.TableScript()
             ask_tables = tkMessageBox.askokcancel("Select Tables to Run.csv File", "Please select the tables to run .csv file.")
             if ask_tables is True:
                 self.tablesfilename = tkFileDialog.askopenfilename(initialdir = self.fpath, title = "Select tables file",filetypes = (("comma seperated files","*.csv"),("all files","*.*")))
@@ -137,71 +134,6 @@ class Internbot:
                         titles = crosstabs.Generate_Table_Script.TablesParser().pull_table_titles(self.tablesfilename)
                         bases = crosstabs.Generate_Table_Script.TablesParser().pull_table_bases(self.tablesfilename)
                         self.banner_window(names, titles, bases)
-        except Exception as e:
-            tkMessageBox.showerror("Error", "An error occurred\n"+ str(e))
-
-    def trended_table_script(self):
-        try:
-            script = crosstabs.Generate_Table_Script.TrendedTableScript()
-            ask_tables = tkMessageBox.askokcancel("Select Tables to Run.csv File", "Please select the tables to run .csv file.")
-            if ask_tables is True:
-                self.tablesfilename = tkFileDialog.askopenfilename(initialdir = self.fpath, title = "Select tables file",filetypes = (("comma seperated files","*.csv"),("all files","*.*")))
-                if self.tablesfilename is not "":
-                    ask_banners = tkMessageBox.askokcancel("Banner selection", "Please insert/select the banners for this report.")
-                    if ask_banners is True:
-                        names = crosstabs.Generate_Table_Script.TablesParser().pull_table_names(self.tablesfilename)
-                        titles = crosstabs.Generate_Table_Script.TablesParser().pull_table_titles(self.tablesfilename)
-                        bases = crosstabs.Generate_Table_Script.TablesParser().pull_table_bases(self.tablesfilename)
-                        self.trended_banner_window(names, titles, bases)
-        except Exception as e:
-            tkMessageBox.showerror("Error", "An error occurred\n"+ str(e))
-
-    def trended_banner_window(self, names, titles, bases):
-        try:
-            self.edit_window = Tkinter.Toplevel(self.__window)
-            self.edit_window.withdraw()
-            x = self.__window.winfo_x()
-            y = self.__window.winfo_y()
-            self.edit_window.geometry("1500x500+%d+%d" % (x - 550 , y - 50))
-            self.edit_window.title("Banner selection")
-
-            titles_frame = Tkinter.Frame(self.edit_window)
-            titles_frame.pack()
-
-            self.boxes_frame = Tkinter.Frame(self.edit_window)
-            self.boxes_frame.pack(fill=Tkinter.BOTH)
-
-            self.tables_box = Tkinter.Listbox(self.edit_window, selectmode="multiple", width=80, height=15)
-
-            self.tables_box.pack(padx = 15, pady=10,expand=True, side = Tkinter.LEFT, fill=Tkinter.BOTH)
-
-            self.banners_box = Tkinter.Listbox(self.edit_window)
-            self.banners_box.pack(padx = 15, pady=10, expand=True, side=Tkinter.RIGHT, fill=Tkinter.BOTH)
-
-            index = 0
-            while index < len(names):
-                self.tables_box.insert(Tkinter.END, names[index] + ": " + titles[index])
-                index += 1
-
-            btn_up = Tkinter.Button(self.edit_window, text = "Up", command = self.shift_up)
-            btn_down = Tkinter.Button(self.edit_window, text = "Down", command = self.shift_down)
-            btn_insert = Tkinter.Button(self.edit_window, text = "Insert", command = self.insert_banner)
-            btn_edit = Tkinter.Button(self.edit_window, text =   "Edit", command = self.parse_selection)
-            btn_create = Tkinter.Button(self.edit_window, text = "Create", command = self.create_banner)
-            btn_remove = Tkinter.Button(self.edit_window, text = "Remove", command = self.remove_banner)
-
-            btn_done = Tkinter.Button(self.edit_window, text = "Done", command = self.finish_trended_banner)
-
-            btn_done.pack(side=Tkinter.BOTTOM, pady=15)
-            btn_remove.pack(side=Tkinter.BOTTOM)
-            btn_create.pack(side=Tkinter.BOTTOM)
-            btn_edit.pack(side=Tkinter.BOTTOM)
-
-            btn_insert.pack(side=Tkinter.BOTTOM, pady=5)
-            btn_down.pack(side=Tkinter.BOTTOM)
-            btn_up.pack(side=Tkinter.BOTTOM)
-
-            self.edit_window.deiconify()
         except Exception as e:
             tkMessageBox.showerror("Error", "An error occurred\n"+ str(e))
 
@@ -506,6 +438,11 @@ class Internbot:
 
     def finish_banner(self):
         try:
+            ask_trended = tkMessageBox.askyesno("Trended Follow-up", "Is this a trended report?")
+            if ask_trended is True:
+                generator = crosstabs.Generate_Table_Script.TrendedTableScript()
+            else:
+                generator = crosstabs.Generate_Table_Script.TableScript()
             table_order = OrderedDict()
             banner_list = OrderedDict()
             for item in list(self.tables_box.get(0, Tkinter.END)):
@@ -515,33 +452,12 @@ class Internbot:
                 question = item.split(": ")
                 banner_list[question[0]] = question[1]
             self.edit_window.destroy()
-            banners = banner_list.keys()
             ask_output = tkMessageBox.askokcancel("Output directory", "Please select the directory for finished table script.")
             if ask_output is True:
                 savedirectory = tkFileDialog.askdirectory()
                 if savedirectory is not "":
-                    crosstabs.Generate_Table_Script.TableScript().compile_scripts(self.tablesfilename, savedirectory, banners, self.__embedded_fields)
-                    self.reorder_tablesfile(savedirectory, table_order)
-        except Exception as e:
-            tkMessageBox.showerror("Error", "An error occurred\n" + str(e))
-
-    def finish_trended_banner(self):
-        try:
-            table_order = OrderedDict()
-            banner_list = OrderedDict()
-            for item in list(self.tables_box.get(0, Tkinter.END)):
-                question = item.split(": ")
-                table_order[question[0]] = question[1]
-            for item in list(self.banners_box.get(0, Tkinter.END)):
-                question = item.split(": ")
-                banner_list[question[0]] = question[1]
-            self.edit_window.destroy()
-            banners = banner_list.keys()
-            ask_output = tkMessageBox.askokcancel("Output directory", "Please select the directory for finished table script.")
-            if ask_output is True:
-                savedirectory = tkFileDialog.askdirectory()
-                if savedirectory is not "":
-                    crosstabs.Generate_Table_Script.TrendedTableScript().compile_scripts(self.tablesfilename, savedirectory, banners, self.__embedded_fields)
+                    #generator.compile_scripts(table_order, banner_list, savedirectory, self.__embedded_fields)
+                    generator.compile_scripts(self.tablesfilename, savedirectory, banner_list.keys(), self.__embedded_fields)
         except Exception as e:
             tkMessageBox.showerror("Error", "An error occurred\n" + str(e))
 
