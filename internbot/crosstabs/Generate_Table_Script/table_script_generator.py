@@ -1,12 +1,13 @@
 import csv
 
-class TableScript(object):
+class TableScriptGenerator(object):
 
     def __init__(self):
         self.grouped_question = []
-    
-    def compile_scripts(self, path_to_tables, path_to_output, banners, embedded_variables):
-        table_path = path_to_tables
+
+    def compile_scripts(self, tables, banners, embedded_variables, filtering_variable, path_to_output):
+        self.__filtering_variable = filtering_variable
+        table_path = tables
         output_path = str(path_to_output) + '/table script.sps'
         output = open(output_path, "w+")
         script = self.write_script(table_path, path_to_output, banners, embedded_variables)
@@ -46,9 +47,16 @@ class TableScript(object):
         for spec in column_specs:
             if spec in self.grouped_question:
                 result += '+ $C%s [C] ' % spec.replace("$","")
-                result += '[COUNT F40.0, COLPCT.COUNT PCT40.0] '
+                if self.__filtering_variable is None:
+                    result += '[COUNT F40.0, COLPCT.COUNT PCT40.0] '
+                else:
+                    result += '> C%s [C] ' % self.__filtering_variable
             else:
                 result += '+ C%s [C] ' % spec
+                if self.__filtering_variable is None:
+                    result += '[COUNT F40.0, COLPCT.COUNT PCT40.0] '
+                else:
+                    result += '> C%s [C] ' % self.__filtering_variable
                 result += '[COUNT F40.0, COLPCT.COUNT PCT40.0] '
         result += '\n  /SLABELS POSITION=ROW VISIBLE=NO\n'
         result += "  /CATEGORIES VARIABLES=%s " % question['VariableName']
@@ -68,7 +76,11 @@ class TableScript(object):
 
         title = question['Title']
         title = title.replace('"', '')
-        result += "    TITLE='Table %s - %s: %s'\n" % (question['TableIndex'], question['VariableName'], title)
+        table_index = int(question['TableIndex'])
+        if table_index < 10:
+            result += "    TITLE='Table 0%s - %s: %s'\n" % (table_index, question['VariableName'], title)
+        else:
+            result += "    Title='Table %s - %s: %s'\n" % (table_index, question['VariableName'], title)
         if question['Base'] is not '':
             result += "    CORNER='%s - %s'\n" % ('Base', question['Base'])
         result += '  /COMPARETEST TYPE=PROP ALPHA=0.05 ADJUST=BONFERRONI ORIGIN=COLUMN INCLUDEMRSETS=YES\n'
