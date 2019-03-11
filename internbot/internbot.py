@@ -22,10 +22,10 @@ class Internbot:
         btn_report = Tkinter.Button(self.__window, text="Run topline report", command=self.topline_menu)
         btn_rnc = Tkinter.Button(self.__window, text="Run RNC", command=self.rnc_menu)
         btn_quit = Tkinter.Button(self.__window, text="Quit", command=self.__window.destroy)
-        btn_xtabs.pack(padx=5, side=Tkinter.LEFT, expand=True)
-        btn_report.pack(padx=5, side=Tkinter.LEFT, expand=True)
-        btn_rnc.pack(padx=5, side=Tkinter.LEFT, expand=True)
-        btn_quit.pack(padx=5, side=Tkinter.LEFT, expand=True)
+        btn_xtabs.pack(padx=2, side=Tkinter.LEFT, expand=True)
+        btn_report.pack(padx=2, side=Tkinter.LEFT, expand=True)
+        btn_rnc.pack(padx=2, side=Tkinter.LEFT, expand=True)
+        btn_quit.pack(padx=2, side=Tkinter.LEFT, expand=True)
 
     def tabs_menu(self):
         redirect_window = Tkinter.Toplevel(self.__window)
@@ -56,9 +56,9 @@ class Internbot:
         btn_basic = Tkinter.Button(redirect_window, text="Basic", command=self.open_basic_topline, height=1, width=10)
         btn_trended = Tkinter.Button(redirect_window, text="Trended", command=self.open_trended_topline, height = 1, width = 10)
         btn_cancel = Tkinter.Button(redirect_window, text = "Cancel", command = redirect_window.destroy, height = 1, width = 10)
-        btn_basic.pack(ipadx = 10, side = Tkinter.BOTTOM, expand=True)
-        btn_trended.pack(ipadx = 10, side = Tkinter.BOTTOM, expand=True)
-        btn_cancel.pack(ipadx = 10, side = Tkinter.BOTTOM, expand=True)
+        btn_basic.pack(ipadx = 10, side = Tkinter.TOP, expand=True)
+        btn_trended.pack(ipadx = 10, side = Tkinter.TOP, expand=True)
+        btn_cancel.pack(ipadx = 10, side = Tkinter.TOP, expand=True)
         redirect_window.deiconify()
 
     def rnc_menu(self):
@@ -566,7 +566,7 @@ class Internbot:
                     isQSF = True
                     self.build_report(isQSF, report)
                 elif ".csv" in filename:
-                    report = topline.CSV.basic_topline.ReportGenerator(filename)
+                    report = topline.CSV.ReportGenerator(filename)
                     self.build_basic_topline_report(isQSF, report)
         except Exception as e:
             if str(e) == "percent":

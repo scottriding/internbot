@@ -112,7 +112,7 @@ class SPSSParser(object):
         elif(self.__banner_depth == 1):
             self.banner_parse_one(sheet)
         else:
-            print "Banner error"
+            raise Exception("Could not parse banners")
 
     def banner_parse_eight(self, sheet):
         all_banners = []
