@@ -122,7 +122,7 @@ class Internbot:
                             else:
                                 tkMessageBox.showinfo("Cancelled", "Cancelled file creation")
         except Exception as e:
-            tkMessageBox.showerror("Error", "An error occurred\n"+e)
+            tkMessageBox.showerror("Error", "An error occurred\n"+ str(e))
 
     def table_script(self):
         try:
@@ -138,7 +138,7 @@ class Internbot:
                         bases = crosstabs.Generate_Table_Script.TablesParser().pull_table_bases(self.tablesfilename)
                         self.banner_window(names, titles, bases)
         except Exception as e:
-            tkMessageBox.showerror("Error", "An error occurred\n"+e)
+            tkMessageBox.showerror("Error", "An error occurred\n"+ str(e))
 
     def trended_table_script(self):
         try:
@@ -154,7 +154,7 @@ class Internbot:
                         bases = crosstabs.Generate_Table_Script.TablesParser().pull_table_bases(self.tablesfilename)
                         self.trended_banner_window(names, titles, bases)
         except Exception as e:
-            tkMessageBox.showerror("Error", "An error occurred\n"+e)
+            tkMessageBox.showerror("Error", "An error occurred\n"+ str(e))
 
     def trended_banner_window(self, names, titles, bases):
         try:
@@ -203,7 +203,7 @@ class Internbot:
 
             self.edit_window.deiconify()
         except Exception as e:
-            tkMessageBox.showerror("Error", "An error occurred\n"+e)
+            tkMessageBox.showerror("Error", "An error occurred\n"+ str(e))
 
     def banner_window(self, names, titles, bases):
         try:
@@ -253,7 +253,7 @@ class Internbot:
 
             self.edit_window.deiconify()
         except Exception as e:
-            tkMessageBox.showerror("Error", "An error occurred"+e)
+            tkMessageBox.showerror("Error", "An error occurred" + str(e))
 
     def shift_up(self):
         current_banners = []
@@ -523,7 +523,7 @@ class Internbot:
                     crosstabs.Generate_Table_Script.TableScript().compile_scripts(self.tablesfilename, savedirectory, banners, self.__embedded_fields)
                     self.reorder_tablesfile(savedirectory, table_order)
         except Exception as e:
-            tkMessageBox.showerror("Error", "An error occurred\n"+e)
+            tkMessageBox.showerror("Error", "An error occurred\n" + str(e))
 
     def finish_trended_banner(self):
         try:
@@ -543,7 +543,7 @@ class Internbot:
                 if savedirectory is not "":
                     crosstabs.Generate_Table_Script.TrendedTableScript().compile_scripts(self.tablesfilename, savedirectory, banners, self.__embedded_fields)
         except Exception as e:
-            tkMessageBox.showerror("Error", "An error occurred\n"+e)
+            tkMessageBox.showerror("Error", "An error occurred\n" + str(e))
 
     def build_xtabs(self):
         try:
@@ -557,7 +557,7 @@ class Internbot:
                     if outputdirectory is not "":
                         builder.write_report(outputdirectory)
         except Exception as e:
-            tkMessageBox.showerror("Error", "An error occurred\ne")
+            tkMessageBox.showerror("Error", "An error occurred\n" + str(e))
 
     def open_basic_topline(self):
         try:
@@ -575,7 +575,7 @@ class Internbot:
             btn_cancel.pack(ipadx = 10, side = Tkinter.LEFT, expand=True)
             redirect_window.deiconify()
         except Exception as e:
-            tkMessageBox.showerror("Error", "An error occurred\n"+e)
+            tkMessageBox.showerror("Error", "An error occurred\n" + str(e))
 
     def open_trended_topline(self):
         try:
@@ -597,7 +597,7 @@ class Internbot:
             btn_cancel.pack(ipadx = 10, side = Tkinter.LEFT, expand=True)
             redirect_window.deiconify()
         except Exception as e:
-            tkMessageBox.showerror("Error", "An error occurred\n"+e)
+            tkMessageBox.showerror("Error", "An error occurred\n" + str(e))
 
     def read_basic_topline(self):
         try:
@@ -631,7 +631,7 @@ class Internbot:
                     report = topline.CSV.trended_topline.ReportGenerator(filename, round)
                     self.build_trended_topline_report(isQSF, report)
         except Exception as e:
-            tkMessageBox.showerror("Error", "An error occurred\n"+e)
+            tkMessageBox.showerror("Error", "An error occurred\n" + str(e))
 
     def build_basic_topline_report(self, isQSF, report):
         try:
@@ -654,7 +654,7 @@ class Internbot:
                     else:
                         report.generate_basic_topline(template_file, savedirectory)
         except Exception as e:
-            tkMessageBox.showerror("Error", "An error occurred\n"+e)
+            tkMessageBox.showerror("Error", "An error occurred\n" + str(e))
 
     def build_trended_topline_report(self, isQSF, report):
         try:
@@ -668,7 +668,7 @@ class Internbot:
                     else:
                         report.generate_basic_topline(template_file, savedirectory)
         except Exception as e:
-            tkMessageBox.showerror("Error", "An error occurred\n"+e)
+            tkMessageBox.showerror("Error", "An error occurred\n" + str(e))
 
     def scores_window(self):
         self.filename = tkFileDialog.askopenfilename(initialdir = self.fpath, title = "Select model file", filetypes = (("comma seperated files","*.csv"),("all files","*.*")))
@@ -723,7 +723,7 @@ class Internbot:
                     if savedirectory is not "":
                         report.generate_scores_topline(savedirectory, report_location, round)
         except Exception as e:
-            tkMessageBox.showerror("Error", "An error occurred\n" + e)
+            tkMessageBox.showerror("Error", "An error occurred\n" + str(e))
 
     def issue_trended_window(self):
         try:
@@ -755,7 +755,7 @@ class Internbot:
                 btn_done.pack(side = Tkinter.RIGHT, expand=True)
                 self.create_window.deiconify()
         except Exception as e:
-            tkMessageBox.showerror("Error", "An error occurred\n" + e)
+            tkMessageBox.showerror("Error", "An error occurred\n" + str(e))
 
     def issue_trended(self):
         try:
@@ -776,7 +776,7 @@ class Internbot:
                     if still_select is True:
                         self.issue_trended()
         except Exception as e:
-            tkMessageBox.showerror("Error", "An error occurred\n" + e)
+            tkMessageBox.showerror("Error", "An error occurred\n" + str(e))
 
 
     def trended_scores_window(self):
@@ -810,7 +810,7 @@ class Internbot:
 
                 self.create_window.deiconify()
         except Exception as e:
-            tkMessageBox.showerror("Error", "An error occurred\n" + e)
+            tkMessageBox.showerror("Error", "An error occurred\n" + str(e))
 
     def trended_scores(self):
         try:
@@ -827,7 +827,7 @@ class Internbot:
                         report.generate_trended_scores(savedirectory, round)
                         self.create_window.destroy()
         except Exception as e:
-            tkMessageBox.showerror("Error", "An error occurred\n" + e)
+            tkMessageBox.showerror("Error", "An error occurred\n" + str(e))
 
     def open_file_for_user(self, file_path):
         print "Save Dir: " + str(file_path)
