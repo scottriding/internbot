@@ -56,11 +56,11 @@ class Internbot:
         message = "Select a topline format."
         Tkinter.Label(redirect_window, text=message).pack(expand=True)
         btn_basic = Tkinter.Button(redirect_window, text="Basic", command=self.open_basic_topline, height=1, width=10)
-        btn_trended = Tkinter.Button(redirect_window, text="Trended", command=self.open_trended_topline, height = 1, width = 10)
-        btn_cancel = Tkinter.Button(redirect_window, text = "Cancel", command = redirect_window.destroy, height = 1, width = 10)
-        btn_basic.pack(ipadx = 10, side = Tkinter.BOTTOM, expand=True)
-        btn_trended.pack(ipadx = 10, side = Tkinter.BOTTOM, expand=True)
-        btn_cancel.pack(ipadx = 10, side = Tkinter.BOTTOM, expand=True)
+        btn_trended = Tkinter.Button(redirect_window, text="Trended", command=self.open_trended_topline, height=1, width=10)
+        btn_cancel = Tkinter.Button(redirect_window, text="Cancel", command=redirect_window.destroy, height=1, width=10)
+        btn_basic.pack(ipadx=10, side=Tkinter.BOTTOM, expand=True)
+        btn_trended.pack(ipadx=10, side=Tkinter.BOTTOM, expand=True)
+        btn_cancel.pack(ipadx=10, side=Tkinter.BOTTOM, expand=True)
         redirect_window.deiconify()
 
     def rnc_menu(self):
@@ -86,75 +86,74 @@ class Internbot:
         try:
             ask_qsf = tkMessageBox.askokcancel("Select Qualtrics File", "Please select the Qualtrics survey .qsf file.")
             if ask_qsf is True: # user selected ok
-                qsffilename = tkFileDialog.askopenfilename(initialdir = self.fpath, title = "Select Qualtrics survey file",filetypes = (("Qualtrics file","*.qsf"),("all files","*.*")))
-                if qsffilename is not "":
+                qsf_file_name = tkFileDialog.askopenfilename(initialdir = self.fpath, title = "Select Qualtrics survey file",filetypes = (("Qualtrics file","*.qsf"),("all files","*.*")))
+                if qsf_file_name is not "":
                     compiler = base.QSFSurveyCompiler()
-                    survey = compiler.compile(qsffilename)
+                    survey = compiler.compile(qsf_file_name)
                     ask_output = tkMessageBox.askokcancel("Output directory", "Please select the directory for finished variable script.")
                     if ask_output is True: # user selected ok
-                        savedirectory = tkFileDialog.askdirectory()
-                        if savedirectory is not "":
+                        save_directory = tkFileDialog.askdirectory()
+                        if save_directory is not "":
                             variables = crosstabs.Generate_Prelim_SPSS_Script.SPSSTranslator()
                             tables = crosstabs.Generate_Prelim_SPSS_Script.TableDefiner()
-                            variables.define_variables(survey, savedirectory)
-                            tables.define_tables(survey, savedirectory)
+                            variables.define_variables(survey, save_directory)
+                            tables.define_tables(survey, save_directory)
                             open_files = tkMessageBox.askyesno("Info", "Done!\nWould you like to open your finished files?")
                             if open_files is True:
-                                self.open_file_for_user(savedirectory+"/Tables to run.csv")
-                                self.open_file_for_user(savedirectory+"/rename variables.sps")
+                                self.open_file_for_user(save_directory+"/Tables to run.csv")
+                                self.open_file_for_user(save_directory+"/rename variables.sps")
                         else:
-                            still_select_dest = tkMessageBox.askyesno("Info",
-                                                                 "You did not select a destination for your finished report"
-                                                                 ".\n Would you still like to?")
+                            still_select_dest = tkMessageBox.askyesno("Info", "You did not select a destination for your finished report.\n Would you still like to?")
                             if still_select_dest is True:
-                                savedirectory = tkFileDialog.askdirectory()
-                                if savedirectory is not "":
+                                save_directory = tkFileDialog.askdirectory()
+                                if save_directory is not "":
                                     variables = crosstabs.Generate_Prelim_SPSS_Script.SPSSTranslator()
                                     tables = crosstabs.Generate_Prelim_SPSS_Script.TableDefiner()
-                                    variables.define_variables(survey, savedirectory)
-                                    tables.define_tables(survey, savedirectory)
-                                    open_files = tkMessageBox.askyesno("Info",
-                                                                       "Done!\nWould you like to open your finished files?")
+                                    variables.define_variables(survey, save_directory)
+                                    tables.define_tables(survey, save_directory)
+                                    open_files = tkMessageBox.askyesno("Info","Done!\n"
+                                                                       "Would you like to open your finished files?")
                                     if open_files is True:
-                                        self.open_file_for_user(savedirectory + "/Tables to run.csv")
-                                        self.open_file_for_user(savedirectory + "/rename variables.sps")
+                                        self.open_file_for_user(save_directory + "/Tables to run.csv")
+                                        self.open_file_for_user(save_directory + "/rename variables.sps")
 
                             else:
                                 tkMessageBox.showinfo("Cancelled", "Cancelled file creation")
         except Exception as e:
-            tkMessageBox.showerror("Error", "An error occurred\n"+e)
+            tkMessageBox.showerror("Error", "An error occurred\n"+str(e))
 
     def table_script(self):
         try:
             script = crosstabs.Generate_Table_Script.TableScript()
-            ask_tables = tkMessageBox.askokcancel("Select Tables to Run.csv File", "Please select the tables to run .csv file.")
+            ask_tables = tkMessageBox.askokcancel("Select Tables to Run.csv File", "Please select the "
+                                                                                   "'Tables to run.csv' file.")
             if ask_tables is True:
-                self.tablesfilename = tkFileDialog.askopenfilename(initialdir = self.fpath, title = "Select tables file",filetypes = (("comma seperated files","*.csv"),("all files","*.*")))
-                if self.tablesfilename is not "":
+                self.tables_file_name = tkFileDialog.askopenfilename(initialdir=self.fpath, title ="Select tables file", filetypes = (("comma seperated files", "*.csv"), ("all files", "*.*")))
+                if self.tables_file_name is not "":
                     ask_banners = tkMessageBox.askokcancel("Banner selection", "Please insert/select the banners for this report.")
                     if ask_banners is True:
-                        names = crosstabs.Generate_Table_Script.TablesParser().pull_table_names(self.tablesfilename)
-                        titles = crosstabs.Generate_Table_Script.TablesParser().pull_table_titles(self.tablesfilename)
-                        bases = crosstabs.Generate_Table_Script.TablesParser().pull_table_bases(self.tablesfilename)
+                        names = crosstabs.Generate_Table_Script.TablesParser().pull_table_names(self.tables_file_name)
+                        titles = crosstabs.Generate_Table_Script.TablesParser().pull_table_titles(self.tables_file_name)
+                        bases = crosstabs.Generate_Table_Script.TablesParser().pull_table_bases(self.tables_file_name)
                         self.banner_window(names, titles, bases)
         except Exception as e:
-            tkMessageBox.showerror("Error", "An error occurred\n"+e)
+            tkMessageBox.showerror("Error", "An error occurred\n"+str(e))
 
     def trended_table_script(self):
         try:
             script = crosstabs.Generate_Table_Script.TrendedTableScript()
             ask_tables = tkMessageBox.askokcancel("Select Tables to Run.csv File", "Please select the tables to run .csv file.")
             if ask_tables is True:
-                self.tablesfilename = tkFileDialog.askopenfilename(initialdir = self.fpath, title = "Select tables file",filetypes = (("comma seperated files","*.csv"),("all files","*.*")))
-                if self.tablesfilename is not "":
+                self.tables_file_name = tkFileDialog.askopenfilename(initialdir = self.fpath, title ="Select tables file", filetypes = (("comma separated files", "*.csv"), ("all files", "*.*")))
+                if self.tables_file_name is not "":
                     ask_banners = tkMessageBox.askokcancel("Banner selection", "Please insert/select the banners for this report.")
                     if ask_banners is True:
-                        names = crosstabs.Generate_Table_Script.TablesParser().pull_table_names(self.tablesfilename)
-                        titles = crosstabs.Generate_Table_Script.TablesParser().pull_table_titles(self.tablesfilename)
-                        bases = crosstabs.Generate_Table_Script.TablesParser().pull_table_bases(self.tablesfilename)
+                        names = crosstabs.Generate_Table_Script.TablesParser().pull_table_names(self.tables_file_name)
+                        titles = crosstabs.Generate_Table_Script.TablesParser().pull_table_titles(self.tables_file_name)
+                        bases = crosstabs.Generate_Table_Script.TablesParser().pull_table_bases(self.tables_file_name)
                         self.trended_banner_window(names, titles, bases)
         except Exception as e:
-            tkMessageBox.showerror("Error", "An error occurred\n"+e)
+            tkMessageBox.showerror("Error", "An error occurred\n"+str(e))
 
     def trended_banner_window(self, names, titles, bases):
         try:
@@ -165,15 +164,17 @@ class Internbot:
             self.edit_window.geometry("1500x500+%d+%d" % (x - 550 , y - 50))
             self.edit_window.title("Banner selection")
 
-            titles_frame = Tkinter.Frame(self.edit_window)
-            titles_frame.pack()
+            #titles_frame = Tkinter.Frame(self.edit_window)
+            #titles_frame.pack()
 
             self.boxes_frame = Tkinter.Frame(self.edit_window)
-            self.boxes_frame.pack(fill=Tkinter.BOTH)
+            self.boxes_frame.pack(side = Tkinter.LEFT, fill=Tkinter.BOTH)
 
-            self.tables_box = Tkinter.Listbox(self.edit_window, selectmode="multiple", width=80, height=15)
-
+            self.tables_box = Tkinter.Listbox(self.boxes_frame, selectmode="multiple", width=80, height=15)
             self.tables_box.pack(padx = 15, pady=10,expand=True, side = Tkinter.LEFT, fill=Tkinter.BOTH)
+
+            scrollbar = Tkinter.Scrollbar(self.boxes_frame)
+            scrollbar.pack(side=Tkinter.RIGHT, fill=Tkinter.Y)
 
             self.banners_box = Tkinter.Listbox(self.edit_window)
             self.banners_box.pack(padx = 15, pady=10, expand=True, side=Tkinter.RIGHT, fill=Tkinter.BOTH)
@@ -183,14 +184,16 @@ class Internbot:
                 self.tables_box.insert(Tkinter.END, names[index] + ": " + titles[index])
                 index += 1
 
-            btn_up = Tkinter.Button(self.edit_window, text = "Up", command = self.shift_up)
-            btn_down = Tkinter.Button(self.edit_window, text = "Down", command = self.shift_down)
-            btn_insert = Tkinter.Button(self.edit_window, text = "Insert", command = self.insert_banner)
-            btn_edit = Tkinter.Button(self.edit_window, text =   "Edit", command = self.parse_selection)
-            btn_create = Tkinter.Button(self.edit_window, text = "Create", command = self.create_banner)
-            btn_remove = Tkinter.Button(self.edit_window, text = "Remove", command = self.remove_banner)
+            buttons_frame = Tkinter.Frame(self.edit_window)
+            buttons_frame.pack(side = Tkinter.RIGHT, fill=Tkinter.BOTH)
+            btn_up = Tkinter.Button(buttons_frame, text = "Up", command = self.shift_up)
+            btn_down = Tkinter.Button(buttons_frame, text = "Down", command = self.shift_down)
+            btn_insert = Tkinter.Button(buttons_frame, text = "Insert", command = self.insert_banner)
+            btn_edit = Tkinter.Button(buttons_frame, text =   "Edit", command = self.parse_selection)
+            btn_create = Tkinter.Button(buttons_frame, text = "Create", command = self.create_banner)
+            btn_remove = Tkinter.Button(buttons_frame, text = "Remove", command = self.remove_banner)
 
-            btn_done = Tkinter.Button(self.edit_window, text = "Done", command = self.finish_trended_banner)
+            btn_done = Tkinter.Button(buttons_frame, text = "Done", command = self.finish_trended_banner)
 
             btn_done.pack(side=Tkinter.BOTTOM, pady=15)
             btn_remove.pack(side=Tkinter.BOTTOM)
@@ -203,7 +206,7 @@ class Internbot:
 
             self.edit_window.deiconify()
         except Exception as e:
-            tkMessageBox.showerror("Error", "An error occurred\n"+e)
+            tkMessageBox.showerror("Error", "An error occurred\n"+str(e))
 
     def banner_window(self, names, titles, bases):
         try:
@@ -253,7 +256,7 @@ class Internbot:
 
             self.edit_window.deiconify()
         except Exception as e:
-            tkMessageBox.showerror("Error", "An error occurred"+e)
+            tkMessageBox.showerror("Error", "An error occurred"+str(e))
 
     def shift_up(self):
         current_banners = []
@@ -392,6 +395,7 @@ class Internbot:
         entry_name.insert(0, initial_name)
         entry_title = Tkinter.Entry(create_window)
         entry_title.insert(0, intial_title)
+
         def create():
             name = entry_name.get()
             title = entry_title.get()
@@ -520,10 +524,10 @@ class Internbot:
             if ask_output is True:
                 savedirectory = tkFileDialog.askdirectory()
                 if savedirectory is not "":
-                    crosstabs.Generate_Table_Script.TableScript().compile_scripts(self.tablesfilename, savedirectory, banners, self.__embedded_fields)
+                    crosstabs.Generate_Table_Script.TableScript().compile_scripts(self.tables_file_name, savedirectory, banners, self.__embedded_fields)
                     self.reorder_tablesfile(savedirectory, table_order)
         except Exception as e:
-            tkMessageBox.showerror("Error", "An error occurred\n"+e)
+            tkMessageBox.showerror("Error", "An error occurred\n"+str(e))
 
     def finish_trended_banner(self):
         try:
@@ -541,9 +545,9 @@ class Internbot:
             if ask_output is True:
                 savedirectory = tkFileDialog.askdirectory()
                 if savedirectory is not "":
-                    crosstabs.Generate_Table_Script.TrendedTableScript().compile_scripts(self.tablesfilename, savedirectory, banners, self.__embedded_fields)
+                    crosstabs.Generate_Table_Script.TrendedTableScript().compile_scripts(self.tables_file_name, savedirectory, banners, self.__embedded_fields)
         except Exception as e:
-            tkMessageBox.showerror("Error", "An error occurred\n"+e)
+            tkMessageBox.showerror("Error", "An error occurred\n"+str(e))
 
     def build_xtabs(self):
         try:
@@ -557,7 +561,7 @@ class Internbot:
                     if outputdirectory is not "":
                         builder.write_report(outputdirectory)
         except Exception as e:
-            tkMessageBox.showerror("Error", "An error occurred\ne")
+            tkMessageBox.showerror("Error", "An error occurred\n"+str(e))
 
     def open_basic_topline(self):
         try:
@@ -575,7 +579,7 @@ class Internbot:
             btn_cancel.pack(ipadx = 10, side = Tkinter.LEFT, expand=True)
             redirect_window.deiconify()
         except Exception as e:
-            tkMessageBox.showerror("Error", "An error occurred\n"+e)
+            tkMessageBox.showerror("Error", "An error occurred\n"+str(e))
 
     def open_trended_topline(self):
         try:
@@ -597,7 +601,7 @@ class Internbot:
             btn_cancel.pack(ipadx = 10, side = Tkinter.LEFT, expand=True)
             redirect_window.deiconify()
         except Exception as e:
-            tkMessageBox.showerror("Error", "An error occurred\n"+e)
+            tkMessageBox.showerror("Error", "An error occurred\n"+str(e))
 
     def read_basic_topline(self):
         try:
@@ -631,7 +635,7 @@ class Internbot:
                     report = topline.CSV.trended_topline.ReportGenerator(filename, round)
                     self.build_trended_topline_report(isQSF, report)
         except Exception as e:
-            tkMessageBox.showerror("Error", "An error occurred\n"+e)
+            tkMessageBox.showerror("Error", "An error occurred\n"+str(e))
 
     def build_basic_topline_report(self, isQSF, report):
         try:
@@ -654,7 +658,7 @@ class Internbot:
                     else:
                         report.generate_basic_topline(template_file, savedirectory)
         except Exception as e:
-            tkMessageBox.showerror("Error", "An error occurred\n"+e)
+            tkMessageBox.showerror("Error", "An error occurred\n"+str(e))
 
     def build_trended_topline_report(self, isQSF, report):
         try:
@@ -668,7 +672,7 @@ class Internbot:
                     else:
                         report.generate_basic_topline(template_file, savedirectory)
         except Exception as e:
-            tkMessageBox.showerror("Error", "An error occurred\n"+e)
+            tkMessageBox.showerror("Error", "An error occurred\n"+str(e))
 
     def scores_window(self):
         self.filename = tkFileDialog.askopenfilename(initialdir = self.fpath, title = "Select model file", filetypes = (("comma seperated files","*.csv"),("all files","*.*")))
@@ -723,7 +727,7 @@ class Internbot:
                     if savedirectory is not "":
                         report.generate_scores_topline(savedirectory, report_location, round)
         except Exception as e:
-            tkMessageBox.showerror("Error", "An error occurred\n" + e)
+            tkMessageBox.showerror("Error", "An error occurred\n" + str(e))
 
     def issue_trended_window(self):
         try:
@@ -755,7 +759,7 @@ class Internbot:
                 btn_done.pack(side = Tkinter.RIGHT, expand=True)
                 self.create_window.deiconify()
         except Exception as e:
-            tkMessageBox.showerror("Error", "An error occurred\n" + e)
+            tkMessageBox.showerror("Error", "An error occurred\n" + str(e))
 
     def issue_trended(self):
         try:
@@ -776,7 +780,7 @@ class Internbot:
                     if still_select is True:
                         self.issue_trended()
         except Exception as e:
-            tkMessageBox.showerror("Error", "An error occurred\n" + e)
+            tkMessageBox.showerror("Error", "An error occurred\n" + str(e))
 
 
     def trended_scores_window(self):
@@ -810,7 +814,7 @@ class Internbot:
 
                 self.create_window.deiconify()
         except Exception as e:
-            tkMessageBox.showerror("Error", "An error occurred\n" + e)
+            tkMessageBox.showerror("Error", "An error occurred\n" + str(e))
 
     def trended_scores(self):
         try:
@@ -827,7 +831,7 @@ class Internbot:
                         report.generate_trended_scores(savedirectory, round)
                         self.create_window.destroy()
         except Exception as e:
-            tkMessageBox.showerror("Error", "An error occurred\n" + e)
+            tkMessageBox.showerror("Error", "An error occurred\n" + str(e))
 
     def open_file_for_user(self, file_path):
         print "Save Dir: " + str(file_path)
@@ -841,6 +845,7 @@ class Internbot:
                 tkMessageBox.showerror("Error", "Error: Could not open file for you \n"+file_path)
         except IOError:
             tkMessageBox.showerror("Error", "Error: Could not open file for you \n" + file_path)
+
 
 window = Tkinter.Tk()
 window.title("Internbot: 01011001 00000010") # Internbot: Y2
