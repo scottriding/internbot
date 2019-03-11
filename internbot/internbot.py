@@ -56,9 +56,9 @@ class Internbot:
         btn_basic = Tkinter.Button(redirect_window, text="Basic", command=self.open_basic_topline, height=1, width=10)
         btn_trended = Tkinter.Button(redirect_window, text="Trended", command=self.open_trended_topline, height = 1, width = 10)
         btn_cancel = Tkinter.Button(redirect_window, text = "Cancel", command = redirect_window.destroy, height = 1, width = 10)
-        btn_basic.pack(ipadx = 10, side = Tkinter.BOTTOM, expand=True)
-        btn_trended.pack(ipadx = 10, side = Tkinter.BOTTOM, expand=True)
-        btn_cancel.pack(ipadx = 10, side = Tkinter.BOTTOM, expand=True)
+        btn_basic.pack(ipadx = 10, side = Tkinter.TOP, expand=True)
+        btn_trended.pack(ipadx = 10, side = Tkinter.TOP, expand=True)
+        btn_cancel.pack(ipadx = 10, side = Tkinter.TOP, expand=True)
         redirect_window.deiconify()
 
     def rnc_menu(self):
@@ -566,7 +566,7 @@ class Internbot:
                     isQSF = True
                     self.build_report(isQSF, report)
                 elif ".csv" in filename:
-                    report = topline.CSV.basic_topline.ReportGenerator(filename)
+                    report = topline.CSV.ReportGenerator(filename)
                     self.build_basic_topline_report(isQSF, report)
         except Exception as e:
             if str(e) == "percent":
