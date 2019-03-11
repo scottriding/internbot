@@ -68,7 +68,11 @@ class TableScript(object):
 
         title = question['Title']
         title = title.replace('"', '')
-        result += "    TITLE='Table %s - %s: %s'\n" % (question['TableIndex'], question['VariableName'], title)
+        table_index = int(question['TableIndex'])
+        if table_index < 10:
+            result += "    TITLE='Table 0%s - %s: %s'\n" % (table_index, question['VariableName'], title)
+        else:
+            result += "    Title='Table %s - %s: %s'\n" % (table_index, question['VariableName'], title)
         if question['Base'] is not '':
             result += "    CORNER='%s - %s'\n" % ('Base', question['Base'])
         result += '  /COMPARETEST TYPE=PROP ALPHA=0.05 ADJUST=BONFERRONI ORIGIN=COLUMN INCLUDEMRSETS=YES\n'
