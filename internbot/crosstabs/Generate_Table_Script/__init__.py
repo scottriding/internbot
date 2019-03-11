@@ -1,2 +1,2 @@
-from table_script_generator import TableScript, TrendedTableScript
+from table_script_generator import TableScriptGenerator
 from table_files_parser import TablesParser

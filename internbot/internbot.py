@@ -438,11 +438,45 @@ class Internbot:
 
     def finish_banner(self):
         try:
+            self.variable_entry = None
             ask_trended = tkMessageBox.askyesno("Trended Follow-up", "Is this a trended report?")
             if ask_trended is True:
-                generator = crosstabs.Generate_Table_Script.TrendedTableScript()
+                self.filter_variable_window()
             else:
-                generator = crosstabs.Generate_Table_Script.TableScript()
+                self.save_table_script()
+        except Exception as e:
+            tkMessageBox.showerror("Error", "An error occurred\n" + str(e))
+
+    def filter_variable_window(self):
+        self.create_window = Tkinter.Toplevel(self.__window)
+        self.create_window.withdraw()
+        x = self.__window.winfo_x()
+        y = self.__window.winfo_y()
+        self.create_window.geometry("250x100+%d+%d" % (x + 75, y + 150))
+        self.create_window.title("Trended report details")
+
+        # filtering  variable
+        variable_frame = Tkinter.Frame(self.create_window)
+        variable_frame.pack(side = Tkinter.TOP, expand=True)
+
+        variable_frame = Tkinter.Label(variable_frame, text="Trended variable:")
+        variable_frame.pack (side = Tkinter.LEFT, expand=True)
+        self.variable_entry = Tkinter.Entry(variable_frame)
+        self.variable_entry.pack(side=Tkinter.RIGHT, expand=True)
+
+        # done and cancel buttons
+        button_frame = Tkinter.Frame(self.create_window)
+        button_frame.pack(side = Tkinter.TOP, expand=True)
+
+        btn_cancel = Tkinter.Button(self.create_window, text = "Cancel", command = self.create_window.destroy)
+        btn_cancel.pack(side = Tkinter.RIGHT, expand=True)
+        btn_done = Tkinter.Button(self.create_window, text = "Done", command = self.save_table_script)
+        btn_done.pack(side = Tkinter.RIGHT, expand=True)
+        self.create_window.deiconify()
+
+    def save_table_script(self):
+        try:
+            generator = crosstabs.Generate_Table_Script.TableScriptGenerator()
             table_order = OrderedDict()
             banner_list = OrderedDict()
             for item in list(self.tables_box.get(0, Tkinter.END)):
@@ -453,11 +487,16 @@ class Internbot:
                 banner_list[question[0]] = question[1]
             self.edit_window.destroy()
             ask_output = tkMessageBox.askokcancel("Output directory", "Please select the directory for finished table script.")
+            filtering_variable = None
+            if self.variable_entry is not None:
+                variable = str(self.variable_entry.get())
+                if variable != "":
+                    filtering_variable = variable
+                self.create_window.destroy()
             if ask_output is True:
                 savedirectory = tkFileDialog.askdirectory()
                 if savedirectory is not "":
-                    #generator.compile_scripts(table_order, banner_list, savedirectory, self.__embedded_fields)
-                    generator.compile_scripts(self.tablesfilename, savedirectory, banner_list.keys(), self.__embedded_fields)
+                     generator.compile_scripts(self.tablesfilename, banner_list.keys(), self.__embedded_fields, filtering_variable, savedirectory)
         except Exception as e:
             tkMessageBox.showerror("Error", "An error occurred\n" + str(e))
 
