@@ -46,39 +46,74 @@ class Internbot:
         redirect_window.deiconify()
 
     def topline_menu(self):
-        redirect_window = Tkinter.Toplevel(self.__window)
-        redirect_window.withdraw()
-        x = self.__window.winfo_x()
-        y = self.__window.winfo_y()
-        redirect_window.geometry("250x100+%d+%d" % (x + 75, y + 150))
-        message = "Select a topline format."
-        Tkinter.Label(redirect_window, text=message).pack(expand=True)
-        btn_basic = Tkinter.Button(redirect_window, text="Basic", command=self.open_basic_topline, height=1, width=10)
-        btn_trended = Tkinter.Button(redirect_window, text="Trended", command=self.open_trended_topline, height = 1, width = 10)
-        btn_cancel = Tkinter.Button(redirect_window, text = "Cancel", command = redirect_window.destroy, height = 1, width = 10)
-        btn_basic.pack(ipadx = 10, side = Tkinter.TOP, expand=True)
-        btn_trended.pack(ipadx = 10, side = Tkinter.TOP, expand=True)
-        btn_cancel.pack(ipadx = 10, side = Tkinter.TOP, expand=True)
-        redirect_window.deiconify()
+		redirect_window = Tkinter.Toplevel(self.__window)
+		redirect_window.withdraw()
+		x = self.__window.winfo_x()
+		y = self.__window.winfo_y()
+		redirect_window.geometry("250x100+%d+%d" % (x + 75, y + 150))
+		redirect_window.title("Y2 Topline Report Automation")
+		message = "Please open a survey file."
+		round_label = Tkinter.Label(redirect_window, text="Round number:")
+		round_label.pack(padx = 5, side = Tkinter.TOP, expand=True)
+		self.round_entry = Tkinter.Entry(redirect_window)
+		self.round_entry.pack(padx = 7, side=Tkinter.TOP, expand=True)
+		Tkinter.Label(redirect_window, text = message).pack(expand=True)
+		btn_open = Tkinter.Button(redirect_window, text = "Open", command = self.read_topline)
+		btn_cancel = Tkinter.Button(redirect_window, text = "Cancel", command = redirect_window.destroy)
+		btn_open.pack(ipadx = 10, side = Tkinter.LEFT, expand=True)
+		btn_cancel.pack(ipadx = 10, side = Tkinter.LEFT, expand=True)
+		redirect_window.deiconify()
 
     def rnc_menu(self):
-        self.redirect_window = Tkinter.Toplevel(self.__window)
-        self.redirect_window.withdraw()
-        x = self.__window.winfo_x()
-        y = self.__window.winfo_y()
-        self.redirect_window.geometry("250x150+%d+%d" % (x + 75, y + 125))
-        self.redirect_window.title("RNC Scores Topline Automation")
-        message = "Please open a model scores file."
-        Tkinter.Label(self.redirect_window, text = message).pack(expand=True)
-        btn_topline = Tkinter.Button(self.redirect_window, text="Scores Topline Report", command=self.scores_window, height = 1, width = 20)
-        btn_trended = Tkinter.Button(self.redirect_window, text="Issue Trended Report", command=self.issue_trended_window, height = 1, width = 20)
-        btn_ind_trended = Tkinter.Button(self.redirect_window, text="Trended Score Reports", command=self.trended_scores_window, height = 1, width = 20)
-        btn_cancel = Tkinter.Button(self.redirect_window, text="Cancel", command = self.redirect_window.destroy, height = 1, width = 20)
-        btn_cancel.pack(ipadx = 5, side = Tkinter.BOTTOM, expand=False)
-        btn_topline.pack(ipadx=5, side=Tkinter.BOTTOM, expand=False)
-        btn_trended.pack(ipadx=5, side = Tkinter.BOTTOM, expand=False)
-        btn_ind_trended.pack(ipadx = 5, side = Tkinter.BOTTOM, expand=False)
-        self.redirect_window.deiconify()
+		self.redirect_window = Tkinter.Toplevel(self.__window)
+		self.redirect_window.withdraw()
+		x = self.__window.winfo_x()
+		y = self.__window.winfo_y()
+		self.redirect_window.geometry("250x150+%d+%d" % (x + 75, y + 125))
+		self.redirect_window.title("RNC Scores Topline Automation")
+		message = "Please open a model scores file."
+		Tkinter.Label(self.redirect_window, text = message).pack(expand=True)
+		btn_topline = Tkinter.Button(self.redirect_window, text="Scores Topline Report", command=self.scores_window, height = 1, width = 20)
+		btn_trended = Tkinter.Button(self.redirect_window, text="Issue Trended Report", command=self.issue_trended_window, height = 1, width = 20)
+		btn_ind_trended = Tkinter.Button(self.redirect_window, text="Trended Score Reports", command=self.trended_scores_window, height = 1, width = 20)
+		btn_cancel = Tkinter.Button(self.redirect_window, text="Cancel", command = self.redirect_window.destroy, height = 1, width = 20)
+		btn_cancel.pack(ipadx = 5, side = Tkinter.BOTTOM, expand=False)
+		btn_topline.pack(ipadx=5, side=Tkinter.BOTTOM, expand=False)
+		btn_trended.pack(ipadx=5, side = Tkinter.BOTTOM, expand=False)
+		btn_ind_trended.pack(ipadx = 5, side = Tkinter.BOTTOM, expand=False)
+		self.redirect_window.deiconify()
+	
+    def read_topline(self):
+		try:
+			filename = tkFileDialog.askopenfilename(initialdir = self.fpath, title = "Select survey file",filetypes = (("Qualtrics files","*.qsf"),("comma seperated files","*.csv"),("all files","*.*")))
+			if filename is not "":
+				isQSF = False
+				if ".qsf" in filename:
+					pass
+				elif ".csv" in filename:
+					round_int = self.round_entry.get()
+					if round_int == "":
+						round_int = 1
+					else:
+						round_int = int(round_int)
+					report = topline.CSV.ReportGenerator(filename, round)
+					self.build_topline_report(isQSF, report)
+		except Exception as e:
+			tkMessageBox.showerror("Error", "An error occurred\n" + str(e))
+
+    def build_topline_report(self, isQSF, report):
+        try:
+            template_file = open("topline_template.docx", "r")
+            ask_output = tkMessageBox.askokcancel("Output directory", "Please select the directory for finished report.")
+            if ask_output is True:
+                savedirectory = tkFileDialog.askdirectory()
+                if savedirectory is not "":
+                    if isQSF is True:
+                        pass
+                    else:
+                        report.generate_topline(template_file, savedirectory)
+        except Exception as e:
+            tkMessageBox.showerror("Error", "An error occurred\n" + str(e))
 
     def variable_script(self):
         try:
@@ -553,117 +588,6 @@ class Internbot:
 
                             else:
                                 tkMessageBox.showinfo("Cancelled", "Cancelled file creation")
-        except Exception as e:
-            tkMessageBox.showerror("Error", "An error occurred\n" + str(e))
-
-    def open_basic_topline(self):
-        try:
-            redirect_window = Tkinter.Toplevel(self.__window)
-            redirect_window.withdraw()
-            x = self.__window.winfo_x()
-            y = self.__window.winfo_y()
-            redirect_window.geometry("250x100+%d+%d" % (x + 75, y + 150))
-            redirect_window.title("Y2 Topline Report Automation")
-            message = "Please open a survey file."
-            Tkinter.Label(redirect_window, text = message).pack(expand=True)
-            btn_open = Tkinter.Button(redirect_window, text = "Open", command = self.read_basic_topline)
-            btn_cancel = Tkinter.Button(redirect_window, text = "Cancel", command = redirect_window.destroy)
-            btn_open.pack(ipadx = 10, side = Tkinter.LEFT, expand=True)
-            btn_cancel.pack(ipadx = 10, side = Tkinter.LEFT, expand=True)
-            redirect_window.deiconify()
-        except Exception as e:
-            tkMessageBox.showerror("Error", "An error occurred\n" + str(e))
-
-    def open_trended_topline(self):
-        try:
-            redirect_window = Tkinter.Toplevel(self.__window)
-            redirect_window.withdraw()
-            x = self.__window.winfo_x()
-            y = self.__window.winfo_y()
-            redirect_window.geometry("250x100+%d+%d" % (x + 75, y + 150))
-            redirect_window.title("Y2 Topline Report Automation")
-            message = "Please open a survey file."
-            round_label = Tkinter.Label(redirect_window, text="Round number:")
-            round_label.pack(padx = 5, side = Tkinter.TOP, expand=True)
-            self.round_entry = Tkinter.Entry(redirect_window)
-            self.round_entry.pack(padx = 7, side=Tkinter.TOP, expand=True)
-            Tkinter.Label(redirect_window, text = message).pack(expand=True)
-            btn_open = Tkinter.Button(redirect_window, text = "Open", command = self.read_trended_topline)
-            btn_cancel = Tkinter.Button(redirect_window, text = "Cancel", command = redirect_window.destroy)
-            btn_open.pack(ipadx = 10, side = Tkinter.LEFT, expand=True)
-            btn_cancel.pack(ipadx = 10, side = Tkinter.LEFT, expand=True)
-            redirect_window.deiconify()
-        except Exception as e:
-            tkMessageBox.showerror("Error", "An error occurred\n" + str(e))
-
-    def read_basic_topline(self):
-        try:
-            filename = tkFileDialog.askopenfilename(initialdir = self.fpath, title = "Select survey file",filetypes = (("Qualtrics files","*.qsf"),("comma seperated files","*.csv"),("all files","*.*")))
-            if filename is not "":
-                isQSF = False
-                if ".qsf" in filename:
-                    compiler = base.QSFSurveyCompiler()
-                    survey = compiler.compile(filename)
-                    report = topline.QSF.ReportGenerator(survey)
-                    isQSF = True
-                    self.build_report(isQSF, report)
-                elif ".csv" in filename:
-                    report = topline.CSV.ReportGenerator(filename)
-                    self.build_basic_topline_report(isQSF, report)
-        except Exception as e:
-            if str(e) == "percent":
-                tkMessageBox.showerror("Error", "An error occurred\n" + str(e))
-
-    def read_trended_topline(self):
-        try:
-            filename = tkFileDialog.askopenfilename(initialdir = self.fpath, title = "Select survey file",filetypes = (("Qualtrics files","*.qsf"),("comma seperated files","*.csv"),("all files","*.*")))
-            if filename is not "":
-                isQSF = False
-                if ".qsf" in filename:
-                    pass
-                elif ".csv" in filename:
-                    round = int(self.round_entry.get())
-                    if round is "":
-                        round = 4
-                    report = topline.CSV.ReportGenerator(filename, round)
-                    self.build_trended_topline_report(isQSF, report)
-        except Exception as e:
-            tkMessageBox.showerror("Error", "An error occurred\n" + str(e))
-
-    def build_basic_topline_report(self, isQSF, report):
-        try:
-            template_file = open("topline_template.docx", "r")
-            ask_output = tkMessageBox.askokcancel("Output directory", "Please select the directory for finished report.")
-            if ask_output is True:
-                savedirectory = tkFileDialog.askdirectory()
-                if savedirectory is not "":
-                    if isQSF is True:
-                        ask_freq = tkMessageBox.askokcancel("Frequency file", "Please select the topline .csv frequency file.")
-                        if ask_freq is True:
-                            freqfilename = tkFileDialog.askopenfilename(initialdir = self.fpath, title = "Select frequency file",filetypes = (("comma seperated files","*.csv"),("all files","*.*")))
-                            ask_open_ends = tkMessageBox.askokcancel("Open ends", "Please select the open-ends .csv file.")
-                            if ask_open_ends is True:
-                                open_ends_file = tkFileDialog.askopenfilename(initialdir = self.fpath, title = "Select open ends file",filetypes = (("comma seperated files","*.csv"),("all files","*.*")))
-                                if open_ends_file is not "":
-                                    report.generate_appendix(template_file, open_ends_file, savedirectory)
-                            else:
-                                report.generate_topline(freqfilename, template_file, savedirectory)
-                    else:
-                        report.generate_topline(template_file, savedirectory)
-        except Exception as e:
-            tkMessageBox.showerror("Error", "An error occurred\n" + str(e))
-
-    def build_trended_topline_report(self, isQSF, report):
-        try:
-            template_file = open("topline_template.docx", "r")
-            ask_output = tkMessageBox.askokcancel("Output directory", "Please select the directory for finished report.")
-            if ask_output is True:
-                savedirectory = tkFileDialog.askdirectory()
-                if savedirectory is not "":
-                    if isQSF is True:
-                        pass
-                    else:
-                        report.generate_topline(template_file, savedirectory)
         except Exception as e:
             tkMessageBox.showerror("Error", "An error occurred\n" + str(e))
 
