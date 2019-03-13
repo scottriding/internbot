@@ -84,36 +84,32 @@ class Internbot:
 		self.redirect_window.deiconify()
 	
     def read_topline(self):
-		try:
-			filename = tkFileDialog.askopenfilename(initialdir = self.fpath, title = "Select survey file",filetypes = (("Qualtrics files","*.qsf"),("comma seperated files","*.csv"),("all files","*.*")))
-			if filename is not "":
-				isQSF = False
-				if ".qsf" in filename:
-					pass
-				elif ".csv" in filename:
-					round_int = self.round_entry.get()
-					if round_int == "":
-						round_int = 1
-					else:
-						round_int = int(round_int)
-					report = topline.CSV.ReportGenerator(filename, round)
-					self.build_topline_report(isQSF, report)
-		except Exception as e:
-			tkMessageBox.showerror("Error", "An error occurred\n" + str(e))
+		filename = tkFileDialog.askopenfilename(initialdir = self.fpath, title = "Select survey file",filetypes = (("Qualtrics files","*.qsf"),("comma seperated files","*.csv"),("all files","*.*")))
+		print filename
+		if filename is not "":
+			isQSF = False
+			if ".qsf" in filename:
+				pass
+			elif ".csv" in filename:
+				round_int = self.round_entry.get()
+				if round_int == "":
+					round_int = 1
+				else:
+					round_int = int(round_int)
+				report = topline.CSV.ReportGenerator(filename, round)
+				self.build_topline_report(isQSF, report)
 
     def build_topline_report(self, isQSF, report):
-        try:
-            template_file = open("topline_template.docx", "r")
-            ask_output = tkMessageBox.askokcancel("Output directory", "Please select the directory for finished report.")
-            if ask_output is True:
-                savedirectory = tkFileDialog.askdirectory()
-                if savedirectory is not "":
-                    if isQSF is True:
-                        pass
-                    else:
-                        report.generate_topline(template_file, savedirectory)
-        except Exception as e:
-            tkMessageBox.showerror("Error", "An error occurred\n" + str(e))
+        template_file = open("topline_template.docx", "r")
+        ask_output = tkMessageBox.askokcancel("Output directory", "Please select the directory for finished report.")
+        if ask_output is True:
+            savedirectory = tkFileDialog.askdirectory()
+            if savedirectory is not "":
+                if isQSF is True:
+                    pass
+                else:
+                    report.generate_topline(template_file, savedirectory)
+        
 
     def variable_script(self):
         try:

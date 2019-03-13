@@ -96,7 +96,8 @@ class Response(object):
             self.__frequencies.append(frequency_data[round_col])
         else:
         	iteration = 1
-        	while iteration <= int(round_no):
+        	round_int = int(round_no)
+        	while iteration <= round_int:
         		print str(iteration)
         		round_col = "percent %s" % iteration
         		if frequency_data[round_col] != '':

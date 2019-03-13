@@ -75,6 +75,7 @@ class ToplineReport(object):
         
     def freqs_percent(self, freq, is_first=False):
         result = 0
+        print freq
         if float(freq) >= 1.0:
             result = freq
         else:
