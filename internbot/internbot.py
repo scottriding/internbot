@@ -136,7 +136,8 @@ class Internbot:
                         self.banner_window(names, titles, bases)
         except Exception as e:
             tkMessageBox.showerror("Error", "An error occurred\n"+ str(e))
-
+            
+   
     def banner_window(self, names, titles, bases):
         try:
             self.edit_window = Tkinter.Toplevel(self.__window)
@@ -147,32 +148,43 @@ class Internbot:
 
             self.edit_window.title("Banner selection")
 
-            titles_frame = Tkinter.Frame(self.edit_window)
-            titles_frame.pack()
-
+            #titles_frame = Tkinter.Frame(self.edit_window)
+            #titles_frame.pack()
+            
             self.boxes_frame = Tkinter.Frame(self.edit_window)
-            self.boxes_frame.pack(fill=Tkinter.BOTH)
-
-            self.tables_box = Tkinter.Listbox(self.edit_window, selectmode="multiple", width=80, height=15)
-
+            self.boxes_frame.pack(side=Tkinter.LEFT, fill=Tkinter.BOTH)
+            horiz_scrollbar = Tkinter.Scrollbar(self.boxes_frame)
+            horiz_scrollbar.config(orient= Tkinter.HORIZONTAL )
+            horiz_scrollbar.pack(side=Tkinter.BOTTOM, fill=Tkinter.X)
+            vert_scrollbar = Tkinter.Scrollbar(self.boxes_frame)
+            vert_scrollbar.pack(side=Tkinter.RIGHT, fill=Tkinter.Y)
+            
+            
+            self.tables_box = Tkinter.Listbox(self.boxes_frame, selectmode="multiple", width=80, height=15, yscrollcommand=vert_scrollbar.set, xscrollcommand = horiz_scrollbar.set)
             self.tables_box.pack(padx = 15, pady=10,expand=True, side = Tkinter.LEFT, fill=Tkinter.BOTH)
-
             self.banners_box = Tkinter.Listbox(self.edit_window)
             self.banners_box.pack(padx = 15, pady=10, expand=True, side=Tkinter.RIGHT, fill=Tkinter.BOTH)
+            
+            
 
             index = 0
             while index < len(names):
                 self.tables_box.insert(Tkinter.END, names[index] + ": " + titles[index])
                 index += 1
+            
+            vert_scrollbar.config(command=self.tables_box.yview)
+            horiz_scrollbar.config(command=self.tables_box.xview)
+            
+            buttons_frame = Tkinter.Frame(self.edit_window)
+            buttons_frame.pack(side = Tkinter.RIGHT, fill=Tkinter.BOTH)
+            btn_up = Tkinter.Button(buttons_frame, text = "Up", command = self.shift_up)
+            btn_down = Tkinter.Button(buttons_frame, text = "Down", command = self.shift_down)
+            btn_insert = Tkinter.Button(buttons_frame, text = "Insert", command = self.insert_banner)
+            btn_edit = Tkinter.Button(buttons_frame, text =   "Edit", command = self.parse_selection)
+            btn_create = Tkinter.Button(buttons_frame, text = "Create", command = self.create_banner)
+            btn_remove = Tkinter.Button(buttons_frame, text = "Remove", command = self.remove_banner)
 
-            btn_up = Tkinter.Button(self.edit_window, text = "Up", command = self.shift_up)
-            btn_down = Tkinter.Button(self.edit_window, text = "Down", command = self.shift_down)
-            btn_insert = Tkinter.Button(self.edit_window, text = "Insert", command = self.insert_banner)
-            btn_edit = Tkinter.Button(self.edit_window, text =   "Edit", command = self.parse_selection)
-            btn_create = Tkinter.Button(self.edit_window, text = "Create", command = self.create_banner)
-            btn_remove = Tkinter.Button(self.edit_window, text = "Remove", command = self.remove_banner)
-
-            btn_done = Tkinter.Button(self.edit_window, text = "Done", command = self.finish_banner)
+            btn_done = Tkinter.Button(buttons_frame, text = "Done", command = self.finish_banner)
 
             btn_done.pack(side=Tkinter.BOTTOM, pady=15)
             btn_remove.pack(side=Tkinter.BOTTOM)
@@ -181,7 +193,7 @@ class Internbot:
 
             btn_insert.pack(side=Tkinter.BOTTOM, pady=5)
             btn_down.pack(side=Tkinter.BOTTOM)
-            btn_up.pack(side=Tkinter.BOTTOM)
+            btn_up.pack(side=Tkinter.BOTTOM) 
 
             self.edit_window.deiconify()
         except Exception as e:
@@ -497,6 +509,21 @@ class Internbot:
                 savedirectory = tkFileDialog.askdirectory()
                 if savedirectory is not "":
                      generator.compile_scripts(self.tablesfilename, banner_list.keys(), self.__embedded_fields, filtering_variable, savedirectory)
+            	else:
+                            still_select_dest = tkMessageBox.askyesno("Info",
+                                                                 "You did not select a destination for your finished report"
+                                                                 ".\n Would you still like to?")
+                            if still_select_dest is True:
+                                savedirectory = tkFileDialog.askdirectory()
+                                if savedirectory is not "":
+                                    generator.compile_scripts(self.tablesfilename, banner_list.keys(), self.__embedded_fields, filtering_variable, savedirectory)
+                                    open_files = tkMessageBox.askyesno("Info",
+                                                                       "Done!\nWould you like to open your finished files?")
+                                    if open_files is True:
+                                        self.open_file_for_user(savedirectory + "/table script.sps")
+
+                            else:
+                                tkMessageBox.showinfo("Cancelled", "Cancelled file creation")
         except Exception as e:
             tkMessageBox.showerror("Error", "An error occurred\n" + str(e))
 
@@ -511,6 +538,21 @@ class Internbot:
                     outputdirectory = tkFileDialog.askdirectory()
                     if outputdirectory is not "":
                         builder.write_report(outputdirectory)
+                    else:
+                            still_select_dest = tkMessageBox.askyesno("Info",
+                                                                 "You did not select a destination for your finished report"
+                                                                 ".\n Would you still like to?")
+                            if still_select_dest is True:
+                                savedirectory = tkFileDialog.askdirectory()
+                                if savedirectory is not "":
+                                    builder.write_report(outputdirectory)
+                                    open_files = tkMessageBox.askyesno("Info",
+                                                                       "Done!\nWould you like to open your finished files?")
+                                    if open_files is True:
+                                        self.open_file_for_user(savedirectory + "/Crosstab Report.xlsx")
+
+                            else:
+                                tkMessageBox.showinfo("Cancelled", "Cancelled file creation")
         except Exception as e:
             tkMessageBox.showerror("Error", "An error occurred\n" + str(e))
 
@@ -626,45 +668,49 @@ class Internbot:
             tkMessageBox.showerror("Error", "An error occurred\n" + str(e))
 
     def scores_window(self):
-        self.filename = tkFileDialog.askopenfilename(initialdir = self.fpath, title = "Select model file", filetypes = (("comma seperated files","*.csv"),("all files","*.*")))
-        if self.filename is not "":
-            self.create_window = Tkinter.Toplevel(self.redirect_window)
-            self.create_window.withdraw()
-            x = self.__window.winfo_x()
-            y = self.__window.winfo_y()
-            self.create_window.geometry("250x100+%d+%d" % (x + 75, y + 150))
-            self.create_window.title("Scores Topline Report Details")
+        try:
+            print "In scores window"
+            self.filename = tkFileDialog.askopenfilename(initialdir = self.fpath, title = "Select model file", filetypes = (("comma seperated files","*.csv"),("all files","*.*")))
+            if self.filename is not "":
+                self.create_window = Tkinter.Toplevel(self.redirect_window)
+                self.create_window.withdraw()
+                x = self.__window.winfo_x()
+                y = self.__window.winfo_y()
+                self.create_window.geometry("250x100+%d+%d" % (x + 75, y + 150))
+                self.create_window.title("Scores Topline Report Details")
+                # location details
+                location_frame = Tkinter.Frame(self.create_window)
+                location_frame.pack(side = Tkinter.TOP, expand=True)
 
-            # location details
-            location_frame = Tkinter.Frame(self.create_window)
-            location_frame.pack(side = Tkinter.TOP, expand=True)
+                location_label = Tkinter.Label(location_frame, text="Reporting region:")
+                location_label.pack (side = Tkinter.LEFT, expand=True)
+                self.location_entry = Tkinter.Entry(location_frame)
+                self.location_entry.pack(side=Tkinter.RIGHT, expand=True)
 
-            location_label = Tkinter.Label(location_frame, text="Reporting region:")
-            location_label.pack (side = Tkinter.LEFT, expand=True)
-            self.location_entry = Tkinter.Entry(location_frame)
-            self.location_entry.pack(side=Tkinter.RIGHT, expand=True)
+                # round details
+                round_frame = Tkinter.Frame(self.create_window)
+                round_frame.pack(side = Tkinter.TOP, expand=True)
 
-            # round details
-            round_frame = Tkinter.Frame(self.create_window)
-            round_frame.pack(side = Tkinter.TOP, expand=True)
+                round_label = Tkinter.Label(round_frame, text="Round number:")
+                round_label.pack(padx = 5, side = Tkinter.LEFT, expand=True)
+                self.round_entry = Tkinter.Entry(round_frame)
+                self.round_entry.pack(padx = 7, side=Tkinter.RIGHT, expand=True)
 
-            round_label = Tkinter.Label(round_frame, text="Round number:")
-            round_label.pack(padx = 5, side = Tkinter.LEFT, expand=True)
-            self.round_entry = Tkinter.Entry(round_frame)
-            self.round_entry.pack(padx = 7, side=Tkinter.RIGHT, expand=True)
+                # done and cancel buttons
+                button_frame = Tkinter.Frame(self.create_window)
+                button_frame.pack(side = Tkinter.TOP, expand=True)
 
-            # done and cancel buttons
-            button_frame = Tkinter.Frame(self.create_window)
-            button_frame.pack(side = Tkinter.TOP, expand=True)
-
-            btn_cancel = Tkinter.Button(self.create_window, text = "Cancel", command = self.create_window.destroy)
-            btn_cancel.pack(side = Tkinter.RIGHT, expand=True)
-            btn_done = Tkinter.Button(self.create_window, text = "Done", command = self.scores_topline)
-            btn_done.pack(side = Tkinter.RIGHT, expand=True)
-            self.create_window.deiconify()
+                btn_cancel = Tkinter.Button(self.create_window, text = "Cancel", command = self.create_window.destroy)
+                btn_cancel.pack(side = Tkinter.RIGHT, expand=True)
+                btn_done = Tkinter.Button(self.create_window, text = "Done", command = self.scores_topline)
+                btn_done.pack(side = Tkinter.RIGHT, expand=True)
+                self.create_window.deiconify()
+        except Exception as e:
+                tkMessageBox.showerror("Error", "An error occurred\n" + str(e))
 
     def scores_topline(self):
         try:
+            print "In scores topline"
             filename = self.filename
             #fields entered by user
             report_location = self.location_entry.get()
@@ -677,11 +723,23 @@ class Internbot:
                     savedirectory = tkFileDialog.askdirectory()
                     if savedirectory is not "":
                         report.generate_scores_topline(savedirectory, report_location, round)
+                        open_files = tkMessageBox.askyesno("Info", "Done!\nWould you like to open your finished files?")
+                        if open_files is True:
+                            self.open_file_for_user(savedirectory + "/scores_topline.xlsx")
+                    else:
+                        still_select = tkMessageBox.askyesno("Info", "You did not select a destination for your finished report. \n Would you still like to?")
+                        if still_select is True:
+                            report.generate_issue_trended(savedirectory, round)
+                            self.create_window.destroy
+                            open_files = tkMessageBox.askyesno("Info","Done!\nWould you like to open your finished files?")
+                            if open_files is True:
+                                self.open_file_for_user(savedirectory + "/scores_topline.xlsx")
         except Exception as e:
             tkMessageBox.showerror("Error", "An error occurred\n" + str(e))
 
     def issue_trended_window(self):
         try:
+            print "In issue trended window"
             self.filename = tkFileDialog.askopenfilename(initialdir = self.fpath, title = "Select model file", filetypes = (("comma seperated files","*.csv"),("all files","*.*")))
             if self.filename is not "":
                 self.create_window = Tkinter.Toplevel(self.redirect_window)
@@ -714,6 +772,7 @@ class Internbot:
 
     def issue_trended(self):
         try:
+            print "In issue trended"
             filename = self.filename
             #fields entered by the user
             round = self.round_entry.get()
@@ -725,17 +784,24 @@ class Internbot:
                 if savedirectory is not "":
                     report.generate_issue_trended(savedirectory, round)
                     self.create_window.destroy
-                    tkMessageBox.showinfo("Info", "Done!")
+                    open_files = tkMessageBox.askyesno("Info", "Done!\nWould you like to open your finished files?")
+                    if open_files is True:
+                        self.open_file_for_user(savedirectory + "/trended.xlsx")
                 else:
                     still_select = tkMessageBox.askyesno("Info", "You did not select a destination for your finished report. \n Would you still like to?")
                     if still_select is True:
-                        self.issue_trended()
+                        report.generate_issue_trended(savedirectory, round)
+                        self.create_window.destroy
+                        open_files = tkMessageBox.askyesno("Info","Done!\nWould you like to open your finished files?")
+                        if open_files is True:
+                            self.open_file_for_user(savedirectory + "/trended.xlsx")
         except Exception as e:
             tkMessageBox.showerror("Error", "An error occurred\n" + str(e))
 
 
     def trended_scores_window(self):
         try:
+            print "In trended scores window"
             self.filename = tkFileDialog.askopenfilename(initialdir = self.fpath, title = "Select model file", filetypes = (("comma seperated files","*.csv"),("all files","*.*")))
             if self.filename is not "":
                 self.create_window = Tkinter.Toplevel(self.redirect_window)
@@ -769,6 +835,7 @@ class Internbot:
 
     def trended_scores(self):
         try:
+            print "In trended scores"
             filename = self.filename
             #Field entered by user
             round = self.round_entry.get()
@@ -781,6 +848,19 @@ class Internbot:
                     if savedirectory is not "":
                         report.generate_trended_scores(savedirectory, round)
                         self.create_window.destroy()
+                        tkMessageBox.showinfo("Info", "Done!")
+                    else:
+                            still_select_dest = tkMessageBox.askyesno("Info",
+                                                                 "You did not select a destination for your finished report"
+                                                                 ".\n Would you still like to?")
+                            if still_select_dest is True:
+                                savedirectory = tkFileDialog.askdirectory()
+                                if savedirectory is not "":
+                                    report.generate_trended_scores(savedirectory, round)
+                                    self.create_window.destroy()
+                                    tkMessageBox.showinfo("Info","Done!")
+                                    
+                    
         except Exception as e:
             tkMessageBox.showerror("Error", "An error occurred\n" + str(e))
 
