@@ -96,7 +96,7 @@ class Internbot:
 					round_int = 1
 				else:
 					round_int = int(round_int)
-				report = topline.CSV.ReportGenerator(filename, round)
+				report = topline.CSV.ReportGenerator(filename, round_int)
 				self.build_topline_report(isQSF, report)
 
     def build_topline_report(self, isQSF, report):
