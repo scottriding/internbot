@@ -91,12 +91,17 @@ class Response(object):
     def __init__(self, label, frequency_data, round_no):
         self.__name = label
         self.__frequencies = []
-        iteration = 1
-        while iteration <= round_no:
-            round_col = "percent %s" % iteration
-            if frequency_data[round_col] != '':
-                self.__frequencies.append(frequency_data[round_col])
-            iteration += 1
+        round_col = "percent" 
+        if frequency_data.get(round_col) is not None:
+            self.__frequencies.append(frequency_data[round_col])
+        else:
+        	iteration = 1
+        	while iteration <= int(round_no):
+        		print str(iteration)
+        		round_col = "percent %s" % iteration
+        		if frequency_data[round_col] != '':
+        			self.__frequencies.append(frequency_data[round_col])
+        		iteration += 1
 
     @property
     def name(self):

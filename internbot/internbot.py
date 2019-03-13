@@ -66,7 +66,7 @@ class Internbot:
         self.redirect_window.withdraw()
         x = self.__window.winfo_x()
         y = self.__window.winfo_y()
-        self.redirect_window.geometry("250x100+%d+%d" % (x + 75, y + 150))
+        self.redirect_window.geometry("250x150+%d+%d" % (x + 75, y + 125))
         self.redirect_window.title("RNC Scores Topline Automation")
         message = "Please open a model scores file."
         Tkinter.Label(self.redirect_window, text = message).pack(expand=True)
@@ -74,10 +74,10 @@ class Internbot:
         btn_trended = Tkinter.Button(self.redirect_window, text="Issue Trended Report", command=self.issue_trended_window, height = 1, width = 20)
         btn_ind_trended = Tkinter.Button(self.redirect_window, text="Trended Score Reports", command=self.trended_scores_window, height = 1, width = 20)
         btn_cancel = Tkinter.Button(self.redirect_window, text="Cancel", command = self.redirect_window.destroy, height = 1, width = 20)
+        btn_cancel.pack(ipadx = 5, side = Tkinter.BOTTOM, expand=False)
         btn_topline.pack(ipadx=5, side=Tkinter.BOTTOM, expand=False)
         btn_trended.pack(ipadx=5, side = Tkinter.BOTTOM, expand=False)
         btn_ind_trended.pack(ipadx = 5, side = Tkinter.BOTTOM, expand=False)
-        btn_cancel.pack(ipadx = 5, side = Tkinter.BOTTOM, expand=False)
         self.redirect_window.deiconify()
 
     def variable_script(self):
@@ -625,7 +625,7 @@ class Internbot:
                     round = int(self.round_entry.get())
                     if round is "":
                         round = 4
-                    report = topline.CSV.trended_topline.ReportGenerator(filename, round)
+                    report = topline.CSV.ReportGenerator(filename, round)
                     self.build_trended_topline_report(isQSF, report)
         except Exception as e:
             tkMessageBox.showerror("Error", "An error occurred\n" + str(e))
@@ -647,9 +647,9 @@ class Internbot:
                                 if open_ends_file is not "":
                                     report.generate_appendix(template_file, open_ends_file, savedirectory)
                             else:
-                                report.generate_basic_topline(freqfilename, template_file, savedirectory)
+                                report.generate_topline(freqfilename, template_file, savedirectory)
                     else:
-                        report.generate_basic_topline(template_file, savedirectory)
+                        report.generate_topline(template_file, savedirectory)
         except Exception as e:
             tkMessageBox.showerror("Error", "An error occurred\n" + str(e))
 
@@ -663,7 +663,7 @@ class Internbot:
                     if isQSF is True:
                         pass
                     else:
-                        report.generate_basic_topline(template_file, savedirectory)
+                        report.generate_topline(template_file, savedirectory)
         except Exception as e:
             tkMessageBox.showerror("Error", "An error occurred\n" + str(e))
 
