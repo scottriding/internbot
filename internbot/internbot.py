@@ -125,38 +125,114 @@ class Internbot:
         year_frame.pack(side = Tkinter.TOP, expand = True)
         self.packing_years(round_no, year_frame)
 
-
-        label_amt = 1
-        while label_amt <= round_no:
-            year_label = Tkinter.Label(year_frame, text="Year name:")
-            year_label.pack(side = Tkinter.LEFT, expand=True)
-            year_entry = Tkinter.Entry(year_frame)
-            year_entry.pack(side=Tkinter.RIGHT, expand=True)
-            label_amt += 1
         self.year_window.deiconify()
 
     def packing_years(self, round_no, year_frame):
         if(round_no >= 10):
-            pass
+            self.pack_ten_labels(year_frame)
         elif(round_no == 9):
-            pass
+            self.pack_nine_labels(year_frame)
         elif(round_no == 8):
-            pass
+            self.pack_eight_labels(year_frame)
         elif(round_no == 7):
-            pass
+            self.pack_seven_labels(year_frame)
         elif(round_no == 6):
-            pass
+            self.pack_six_labels(year_frame)
         elif(round_no == 5):
-            pass
+            self.pack_five_labels(year_frame)
         elif(round_no == 4):
-            pass
+            self.pack_four_labels(year_frame)
         elif(round_no == 3):
-            pass
+        	self.pack_three_labels(year_frame)
         elif(round_no == 2):
-            pass
+            self.pack_two_labels(year_frame)
 
     def pack_two_labels(self, year_frame):
-        pass
+		year_one_frame = Tkinter.Frame(year_frame)
+		year_one_label = Tkinter.Label(year_one_frame, text="1st year name:")
+		year_one_label.pack(side = Tkinter.LEFT, expand=True)
+		self.year_one_entry = Tkinter.Entry(year_one_frame)
+		self.year_one_entry.pack(side=Tkinter.RIGHT, expand=True)
+		year_one_frame.pack(side = Tkinter.TOP, expand = True)
+		
+		year_two_frame = Tkinter.Frame(year_frame)
+		year_two_label = Tkinter.Label(year_two_frame, text="2nd year name:")
+		year_two_label.pack(side = Tkinter.LEFT, expand=True)
+		self.year_two_entry = Tkinter.Entry(year_two_frame)
+		self.year_two_entry.pack(side=Tkinter.RIGHT, expand=True)
+		year_two_frame.pack(side = Tkinter.TOP, expand = True)
+            
+    def pack_three_labels(self, year_frame):
+    	self.pack_two_labels(year_frame)
+    	year_three_frame = Tkinter.Frame(year_frame)
+    	year_three_label = Tkinter.Label(year_three_frame, text="3rd year name:")
+    	year_three_label.pack(side = Tkinter.LEFT, expand=True)
+    	self.year_three_entry = Tkinter.Entry(year_three_frame)
+    	self.year_three_entry.pack(side=Tkinter.RIGHT, expand=True)
+    	year_three_frame.pack(side = Tkinter.TOP, expand = True)
+    
+    def pack_four_labels(self, year_frame):
+    	self.pack_three_labels(year_frame)
+    	year_four_frame = Tkinter.Frame(year_frame)
+    	year_four_label = Tkinter.Label(year_four_frame, text="4th year name:")
+    	year_four_label.pack(side = Tkinter.LEFT, expand=True)
+    	self.year_four_entry = Tkinter.Entry(year_four_frame)
+    	self.year_four_entry.pack(side=Tkinter.RIGHT, expand=True)
+    	year_four_frame.pack(side = Tkinter.TOP, expand = True)
+    
+    def pack_five_labels(self, year_frame):
+    	self.pack_four_labels(year_frame)
+    	year_five_frame = Tkinter.Frame(year_frame)
+    	year_five_label = Tkinter.Label(year_five_frame, text="5th year name:")
+    	year_five_label.pack(side = Tkinter.LEFT, expand=True)
+    	self.year_five_entry = Tkinter.Entry(year_five_frame)
+    	self.year_five_entry.pack(side=Tkinter.RIGHT, expand=True)
+    	year_five_frame.pack(side = Tkinter.TOP, expand = True)	
+    
+    def pack_six_labels(self, year_frame):
+    	self.pack_five_labels(year_frame)
+    	year_six_frame = Tkinter.Frame(year_frame)
+    	year_six_label = Tkinter.Label(year_six_frame, text="6th year name:")
+    	year_six_label.pack(side = Tkinter.LEFT, expand=True)
+    	self.year_six_entry = Tkinter.Entry(year_six_frame)
+    	self.year_six_entry.pack(side=Tkinter.RIGHT, expand=True)
+    	year_six_frame.pack(side = Tkinter.TOP, expand = True)	
+    	
+    def pack_seven_labels(self, year_frame):
+    	self.pack_six_labels(year_frame)
+    	year_seven_frame = Tkinter.Frame(year_frame)
+    	year_seven_label = Tkinter.Label(year_seven_frame, text="7th year name:")
+    	year_seven_label.pack(side = Tkinter.LEFT, expand=True)
+    	self.year_seven_entry = Tkinter.Entry(year_seven_frame)
+    	self.year_seven_entry.pack(side=Tkinter.RIGHT, expand=True)
+    	year_seven_frame.pack(side = Tkinter.TOP, expand = True)
+    	
+    def pack_eight_labels(self, year_frame):
+    	self.pack_seven_labels(year_frame)
+    	year_eight_frame = Tkinter.Frame(year_frame)
+    	year_eight_label = Tkinter.Label(year_eight_frame, text="8th year name:")
+    	year_eight_label.pack(side = Tkinter.LEFT, expand=True)
+    	self.year_eight_entry = Tkinter.Entry(year_eight_frame)
+    	self.year_eight_entry.pack(side=Tkinter.RIGHT, expand=True)
+    	year_eight_frame.pack(side = Tkinter.TOP, expand = True)
+    	
+    def pack_nine_labels(self, year_frame):
+    	self.pack_eight_labels(year_frame)
+    	year_nine_frame = Tkinter.Frame(year_frame)
+    	year_nine_label = Tkinter.Label(year_nine_frame, text="9th year name:")
+    	year_nine_label.pack(side = Tkinter.LEFT, expand=True)
+    	self.year_nine_entry = Tkinter.Entry(year_nine_frame)
+    	self.year_nine_entry.pack(side=Tkinter.RIGHT, expand=True)
+    	year_nine_frame.pack(side = Tkinter.TOP, expand = True)
+    	
+    def pack_ten_labels(self, year_frame):
+    	self.pack_nine_labels(year_frame)
+    	year_ten_frame = Tkinter.Frame(year_frame)
+    	year_ten_label = Tkinter.Label(year_ten_frame, text="10th year name:")
+    	year_ten_label.pack(side = Tkinter.LEFT, expand=True)
+    	self.year_ten_entry = Tkinter.Entry(year_ten_frame)
+    	self.year_ten_entry.pack(side=Tkinter.RIGHT, expand=True)
+    	year_ten_frame.pack(side = Tkinter.TOP, expand = True)
 
     def build_topline_report(self, isQSF, report, years=[]):
         template_file = open("topline_template.docx", "r")
@@ -167,7 +243,7 @@ class Internbot:
                 if isQSF is True:
                     pass
                 else:
-                    report.generate_topline(template_file, round, savedirectory, years)
+                    report.generate_topline(template_file, savedirectory, years)
         
 
     def variable_script(self):
