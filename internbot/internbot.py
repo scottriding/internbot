@@ -46,23 +46,29 @@ class Internbot:
         redirect_window.deiconify()
 
     def topline_menu(self):
-		redirect_window = Tkinter.Toplevel(self.__window)
-		redirect_window.withdraw()
-		x = self.__window.winfo_x()
-		y = self.__window.winfo_y()
-		redirect_window.geometry("250x100+%d+%d" % (x + 75, y + 150))
-		redirect_window.title("Y2 Topline Report Automation")
-		message = "Please open a survey file."
-		round_label = Tkinter.Label(redirect_window, text="Round number:")
-		round_label.pack(padx = 5, side = Tkinter.TOP, expand=True)
-		self.round_entry = Tkinter.Entry(redirect_window)
-		self.round_entry.pack(padx = 7, side=Tkinter.TOP, expand=True)
-		Tkinter.Label(redirect_window, text = message).pack(expand=True)
-		btn_open = Tkinter.Button(redirect_window, text = "Open", command = self.read_topline)
-		btn_cancel = Tkinter.Button(redirect_window, text = "Cancel", command = redirect_window.destroy)
-		btn_open.pack(ipadx = 10, side = Tkinter.LEFT, expand=True)
-		btn_cancel.pack(ipadx = 10, side = Tkinter.LEFT, expand=True)
-		redirect_window.deiconify()
+        self.redirect_window = Tkinter.Toplevel(self.__window)
+        self.redirect_window.withdraw()
+        x = self.__window.winfo_x()
+        y = self.__window.winfo_y()
+        self.redirect_window.geometry("250x100+%d+%d" % (x + 75, y + 150))
+        self.redirect_window.title("Y2 Topline Report Automation")
+        message = "Please open a survey file."
+        Tkinter.Label(self.redirect_window, text = message).pack(expand=True)
+
+        # round details
+        round_frame = Tkinter.Frame(self.redirect_window)
+        round_frame.pack(side = Tkinter.TOP, expand = True)
+
+        round_label = Tkinter.Label(round_frame, text="Round number:")
+        round_label.pack(side = Tkinter.LEFT, expand=True)
+        self.round_entry = Tkinter.Entry(round_frame)
+        self.round_entry.pack(side=Tkinter.RIGHT, expand=True)
+        
+        btn_open = Tkinter.Button(self.redirect_window, text = "Open", command = self.read_topline)
+        btn_cancel = Tkinter.Button(self.redirect_window, text = "Cancel", command = self.redirect_window.destroy)
+        btn_open.pack(ipadx = 10, side = Tkinter.LEFT, expand=True)
+        btn_cancel.pack(ipadx = 10, side = Tkinter.LEFT, expand=True)
+        self.redirect_window.deiconify()
 
     def rnc_menu(self):
 		self.redirect_window = Tkinter.Toplevel(self.__window)
@@ -84,21 +90,75 @@ class Internbot:
 		self.redirect_window.deiconify()
 	
     def read_topline(self):
-		filename = tkFileDialog.askopenfilename(initialdir = self.fpath, title = "Select survey file",filetypes = (("Qualtrics files","*.qsf"),("comma seperated files","*.csv"),("all files","*.*")))
-		if filename is not "":
-			isQSF = False
-			if ".qsf" in filename:
-				pass
-			elif ".csv" in filename:
-				round_int = self.round_entry.get()
-				if round_int == "":
-					round_int = 1
-				else:
-					round_int = int(round_int)
-				report = topline.CSV.ReportGenerator(filename, round_int)
-				self.build_topline_report(isQSF, report)
+        filename = tkFileDialog.askopenfilename(initialdir = self.fpath, title = "Select survey file",filetypes = (("Qualtrics files","*.qsf"),("comma seperated files","*.csv"),("all files","*.*")))
+        if filename is not "":
+            isQSF = False
+            if ".qsf" in filename:
+                pass
+            elif ".csv" in filename:
+                round_int = self.round_entry.get()
+                is_trended = False
+                if round_int == "":
+                    round_int = 1
+                else:
+                    round_int = int(round_int)
+                    if round_int != 1:
+                        is_trended = True
+                report = topline.CSV.ReportGenerator(filename, round_int)
+                self.redirect_window.destroy()
+                if is_trended is True:
+                    self.year_window(round_int)
+                else:
+                    self.build_topline_report(isQSF, report)
 
-    def build_topline_report(self, isQSF, report):
+    def year_window(self, round_no):
+        self.year_window = Tkinter.Toplevel(self.__window)
+        self.year_window.withdraw()
+        x = self.__window.winfo_x()
+        y = self.__window.winfo_y()
+        #self.year_window.geometry("250x150+%d+%d" % (x + 75, y + 125))
+        self.year_window.title("Trended report years")
+        message = "Please input the applicable years for the trended topline report."
+        Tkinter.Label(self.year_window, text=message).pack(expand=True)
+        
+        year_frame = Tkinter.Frame(self.year_window)
+        year_frame.pack(side = Tkinter.TOP, expand = True)
+        self.packing_years(round_no, year_frame)
+
+
+        label_amt = 1
+        while label_amt <= round_no:
+            year_label = Tkinter.Label(year_frame, text="Year name:")
+            year_label.pack(side = Tkinter.LEFT, expand=True)
+            year_entry = Tkinter.Entry(year_frame)
+            year_entry.pack(side=Tkinter.RIGHT, expand=True)
+            label_amt += 1
+        self.year_window.deiconify()
+
+    def packing_years(self, round_no, year_frame):
+        if(round_no >= 10):
+            pass
+        elif(round_no == 9):
+            pass
+        elif(round_no == 8):
+            pass
+        elif(round_no == 7):
+            pass
+        elif(round_no == 6):
+            pass
+        elif(round_no == 5):
+            pass
+        elif(round_no == 4):
+            pass
+        elif(round_no == 3):
+            pass
+        elif(round_no == 2):
+            pass
+
+    def pack_two_labels(self, year_frame):
+        pass
+
+    def build_topline_report(self, isQSF, report, years=[]):
         template_file = open("topline_template.docx", "r")
         ask_output = tkMessageBox.askokcancel("Output directory", "Please select the directory for finished report.")
         if ask_output is True:
@@ -107,7 +167,7 @@ class Internbot:
                 if isQSF is True:
                     pass
                 else:
-                    report.generate_topline(template_file, savedirectory)
+                    report.generate_topline(template_file, round, savedirectory, years)
         
 
     def variable_script(self):

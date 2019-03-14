@@ -5,10 +5,11 @@ from docx.shared import Cm
 
 class ToplineReport(object):
 
-    def __init__(self, questions, path_to_template):
+    def __init__(self, questions, path_to_template, years):
         self.doc = Document(path_to_template)
         self.line_break = self.doc.styles['LineBreak']
         self.questions = questions
+        self.headers = years
         names = questions.list_names()
         for name in names:
             self.write_question(name)

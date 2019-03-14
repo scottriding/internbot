@@ -18,6 +18,6 @@ class ReportGenerator(object):
         for question in question_data:
             self.__questions.add(question, round_no)
 
-    def generate_topline(self, path_to_template, path_to_output):
-        report = ToplineReport(self.__questions, path_to_template)
+    def generate_topline(self, path_to_template, path_to_output, years):
+        report = ToplineReport(self.__questions, path_to_template, years)
         report.save(str(path_to_output) + '/topline_report.docx')
