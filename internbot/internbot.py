@@ -85,7 +85,6 @@ class Internbot:
 	
     def read_topline(self):
 		filename = tkFileDialog.askopenfilename(initialdir = self.fpath, title = "Select survey file",filetypes = (("Qualtrics files","*.qsf"),("comma seperated files","*.csv"),("all files","*.*")))
-		print filename
 		if filename is not "":
 			isQSF = False
 			if ".qsf" in filename:
@@ -96,7 +95,7 @@ class Internbot:
 					round_int = 1
 				else:
 					round_int = int(round_int)
-				report = topline.CSV.ReportGenerator(filename, round)
+				report = topline.CSV.ReportGenerator(filename, round_int)
 				self.build_topline_report(isQSF, report)
 
     def build_topline_report(self, isQSF, report):
