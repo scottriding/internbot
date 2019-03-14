@@ -46,7 +46,6 @@ class ToplineReport(object):
         paragraph.add_run(" (n = " + str(n) + ")")
     
     def write_responses(self, responses):
-    	headers = ["Total 2019", "Total 2017", "Total 2016", "Total 2015"]
         first_response_freqs = responses[0].frequencies
         data_columns  = len(first_response_freqs)
         table = self.doc.add_table(rows=1, cols=data_columns+5)
@@ -54,7 +53,8 @@ class ToplineReport(object):
             titles_row = table.add_row().cells  
             headers_index = 0
             for i in range(5, data_columns+5):
-                titles_row[i].text = headers[headers_index]
+                header_text = "Total %s" % self.headers[headers_index]
+                titles_row[i].text = header_text
                 headers_index += 1
         first_row = True
         first_freq = True

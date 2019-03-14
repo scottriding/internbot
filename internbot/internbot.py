@@ -92,7 +92,7 @@ class Internbot:
     def read_topline(self):
         filename = tkFileDialog.askopenfilename(initialdir = self.fpath, title = "Select survey file",filetypes = (("Qualtrics files","*.qsf"),("comma seperated files","*.csv"),("all files","*.*")))
         if filename is not "":
-            isQSF = False
+            self.isQSF = False
             if ".qsf" in filename:
                 pass
             elif ".csv" in filename:
@@ -104,14 +104,15 @@ class Internbot:
                     round_int = int(round_int)
                     if round_int != 1:
                         is_trended = True
-                report = topline.CSV.ReportGenerator(filename, round_int)
+                self.report = topline.CSV.ReportGenerator(filename, round_int)
                 self.redirect_window.destroy()
+                self.round = round_int
                 if is_trended is True:
-                    self.year_window(round_int)
+                    self.year_window()
                 else:
-                    self.build_topline_report(isQSF, report)
+                    self.build_topline_report(self.isQSF, self.report)
 
-    def year_window(self, round_no):
+    def year_window(self):
         self.year_window = Tkinter.Toplevel(self.__window)
         self.year_window.withdraw()
         x = self.__window.winfo_x()
@@ -123,28 +124,31 @@ class Internbot:
         
         year_frame = Tkinter.Frame(self.year_window)
         year_frame.pack(side = Tkinter.TOP, expand = True)
-        self.packing_years(round_no, year_frame)
-
+        self.packing_years(year_frame)
+        btn_finish = Tkinter.Button(self.year_window, text = "Done", command=self.read_years, height = 1, width = 20)
+        btn_cancel = Tkinter.Button(self.year_window, text = "Cancel", command=self.year_window.destroy, height = 1, width = 20)
+        btn_finish.pack(ipadx=5, side = Tkinter.LEFT, expand=False)
+        btn_cancel.pack(ipadx=5, side = Tkinter.RIGHT, expand=False)
         self.year_window.deiconify()
 
-    def packing_years(self, round_no, year_frame):
-        if(round_no >= 10):
+    def packing_years(self, year_frame):
+        if(self.round >= 10):
             self.pack_ten_labels(year_frame)
-        elif(round_no == 9):
+        elif(self.round == 9):
             self.pack_nine_labels(year_frame)
-        elif(round_no == 8):
+        elif(self.round == 8):
             self.pack_eight_labels(year_frame)
-        elif(round_no == 7):
+        elif(self.round == 7):
             self.pack_seven_labels(year_frame)
-        elif(round_no == 6):
+        elif(self.round == 6):
             self.pack_six_labels(year_frame)
-        elif(round_no == 5):
+        elif(self.round == 5):
             self.pack_five_labels(year_frame)
-        elif(round_no == 4):
+        elif(self.round == 4):
             self.pack_four_labels(year_frame)
-        elif(round_no == 3):
+        elif(self.round == 3):
         	self.pack_three_labels(year_frame)
-        elif(round_no == 2):
+        elif(self.round == 2):
             self.pack_two_labels(year_frame)
 
     def pack_two_labels(self, year_frame):
@@ -233,6 +237,65 @@ class Internbot:
     	self.year_ten_entry = Tkinter.Entry(year_ten_frame)
     	self.year_ten_entry.pack(side=Tkinter.RIGHT, expand=True)
     	year_ten_frame.pack(side = Tkinter.TOP, expand = True)
+
+    def read_years(self):
+        years = []
+        if(self.round >= 10):
+            self.pull_ten_labels(years)
+        elif(self.round == 9):
+            self.pull_nine_labels(years)
+        elif(self.round == 8):
+            self.pull_eight_labels(years)
+        elif(self.round == 7):
+            self.pull_seven_labels(years)
+        elif(self.round == 6):
+            self.pull_six_labels(years)
+        elif(self.round == 5):
+            self.pull_five_labels(years)
+        elif(self.round == 4):
+            self.pull_four_labels(years)
+        elif(self.round == 3):
+        	self.pull_three_labels(years)
+        elif(self.round == 2):
+            self.pull_two_labels(years)
+        self.year_window.destroy()
+        self.build_topline_report(self.isQSF, self.report, years)
+
+    def pull_ten_labels(self, years):
+        years.append(self.year_ten_entry.get())
+        self.pull_nine_labels(years)
+
+    def pull_nine_labels(self, years):
+        years.append(self.year_nine_entry.get())
+        self.pull_eight_labels(years)
+
+    def pull_eight_labels(self, years):
+        years.append(self.year_eight_entry.get())
+        self.pull_seven_labels(years)
+
+    def pull_seven_labels(self, years):
+        years.append(self.year_seven_entry.get())
+        self.pull_six_labels(years)
+
+    def pull_six_labels(self, years):
+        years.append(self.year_six_entry.get())
+        self.pull_five_labels(years)
+
+    def pull_five_labels(self, years):
+        years.append(self.year_five_entry.get())
+        self.pull_four_labels(years)
+
+    def pull_four_labels(self, years):
+        years.append(self.year_four_entry.get())
+        self.pull_three_labels(years)
+
+    def pull_three_labels(self, years):
+        years.append(self.year_three_entry.get())
+        self.pull_two_labels(years)
+
+    def pull_two_labels(self, years):
+        years.append(self.year_two_entry.get())
+        years.append(self.year_one_entry.get())
 
     def build_topline_report(self, isQSF, report, years=[]):
         template_file = open("topline_template.docx", "r")
