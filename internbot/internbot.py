@@ -85,7 +85,6 @@ class Internbot:
 	
     def read_topline(self):
 		filename = tkFileDialog.askopenfilename(initialdir = self.fpath, title = "Select survey file",filetypes = (("Qualtrics files","*.qsf"),("comma seperated files","*.csv"),("all files","*.*")))
-		print filename
 		if filename is not "":
 			isQSF = False
 			if ".qsf" in filename:

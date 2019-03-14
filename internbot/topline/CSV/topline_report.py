@@ -16,7 +16,7 @@ class ToplineReport(object):
         
     def write_question(self, name):
         question = self.questions.get(name)
-        print "writing question: %s" % name
+        print "Writing question: %s" % name
         if question.display_logic != "":
             display_prompt = self.doc.add_paragraph()
             display_prompt.add_run("(" + question.display_logic + ")")
@@ -35,7 +35,6 @@ class ToplineReport(object):
         paragraph.add_run(name + ".")
     
     def write_prompt(self, prompt, paragraph):
-        print prompt
         paragraph_format = paragraph.paragraph_format
         paragraph_format.keep_together = True           # question prompt will all be fit in one page
         paragraph_format.left_indent = Inches(1)        
@@ -75,7 +74,6 @@ class ToplineReport(object):
         
     def freqs_percent(self, freq, is_first=False):
         result = 0
-        print freq
         if float(freq) >= 1.0:
             result = freq
         else:

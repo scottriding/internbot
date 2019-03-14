@@ -16,12 +16,14 @@ class Questions(object):
         question_pop = question_data['n']
         if self.already_exists(question_name):
             question = self.get(question_name)
-            question.add_response(question_response, question_data, round_no)
+            if question_response != "":
+                question.add_response(question_response, question_data, round_no)
             if display_logic != "":
                 question.add_display(display_logic)
         else:
             question = Question(question_name, question_prompt, question_pop)
-            question.add_response(question_response, question_data, round_no)
+            if question_response != "":
+                question.add_response(question_response, question_data, round_no)
             if display_logic != "":
                 question.add_display(display_logic)
             self.__questions[question.name] = question
@@ -98,7 +100,6 @@ class Response(object):
         	iteration = 1
         	round_int = int(round_no)
         	while iteration <= round_int:
-        		print str(iteration)
         		round_col = "percent %s" % iteration
         		if frequency_data[round_col] != '':
         			self.__frequencies.append(frequency_data[round_col])
