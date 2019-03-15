@@ -114,7 +114,8 @@ class Internbot:
         filename = tkFileDialog.askopenfilename(initialdir = self.fpath, title = "Select open ends file",filetypes = (("comma seperated files","*.csv"),("all files","*.*")))
         output = tkFileDialog.askdirectory()
         builder = topline.QSF.ReportGenerator(survey)
-        builder.generate_appendix("topline_template.docx", filename, output)
+        builder.generate_appendix("appendix_template.docx", filename, output)
+        self.redirect_window.destroy()
 
     def read_topline(self):
 		try:
