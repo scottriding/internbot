@@ -46,39 +46,279 @@ class Internbot:
         redirect_window.deiconify()
 
     def topline_menu(self):
-        redirect_window = Tkinter.Toplevel(self.__window)
-        redirect_window.withdraw()
-        x = self.__window.winfo_x()
-        y = self.__window.winfo_y()
-        redirect_window.geometry("250x100+%d+%d" % (x + 75, y + 150))
-        message = "Select a topline format."
-        Tkinter.Label(redirect_window, text=message).pack(expand=True)
-        btn_basic = Tkinter.Button(redirect_window, text="Basic", command=self.open_basic_topline, height=1, width=10)
-        btn_trended = Tkinter.Button(redirect_window, text="Trended", command=self.open_trended_topline, height = 1, width = 10)
-        btn_cancel = Tkinter.Button(redirect_window, text = "Cancel", command = redirect_window.destroy, height = 1, width = 10)
-        btn_basic.pack(ipadx = 10, side = Tkinter.TOP, expand=True)
-        btn_trended.pack(ipadx = 10, side = Tkinter.TOP, expand=True)
-        btn_cancel.pack(ipadx = 10, side = Tkinter.TOP, expand=True)
-        redirect_window.deiconify()
-
-    def rnc_menu(self):
         self.redirect_window = Tkinter.Toplevel(self.__window)
         self.redirect_window.withdraw()
         x = self.__window.winfo_x()
         y = self.__window.winfo_y()
         self.redirect_window.geometry("250x100+%d+%d" % (x + 75, y + 150))
-        self.redirect_window.title("RNC Scores Topline Automation")
-        message = "Please open a model scores file."
+        self.redirect_window.title("Y2 Topline Report Automation")
+        message = "Please open a survey file."
         Tkinter.Label(self.redirect_window, text = message).pack(expand=True)
-        btn_topline = Tkinter.Button(self.redirect_window, text="Scores Topline Report", command=self.scores_window, height = 1, width = 20)
-        btn_trended = Tkinter.Button(self.redirect_window, text="Issue Trended Report", command=self.issue_trended_window, height = 1, width = 20)
-        btn_ind_trended = Tkinter.Button(self.redirect_window, text="Trended Score Reports", command=self.trended_scores_window, height = 1, width = 20)
-        btn_cancel = Tkinter.Button(self.redirect_window, text="Cancel", command = self.redirect_window.destroy, height = 1, width = 20)
-        btn_topline.pack(ipadx=5, side=Tkinter.BOTTOM, expand=False)
-        btn_trended.pack(ipadx=5, side = Tkinter.BOTTOM, expand=False)
-        btn_ind_trended.pack(ipadx = 5, side = Tkinter.BOTTOM, expand=False)
-        btn_cancel.pack(ipadx = 5, side = Tkinter.BOTTOM, expand=False)
+
+        # round details
+        round_frame = Tkinter.Frame(self.redirect_window)
+        round_frame.pack(side = Tkinter.TOP, expand = True)
+
+        round_label = Tkinter.Label(round_frame, text="Round number:")
+        round_label.pack(side = Tkinter.LEFT, expand=True)
+        self.round_entry = Tkinter.Entry(round_frame)
+        self.round_entry.pack(side=Tkinter.RIGHT, expand=True)
+        
+        btn_open = Tkinter.Button(self.redirect_window, text = "Open", command = self.read_topline)
+        btn_cancel = Tkinter.Button(self.redirect_window, text = "Cancel", command = self.redirect_window.destroy)
+        btn_open.pack(ipadx = 10, side = Tkinter.LEFT, expand=True)
+        btn_cancel.pack(ipadx = 10, side = Tkinter.LEFT, expand=True)
         self.redirect_window.deiconify()
+
+    def rnc_menu(self):
+		self.redirect_window = Tkinter.Toplevel(self.__window)
+		self.redirect_window.withdraw()
+		x = self.__window.winfo_x()
+		y = self.__window.winfo_y()
+		self.redirect_window.geometry("250x150+%d+%d" % (x + 75, y + 125))
+		self.redirect_window.title("RNC Scores Topline Automation")
+		message = "Please open a model scores file."
+		Tkinter.Label(self.redirect_window, text = message).pack(expand=True)
+		btn_topline = Tkinter.Button(self.redirect_window, text="Scores Topline Report", command=self.scores_window, height = 1, width = 20)
+		btn_trended = Tkinter.Button(self.redirect_window, text="Issue Trended Report", command=self.issue_trended_window, height = 1, width = 20)
+		btn_ind_trended = Tkinter.Button(self.redirect_window, text="Trended Score Reports", command=self.trended_scores_window, height = 1, width = 20)
+		btn_cancel = Tkinter.Button(self.redirect_window, text="Cancel", command = self.redirect_window.destroy, height = 1, width = 20)
+		btn_cancel.pack(ipadx = 5, side = Tkinter.BOTTOM, expand=False)
+		btn_topline.pack(ipadx=5, side=Tkinter.BOTTOM, expand=False)
+		btn_trended.pack(ipadx=5, side = Tkinter.BOTTOM, expand=False)
+		btn_ind_trended.pack(ipadx = 5, side = Tkinter.BOTTOM, expand=False)
+		self.redirect_window.deiconify()
+	
+    def read_topline(self):
+		try:
+			filename = tkFileDialog.askopenfilename(initialdir = self.fpath, title = "Select survey file",filetypes = (("Qualtrics files","*.qsf"),("comma seperated files","*.csv"),("all files","*.*")))
+			if filename is not "":
+				self.isQSF = False
+				if ".qsf" in filename:
+					pass
+				elif ".csv" in filename:
+					round_int = self.round_entry.get()
+					is_trended = False
+					if round_int == "":
+						round_int = 1
+					else:
+						round_int = int(round_int)
+						if round_int != 1:
+							is_trended = True
+					self.report = topline.CSV.ReportGenerator(filename, round_int)
+					self.redirect_window.destroy()
+					self.round = round_int
+					if is_trended is True:
+						self.year_window_setup()
+					else:
+						self.build_topline_report(self.isQSF, self.report)
+		except Exception as e:
+				tkMessageBox.showerror("Error", "An error occurred\n"+ str(e))
+
+    def year_window_setup(self):
+		try:
+			self.year_window = Tkinter.Toplevel(self.__window)
+			self.year_window.withdraw()
+			x = self.__window.winfo_x()
+			y = self.__window.winfo_y()
+			self.year_window.geometry("500x%d+%d+%d" % (100+self.round*25, x - 50, y + (200-(100+self.round*25)/2)))
+			self.year_window.title("Trended report years")
+			message = "Please input the applicable years for the trended topline report."
+			Tkinter.Label(self.year_window, text=message).pack(expand=True)
+		
+			year_frame = Tkinter.Frame(self.year_window)
+			year_frame.pack(side = Tkinter.TOP, expand = True)
+			self.packing_years(year_frame)
+			btn_finish = Tkinter.Button(self.year_window, text = "Done", command=self.read_years, height = 1, width = 20)
+			btn_cancel = Tkinter.Button(self.year_window, text = "Cancel", command=self.year_window.destroy, height = 1, width = 20)
+			btn_finish.pack(ipadx=5, side = Tkinter.LEFT, expand=False)
+			btn_cancel.pack(ipadx=5, side = Tkinter.RIGHT, expand=False)
+			self.year_window.deiconify()
+		except Exception as e:
+				tkMessageBox.showerror("Error", "An error occurred\n"+ str(e))
+
+    def packing_years(self, year_frame):
+        if(self.round >= 10):
+            self.pack_ten_labels(year_frame)
+        elif(self.round == 9):
+            self.pack_nine_labels(year_frame)
+        elif(self.round == 8):
+            self.pack_eight_labels(year_frame)
+        elif(self.round == 7):
+            self.pack_seven_labels(year_frame)
+        elif(self.round == 6):
+            self.pack_six_labels(year_frame)
+        elif(self.round == 5):
+            self.pack_five_labels(year_frame)
+        elif(self.round == 4):
+            self.pack_four_labels(year_frame)
+        elif(self.round == 3):
+        	self.pack_three_labels(year_frame)
+        elif(self.round == 2):
+            self.pack_two_labels(year_frame)
+
+    def pack_two_labels(self, year_frame):
+		year_one_frame = Tkinter.Frame(year_frame)
+		year_one_label = Tkinter.Label(year_one_frame, text="1st year name:")
+		year_one_label.pack(side = Tkinter.LEFT, expand=True)
+		self.year_one_entry = Tkinter.Entry(year_one_frame)
+		self.year_one_entry.pack(side=Tkinter.RIGHT, expand=True)
+		year_one_frame.pack(side = Tkinter.TOP, expand = True)
+		
+		year_two_frame = Tkinter.Frame(year_frame)
+		year_two_label = Tkinter.Label(year_two_frame, text="2nd year name:")
+		year_two_label.pack(side = Tkinter.LEFT, expand=True)
+		self.year_two_entry = Tkinter.Entry(year_two_frame)
+		self.year_two_entry.pack(side=Tkinter.RIGHT, expand=True)
+		year_two_frame.pack(side = Tkinter.TOP, expand = True)
+            
+    def pack_three_labels(self, year_frame):
+    	self.pack_two_labels(year_frame)
+    	year_three_frame = Tkinter.Frame(year_frame)
+    	year_three_label = Tkinter.Label(year_three_frame, text="3rd year name:")
+    	year_three_label.pack(side = Tkinter.LEFT, expand=True)
+    	self.year_three_entry = Tkinter.Entry(year_three_frame)
+    	self.year_three_entry.pack(side=Tkinter.RIGHT, expand=True)
+    	year_three_frame.pack(side = Tkinter.TOP, expand = True)
+    
+    def pack_four_labels(self, year_frame):
+    	self.pack_three_labels(year_frame)
+    	year_four_frame = Tkinter.Frame(year_frame)
+    	year_four_label = Tkinter.Label(year_four_frame, text="4th year name:")
+    	year_four_label.pack(side = Tkinter.LEFT, expand=True)
+    	self.year_four_entry = Tkinter.Entry(year_four_frame)
+    	self.year_four_entry.pack(side=Tkinter.RIGHT, expand=True)
+    	year_four_frame.pack(side = Tkinter.TOP, expand = True)
+    
+    def pack_five_labels(self, year_frame):
+    	self.pack_four_labels(year_frame)
+    	year_five_frame = Tkinter.Frame(year_frame)
+    	year_five_label = Tkinter.Label(year_five_frame, text="5th year name:")
+    	year_five_label.pack(side = Tkinter.LEFT, expand=True)
+    	self.year_five_entry = Tkinter.Entry(year_five_frame)
+    	self.year_five_entry.pack(side=Tkinter.RIGHT, expand=True)
+    	year_five_frame.pack(side = Tkinter.TOP, expand = True)	
+    
+    def pack_six_labels(self, year_frame):
+    	self.pack_five_labels(year_frame)
+    	year_six_frame = Tkinter.Frame(year_frame)
+    	year_six_label = Tkinter.Label(year_six_frame, text="6th year name:")
+    	year_six_label.pack(side = Tkinter.LEFT, expand=True)
+    	self.year_six_entry = Tkinter.Entry(year_six_frame)
+    	self.year_six_entry.pack(side=Tkinter.RIGHT, expand=True)
+    	year_six_frame.pack(side = Tkinter.TOP, expand = True)	
+    	
+    def pack_seven_labels(self, year_frame):
+    	self.pack_six_labels(year_frame)
+    	year_seven_frame = Tkinter.Frame(year_frame)
+    	year_seven_label = Tkinter.Label(year_seven_frame, text="7th year name:")
+    	year_seven_label.pack(side = Tkinter.LEFT, expand=True)
+    	self.year_seven_entry = Tkinter.Entry(year_seven_frame)
+    	self.year_seven_entry.pack(side=Tkinter.RIGHT, expand=True)
+    	year_seven_frame.pack(side = Tkinter.TOP, expand = True)
+    	
+    def pack_eight_labels(self, year_frame):
+    	self.pack_seven_labels(year_frame)
+    	year_eight_frame = Tkinter.Frame(year_frame)
+    	year_eight_label = Tkinter.Label(year_eight_frame, text="8th year name:")
+    	year_eight_label.pack(side = Tkinter.LEFT, expand=True)
+    	self.year_eight_entry = Tkinter.Entry(year_eight_frame)
+    	self.year_eight_entry.pack(side=Tkinter.RIGHT, expand=True)
+    	year_eight_frame.pack(side = Tkinter.TOP, expand = True)
+    	
+    def pack_nine_labels(self, year_frame):
+    	self.pack_eight_labels(year_frame)
+    	year_nine_frame = Tkinter.Frame(year_frame)
+    	year_nine_label = Tkinter.Label(year_nine_frame, text="9th year name:")
+    	year_nine_label.pack(side = Tkinter.LEFT, expand=True)
+    	self.year_nine_entry = Tkinter.Entry(year_nine_frame)
+    	self.year_nine_entry.pack(side=Tkinter.RIGHT, expand=True)
+    	year_nine_frame.pack(side = Tkinter.TOP, expand = True)
+    	
+    def pack_ten_labels(self, year_frame):
+    	self.pack_nine_labels(year_frame)
+    	year_ten_frame = Tkinter.Frame(year_frame)
+    	year_ten_label = Tkinter.Label(year_ten_frame, text="10th year name:")
+    	year_ten_label.pack(side = Tkinter.LEFT, expand=True)
+    	self.year_ten_entry = Tkinter.Entry(year_ten_frame)
+    	self.year_ten_entry.pack(side=Tkinter.RIGHT, expand=True)
+    	year_ten_frame.pack(side = Tkinter.TOP, expand = True)
+
+    def read_years(self):
+        years = []
+        if(self.round >= 10):
+            self.pull_ten_labels(years)
+        elif(self.round == 9):
+            self.pull_nine_labels(years)
+        elif(self.round == 8):
+            self.pull_eight_labels(years)
+        elif(self.round == 7):
+            self.pull_seven_labels(years)
+        elif(self.round == 6):
+            self.pull_six_labels(years)
+        elif(self.round == 5):
+            self.pull_five_labels(years)
+        elif(self.round == 4):
+            self.pull_four_labels(years)
+        elif(self.round == 3):
+        	self.pull_three_labels(years)
+        elif(self.round == 2):
+            self.pull_two_labels(years)
+        self.year_window.destroy()
+        self.build_topline_report(self.isQSF, self.report, years)
+
+    def pull_ten_labels(self, years):
+        years.append(self.year_ten_entry.get())
+        self.pull_nine_labels(years)
+
+    def pull_nine_labels(self, years):
+        years.append(self.year_nine_entry.get())
+        self.pull_eight_labels(years)
+
+    def pull_eight_labels(self, years):
+        years.append(self.year_eight_entry.get())
+        self.pull_seven_labels(years)
+
+    def pull_seven_labels(self, years):
+        years.append(self.year_seven_entry.get())
+        self.pull_six_labels(years)
+
+    def pull_six_labels(self, years):
+        years.append(self.year_six_entry.get())
+        self.pull_five_labels(years)
+
+    def pull_five_labels(self, years):
+        years.append(self.year_five_entry.get())
+        self.pull_four_labels(years)
+
+    def pull_four_labels(self, years):
+        years.append(self.year_four_entry.get())
+        self.pull_three_labels(years)
+
+    def pull_three_labels(self, years):
+        years.append(self.year_three_entry.get())
+        self.pull_two_labels(years)
+
+    def pull_two_labels(self, years):
+        years.append(self.year_two_entry.get())
+        years.append(self.year_one_entry.get())
+
+    def build_topline_report(self, isQSF, report, years=[]):
+		try:
+			template_file = open("topline_template.docx", "r")
+			ask_output = tkMessageBox.askokcancel("Output directory", "Please select the directory for finished report.")
+			if ask_output is True:
+				savedirectory = tkFileDialog.askdirectory()
+				if savedirectory is not "":
+					if isQSF is True:
+						pass
+					else:
+						report.generate_topline(template_file, savedirectory, years)
+						open_files = tkMessageBox.askyesno("Info", "Done!\nWould you like to open your finished files?")
+						if open_files is True:
+							self.open_file_for_user(savedirectory+"/topline_report.docx")
+		except Exception as e:
+				tkMessageBox.showerror("Error", "An error occurred\n"+ str(e))
 
     def variable_script(self):
         try:
@@ -100,25 +340,6 @@ class Internbot:
                             if open_files is True:
                                 self.open_file_for_user(savedirectory+"/Tables to run.csv")
                                 self.open_file_for_user(savedirectory+"/rename variables.sps")
-                        else:
-                            still_select_dest = tkMessageBox.askyesno("Info",
-                                                                 "You did not select a destination for your finished report"
-                                                                 ".\n Would you still like to?")
-                            if still_select_dest is True:
-                                savedirectory = tkFileDialog.askdirectory()
-                                if savedirectory is not "":
-                                    variables = crosstabs.Generate_Prelim_SPSS_Script.SPSSTranslator()
-                                    tables = crosstabs.Generate_Prelim_SPSS_Script.TableDefiner()
-                                    variables.define_variables(survey, savedirectory)
-                                    tables.define_tables(survey, savedirectory)
-                                    open_files = tkMessageBox.askyesno("Info",
-                                                                       "Done!\nWould you like to open your finished files?")
-                                    if open_files is True:
-                                        self.open_file_for_user(savedirectory + "/Tables to run.csv")
-                                        self.open_file_for_user(savedirectory + "/rename variables.sps")
-
-                            else:
-                                tkMessageBox.showinfo("Cancelled", "Cancelled file creation")
         except Exception as e:
             tkMessageBox.showerror("Error", "An error occurred\n"+ str(e))
 
@@ -183,14 +404,12 @@ class Internbot:
             btn_edit = Tkinter.Button(buttons_frame, text =   "Edit", command = self.parse_selection)
             btn_create = Tkinter.Button(buttons_frame, text = "Create", command = self.create_banner)
             btn_remove = Tkinter.Button(buttons_frame, text = "Remove", command = self.remove_banner)
-
             btn_done = Tkinter.Button(buttons_frame, text = "Done", command = self.finish_banner)
 
             btn_done.pack(side=Tkinter.BOTTOM, pady=15)
             btn_remove.pack(side=Tkinter.BOTTOM)
             btn_create.pack(side=Tkinter.BOTTOM)
             btn_edit.pack(side=Tkinter.BOTTOM)
-
             btn_insert.pack(side=Tkinter.BOTTOM, pady=5)
             btn_down.pack(side=Tkinter.BOTTOM)
             btn_up.pack(side=Tkinter.BOTTOM) 
@@ -509,21 +728,9 @@ class Internbot:
                 savedirectory = tkFileDialog.askdirectory()
                 if savedirectory is not "":
                      generator.compile_scripts(self.tablesfilename, banner_list.keys(), self.__embedded_fields, filtering_variable, savedirectory)
-            	else:
-                            still_select_dest = tkMessageBox.askyesno("Info",
-                                                                 "You did not select a destination for your finished report"
-                                                                 ".\n Would you still like to?")
-                            if still_select_dest is True:
-                                savedirectory = tkFileDialog.askdirectory()
-                                if savedirectory is not "":
-                                    generator.compile_scripts(self.tablesfilename, banner_list.keys(), self.__embedded_fields, filtering_variable, savedirectory)
-                                    open_files = tkMessageBox.askyesno("Info",
-                                                                       "Done!\nWould you like to open your finished files?")
-                                    if open_files is True:
-                                        self.open_file_for_user(savedirectory + "/table script.sps")
-
-                            else:
-                                tkMessageBox.showinfo("Cancelled", "Cancelled file creation")
+                     open_files = tkMessageBox.askyesno("Info","Done!\nWould you like to open your finished files?")
+                     if open_files is True:
+                     	self.open_file_for_user(savedirectory + "/table script.sps")
         except Exception as e:
             tkMessageBox.showerror("Error", "An error occurred\n" + str(e))
 
@@ -538,132 +745,9 @@ class Internbot:
                     outputdirectory = tkFileDialog.askdirectory()
                     if outputdirectory is not "":
                         builder.write_report(outputdirectory)
-                    else:
-                            still_select_dest = tkMessageBox.askyesno("Info",
-                                                                 "You did not select a destination for your finished report"
-                                                                 ".\n Would you still like to?")
-                            if still_select_dest is True:
-                                savedirectory = tkFileDialog.askdirectory()
-                                if savedirectory is not "":
-                                    builder.write_report(outputdirectory)
-                                    open_files = tkMessageBox.askyesno("Info",
-                                                                       "Done!\nWould you like to open your finished files?")
-                                    if open_files is True:
-                                        self.open_file_for_user(savedirectory + "/Crosstab Report.xlsx")
-
-                            else:
-                                tkMessageBox.showinfo("Cancelled", "Cancelled file creation")
-        except Exception as e:
-            tkMessageBox.showerror("Error", "An error occurred\n" + str(e))
-
-    def open_basic_topline(self):
-        try:
-            redirect_window = Tkinter.Toplevel(self.__window)
-            redirect_window.withdraw()
-            x = self.__window.winfo_x()
-            y = self.__window.winfo_y()
-            redirect_window.geometry("250x100+%d+%d" % (x + 75, y + 150))
-            redirect_window.title("Y2 Topline Report Automation")
-            message = "Please open a survey file."
-            Tkinter.Label(redirect_window, text = message).pack(expand=True)
-            btn_open = Tkinter.Button(redirect_window, text = "Open", command = self.read_basic_topline)
-            btn_cancel = Tkinter.Button(redirect_window, text = "Cancel", command = redirect_window.destroy)
-            btn_open.pack(ipadx = 10, side = Tkinter.LEFT, expand=True)
-            btn_cancel.pack(ipadx = 10, side = Tkinter.LEFT, expand=True)
-            redirect_window.deiconify()
-        except Exception as e:
-            tkMessageBox.showerror("Error", "An error occurred\n" + str(e))
-
-    def open_trended_topline(self):
-        try:
-            redirect_window = Tkinter.Toplevel(self.__window)
-            redirect_window.withdraw()
-            x = self.__window.winfo_x()
-            y = self.__window.winfo_y()
-            redirect_window.geometry("250x100+%d+%d" % (x + 75, y + 150))
-            redirect_window.title("Y2 Topline Report Automation")
-            message = "Please open a survey file."
-            round_label = Tkinter.Label(redirect_window, text="Round number:")
-            round_label.pack(padx = 5, side = Tkinter.TOP, expand=True)
-            self.round_entry = Tkinter.Entry(redirect_window)
-            self.round_entry.pack(padx = 7, side=Tkinter.TOP, expand=True)
-            Tkinter.Label(redirect_window, text = message).pack(expand=True)
-            btn_open = Tkinter.Button(redirect_window, text = "Open", command = self.read_trended_topline)
-            btn_cancel = Tkinter.Button(redirect_window, text = "Cancel", command = redirect_window.destroy)
-            btn_open.pack(ipadx = 10, side = Tkinter.LEFT, expand=True)
-            btn_cancel.pack(ipadx = 10, side = Tkinter.LEFT, expand=True)
-            redirect_window.deiconify()
-        except Exception as e:
-            tkMessageBox.showerror("Error", "An error occurred\n" + str(e))
-
-    def read_basic_topline(self):
-        try:
-            filename = tkFileDialog.askopenfilename(initialdir = self.fpath, title = "Select survey file",filetypes = (("Qualtrics files","*.qsf"),("comma seperated files","*.csv"),("all files","*.*")))
-            if filename is not "":
-                isQSF = False
-                if ".qsf" in filename:
-                    compiler = base.QSFSurveyCompiler()
-                    survey = compiler.compile(filename)
-                    report = topline.QSF.ReportGenerator(survey)
-                    isQSF = True
-                    self.build_report(isQSF, report)
-                elif ".csv" in filename:
-                    report = topline.CSV.ReportGenerator(filename)
-                    self.build_basic_topline_report(isQSF, report)
-        except Exception as e:
-            if str(e) == "percent":
-                tkMessageBox.showerror("Error", "An error occurred\n" + str(e))
-
-    def read_trended_topline(self):
-        try:
-            filename = tkFileDialog.askopenfilename(initialdir = self.fpath, title = "Select survey file",filetypes = (("Qualtrics files","*.qsf"),("comma seperated files","*.csv"),("all files","*.*")))
-            if filename is not "":
-                isQSF = False
-                if ".qsf" in filename:
-                    pass
-                elif ".csv" in filename:
-                    round = int(self.round_entry.get())
-                    if round is "":
-                        round = 4
-                    report = topline.CSV.trended_topline.ReportGenerator(filename, round)
-                    self.build_trended_topline_report(isQSF, report)
-        except Exception as e:
-            tkMessageBox.showerror("Error", "An error occurred\n" + str(e))
-
-    def build_basic_topline_report(self, isQSF, report):
-        try:
-            template_file = open("topline_template.docx", "r")
-            ask_output = tkMessageBox.askokcancel("Output directory", "Please select the directory for finished report.")
-            if ask_output is True:
-                savedirectory = tkFileDialog.askdirectory()
-                if savedirectory is not "":
-                    if isQSF is True:
-                        ask_freq = tkMessageBox.askokcancel("Frequency file", "Please select the topline .csv frequency file.")
-                        if ask_freq is True:
-                            freqfilename = tkFileDialog.askopenfilename(initialdir = self.fpath, title = "Select frequency file",filetypes = (("comma seperated files","*.csv"),("all files","*.*")))
-                            ask_open_ends = tkMessageBox.askokcancel("Open ends", "Please select the open-ends .csv file.")
-                            if ask_open_ends is True:
-                                open_ends_file = tkFileDialog.askopenfilename(initialdir = self.fpath, title = "Select open ends file",filetypes = (("comma seperated files","*.csv"),("all files","*.*")))
-                                if open_ends_file is not "":
-                                    report.generate_appendix(template_file, open_ends_file, savedirectory)
-                            else:
-                                report.generate_basic_topline(freqfilename, template_file, savedirectory)
-                    else:
-                        report.generate_basic_topline(template_file, savedirectory)
-        except Exception as e:
-            tkMessageBox.showerror("Error", "An error occurred\n" + str(e))
-
-    def build_trended_topline_report(self, isQSF, report):
-        try:
-            template_file = open("topline_template.docx", "r")
-            ask_output = tkMessageBox.askokcancel("Output directory", "Please select the directory for finished report.")
-            if ask_output is True:
-                savedirectory = tkFileDialog.askdirectory()
-                if savedirectory is not "":
-                    if isQSF is True:
-                        pass
-                    else:
-                        report.generate_basic_topline(template_file, savedirectory)
+                        open_files = tkMessageBox.askyesno("Info", "Done!\nWould you like to open your finished files?")
+                        if open_files is True:
+                        	self.open_file_for_user(savedirectory + "/Crosstab Report.xlsx")
         except Exception as e:
             tkMessageBox.showerror("Error", "An error occurred\n" + str(e))
 
@@ -710,7 +794,6 @@ class Internbot:
 
     def scores_topline(self):
         try:
-            print "In scores topline"
             filename = self.filename
             #fields entered by user
             report_location = self.location_entry.get()
@@ -726,14 +809,6 @@ class Internbot:
                         open_files = tkMessageBox.askyesno("Info", "Done!\nWould you like to open your finished files?")
                         if open_files is True:
                             self.open_file_for_user(savedirectory + "/scores_topline.xlsx")
-                    else:
-                        still_select = tkMessageBox.askyesno("Info", "You did not select a destination for your finished report. \n Would you still like to?")
-                        if still_select is True:
-                            report.generate_issue_trended(savedirectory, round)
-                            self.create_window.destroy
-                            open_files = tkMessageBox.askyesno("Info","Done!\nWould you like to open your finished files?")
-                            if open_files is True:
-                                self.open_file_for_user(savedirectory + "/scores_topline.xlsx")
         except Exception as e:
             tkMessageBox.showerror("Error", "An error occurred\n" + str(e))
 
@@ -787,14 +862,6 @@ class Internbot:
                     open_files = tkMessageBox.askyesno("Info", "Done!\nWould you like to open your finished files?")
                     if open_files is True:
                         self.open_file_for_user(savedirectory + "/trended.xlsx")
-                else:
-                    still_select = tkMessageBox.askyesno("Info", "You did not select a destination for your finished report. \n Would you still like to?")
-                    if still_select is True:
-                        report.generate_issue_trended(savedirectory, round)
-                        self.create_window.destroy
-                        open_files = tkMessageBox.askyesno("Info","Done!\nWould you like to open your finished files?")
-                        if open_files is True:
-                            self.open_file_for_user(savedirectory + "/trended.xlsx")
         except Exception as e:
             tkMessageBox.showerror("Error", "An error occurred\n" + str(e))
 
@@ -849,18 +916,6 @@ class Internbot:
                         report.generate_trended_scores(savedirectory, round)
                         self.create_window.destroy()
                         tkMessageBox.showinfo("Info", "Done!")
-                    else:
-                            still_select_dest = tkMessageBox.askyesno("Info",
-                                                                 "You did not select a destination for your finished report"
-                                                                 ".\n Would you still like to?")
-                            if still_select_dest is True:
-                                savedirectory = tkFileDialog.askdirectory()
-                                if savedirectory is not "":
-                                    report.generate_trended_scores(savedirectory, round)
-                                    self.create_window.destroy()
-                                    tkMessageBox.showinfo("Info","Done!")
-                                    
-                    
         except Exception as e:
             tkMessageBox.showerror("Error", "An error occurred\n" + str(e))
 

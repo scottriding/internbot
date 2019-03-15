@@ -5,10 +5,11 @@ from docx.shared import Cm
 
 class ToplineReport(object):
 
-    def __init__(self, questions, path_to_template):
+    def __init__(self, questions, path_to_template, years):
         self.doc = Document(path_to_template)
         self.line_break = self.doc.styles['LineBreak']
         self.questions = questions
+        self.headers = years
         names = questions.list_names()
         for name in names:
             self.write_question(name)
@@ -16,7 +17,7 @@ class ToplineReport(object):
         
     def write_question(self, name):
         question = self.questions.get(name)
-        print "writing question: %s" % name
+        print "Writing question: %s" % name
         if question.display_logic != "":
             display_prompt = self.doc.add_paragraph()
             display_prompt.add_run("(" + question.display_logic + ")")
@@ -35,7 +36,6 @@ class ToplineReport(object):
         paragraph.add_run(name + ".")
     
     def write_prompt(self, prompt, paragraph):
-        print prompt
         paragraph_format = paragraph.paragraph_format
         paragraph_format.keep_together = True           # question prompt will all be fit in one page
         paragraph_format.left_indent = Inches(1)        
@@ -46,7 +46,6 @@ class ToplineReport(object):
         paragraph.add_run(" (n = " + str(n) + ")")
     
     def write_responses(self, responses):
-    	headers = ["Total 2019", "Total 2017", "Total 2016", "Total 2015"]
         first_response_freqs = responses[0].frequencies
         data_columns  = len(first_response_freqs)
         table = self.doc.add_table(rows=1, cols=data_columns+5)
@@ -54,7 +53,8 @@ class ToplineReport(object):
             titles_row = table.add_row().cells  
             headers_index = 0
             for i in range(5, data_columns+5):
-                titles_row[i].text = headers[headers_index]
+                header_text = "Total %s" % self.headers[headers_index]
+                titles_row[i].text = header_text
                 headers_index += 1
         first_row = True
         first_freq = True
