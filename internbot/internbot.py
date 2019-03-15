@@ -90,46 +90,52 @@ class Internbot:
 		self.redirect_window.deiconify()
 	
     def read_topline(self):
-        filename = tkFileDialog.askopenfilename(initialdir = self.fpath, title = "Select survey file",filetypes = (("Qualtrics files","*.qsf"),("comma seperated files","*.csv"),("all files","*.*")))
-        if filename is not "":
-            self.isQSF = False
-            if ".qsf" in filename:
-                pass
-            elif ".csv" in filename:
-                round_int = self.round_entry.get()
-                is_trended = False
-                if round_int == "":
-                    round_int = 1
-                else:
-                    round_int = int(round_int)
-                    if round_int != 1:
-                        is_trended = True
-                self.report = topline.CSV.ReportGenerator(filename, round_int)
-                self.redirect_window.destroy()
-                self.round = round_int
-                if is_trended is True:
-                    self.year_window_setup()
-                else:
-                    self.build_topline_report(self.isQSF, self.report)
+		try:
+			filename = tkFileDialog.askopenfilename(initialdir = self.fpath, title = "Select survey file",filetypes = (("Qualtrics files","*.qsf"),("comma seperated files","*.csv"),("all files","*.*")))
+			if filename is not "":
+				self.isQSF = False
+				if ".qsf" in filename:
+					pass
+				elif ".csv" in filename:
+					round_int = self.round_entry.get()
+					is_trended = False
+					if round_int == "":
+						round_int = 1
+					else:
+						round_int = int(round_int)
+						if round_int != 1:
+							is_trended = True
+					self.report = topline.CSV.ReportGenerator(filename, round_int)
+					self.redirect_window.destroy()
+					self.round = round_int
+					if is_trended is True:
+						self.year_window_setup()
+					else:
+						self.build_topline_report(self.isQSF, self.report)
+		except Exception as e:
+				tkMessageBox.showerror("Error", "An error occurred\n"+ str(e))
 
     def year_window_setup(self):
-        self.year_window = Tkinter.Toplevel(self.__window)
-        self.year_window.withdraw()
-        x = self.__window.winfo_x()
-        y = self.__window.winfo_y()
-        self.year_window.geometry("500x%d+%d+%d" % (100+self.round*25, x - 50, y + (200-(100+self.round*25)/2)))
-        self.year_window.title("Trended report years")
-        message = "Please input the applicable years for the trended topline report."
-        Tkinter.Label(self.year_window, text=message).pack(expand=True)
-        
-        year_frame = Tkinter.Frame(self.year_window)
-        year_frame.pack(side = Tkinter.TOP, expand = True)
-        self.packing_years(year_frame)
-        btn_finish = Tkinter.Button(self.year_window, text = "Done", command=self.read_years, height = 1, width = 20)
-        btn_cancel = Tkinter.Button(self.year_window, text = "Cancel", command=self.year_window.destroy, height = 1, width = 20)
-        btn_finish.pack(ipadx=5, side = Tkinter.LEFT, expand=False)
-        btn_cancel.pack(ipadx=5, side = Tkinter.RIGHT, expand=False)
-        self.year_window.deiconify()
+		try:
+			self.year_window = Tkinter.Toplevel(self.__window)
+			self.year_window.withdraw()
+			x = self.__window.winfo_x()
+			y = self.__window.winfo_y()
+			self.year_window.geometry("500x%d+%d+%d" % (100+self.round*25, x - 50, y + (200-(100+self.round*25)/2)))
+			self.year_window.title("Trended report years")
+			message = "Please input the applicable years for the trended topline report."
+			Tkinter.Label(self.year_window, text=message).pack(expand=True)
+		
+			year_frame = Tkinter.Frame(self.year_window)
+			year_frame.pack(side = Tkinter.TOP, expand = True)
+			self.packing_years(year_frame)
+			btn_finish = Tkinter.Button(self.year_window, text = "Done", command=self.read_years, height = 1, width = 20)
+			btn_cancel = Tkinter.Button(self.year_window, text = "Cancel", command=self.year_window.destroy, height = 1, width = 20)
+			btn_finish.pack(ipadx=5, side = Tkinter.LEFT, expand=False)
+			btn_cancel.pack(ipadx=5, side = Tkinter.RIGHT, expand=False)
+			self.year_window.deiconify()
+		except Exception as e:
+				tkMessageBox.showerror("Error", "An error occurred\n"+ str(e))
 
     def packing_years(self, year_frame):
         if(self.round >= 10):
@@ -298,18 +304,21 @@ class Internbot:
         years.append(self.year_one_entry.get())
 
     def build_topline_report(self, isQSF, report, years=[]):
-        template_file = open("topline_template.docx", "r")
-        ask_output = tkMessageBox.askokcancel("Output directory", "Please select the directory for finished report.")
-        if ask_output is True:
-            savedirectory = tkFileDialog.askdirectory()
-            if savedirectory is not "":
-                if isQSF is True:
-                    pass
-                else:
-                    report.generate_topline(template_file, savedirectory, years)
-                    open_files = tkMessageBox.askyesno("Info", "Done!\nWould you like to open your finished files?")
-                    if open_files is True:
-                        self.open_file_for_user(savedirectory+"/topline_report.docx")
+		try:
+			template_file = open("topline_template.docx", "r")
+			ask_output = tkMessageBox.askokcancel("Output directory", "Please select the directory for finished report.")
+			if ask_output is True:
+				savedirectory = tkFileDialog.askdirectory()
+				if savedirectory is not "":
+					if isQSF is True:
+						pass
+					else:
+						report.generate_topline(template_file, savedirectory, years)
+						open_files = tkMessageBox.askyesno("Info", "Done!\nWould you like to open your finished files?")
+						if open_files is True:
+							self.open_file_for_user(savedirectory+"/topline_report.docx")
+		except Exception as e:
+				tkMessageBox.showerror("Error", "An error occurred\n"+ str(e))
 
     def variable_script(self):
         try:
