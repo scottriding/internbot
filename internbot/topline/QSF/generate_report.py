@@ -2,6 +2,7 @@ from topline_report import ToplineReport
 from topline_appendix import ToplineAppendix
 import csv
 import re
+import ftfy
 
 class ReportGenerator(object):
     def __init__(self, survey):
@@ -36,8 +37,11 @@ class ReportGenerator(object):
         for row in csv_reader:
             if row['variable'] != "":
                 print row['label']
-                yield {unicode(key, 'UTF-8'):unicode(value, 'UTF-8') for key, value in row.iteritems()}
+                #yield {unicode(key, 'UTF-8'):unicode(value, 'UTF-8') for key, value in row.iteritems()}
+                yield {key.decode('utf8').encode('latin1').decode('utf8'):value.decode('utf8').encode('latin1').decode('utf8') for key, value in row.iteritems()}
 
+    
+    
     def assign_text_responses(self, path_to_appendix):
         text_responses = self.unicode_dict_reader(open(path_to_appendix))
         for response in text_responses:
