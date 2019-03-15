@@ -38,7 +38,7 @@ class ReportGenerator(object):
             if row['variable'] != "":
                 print row['label']
                 #yield {unicode(key, 'UTF-8'):unicode(value, 'UTF-8') for key, value in row.iteritems()}
-                yield {key.decode('utf8').encode('latin1').decode('utf8'):value.decode('utf8').encode('latin1').decode('utf8') for key, value in row.iteritems()}
+                yield {key.decode('iso-8859-1').encode('utf8'):value.decode('iso-8859-1').encode('utf8') for key, value in row.iteritems()}
 
     
     
