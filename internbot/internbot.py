@@ -307,7 +307,9 @@ class Internbot:
                     pass
                 else:
                     report.generate_topline(template_file, savedirectory, years)
-        
+                    open_files = tkMessageBox.askyesno("Info", "Done!\nWould you like to open your finished files?")
+                    if open_files is True:
+                        self.open_file_for_user(savedirectory+"/topline_report.docx")
 
     def variable_script(self):
         try:
@@ -329,25 +331,6 @@ class Internbot:
                             if open_files is True:
                                 self.open_file_for_user(savedirectory+"/Tables to run.csv")
                                 self.open_file_for_user(savedirectory+"/rename variables.sps")
-                        else:
-                            still_select_dest = tkMessageBox.askyesno("Info",
-                                                                 "You did not select a destination for your finished report"
-                                                                 ".\n Would you still like to?")
-                            if still_select_dest is True:
-                                savedirectory = tkFileDialog.askdirectory()
-                                if savedirectory is not "":
-                                    variables = crosstabs.Generate_Prelim_SPSS_Script.SPSSTranslator()
-                                    tables = crosstabs.Generate_Prelim_SPSS_Script.TableDefiner()
-                                    variables.define_variables(survey, savedirectory)
-                                    tables.define_tables(survey, savedirectory)
-                                    open_files = tkMessageBox.askyesno("Info",
-                                                                       "Done!\nWould you like to open your finished files?")
-                                    if open_files is True:
-                                        self.open_file_for_user(savedirectory + "/Tables to run.csv")
-                                        self.open_file_for_user(savedirectory + "/rename variables.sps")
-
-                            else:
-                                tkMessageBox.showinfo("Cancelled", "Cancelled file creation")
         except Exception as e:
             tkMessageBox.showerror("Error", "An error occurred\n"+ str(e))
 
@@ -412,14 +395,12 @@ class Internbot:
             btn_edit = Tkinter.Button(buttons_frame, text =   "Edit", command = self.parse_selection)
             btn_create = Tkinter.Button(buttons_frame, text = "Create", command = self.create_banner)
             btn_remove = Tkinter.Button(buttons_frame, text = "Remove", command = self.remove_banner)
-
             btn_done = Tkinter.Button(buttons_frame, text = "Done", command = self.finish_banner)
 
             btn_done.pack(side=Tkinter.BOTTOM, pady=15)
             btn_remove.pack(side=Tkinter.BOTTOM)
             btn_create.pack(side=Tkinter.BOTTOM)
             btn_edit.pack(side=Tkinter.BOTTOM)
-
             btn_insert.pack(side=Tkinter.BOTTOM, pady=5)
             btn_down.pack(side=Tkinter.BOTTOM)
             btn_up.pack(side=Tkinter.BOTTOM) 
@@ -738,21 +719,9 @@ class Internbot:
                 savedirectory = tkFileDialog.askdirectory()
                 if savedirectory is not "":
                      generator.compile_scripts(self.tablesfilename, banner_list.keys(), self.__embedded_fields, filtering_variable, savedirectory)
-            	else:
-                            still_select_dest = tkMessageBox.askyesno("Info",
-                                                                 "You did not select a destination for your finished report"
-                                                                 ".\n Would you still like to?")
-                            if still_select_dest is True:
-                                savedirectory = tkFileDialog.askdirectory()
-                                if savedirectory is not "":
-                                    generator.compile_scripts(self.tablesfilename, banner_list.keys(), self.__embedded_fields, filtering_variable, savedirectory)
-                                    open_files = tkMessageBox.askyesno("Info",
-                                                                       "Done!\nWould you like to open your finished files?")
-                                    if open_files is True:
-                                        self.open_file_for_user(savedirectory + "/table script.sps")
-
-                            else:
-                                tkMessageBox.showinfo("Cancelled", "Cancelled file creation")
+                     open_files = tkMessageBox.askyesno("Info","Done!\nWould you like to open your finished files?")
+                     if open_files is True:
+                     	self.open_file_for_user(savedirectory + "/table script.sps")
         except Exception as e:
             tkMessageBox.showerror("Error", "An error occurred\n" + str(e))
 
@@ -767,21 +736,9 @@ class Internbot:
                     outputdirectory = tkFileDialog.askdirectory()
                     if outputdirectory is not "":
                         builder.write_report(outputdirectory)
-                    else:
-                            still_select_dest = tkMessageBox.askyesno("Info",
-                                                                 "You did not select a destination for your finished report"
-                                                                 ".\n Would you still like to?")
-                            if still_select_dest is True:
-                                savedirectory = tkFileDialog.askdirectory()
-                                if savedirectory is not "":
-                                    builder.write_report(outputdirectory)
-                                    open_files = tkMessageBox.askyesno("Info",
-                                                                       "Done!\nWould you like to open your finished files?")
-                                    if open_files is True:
-                                        self.open_file_for_user(savedirectory + "/Crosstab Report.xlsx")
-
-                            else:
-                                tkMessageBox.showinfo("Cancelled", "Cancelled file creation")
+                        open_files = tkMessageBox.askyesno("Info", "Done!\nWould you like to open your finished files?")
+                        if open_files is True:
+                        	self.open_file_for_user(savedirectory + "/Crosstab Report.xlsx")
         except Exception as e:
             tkMessageBox.showerror("Error", "An error occurred\n" + str(e))
 
@@ -828,7 +785,6 @@ class Internbot:
 
     def scores_topline(self):
         try:
-            print "In scores topline"
             filename = self.filename
             #fields entered by user
             report_location = self.location_entry.get()
@@ -844,14 +800,6 @@ class Internbot:
                         open_files = tkMessageBox.askyesno("Info", "Done!\nWould you like to open your finished files?")
                         if open_files is True:
                             self.open_file_for_user(savedirectory + "/scores_topline.xlsx")
-                    else:
-                        still_select = tkMessageBox.askyesno("Info", "You did not select a destination for your finished report. \n Would you still like to?")
-                        if still_select is True:
-                            report.generate_issue_trended(savedirectory, round)
-                            self.create_window.destroy
-                            open_files = tkMessageBox.askyesno("Info","Done!\nWould you like to open your finished files?")
-                            if open_files is True:
-                                self.open_file_for_user(savedirectory + "/scores_topline.xlsx")
         except Exception as e:
             tkMessageBox.showerror("Error", "An error occurred\n" + str(e))
 
@@ -905,14 +853,6 @@ class Internbot:
                     open_files = tkMessageBox.askyesno("Info", "Done!\nWould you like to open your finished files?")
                     if open_files is True:
                         self.open_file_for_user(savedirectory + "/trended.xlsx")
-                else:
-                    still_select = tkMessageBox.askyesno("Info", "You did not select a destination for your finished report. \n Would you still like to?")
-                    if still_select is True:
-                        report.generate_issue_trended(savedirectory, round)
-                        self.create_window.destroy
-                        open_files = tkMessageBox.askyesno("Info","Done!\nWould you like to open your finished files?")
-                        if open_files is True:
-                            self.open_file_for_user(savedirectory + "/trended.xlsx")
         except Exception as e:
             tkMessageBox.showerror("Error", "An error occurred\n" + str(e))
 
@@ -967,18 +907,6 @@ class Internbot:
                         report.generate_trended_scores(savedirectory, round)
                         self.create_window.destroy()
                         tkMessageBox.showinfo("Info", "Done!")
-                    else:
-                            still_select_dest = tkMessageBox.askyesno("Info",
-                                                                 "You did not select a destination for your finished report"
-                                                                 ".\n Would you still like to?")
-                            if still_select_dest is True:
-                                savedirectory = tkFileDialog.askdirectory()
-                                if savedirectory is not "":
-                                    report.generate_trended_scores(savedirectory, round)
-                                    self.create_window.destroy()
-                                    tkMessageBox.showinfo("Info","Done!")
-                                    
-                    
         except Exception as e:
             tkMessageBox.showerror("Error", "An error occurred\n" + str(e))
 
