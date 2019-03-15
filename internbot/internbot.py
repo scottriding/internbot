@@ -108,16 +108,16 @@ class Internbot:
                 self.redirect_window.destroy()
                 self.round = round_int
                 if is_trended is True:
-                    self.year_window()
+                    self.year_window_setup()
                 else:
                     self.build_topline_report(self.isQSF, self.report)
 
-    def year_window(self):
+    def year_window_setup(self):
         self.year_window = Tkinter.Toplevel(self.__window)
         self.year_window.withdraw()
         x = self.__window.winfo_x()
         y = self.__window.winfo_y()
-        #self.year_window.geometry("250x150+%d+%d" % (x + 75, y + 125))
+        self.year_window.geometry("500x%d+%d+%d" % (100+self.round*25, x - 50, y + (200-(100+self.round*25)/2)))
         self.year_window.title("Trended report years")
         message = "Please input the applicable years for the trended topline report."
         Tkinter.Label(self.year_window, text=message).pack(expand=True)
