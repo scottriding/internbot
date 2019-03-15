@@ -20,10 +20,12 @@ class Internbot:
     def main_buttons(self):
         btn_xtabs = Tkinter.Button(self.__window, text="Run crosstabs", command=self.tabs_menu)
         btn_report = Tkinter.Button(self.__window, text="Run topline report", command=self.topline_menu)
+        btn_appen = Tkinter.Button(self.__window, text="Run topline appendix", command=self.append_menu)
         btn_rnc = Tkinter.Button(self.__window, text="Run RNC", command=self.rnc_menu)
         btn_quit = Tkinter.Button(self.__window, text="Quit", command=self.__window.destroy)
         btn_xtabs.pack(padx=2, side=Tkinter.LEFT, expand=True)
         btn_report.pack(padx=2, side=Tkinter.LEFT, expand=True)
+        btn_appen.pack(padx=2, side=Tkinter.LEFT, expand=True)
         btn_rnc.pack(padx=2, side=Tkinter.LEFT, expand=True)
         btn_quit.pack(padx=2, side=Tkinter.LEFT, expand=True)
 
@@ -70,6 +72,22 @@ class Internbot:
         btn_cancel.pack(ipadx = 10, side = Tkinter.LEFT, expand=True)
         self.redirect_window.deiconify()
 
+    def append_menu(self):
+        self.redirect_window = Tkinter.Toplevel(self.__window)
+        self.redirect_window.withdraw()
+        x = self.__window.winfo_x()
+        y = self.__window.winfo_y()
+        self.redirect_window.geometry("250x100+%d+%d" % (x + 75, y + 150))
+        self.redirect_window.title("Y2 Topline Appendix Report Automation")
+        message = "Please open a appendix file."
+        Tkinter.Label(self.redirect_window, text = message).pack(expand=True)
+
+        btn_open = Tkinter.Button(self.redirect_window, text = "Open", command = self.read_append)
+        btn_cancel = Tkinter.Button(self.redirect_window, text = "Cancel", command = self.redirect_window.destroy)
+        btn_open.pack(ipadx = 10, side = Tkinter.LEFT, expand=True)
+        btn_cancel.pack(ipadx = 10, side = Tkinter.LEFT, expand=True)
+        self.redirect_window.deiconify()
+
     def rnc_menu(self):
 		self.redirect_window = Tkinter.Toplevel(self.__window)
 		self.redirect_window.withdraw()
@@ -89,6 +107,15 @@ class Internbot:
 		btn_ind_trended.pack(ipadx = 5, side = Tkinter.BOTTOM, expand=False)
 		self.redirect_window.deiconify()
 	
+    def read_append(self):
+        qsffilename = tkFileDialog.askopenfilename(initialdir = self.fpath, title = "Select survey file", filetypes = (("Qualtrics files","*.qsf"), ("all files", "*.*")))
+        compiler = base.QSFSurveyCompiler()
+        survey = compiler.compile(qsffilename)            
+        filename = tkFileDialog.askopenfilename(initialdir = self.fpath, title = "Select open ends file",filetypes = (("comma seperated files","*.csv"),("all files","*.*")))
+        output = tkFileDialog.askdirectory()
+        builder = topline.QSF.ReportGenerator(survey)
+        builder.generate_appendix("topline_template.docx", filename, output)
+
     def read_topline(self):
 		try:
 			filename = tkFileDialog.askopenfilename(initialdir = self.fpath, title = "Select survey file",filetypes = (("Qualtrics files","*.qsf"),("comma seperated files","*.csv"),("all files","*.*")))

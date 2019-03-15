@@ -239,6 +239,7 @@ class Question(object):
         self.__has_carry_forward_statements = False
         self.__has_carry_forward_answers = False
         self.__n = 0
+        self.__display_logic = None
 
     @property
     def has_carry_forward_statements(self):
@@ -352,6 +353,14 @@ class Question(object):
     @has_mixed_responses.setter
     def has_mixed_responses(self, type):
         self.__has_mixed_responses = bool(type)
+
+    @property
+    def display_logic(self):
+        return self.__display_logic
+
+    @display_logic.setter
+    def display_logic(self, logic):
+        self.__display_logic = str(logic)
 
     def add_response(self, response, code=None):
         self.__responses.add(response, code)

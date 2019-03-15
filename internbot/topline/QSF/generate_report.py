@@ -31,26 +31,32 @@ class ReportGenerator(object):
         report.write_independent(open_ended_questions, path_to_template)
         report.save(str(path_to_output) + '/appendix.docx')
 
+    def unicode_dict_reader(self, utf8_data, **kwargs):
+        csv_reader = csv.DictReader(utf8_data, **kwargs)
+        for row in csv_reader:
+            if row['variable'] != "":
+                print row['label']
+                yield {unicode(key, 'UTF-8'):unicode(value, 'UTF-8') for key, value in row.iteritems()}
+
     def assign_text_responses(self, path_to_appendix):
-        with open(path_to_appendix, 'rb') as appendix_file:
-            file = csv.DictReader(appendix_file, quotechar = '"')
-            for response in file:
-                matching_question = self.find_question(response['variable'], self.survey)
-                if matching_question is not None:
-                    matching_question.add_text_response(response['label'])
-                    matching_question.text_entry = True
+        text_responses = self.unicode_dict_reader(open(path_to_appendix))
+        for response in text_responses:
+            matching_question = self.find_question(response["variable"], self.survey)
+            if matching_question is not None:
+                matching_question.add_text_response(response['label'])
+                matching_question.text_entry = True
 
     def assign_frequencies(self, path_to_csv):
-        with open(path_to_csv, 'rb') as csvfile:
-            file = csv.DictReader(csvfile, quotechar = '"')
-            for question_data in file:
-                matching_question = self.find_question(question_data['variable'], self.survey)
-                if matching_question is not None:
-                    matching_response = self.find_response(question_data['label'], matching_question)
-                    if matching_response is not None:
-                        self.add_frequency(matching_response, question_data['percent'])
-                        self.add_n(matching_question, question_data['n'])
-                        #self.add_display_logic(matching_question, question_data['display'])
+        question_data = self.unicode_dict_reader(open(path_to_csv))
+        for row in question_data:
+            matching_question = self.find_question(row["variable"], self.survey)
+            if matching_question is not None:
+                matching_response = self.find_response(row["label"], matching_question)
+                if matching_response is not None:
+                    self.add_frequency(matching_response, row["percent"])
+                    self.add_n(matching_question, row["n"])
+                    if row["display"] != "":
+                        self.add_display_logic(matching_question, row["display"])
                 
     def find_question(self, question_to_find, survey):
         matching_question = survey.blocks.find_question_by_name(question_to_find)
@@ -82,3 +88,6 @@ class ReportGenerator(object):
     def add_n(self, question, n):
         current_n = question.n
         question.n = current_n + int(n)
+
+    def add_display_logic(self, question, display):
+        question.display_logic = display
