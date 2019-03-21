@@ -28,13 +28,40 @@ class Internbot:
         btn_appen.pack(padx=2, side=Tkinter.LEFT, expand=True)
         btn_rnc.pack(padx=2, side=Tkinter.LEFT, expand=True)
         btn_quit.pack(padx=2, side=Tkinter.LEFT, expand=True)
+        
+        self.menubar = Tkinter.Menu(self.__window)
+        
+        menu_xtabs = Tkinter.Menu(self.menubar, tearoff = 0)
+        menu_xtabs.add_command(label="Variable Script", command=self.variable_script)
+        menu_xtabs.add_command(label="Table Script", command=self.table_script)
+        menu_xtabs.add_command(label="Build Report", command=self.build_xtabs)
+        self.menubar.add_cascade(label="Crosstabs", menu=menu_xtabs)
+        
+        menu_report = Tkinter.Menu(self.menubar, tearoff = 0)
+        menu_report.add_command(label="Run Topline", command=self.topline_menu)
+        menu_report.add_command(label="Run Appendix", command=self.append_menu)
+        self.menubar.add_cascade(label="Topline", menu=menu_report)
+        
+        menu_rnc = Tkinter.Menu(self.menubar, tearoff=0)
+        menu_rnc.add_command(label="Scores Topline", command=self.scores_window)
+        menu_rnc.add_command(label="Issue Trended", command=self.issue_trended_window)
+        menu_rnc.add_command(label="Trended Score", command=self.trended_scores_window)
+        self.menubar.add_cascade(label="RNC", menu=menu_rnc)
+        
+        menu_quit = Tkinter.Menu(self.menubar, tearoff = 0)
+        menu_quit.add_command(label="Good Bye", command=self.__window.destroy)
+        self.menubar.add_cascade(label="Quit", menu=menu_quit)
+        
+        
+        self.__window.config(menu=self.menubar)
+        
 
     def tabs_menu(self):
         redirect_window = Tkinter.Toplevel(self.__window)
         redirect_window.withdraw()
         x = self.__window.winfo_x()
         y = self.__window.winfo_y()
-        redirect_window.geometry("300x200+%d+%d" % (x + 50, y + 100))
+        redirect_window.geometry("300x200+%d+%d" % (x + 150, y + 100))
         message = "Please select the files to produce."
         Tkinter.Label(redirect_window, text = message).pack()
         btn_var = Tkinter.Button(redirect_window, text="Variable script", command=self.variable_script, height=1, width=15)
@@ -52,7 +79,7 @@ class Internbot:
         self.redirect_window.withdraw()
         x = self.__window.winfo_x()
         y = self.__window.winfo_y()
-        self.redirect_window.geometry("250x100+%d+%d" % (x + 75, y + 150))
+        self.redirect_window.geometry("250x100+%d+%d" % (x + 175, y + 150))
         self.redirect_window.title("Y2 Topline Report Automation")
         message = "Please open a survey file."
         Tkinter.Label(self.redirect_window, text = message).pack(expand=True)
@@ -77,7 +104,7 @@ class Internbot:
         self.redirect_window.withdraw()
         x = self.__window.winfo_x()
         y = self.__window.winfo_y()
-        self.redirect_window.geometry("250x100+%d+%d" % (x + 75, y + 150))
+        self.redirect_window.geometry("250x100+%d+%d" % (x + 175, y + 150))
         self.redirect_window.title("Y2 Topline Appendix Report Automation")
         message = "Please open a appendix file."
         Tkinter.Label(self.redirect_window, text = message).pack(expand=True)
@@ -93,7 +120,7 @@ class Internbot:
 		self.redirect_window.withdraw()
 		x = self.__window.winfo_x()
 		y = self.__window.winfo_y()
-		self.redirect_window.geometry("250x150+%d+%d" % (x + 75, y + 125))
+		self.redirect_window.geometry("250x150+%d+%d" % (x + 175, y + 125))
 		self.redirect_window.title("RNC Scores Topline Automation")
 		message = "Please open a model scores file."
 		Tkinter.Label(self.redirect_window, text = message).pack(expand=True)
@@ -149,7 +176,7 @@ class Internbot:
 			self.year_window.withdraw()
 			x = self.__window.winfo_x()
 			y = self.__window.winfo_y()
-			self.year_window.geometry("500x%d+%d+%d" % (100+self.round*25, x - 50, y + (200-(100+self.round*25)/2)))
+			self.year_window.geometry("500x%d+%d+%d" % (100+self.round*25, x + 50, y + (200-(100+self.round*25)/2)))
 			self.year_window.title("Trended report years")
 			message = "Please input the applicable years for the trended topline report."
 			Tkinter.Label(self.year_window, text=message).pack(expand=True)
@@ -393,7 +420,7 @@ class Internbot:
             self.edit_window.withdraw()
             x = self.__window.winfo_x()
             y = self.__window.winfo_y()
-            self.edit_window.geometry("1500x500+%d+%d" % (x - 550 , y - 50))
+            self.edit_window.geometry("1500x500+%d+%d" % (x - 450 , y - 50))
 
             self.edit_window.title("Banner selection")
 
@@ -711,7 +738,7 @@ class Internbot:
         self.create_window.withdraw()
         x = self.__window.winfo_x()
         y = self.__window.winfo_y()
-        self.create_window.geometry("250x100+%d+%d" % (x + 75, y + 150))
+        self.create_window.geometry("250x100+%d+%d" % (x + 175, y + 150))
         self.create_window.title("Trended report details")
 
         # filtering  variable
@@ -788,7 +815,7 @@ class Internbot:
                 self.create_window.withdraw()
                 x = self.__window.winfo_x()
                 y = self.__window.winfo_y()
-                self.create_window.geometry("250x100+%d+%d" % (x + 75, y + 150))
+                self.create_window.geometry("250x100+%d+%d" % (x + 175, y + 150))
                 self.create_window.title("Scores Topline Report Details")
                 # location details
                 location_frame = Tkinter.Frame(self.create_window)
@@ -849,7 +876,7 @@ class Internbot:
                 self.create_window.withdraw()
                 x = self.__window.winfo_x()
                 y = self.__window.winfo_y()
-                self.create_window.geometry("250x100+%d+%d" % (x + 75, y + 150))
+                self.create_window.geometry("250x100+%d+%d" % (x + 175, y + 150))
                 self.create_window.title("Issue Trended Report Details")
 
                 # round details
@@ -903,7 +930,7 @@ class Internbot:
                 self.create_window.withdraw()
                 x = self.__window.winfo_x()
                 y = self.__window.winfo_y()
-                self.create_window.geometry("250x100+%d+%d" % (x +75, y + 150))
+                self.create_window.geometry("250x100+%d+%d" % (x + 175, y + 150))
                 self.create_window.title("Trended Issue Reports Details")
 
                 # round details
@@ -964,9 +991,9 @@ window = Tkinter.Tk()
 window.title("Internbot: 01011001 00000010") # Internbot: Y2
 screen_width = window.winfo_screenwidth()
 screen_height = window.winfo_screenheight()
-mov_x = screen_width / 2 - 200
-mov_y = screen_height / 2 - 200
-window.geometry("400x400+%d+%d" % (mov_x, mov_y))
+mov_x = screen_width / 2 - 300
+mov_y = screen_height / 2 - 300
+window.geometry("600x400+%d+%d" % (mov_x, mov_y))
 window['background'] = 'white'
 y2_logo = "Y2Logo.gif"
 render = Tkinter.PhotoImage(file= y2_logo)
