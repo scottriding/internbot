@@ -8,6 +8,7 @@ import tkFileDialog
 import os, subprocess, platform
 import csv
 from collections import OrderedDict
+from years_window import YearsWindow
 
 class Internbot:
 
@@ -30,7 +31,6 @@ class Internbot:
         btn_quit.pack(padx=2, side=Tkinter.LEFT, expand=True)
         
         self.menubar = Tkinter.Menu(self.__window)
-        
         menu_xtabs = Tkinter.Menu(self.menubar, tearoff = 0)
         menu_xtabs.add_command(label="Variable Script", command=self.variable_script)
         menu_xtabs.add_command(label="Table Script", command=self.table_script)
@@ -51,8 +51,6 @@ class Internbot:
         menu_quit = Tkinter.Menu(self.menubar, tearoff = 0)
         menu_quit.add_command(label="Good Bye", command=self.__window.destroy)
         self.menubar.add_cascade(label="Quit", menu=menu_quit)
-        
-        
         self.__window.config(menu=self.menubar)
         
 
@@ -116,24 +114,24 @@ class Internbot:
         self.redirect_window.deiconify()
 
     def rnc_menu(self):
-		self.redirect_window = Tkinter.Toplevel(self.__window)
-		self.redirect_window.withdraw()
-		x = self.__window.winfo_x()
-		y = self.__window.winfo_y()
-		self.redirect_window.geometry("250x150+%d+%d" % (x + 175, y + 125))
-		self.redirect_window.title("RNC Scores Topline Automation")
-		message = "Please open a model scores file."
-		Tkinter.Label(self.redirect_window, text = message).pack(expand=True)
-		btn_topline = Tkinter.Button(self.redirect_window, text="Scores Topline Report", command=self.scores_window, height = 1, width = 20)
-		btn_trended = Tkinter.Button(self.redirect_window, text="Issue Trended Report", command=self.issue_trended_window, height = 1, width = 20)
-		btn_ind_trended = Tkinter.Button(self.redirect_window, text="Trended Score Reports", command=self.trended_scores_window, height = 1, width = 20)
-		btn_cancel = Tkinter.Button(self.redirect_window, text="Cancel", command = self.redirect_window.destroy, height = 1, width = 20)
-		btn_cancel.pack(ipadx = 5, side = Tkinter.BOTTOM, expand=False)
-		btn_topline.pack(ipadx=5, side=Tkinter.BOTTOM, expand=False)
-		btn_trended.pack(ipadx=5, side = Tkinter.BOTTOM, expand=False)
-		btn_ind_trended.pack(ipadx = 5, side = Tkinter.BOTTOM, expand=False)
-		self.redirect_window.deiconify()
-	
+        self.redirect_window = Tkinter.Toplevel(self.__window)
+        self.redirect_window.withdraw()
+        x = self.__window.winfo_x()
+        y = self.__window.winfo_y()
+        self.redirect_window.geometry("250x150+%d+%d" % (x + 175, y + 125))
+        self.redirect_window.title("RNC Scores Topline Automation")
+        message = "Please open a model scores file."
+        Tkinter.Label(self.redirect_window, text = message).pack(expand=True)
+        btn_topline = Tkinter.Button(self.redirect_window, text="Scores Topline Report", command=self.scores_window, height = 1, width = 20)
+        btn_trended = Tkinter.Button(self.redirect_window, text="Issue Trended Report", command=self.issue_trended_window, height = 1, width = 20)
+        btn_ind_trended = Tkinter.Button(self.redirect_window, text="Trended Score Reports", command=self.trended_scores_window, height = 1, width = 20)
+        btn_cancel = Tkinter.Button(self.redirect_window, text="Cancel", command = self.redirect_window.destroy, height = 1, width = 20)
+        btn_cancel.pack(ipadx = 5, side = Tkinter.BOTTOM, expand=False)
+        btn_topline.pack(ipadx=5, side=Tkinter.BOTTOM, expand=False)
+        btn_trended.pack(ipadx=5, side = Tkinter.BOTTOM, expand=False)
+        btn_ind_trended.pack(ipadx = 5, side = Tkinter.BOTTOM, expand=False)
+        self.redirect_window.deiconify()
+
     def read_append(self):
         qsffilename = tkFileDialog.askopenfilename(initialdir = self.fpath, title = "Select survey file", filetypes = (("Qualtrics files","*.qsf"), ("all files", "*.*")))
         compiler = base.QSFSurveyCompiler()
@@ -171,209 +169,50 @@ class Internbot:
 				tkMessageBox.showerror("Error", "An error occurred\n"+ str(e))
 
     def year_window_setup(self):
-		try:
-			self.year_window = Tkinter.Toplevel(self.__window)
-			self.year_window.withdraw()
-			x = self.__window.winfo_x()
-			y = self.__window.winfo_y()
-			self.year_window.geometry("500x%d+%d+%d" % (100+self.round*25, x + 50, y + (200-(100+self.round*25)/2)))
-			self.year_window.title("Trended report years")
-			message = "Please input the applicable years for the trended topline report."
-			Tkinter.Label(self.year_window, text=message).pack(expand=True)
-		
-			year_frame = Tkinter.Frame(self.year_window)
-			year_frame.pack(side = Tkinter.TOP, expand = True)
-			self.packing_years(year_frame)
-			btn_finish = Tkinter.Button(self.year_window, text = "Done", command=self.read_years, height = 1, width = 20)
-			btn_cancel = Tkinter.Button(self.year_window, text = "Cancel", command=self.year_window.destroy, height = 1, width = 20)
-			btn_finish.pack(ipadx=5, side = Tkinter.LEFT, expand=False)
-			btn_cancel.pack(ipadx=5, side = Tkinter.RIGHT, expand=False)
-			self.year_window.deiconify()
-		except Exception as e:
-				tkMessageBox.showerror("Error", "An error occurred\n"+ str(e))
+        try:
+            self.year_window = Tkinter.Toplevel(self.__window)
+            self.year_window.withdraw()
+            x = self.__window.winfo_x()
+            y = self.__window.winfo_y()
+            self.year_window.geometry("500x%d+%d+%d" % (100+self.round*25, x + 50, y + (200-(100+self.round*25)/2)))
+            self.year_window.title("Trended report years")
+            message = "Please input the applicable years for the trended topline report."
+            Tkinter.Label(self.year_window, text=message).pack(expand=True)
 
-    def packing_years(self, year_frame):
-        if(self.round >= 10):
-            self.pack_ten_labels(year_frame)
-        elif(self.round == 9):
-            self.pack_nine_labels(year_frame)
-        elif(self.round == 8):
-            self.pack_eight_labels(year_frame)
-        elif(self.round == 7):
-            self.pack_seven_labels(year_frame)
-        elif(self.round == 6):
-            self.pack_six_labels(year_frame)
-        elif(self.round == 5):
-            self.pack_five_labels(year_frame)
-        elif(self.round == 4):
-            self.pack_four_labels(year_frame)
-        elif(self.round == 3):
-        	self.pack_three_labels(year_frame)
-        elif(self.round == 2):
-            self.pack_two_labels(year_frame)
+            year_frame = Tkinter.Frame(self.year_window)
+            year_frame.pack(side = Tkinter.TOP, expand = True)
+            self.year_window_obj = YearsWindow(self.__window, self.year_window, self.round)
+            self.year_window_obj.packing_years(year_frame)
+            btn_finish = Tkinter.Button(self.year_window, text = "Done", command=self.build_topline_leadup, height = 1, width = 20)
+            btn_cancel = Tkinter.Button(self.year_window, text = "Cancel", command=self.year_window.destroy, height = 1, width = 20)
+            btn_finish.pack(ipadx=5, side = Tkinter.LEFT, expand=False)
+            btn_cancel.pack(ipadx=5, side = Tkinter.RIGHT, expand=False)
+            self.year_window.deiconify()
+        except Exception as e:
+            tkMessageBox.showerror("Error", "An error occurred\n"+ str(e))
 
-    def pack_two_labels(self, year_frame):
-		year_one_frame = Tkinter.Frame(year_frame)
-		year_one_label = Tkinter.Label(year_one_frame, text="1st year name:")
-		year_one_label.pack(side = Tkinter.LEFT, expand=True)
-		self.year_one_entry = Tkinter.Entry(year_one_frame)
-		self.year_one_entry.pack(side=Tkinter.RIGHT, expand=True)
-		year_one_frame.pack(side = Tkinter.TOP, expand = True)
-		
-		year_two_frame = Tkinter.Frame(year_frame)
-		year_two_label = Tkinter.Label(year_two_frame, text="2nd year name:")
-		year_two_label.pack(side = Tkinter.LEFT, expand=True)
-		self.year_two_entry = Tkinter.Entry(year_two_frame)
-		self.year_two_entry.pack(side=Tkinter.RIGHT, expand=True)
-		year_two_frame.pack(side = Tkinter.TOP, expand = True)
-            
-    def pack_three_labels(self, year_frame):
-    	self.pack_two_labels(year_frame)
-    	year_three_frame = Tkinter.Frame(year_frame)
-    	year_three_label = Tkinter.Label(year_three_frame, text="3rd year name:")
-    	year_three_label.pack(side = Tkinter.LEFT, expand=True)
-    	self.year_three_entry = Tkinter.Entry(year_three_frame)
-    	self.year_three_entry.pack(side=Tkinter.RIGHT, expand=True)
-    	year_three_frame.pack(side = Tkinter.TOP, expand = True)
-    
-    def pack_four_labels(self, year_frame):
-    	self.pack_three_labels(year_frame)
-    	year_four_frame = Tkinter.Frame(year_frame)
-    	year_four_label = Tkinter.Label(year_four_frame, text="4th year name:")
-    	year_four_label.pack(side = Tkinter.LEFT, expand=True)
-    	self.year_four_entry = Tkinter.Entry(year_four_frame)
-    	self.year_four_entry.pack(side=Tkinter.RIGHT, expand=True)
-    	year_four_frame.pack(side = Tkinter.TOP, expand = True)
-    
-    def pack_five_labels(self, year_frame):
-    	self.pack_four_labels(year_frame)
-    	year_five_frame = Tkinter.Frame(year_frame)
-    	year_five_label = Tkinter.Label(year_five_frame, text="5th year name:")
-    	year_five_label.pack(side = Tkinter.LEFT, expand=True)
-    	self.year_five_entry = Tkinter.Entry(year_five_frame)
-    	self.year_five_entry.pack(side=Tkinter.RIGHT, expand=True)
-    	year_five_frame.pack(side = Tkinter.TOP, expand = True)	
-    
-    def pack_six_labels(self, year_frame):
-    	self.pack_five_labels(year_frame)
-    	year_six_frame = Tkinter.Frame(year_frame)
-    	year_six_label = Tkinter.Label(year_six_frame, text="6th year name:")
-    	year_six_label.pack(side = Tkinter.LEFT, expand=True)
-    	self.year_six_entry = Tkinter.Entry(year_six_frame)
-    	self.year_six_entry.pack(side=Tkinter.RIGHT, expand=True)
-    	year_six_frame.pack(side = Tkinter.TOP, expand = True)	
-    	
-    def pack_seven_labels(self, year_frame):
-    	self.pack_six_labels(year_frame)
-    	year_seven_frame = Tkinter.Frame(year_frame)
-    	year_seven_label = Tkinter.Label(year_seven_frame, text="7th year name:")
-    	year_seven_label.pack(side = Tkinter.LEFT, expand=True)
-    	self.year_seven_entry = Tkinter.Entry(year_seven_frame)
-    	self.year_seven_entry.pack(side=Tkinter.RIGHT, expand=True)
-    	year_seven_frame.pack(side = Tkinter.TOP, expand = True)
-    	
-    def pack_eight_labels(self, year_frame):
-    	self.pack_seven_labels(year_frame)
-    	year_eight_frame = Tkinter.Frame(year_frame)
-    	year_eight_label = Tkinter.Label(year_eight_frame, text="8th year name:")
-    	year_eight_label.pack(side = Tkinter.LEFT, expand=True)
-    	self.year_eight_entry = Tkinter.Entry(year_eight_frame)
-    	self.year_eight_entry.pack(side=Tkinter.RIGHT, expand=True)
-    	year_eight_frame.pack(side = Tkinter.TOP, expand = True)
-    	
-    def pack_nine_labels(self, year_frame):
-    	self.pack_eight_labels(year_frame)
-    	year_nine_frame = Tkinter.Frame(year_frame)
-    	year_nine_label = Tkinter.Label(year_nine_frame, text="9th year name:")
-    	year_nine_label.pack(side = Tkinter.LEFT, expand=True)
-    	self.year_nine_entry = Tkinter.Entry(year_nine_frame)
-    	self.year_nine_entry.pack(side=Tkinter.RIGHT, expand=True)
-    	year_nine_frame.pack(side = Tkinter.TOP, expand = True)
-    	
-    def pack_ten_labels(self, year_frame):
-    	self.pack_nine_labels(year_frame)
-    	year_ten_frame = Tkinter.Frame(year_frame)
-    	year_ten_label = Tkinter.Label(year_ten_frame, text="10th year name:")
-    	year_ten_label.pack(side = Tkinter.LEFT, expand=True)
-    	self.year_ten_entry = Tkinter.Entry(year_ten_frame)
-    	self.year_ten_entry.pack(side=Tkinter.RIGHT, expand=True)
-    	year_ten_frame.pack(side = Tkinter.TOP, expand = True)
-
-    def read_years(self):
-        years = []
-        if(self.round >= 10):
-            self.pull_ten_labels(years)
-        elif(self.round == 9):
-            self.pull_nine_labels(years)
-        elif(self.round == 8):
-            self.pull_eight_labels(years)
-        elif(self.round == 7):
-            self.pull_seven_labels(years)
-        elif(self.round == 6):
-            self.pull_six_labels(years)
-        elif(self.round == 5):
-            self.pull_five_labels(years)
-        elif(self.round == 4):
-            self.pull_four_labels(years)
-        elif(self.round == 3):
-        	self.pull_three_labels(years)
-        elif(self.round == 2):
-            self.pull_two_labels(years)
-        self.year_window.destroy()
+    def build_topline_leadup(self):
+        years = self.year_window_obj.read_years()
+        for i in range(len(years)):
+            print years[i]
         self.build_topline_report(self.isQSF, self.report, years)
 
-    def pull_ten_labels(self, years):
-        years.append(self.year_ten_entry.get())
-        self.pull_nine_labels(years)
-
-    def pull_nine_labels(self, years):
-        years.append(self.year_nine_entry.get())
-        self.pull_eight_labels(years)
-
-    def pull_eight_labels(self, years):
-        years.append(self.year_eight_entry.get())
-        self.pull_seven_labels(years)
-
-    def pull_seven_labels(self, years):
-        years.append(self.year_seven_entry.get())
-        self.pull_six_labels(years)
-
-    def pull_six_labels(self, years):
-        years.append(self.year_six_entry.get())
-        self.pull_five_labels(years)
-
-    def pull_five_labels(self, years):
-        years.append(self.year_five_entry.get())
-        self.pull_four_labels(years)
-
-    def pull_four_labels(self, years):
-        years.append(self.year_four_entry.get())
-        self.pull_three_labels(years)
-
-    def pull_three_labels(self, years):
-        years.append(self.year_three_entry.get())
-        self.pull_two_labels(years)
-
-    def pull_two_labels(self, years):
-        years.append(self.year_two_entry.get())
-        years.append(self.year_one_entry.get())
-
     def build_topline_report(self, isQSF, report, years=[]):
-		try:
-			template_file = open("topline_template.docx", "r")
-			ask_output = tkMessageBox.askokcancel("Output directory", "Please select the directory for finished report.")
-			if ask_output is True:
-				savedirectory = tkFileDialog.askdirectory()
-				if savedirectory is not "":
-					if isQSF is True:
-						pass
-					else:
-						report.generate_topline(template_file, savedirectory, years)
-						open_files = tkMessageBox.askyesno("Info", "Done!\nWould you like to open your finished files?")
-						if open_files is True:
-							self.open_file_for_user(savedirectory+"/topline_report.docx")
-		except Exception as e:
-				tkMessageBox.showerror("Error", "An error occurred\n"+ str(e))
+        try:
+            template_file = open("topline_template.docx", "r")
+            ask_output = tkMessageBox.askokcancel("Output directory", "Please select the directory for finished report.")
+            if ask_output is True:
+                savedirectory = tkFileDialog.askdirectory()
+                if savedirectory is not "":
+                    if isQSF is True:
+                        pass
+                    else:
+                        report.generate_topline(template_file, savedirectory, years)
+                        open_files = tkMessageBox.askyesno("Info", "Done!\nWould you like to open your finished files?")
+                        if open_files is True:
+                            self.open_file_for_user(savedirectory+"/topline_report.docx")
+        except Exception as e:
+            tkMessageBox.showerror("Error", "An error occurred\n" + str(e))
 
     def variable_script(self):
         try:
@@ -802,7 +641,7 @@ class Internbot:
                         builder.write_report(outputdirectory)
                         open_files = tkMessageBox.askyesno("Info", "Done!\nWould you like to open your finished files?")
                         if open_files is True:
-                        	self.open_file_for_user(savedirectory + "/Crosstab Report.xlsx")
+                            self.open_file_for_user(outputdirectory + "/Crosstab Report.xlsx")
         except Exception as e:
             tkMessageBox.showerror("Error", "An error occurred\n" + str(e))
 
