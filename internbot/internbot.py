@@ -647,42 +647,43 @@ class Internbot:
 
     def scores_window(self):
         try:
-            print "In scores window"
-            self.filename = tkFileDialog.askopenfilename(initialdir = self.fpath, title = "Select model file", filetypes = (("comma seperated files","*.csv"),("all files","*.*")))
-            if self.filename is not "":
-                self.create_window = Tkinter.Toplevel(self.redirect_window)
-                self.create_window.withdraw()
-                x = self.__window.winfo_x()
-                y = self.__window.winfo_y()
-                self.create_window.geometry("250x100+%d+%d" % (x + 175, y + 150))
-                self.create_window.title("Scores Topline Report Details")
-                # location details
-                location_frame = Tkinter.Frame(self.create_window)
-                location_frame.pack(side = Tkinter.TOP, expand=True)
+            okay = tkMessageBox.askokcancel("Select", "Select a model file")
+            if okay is True:
+                self.filename = tkFileDialog.askopenfilename(initialdir = self.fpath, title = "Select model file", filetypes = (("comma seperated files","*.csv"),("all files","*.*")))
+                if self.filename is not "":
+                    self.create_window = Tkinter.Toplevel(self.redirect_window)
+                    self.create_window.withdraw()
+                    x = self.__window.winfo_x()
+                    y = self.__window.winfo_y()
+                    self.create_window.geometry("250x100+%d+%d" % (x + 175, y + 150))
+                    self.create_window.title("Scores Topline Report Details")
+                    # location details
+                    location_frame = Tkinter.Frame(self.create_window)
+                    location_frame.pack(side = Tkinter.TOP, expand=True)
 
-                location_label = Tkinter.Label(location_frame, text="Reporting region:")
-                location_label.pack (side = Tkinter.LEFT, expand=True)
-                self.location_entry = Tkinter.Entry(location_frame)
-                self.location_entry.pack(side=Tkinter.RIGHT, expand=True)
+                    location_label = Tkinter.Label(location_frame, text="Reporting region:")
+                    location_label.pack (side = Tkinter.LEFT, expand=True)
+                    self.location_entry = Tkinter.Entry(location_frame)
+                    self.location_entry.pack(side=Tkinter.RIGHT, expand=True)
 
-                # round details
-                round_frame = Tkinter.Frame(self.create_window)
-                round_frame.pack(side = Tkinter.TOP, expand=True)
+                    # round details
+                    round_frame = Tkinter.Frame(self.create_window)
+                    round_frame.pack(side = Tkinter.TOP, expand=True)
 
-                round_label = Tkinter.Label(round_frame, text="Round number:")
-                round_label.pack(padx = 5, side = Tkinter.LEFT, expand=True)
-                self.round_entry = Tkinter.Entry(round_frame)
-                self.round_entry.pack(padx = 7, side=Tkinter.RIGHT, expand=True)
+                    round_label = Tkinter.Label(round_frame, text="Round number:")
+                    round_label.pack(padx = 5, side = Tkinter.LEFT, expand=True)
+                    self.round_entry = Tkinter.Entry(round_frame)
+                    self.round_entry.pack(padx = 7, side=Tkinter.RIGHT, expand=True)
 
-                # done and cancel buttons
-                button_frame = Tkinter.Frame(self.create_window)
-                button_frame.pack(side = Tkinter.TOP, expand=True)
+                    # done and cancel buttons
+                    button_frame = Tkinter.Frame(self.create_window)
+                    button_frame.pack(side = Tkinter.TOP, expand=True)
 
-                btn_cancel = Tkinter.Button(self.create_window, text = "Cancel", command = self.create_window.destroy)
-                btn_cancel.pack(side = Tkinter.RIGHT, expand=True)
-                btn_done = Tkinter.Button(self.create_window, text = "Done", command = self.scores_topline)
-                btn_done.pack(side = Tkinter.RIGHT, expand=True)
-                self.create_window.deiconify()
+                    btn_cancel = Tkinter.Button(self.create_window, text = "Cancel", command = self.create_window.destroy)
+                    btn_cancel.pack(side = Tkinter.RIGHT, expand=True)
+                    btn_done = Tkinter.Button(self.create_window, text = "Done", command = self.scores_topline)
+                    btn_done.pack(side = Tkinter.RIGHT, expand=True)
+                    self.create_window.deiconify()
         except Exception as e:
                 tkMessageBox.showerror("Error", "An error occurred\n" + str(e))
 
@@ -708,40 +709,40 @@ class Internbot:
 
     def issue_trended_window(self):
         try:
-            print "In issue trended window"
-            self.filename = tkFileDialog.askopenfilename(initialdir = self.fpath, title = "Select model file", filetypes = (("comma seperated files","*.csv"),("all files","*.*")))
-            if self.filename is not "":
-                self.create_window = Tkinter.Toplevel(self.redirect_window)
-                self.create_window.withdraw()
-                x = self.__window.winfo_x()
-                y = self.__window.winfo_y()
-                self.create_window.geometry("250x100+%d+%d" % (x + 175, y + 150))
-                self.create_window.title("Issue Trended Report Details")
+            okay = tkMessageBox.askokcancel("Select", "Select a model file")
+            if okay is True:
+                self.filename = tkFileDialog.askopenfilename(initialdir = self.fpath, title = "Select model file", filetypes = (("comma seperated files","*.csv"),("all files","*.*")))
+                if self.filename is not "":
+                    self.create_window = Tkinter.Toplevel(self.redirect_window)
+                    self.create_window.withdraw()
+                    x = self.__window.winfo_x()
+                    y = self.__window.winfo_y()
+                    self.create_window.geometry("250x100+%d+%d" % (x + 175, y + 150))
+                    self.create_window.title("Issue Trended Report Details")
 
-                # round details
-                round_frame = Tkinter.Frame(self.create_window)
-                round_frame.pack(side = Tkinter.TOP, expand=True)
+                    # round details
+                    round_frame = Tkinter.Frame(self.create_window)
+                    round_frame.pack(side = Tkinter.TOP, expand=True)
 
-                round_label = Tkinter.Label(round_frame, text="Round number:")
-                round_label.pack(padx = 5, side = Tkinter.LEFT, expand=True)
-                self.round_entry = Tkinter.Entry(round_frame)
-                self.round_entry.pack(padx = 7, side=Tkinter.RIGHT, expand=True)
+                    round_label = Tkinter.Label(round_frame, text="Round number:")
+                    round_label.pack(padx = 5, side = Tkinter.LEFT, expand=True)
+                    self.round_entry = Tkinter.Entry(round_frame)
+                    self.round_entry.pack(padx = 7, side=Tkinter.RIGHT, expand=True)
 
-                # done and cancel buttons
-                button_frame = Tkinter.Frame(self.create_window)
-                button_frame.pack(side = Tkinter.TOP, expand=True)
+                    # done and cancel buttons
+                    button_frame = Tkinter.Frame(self.create_window)
+                    button_frame.pack(side = Tkinter.TOP, expand=True)
 
-                btn_cancel = Tkinter.Button(self.create_window, text = "Cancel", command = self.create_window.destroy)
-                btn_cancel.pack(side = Tkinter.RIGHT, expand=True)
-                btn_done = Tkinter.Button(self.create_window, text = "Done", command = self.issue_trended)
-                btn_done.pack(side = Tkinter.RIGHT, expand=True)
-                self.create_window.deiconify()
+                    btn_cancel = Tkinter.Button(self.create_window, text = "Cancel", command = self.create_window.destroy)
+                    btn_cancel.pack(side = Tkinter.RIGHT, expand=True)
+                    btn_done = Tkinter.Button(self.create_window, text = "Done", command = self.issue_trended)
+                    btn_done.pack(side = Tkinter.RIGHT, expand=True)
+                    self.create_window.deiconify()
         except Exception as e:
             tkMessageBox.showerror("Error", "An error occurred\n" + str(e))
 
     def issue_trended(self):
         try:
-            print "In issue trended"
             filename = self.filename
             #fields entered by the user
             round = self.round_entry.get()
@@ -762,41 +763,41 @@ class Internbot:
 
     def trended_scores_window(self):
         try:
-            print "In trended scores window"
-            self.filename = tkFileDialog.askopenfilename(initialdir = self.fpath, title = "Select model file", filetypes = (("comma seperated files","*.csv"),("all files","*.*")))
-            if self.filename is not "":
-                self.create_window = Tkinter.Toplevel(self.redirect_window)
-                self.create_window.withdraw()
-                x = self.__window.winfo_x()
-                y = self.__window.winfo_y()
-                self.create_window.geometry("250x100+%d+%d" % (x + 175, y + 150))
-                self.create_window.title("Trended Issue Reports Details")
+            okay = tkMessageBox.askokcancel("Select", "Select a model file")
+            if okay is True:
+                self.filename = tkFileDialog.askopenfilename(initialdir = self.fpath, title = "Select model file", filetypes = (("comma seperated files","*.csv"),("all files","*.*")))
+                if self.filename is not "":
+                    self.create_window = Tkinter.Toplevel(self.redirect_window)
+                    self.create_window.withdraw()
+                    x = self.__window.winfo_x()
+                    y = self.__window.winfo_y()
+                    self.create_window.geometry("250x100+%d+%d" % (x + 175, y + 150))
+                    self.create_window.title("Trended Issue Reports Details")
 
-                # round details
-                round_frame = Tkinter.Frame(self.create_window)
-                round_frame.pack(side = Tkinter.TOP, expand=True)
+                    # round details
+                    round_frame = Tkinter.Frame(self.create_window)
+                    round_frame.pack(side = Tkinter.TOP, expand=True)
 
-                round_label = Tkinter.Label(round_frame, text="Round number:")
-                round_label.pack(padx = 5, side = Tkinter.TOP, expand=True)
-                self.round_entry = Tkinter.Entry(round_frame)
-                self.round_entry.pack(padx = 7, side=Tkinter.BOTTOM, expand=True)
+                    round_label = Tkinter.Label(round_frame, text="Round number:")
+                    round_label.pack(padx = 5, side = Tkinter.TOP, expand=True)
+                    self.round_entry = Tkinter.Entry(round_frame)
+                    self.round_entry.pack(padx = 7, side=Tkinter.BOTTOM, expand=True)
 
-                # done and cancel buttons
-                button_frame = Tkinter.Frame(self.create_window)
-                button_frame.pack(side = Tkinter.TOP, expand=True)
+                    # done and cancel buttons
+                    button_frame = Tkinter.Frame(self.create_window)
+                    button_frame.pack(side = Tkinter.TOP, expand=True)
 
-                btn_cancel = Tkinter.Button(self.create_window, text = "Cancel", command = self.create_window.destroy)
-                btn_cancel.pack(side = Tkinter.RIGHT, expand=True)
-                btn_done = Tkinter.Button(self.create_window, text = "Done", command = self.trended_scores)
-                btn_done.pack(side = Tkinter.RIGHT, expand=True)
+                    btn_cancel = Tkinter.Button(self.create_window, text = "Cancel", command = self.create_window.destroy)
+                    btn_cancel.pack(side = Tkinter.RIGHT, expand=True)
+                    btn_done = Tkinter.Button(self.create_window, text = "Done", command = self.trended_scores)
+                    btn_done.pack(side = Tkinter.RIGHT, expand=True)
 
-                self.create_window.deiconify()
+                    self.create_window.deiconify()
         except Exception as e:
             tkMessageBox.showerror("Error", "An error occurred\n" + str(e))
 
     def trended_scores(self):
         try:
-            print "In trended scores"
             filename = self.filename
             #Field entered by user
             round = self.round_entry.get()
@@ -828,6 +829,8 @@ class Internbot:
 
 window = Tkinter.Tk()
 window.title("Internbot: 01011001 00000010") # Internbot: Y2
+if platform.system() == 'Windows':  # Windows
+    window.iconbitmap('y2.ico')
 screen_width = window.winfo_screenwidth()
 screen_height = window.winfo_screenheight()
 mov_x = screen_width / 2 - 300
