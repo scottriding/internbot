@@ -8,11 +8,15 @@ Usage:
 from setuptools import setup
 
 APP = ['internbot.py']
-DATA_FILES = ['Y2Logo.gif', 'topline_template.docx']
+DATA_FILES = ['Y2Logo.gif', 'topline_template.docx', 'appendix_template.docx', 'y2.ico']
 OPTIONS = {}
 
 setup(
     app=APP,
+    name = 'internbot',
+    version = 0.00,
+    url = 'http://github.com/scottriding/internbot/',
+    authors=['Kathryn Riding', 'Scott Riding', 'Tristan Bowler'],
     data_files=DATA_FILES,
     options={'py2app': OPTIONS},
     setup_requires=['py2app'],
