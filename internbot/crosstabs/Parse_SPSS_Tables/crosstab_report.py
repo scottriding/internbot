@@ -97,8 +97,10 @@ class CrosstabReportWriter(object):
             sheet[current_table_cell].alignment = self.__center_align
             sheet[current_table_cell].border = self.__thin_bottom
 
+            current_name = table.name[11:]
+            current_name = current_name.replace("$", "")
+            sheet[current_question_title].value = current_name
             sheet[current_question_title].font = self.__font_reg
-            sheet[current_question_title].value = table.name
             sheet[current_question_title].alignment = self.__center_align
             sheet[current_question_title].border = self.__thin_bottom
 
@@ -166,7 +168,8 @@ class CrosstabReportWriter(object):
         sheet["A1"].alignment = self.__center_align
 
         sheet["A2"].fill = self.__table_liner
-        sheet["A2"].value = table.name
+        current_name = table.name.replace("$", "")
+        sheet["A2"].value = current_name
         sheet["A2"].font = self.__font_reg
         sheet["A2"].alignment = Alignment(horizontal="left", vertical="center", wrap_text=True)
 
@@ -274,7 +277,9 @@ class CrosstabReportWriter(object):
 
     def write_reponse_details(self, sheet, table, current_row):
         current_cell = "A%s" % current_row
-        sheet[current_cell].value = table.name
+        current_name = table.name[11:]
+        current_name = current_name.replace("$", "")
+        sheet[current_cell].value = current_name
         sheet[current_cell].fill = self.shading_style
         sheet[current_cell].font = self.__font_bold
         sheet[current_cell].alignment = Alignment(horizontal="left", vertical="top", wrapText=True)
