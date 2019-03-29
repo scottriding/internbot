@@ -262,9 +262,6 @@ class Internbot:
             self.edit_window.geometry("1500x500+%d+%d" % (x - 450 , y - 50))
 
             self.edit_window.title("Banner selection")
-
-            #titles_frame = Tkinter.Frame(self.edit_window)
-            #titles_frame.pack()
             
             self.boxes_frame = Tkinter.Frame(self.edit_window)
             self.boxes_frame.pack(side=Tkinter.LEFT, fill=Tkinter.BOTH)

@@ -16,8 +16,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/internbot.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="614">
-              <caret line="746" column="39" lean-forward="true" selection-start-line="746" selection-start-column="39" selection-end-line="746" selection-end-column="39" />
+            <state relative-caret-position="-4125">
+              <caret line="228" column="90" lean-forward="true" selection-start-line="228" selection-start-column="90" selection-end-line="228" selection-end-column="90" />
               <folding>
                 <element signature="e#0#11#0" expanded="true" />
                 <element signature="e#299#465#0" />
@@ -30,10 +30,6 @@
                 <element signature="e#8996#10354#0" />
                 <element signature="e#10400#10570#0" />
                 <element signature="e#10641#11512#0" />
-                <element signature="e#11553#13196#0" />
-                <element signature="e#13234#14342#0" />
-                <element signature="e#13251#14236#0" />
-                <element signature="e#14419#17478#0" />
                 <element signature="e#17512#17913#0" />
                 <element signature="e#17955#18455#0" />
                 <element signature="e#18512#19689#0" />
@@ -51,6 +47,15 @@
                 <element signature="e#29567#31141#0" />
                 <element signature="e#31178#32234#0" />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/crosstabs/Generate_Prelim_SPSS_Script/define_tables.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="1185">
+              <caret line="79" column="2" lean-forward="true" selection-start-line="79" selection-start-column="2" selection-end-line="79" selection-end-column="2" />
             </state>
           </provider>
         </entry>
@@ -90,6 +95,11 @@
       </file>
     </leaf>
   </component>
+  <component name="FindInProjectRecents">
+    <findStrings>
+      <find>tables</find>
+    </findStrings>
+  </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
   </component>
@@ -118,6 +128,23 @@
             <path>
               <item name="internbot" type="b2602c69:ProjectViewProjectNode" />
               <item name="internbot" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="internbot" type="b2602c69:ProjectViewProjectNode" />
+              <item name="internbot" type="462c0819:PsiDirectoryNode" />
+              <item name="crosstabs" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="internbot" type="b2602c69:ProjectViewProjectNode" />
+              <item name="internbot" type="462c0819:PsiDirectoryNode" />
+              <item name="crosstabs" type="462c0819:PsiDirectoryNode" />
+              <item name="Generate_Prelim_SPSS_Script" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="internbot" type="b2602c69:ProjectViewProjectNode" />
+              <item name="internbot" type="462c0819:PsiDirectoryNode" />
+              <item name="crosstabs" type="462c0819:PsiDirectoryNode" />
+              <item name="Generate_Table_Script" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="internbot" type="b2602c69:ProjectViewProjectNode" />
@@ -232,10 +259,17 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/crosstabs/Generate_Prelim_SPSS_Script/define_tables.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1185">
+          <caret line="79" column="2" lean-forward="true" selection-start-line="79" selection-start-column="2" selection-end-line="79" selection-end-column="2" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/internbot.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="614">
-          <caret line="746" column="39" lean-forward="true" selection-start-line="746" selection-start-column="39" selection-end-line="746" selection-end-column="39" />
+        <state relative-caret-position="-4125">
+          <caret line="228" column="90" lean-forward="true" selection-start-line="228" selection-start-column="90" selection-end-line="228" selection-end-column="90" />
           <folding>
             <element signature="e#0#11#0" expanded="true" />
             <element signature="e#299#465#0" />
@@ -248,10 +282,6 @@
             <element signature="e#8996#10354#0" />
             <element signature="e#10400#10570#0" />
             <element signature="e#10641#11512#0" />
-            <element signature="e#11553#13196#0" />
-            <element signature="e#13234#14342#0" />
-            <element signature="e#13251#14236#0" />
-            <element signature="e#14419#17478#0" />
             <element signature="e#17512#17913#0" />
             <element signature="e#17955#18455#0" />
             <element signature="e#18512#19689#0" />
