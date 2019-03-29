@@ -19,11 +19,11 @@ class Internbot:
             self.__embedded_fields = []
 
     def main_buttons(self):
-        btn_xtabs = Tkinter.Button(self.__window, text="Run crosstabs", command=self.tabs_menu)
-        btn_report = Tkinter.Button(self.__window, text="Run topline report", command=self.topline_menu)
-        btn_appen = Tkinter.Button(self.__window, text="Run topline appendix", command=self.append_menu)
-        btn_rnc = Tkinter.Button(self.__window, text="Run RNC", command=self.rnc_menu)
-        btn_quit = Tkinter.Button(self.__window, text="Quit", command=self.__window.destroy)
+        btn_xtabs = Tkinter.Button(self.__window, text="Run crosstabs", command=self.tabs_menu, relief=Tkinter.GROOVE)
+        btn_report = Tkinter.Button(self.__window, text="Run topline report", command=self.topline_menu, relief=Tkinter.GROOVE)
+        btn_appen = Tkinter.Button(self.__window, text="Run topline appendix", command=self.append_menu, relief=Tkinter.GROOVE)
+        btn_rnc = Tkinter.Button(self.__window, text="Run RNC", command=self.rnc_menu, relief=Tkinter.GROOVE)
+        btn_quit = Tkinter.Button(self.__window, text="Quit", command=self.__window.destroy, relief=Tkinter.GROOVE)
         btn_xtabs.pack(padx=2, side=Tkinter.LEFT, expand=True)
         btn_report.pack(padx=2, side=Tkinter.LEFT, expand=True)
         btn_appen.pack(padx=2, side=Tkinter.LEFT, expand=True)
@@ -825,17 +825,28 @@ class Internbot:
             tkMessageBox.showerror("Error", "Error: Could not open file for you \n" + file_path)
 
 window = Tkinter.Tk()
+window.withdraw()
 window.title("Internbot: 01011001 00000010") # Internbot: Y2
 if platform.system() == 'Windows':  # Windows
     window.iconbitmap('y2.ico')
 screen_width = window.winfo_screenwidth()
+
 screen_height = window.winfo_screenheight()
+print screen_width
+print screen_height
 mov_x = screen_width / 2 - 300
-mov_y = screen_height / 2 - 300
+mov_y = screen_height / 2 - 200
+print mov_x
+print mov_y
 window.geometry("600x400+%d+%d" % (mov_x, mov_y))
+x = window.winfo_x()
+y = window.winfo_y()
+print x
+print y
 window['background'] = 'white'
 y2_logo = "Y2Logo.gif"
 render = Tkinter.PhotoImage(file= y2_logo)
-Tkinter.Label(window, image=render).pack()
+Tkinter.Label(window, image=render, borderwidth=0, highlightthickness=0, relief=Tkinter.FLAT).pack()
+window.deiconify()
 Internbot(window)
 window.mainloop()
