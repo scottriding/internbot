@@ -8,6 +8,7 @@ import tkFileDialog
 import os, subprocess, platform
 import csv
 from collections import OrderedDict
+from years_window import YearsWindow
 
 class Internbot:
 
@@ -28,13 +29,37 @@ class Internbot:
         btn_appen.pack(padx=2, side=Tkinter.LEFT, expand=True)
         btn_rnc.pack(padx=2, side=Tkinter.LEFT, expand=True)
         btn_quit.pack(padx=2, side=Tkinter.LEFT, expand=True)
+        
+        self.menubar = Tkinter.Menu(self.__window)
+        menu_xtabs = Tkinter.Menu(self.menubar, tearoff = 0)
+        menu_xtabs.add_command(label="Variable Script", command=self.variable_script)
+        menu_xtabs.add_command(label="Table Script", command=self.table_script)
+        menu_xtabs.add_command(label="Build Report", command=self.build_xtabs)
+        self.menubar.add_cascade(label="Crosstabs", menu=menu_xtabs)
+        
+        menu_report = Tkinter.Menu(self.menubar, tearoff = 0)
+        menu_report.add_command(label="Run Topline", command=self.topline_menu)
+        menu_report.add_command(label="Run Appendix", command=self.append_menu)
+        self.menubar.add_cascade(label="Topline", menu=menu_report)
+        
+        menu_rnc = Tkinter.Menu(self.menubar, tearoff=0)
+        menu_rnc.add_command(label="Scores Topline", command=self.scores_window)
+        menu_rnc.add_command(label="Issue Trended", command=self.issue_trended_window)
+        menu_rnc.add_command(label="Trended Score", command=self.trended_scores_window)
+        self.menubar.add_cascade(label="RNC", menu=menu_rnc)
+        
+        menu_quit = Tkinter.Menu(self.menubar, tearoff = 0)
+        menu_quit.add_command(label="Good Bye", command=self.__window.destroy)
+        self.menubar.add_cascade(label="Quit", menu=menu_quit)
+        self.__window.config(menu=self.menubar)
+        
 
     def tabs_menu(self):
         redirect_window = Tkinter.Toplevel(self.__window)
         redirect_window.withdraw()
         x = self.__window.winfo_x()
         y = self.__window.winfo_y()
-        redirect_window.geometry("300x200+%d+%d" % (x + 50, y + 100))
+        redirect_window.geometry("300x200+%d+%d" % (x + 150, y + 100))
         message = "Please select the files to produce."
         Tkinter.Label(redirect_window, text = message).pack()
         btn_var = Tkinter.Button(redirect_window, text="Variable script", command=self.variable_script, height=1, width=15)
@@ -52,7 +77,7 @@ class Internbot:
         self.redirect_window.withdraw()
         x = self.__window.winfo_x()
         y = self.__window.winfo_y()
-        self.redirect_window.geometry("250x100+%d+%d" % (x + 75, y + 150))
+        self.redirect_window.geometry("250x100+%d+%d" % (x + 175, y + 150))
         self.redirect_window.title("Y2 Topline Report Automation")
         message = "Please open a survey file."
         Tkinter.Label(self.redirect_window, text = message).pack(expand=True)
@@ -77,7 +102,7 @@ class Internbot:
         self.redirect_window.withdraw()
         x = self.__window.winfo_x()
         y = self.__window.winfo_y()
-        self.redirect_window.geometry("250x100+%d+%d" % (x + 75, y + 150))
+        self.redirect_window.geometry("250x100+%d+%d" % (x + 175, y + 150))
         self.redirect_window.title("Y2 Topline Appendix Report Automation")
         message = "Please open a appendix file."
         Tkinter.Label(self.redirect_window, text = message).pack(expand=True)
@@ -89,24 +114,24 @@ class Internbot:
         self.redirect_window.deiconify()
 
     def rnc_menu(self):
-		self.redirect_window = Tkinter.Toplevel(self.__window)
-		self.redirect_window.withdraw()
-		x = self.__window.winfo_x()
-		y = self.__window.winfo_y()
-		self.redirect_window.geometry("250x150+%d+%d" % (x + 75, y + 125))
-		self.redirect_window.title("RNC Scores Topline Automation")
-		message = "Please open a model scores file."
-		Tkinter.Label(self.redirect_window, text = message).pack(expand=True)
-		btn_topline = Tkinter.Button(self.redirect_window, text="Scores Topline Report", command=self.scores_window, height = 1, width = 20)
-		btn_trended = Tkinter.Button(self.redirect_window, text="Issue Trended Report", command=self.issue_trended_window, height = 1, width = 20)
-		btn_ind_trended = Tkinter.Button(self.redirect_window, text="Trended Score Reports", command=self.trended_scores_window, height = 1, width = 20)
-		btn_cancel = Tkinter.Button(self.redirect_window, text="Cancel", command = self.redirect_window.destroy, height = 1, width = 20)
-		btn_cancel.pack(ipadx = 5, side = Tkinter.BOTTOM, expand=False)
-		btn_topline.pack(ipadx=5, side=Tkinter.BOTTOM, expand=False)
-		btn_trended.pack(ipadx=5, side = Tkinter.BOTTOM, expand=False)
-		btn_ind_trended.pack(ipadx = 5, side = Tkinter.BOTTOM, expand=False)
-		self.redirect_window.deiconify()
-	
+        self.redirect_window = Tkinter.Toplevel(self.__window)
+        self.redirect_window.withdraw()
+        x = self.__window.winfo_x()
+        y = self.__window.winfo_y()
+        self.redirect_window.geometry("250x150+%d+%d" % (x + 175, y + 125))
+        self.redirect_window.title("RNC Scores Topline Automation")
+        message = "Please open a model scores file."
+        Tkinter.Label(self.redirect_window, text = message).pack(expand=True)
+        btn_topline = Tkinter.Button(self.redirect_window, text="Scores Topline Report", command=self.scores_window, height = 1, width = 20)
+        btn_trended = Tkinter.Button(self.redirect_window, text="Issue Trended Report", command=self.issue_trended_window, height = 1, width = 20)
+        btn_ind_trended = Tkinter.Button(self.redirect_window, text="Trended Score Reports", command=self.trended_scores_window, height = 1, width = 20)
+        btn_cancel = Tkinter.Button(self.redirect_window, text="Cancel", command = self.redirect_window.destroy, height = 1, width = 20)
+        btn_cancel.pack(ipadx = 5, side = Tkinter.BOTTOM, expand=False)
+        btn_topline.pack(ipadx=5, side=Tkinter.BOTTOM, expand=False)
+        btn_trended.pack(ipadx=5, side = Tkinter.BOTTOM, expand=False)
+        btn_ind_trended.pack(ipadx = 5, side = Tkinter.BOTTOM, expand=False)
+        self.redirect_window.deiconify()
+
     def read_append(self):
         qsffilename = tkFileDialog.askopenfilename(initialdir = self.fpath, title = "Select survey file", filetypes = (("Qualtrics files","*.qsf"), ("all files", "*.*")))
         compiler = base.QSFSurveyCompiler()
@@ -144,209 +169,50 @@ class Internbot:
 				tkMessageBox.showerror("Error", "An error occurred\n"+ str(e))
 
     def year_window_setup(self):
-		try:
-			self.year_window = Tkinter.Toplevel(self.__window)
-			self.year_window.withdraw()
-			x = self.__window.winfo_x()
-			y = self.__window.winfo_y()
-			self.year_window.geometry("500x%d+%d+%d" % (100+self.round*25, x - 50, y + (200-(100+self.round*25)/2)))
-			self.year_window.title("Trended report years")
-			message = "Please input the applicable years for the trended topline report."
-			Tkinter.Label(self.year_window, text=message).pack(expand=True)
-		
-			year_frame = Tkinter.Frame(self.year_window)
-			year_frame.pack(side = Tkinter.TOP, expand = True)
-			self.packing_years(year_frame)
-			btn_finish = Tkinter.Button(self.year_window, text = "Done", command=self.read_years, height = 1, width = 20)
-			btn_cancel = Tkinter.Button(self.year_window, text = "Cancel", command=self.year_window.destroy, height = 1, width = 20)
-			btn_finish.pack(ipadx=5, side = Tkinter.LEFT, expand=False)
-			btn_cancel.pack(ipadx=5, side = Tkinter.RIGHT, expand=False)
-			self.year_window.deiconify()
-		except Exception as e:
-				tkMessageBox.showerror("Error", "An error occurred\n"+ str(e))
+        try:
+            self.year_window = Tkinter.Toplevel(self.__window)
+            self.year_window.withdraw()
+            x = self.__window.winfo_x()
+            y = self.__window.winfo_y()
+            self.year_window.geometry("500x%d+%d+%d" % (100+self.round*25, x + 50, y + (200-(100+self.round*25)/2)))
+            self.year_window.title("Trended report years")
+            message = "Please input the applicable years for the trended topline report."
+            Tkinter.Label(self.year_window, text=message).pack(expand=True)
 
-    def packing_years(self, year_frame):
-        if(self.round >= 10):
-            self.pack_ten_labels(year_frame)
-        elif(self.round == 9):
-            self.pack_nine_labels(year_frame)
-        elif(self.round == 8):
-            self.pack_eight_labels(year_frame)
-        elif(self.round == 7):
-            self.pack_seven_labels(year_frame)
-        elif(self.round == 6):
-            self.pack_six_labels(year_frame)
-        elif(self.round == 5):
-            self.pack_five_labels(year_frame)
-        elif(self.round == 4):
-            self.pack_four_labels(year_frame)
-        elif(self.round == 3):
-        	self.pack_three_labels(year_frame)
-        elif(self.round == 2):
-            self.pack_two_labels(year_frame)
+            year_frame = Tkinter.Frame(self.year_window)
+            year_frame.pack(side = Tkinter.TOP, expand = True)
+            self.year_window_obj = YearsWindow(self.__window, self.year_window, self.round)
+            self.year_window_obj.packing_years(year_frame)
+            btn_finish = Tkinter.Button(self.year_window, text = "Done", command=self.build_topline_leadup, height = 1, width = 20)
+            btn_cancel = Tkinter.Button(self.year_window, text = "Cancel", command=self.year_window.destroy, height = 1, width = 20)
+            btn_finish.pack(ipadx=5, side = Tkinter.LEFT, expand=False)
+            btn_cancel.pack(ipadx=5, side = Tkinter.RIGHT, expand=False)
+            self.year_window.deiconify()
+        except Exception as e:
+            tkMessageBox.showerror("Error", "An error occurred\n"+ str(e))
 
-    def pack_two_labels(self, year_frame):
-		year_one_frame = Tkinter.Frame(year_frame)
-		year_one_label = Tkinter.Label(year_one_frame, text="1st year name:")
-		year_one_label.pack(side = Tkinter.LEFT, expand=True)
-		self.year_one_entry = Tkinter.Entry(year_one_frame)
-		self.year_one_entry.pack(side=Tkinter.RIGHT, expand=True)
-		year_one_frame.pack(side = Tkinter.TOP, expand = True)
-		
-		year_two_frame = Tkinter.Frame(year_frame)
-		year_two_label = Tkinter.Label(year_two_frame, text="2nd year name:")
-		year_two_label.pack(side = Tkinter.LEFT, expand=True)
-		self.year_two_entry = Tkinter.Entry(year_two_frame)
-		self.year_two_entry.pack(side=Tkinter.RIGHT, expand=True)
-		year_two_frame.pack(side = Tkinter.TOP, expand = True)
-            
-    def pack_three_labels(self, year_frame):
-    	self.pack_two_labels(year_frame)
-    	year_three_frame = Tkinter.Frame(year_frame)
-    	year_three_label = Tkinter.Label(year_three_frame, text="3rd year name:")
-    	year_three_label.pack(side = Tkinter.LEFT, expand=True)
-    	self.year_three_entry = Tkinter.Entry(year_three_frame)
-    	self.year_three_entry.pack(side=Tkinter.RIGHT, expand=True)
-    	year_three_frame.pack(side = Tkinter.TOP, expand = True)
-    
-    def pack_four_labels(self, year_frame):
-    	self.pack_three_labels(year_frame)
-    	year_four_frame = Tkinter.Frame(year_frame)
-    	year_four_label = Tkinter.Label(year_four_frame, text="4th year name:")
-    	year_four_label.pack(side = Tkinter.LEFT, expand=True)
-    	self.year_four_entry = Tkinter.Entry(year_four_frame)
-    	self.year_four_entry.pack(side=Tkinter.RIGHT, expand=True)
-    	year_four_frame.pack(side = Tkinter.TOP, expand = True)
-    
-    def pack_five_labels(self, year_frame):
-    	self.pack_four_labels(year_frame)
-    	year_five_frame = Tkinter.Frame(year_frame)
-    	year_five_label = Tkinter.Label(year_five_frame, text="5th year name:")
-    	year_five_label.pack(side = Tkinter.LEFT, expand=True)
-    	self.year_five_entry = Tkinter.Entry(year_five_frame)
-    	self.year_five_entry.pack(side=Tkinter.RIGHT, expand=True)
-    	year_five_frame.pack(side = Tkinter.TOP, expand = True)	
-    
-    def pack_six_labels(self, year_frame):
-    	self.pack_five_labels(year_frame)
-    	year_six_frame = Tkinter.Frame(year_frame)
-    	year_six_label = Tkinter.Label(year_six_frame, text="6th year name:")
-    	year_six_label.pack(side = Tkinter.LEFT, expand=True)
-    	self.year_six_entry = Tkinter.Entry(year_six_frame)
-    	self.year_six_entry.pack(side=Tkinter.RIGHT, expand=True)
-    	year_six_frame.pack(side = Tkinter.TOP, expand = True)	
-    	
-    def pack_seven_labels(self, year_frame):
-    	self.pack_six_labels(year_frame)
-    	year_seven_frame = Tkinter.Frame(year_frame)
-    	year_seven_label = Tkinter.Label(year_seven_frame, text="7th year name:")
-    	year_seven_label.pack(side = Tkinter.LEFT, expand=True)
-    	self.year_seven_entry = Tkinter.Entry(year_seven_frame)
-    	self.year_seven_entry.pack(side=Tkinter.RIGHT, expand=True)
-    	year_seven_frame.pack(side = Tkinter.TOP, expand = True)
-    	
-    def pack_eight_labels(self, year_frame):
-    	self.pack_seven_labels(year_frame)
-    	year_eight_frame = Tkinter.Frame(year_frame)
-    	year_eight_label = Tkinter.Label(year_eight_frame, text="8th year name:")
-    	year_eight_label.pack(side = Tkinter.LEFT, expand=True)
-    	self.year_eight_entry = Tkinter.Entry(year_eight_frame)
-    	self.year_eight_entry.pack(side=Tkinter.RIGHT, expand=True)
-    	year_eight_frame.pack(side = Tkinter.TOP, expand = True)
-    	
-    def pack_nine_labels(self, year_frame):
-    	self.pack_eight_labels(year_frame)
-    	year_nine_frame = Tkinter.Frame(year_frame)
-    	year_nine_label = Tkinter.Label(year_nine_frame, text="9th year name:")
-    	year_nine_label.pack(side = Tkinter.LEFT, expand=True)
-    	self.year_nine_entry = Tkinter.Entry(year_nine_frame)
-    	self.year_nine_entry.pack(side=Tkinter.RIGHT, expand=True)
-    	year_nine_frame.pack(side = Tkinter.TOP, expand = True)
-    	
-    def pack_ten_labels(self, year_frame):
-    	self.pack_nine_labels(year_frame)
-    	year_ten_frame = Tkinter.Frame(year_frame)
-    	year_ten_label = Tkinter.Label(year_ten_frame, text="10th year name:")
-    	year_ten_label.pack(side = Tkinter.LEFT, expand=True)
-    	self.year_ten_entry = Tkinter.Entry(year_ten_frame)
-    	self.year_ten_entry.pack(side=Tkinter.RIGHT, expand=True)
-    	year_ten_frame.pack(side = Tkinter.TOP, expand = True)
-
-    def read_years(self):
-        years = []
-        if(self.round >= 10):
-            self.pull_ten_labels(years)
-        elif(self.round == 9):
-            self.pull_nine_labels(years)
-        elif(self.round == 8):
-            self.pull_eight_labels(years)
-        elif(self.round == 7):
-            self.pull_seven_labels(years)
-        elif(self.round == 6):
-            self.pull_six_labels(years)
-        elif(self.round == 5):
-            self.pull_five_labels(years)
-        elif(self.round == 4):
-            self.pull_four_labels(years)
-        elif(self.round == 3):
-        	self.pull_three_labels(years)
-        elif(self.round == 2):
-            self.pull_two_labels(years)
-        self.year_window.destroy()
+    def build_topline_leadup(self):
+        years = self.year_window_obj.read_years()
+        for i in range(len(years)):
+            print years[i]
         self.build_topline_report(self.isQSF, self.report, years)
 
-    def pull_ten_labels(self, years):
-        years.append(self.year_ten_entry.get())
-        self.pull_nine_labels(years)
-
-    def pull_nine_labels(self, years):
-        years.append(self.year_nine_entry.get())
-        self.pull_eight_labels(years)
-
-    def pull_eight_labels(self, years):
-        years.append(self.year_eight_entry.get())
-        self.pull_seven_labels(years)
-
-    def pull_seven_labels(self, years):
-        years.append(self.year_seven_entry.get())
-        self.pull_six_labels(years)
-
-    def pull_six_labels(self, years):
-        years.append(self.year_six_entry.get())
-        self.pull_five_labels(years)
-
-    def pull_five_labels(self, years):
-        years.append(self.year_five_entry.get())
-        self.pull_four_labels(years)
-
-    def pull_four_labels(self, years):
-        years.append(self.year_four_entry.get())
-        self.pull_three_labels(years)
-
-    def pull_three_labels(self, years):
-        years.append(self.year_three_entry.get())
-        self.pull_two_labels(years)
-
-    def pull_two_labels(self, years):
-        years.append(self.year_two_entry.get())
-        years.append(self.year_one_entry.get())
-
     def build_topline_report(self, isQSF, report, years=[]):
-		try:
-			template_file = open("topline_template.docx", "r")
-			ask_output = tkMessageBox.askokcancel("Output directory", "Please select the directory for finished report.")
-			if ask_output is True:
-				savedirectory = tkFileDialog.askdirectory()
-				if savedirectory is not "":
-					if isQSF is True:
-						pass
-					else:
-						report.generate_topline(template_file, savedirectory, years)
-						open_files = tkMessageBox.askyesno("Info", "Done!\nWould you like to open your finished files?")
-						if open_files is True:
-							self.open_file_for_user(savedirectory+"/topline_report.docx")
-		except Exception as e:
-				tkMessageBox.showerror("Error", "An error occurred\n"+ str(e))
+        try:
+            template_file = open("topline_template.docx", "r")
+            ask_output = tkMessageBox.askokcancel("Output directory", "Please select the directory for finished report.")
+            if ask_output is True:
+                savedirectory = tkFileDialog.askdirectory()
+                if savedirectory is not "":
+                    if isQSF is True:
+                        pass
+                    else:
+                        report.generate_topline(template_file, savedirectory, years)
+                        open_files = tkMessageBox.askyesno("Info", "Done!\nWould you like to open your finished files?")
+                        if open_files is True:
+                            self.open_file_for_user(savedirectory+"/topline_report.docx")
+        except Exception as e:
+            tkMessageBox.showerror("Error", "An error occurred\n" + str(e))
 
     def variable_script(self):
         try:
@@ -393,12 +259,9 @@ class Internbot:
             self.edit_window.withdraw()
             x = self.__window.winfo_x()
             y = self.__window.winfo_y()
-            self.edit_window.geometry("1500x500+%d+%d" % (x - 550 , y - 50))
+            self.edit_window.geometry("1500x500+%d+%d" % (x - 450 , y - 50))
 
             self.edit_window.title("Banner selection")
-
-            #titles_frame = Tkinter.Frame(self.edit_window)
-            #titles_frame.pack()
             
             self.boxes_frame = Tkinter.Frame(self.edit_window)
             self.boxes_frame.pack(side=Tkinter.LEFT, fill=Tkinter.BOTH)
@@ -711,7 +574,7 @@ class Internbot:
         self.create_window.withdraw()
         x = self.__window.winfo_x()
         y = self.__window.winfo_y()
-        self.create_window.geometry("250x100+%d+%d" % (x + 75, y + 150))
+        self.create_window.geometry("250x100+%d+%d" % (x + 175, y + 150))
         self.create_window.title("Trended report details")
 
         # filtering  variable
@@ -775,48 +638,49 @@ class Internbot:
                         builder.write_report(outputdirectory)
                         open_files = tkMessageBox.askyesno("Info", "Done!\nWould you like to open your finished files?")
                         if open_files is True:
-                        	self.open_file_for_user(savedirectory + "/Crosstab Report.xlsx")
+                            self.open_file_for_user(outputdirectory + "/Crosstab Report.xlsx")
         except Exception as e:
             tkMessageBox.showerror("Error", "An error occurred\n" + str(e))
 
     def scores_window(self):
         try:
-            print "In scores window"
-            self.filename = tkFileDialog.askopenfilename(initialdir = self.fpath, title = "Select model file", filetypes = (("comma seperated files","*.csv"),("all files","*.*")))
-            if self.filename is not "":
-                self.create_window = Tkinter.Toplevel(self.redirect_window)
-                self.create_window.withdraw()
-                x = self.__window.winfo_x()
-                y = self.__window.winfo_y()
-                self.create_window.geometry("250x100+%d+%d" % (x + 75, y + 150))
-                self.create_window.title("Scores Topline Report Details")
-                # location details
-                location_frame = Tkinter.Frame(self.create_window)
-                location_frame.pack(side = Tkinter.TOP, expand=True)
+            okay = tkMessageBox.askokcancel("Select", "Select a model file")
+            if okay is True:
+                self.filename = tkFileDialog.askopenfilename(initialdir = self.fpath, title = "Select model file", filetypes = (("comma seperated files","*.csv"),("all files","*.*")))
+                if self.filename is not "":
+                    self.create_window = Tkinter.Toplevel(self.redirect_window)
+                    self.create_window.withdraw()
+                    x = self.__window.winfo_x()
+                    y = self.__window.winfo_y()
+                    self.create_window.geometry("250x100+%d+%d" % (x + 175, y + 150))
+                    self.create_window.title("Scores Topline Report Details")
+                    # location details
+                    location_frame = Tkinter.Frame(self.create_window)
+                    location_frame.pack(side = Tkinter.TOP, expand=True)
 
-                location_label = Tkinter.Label(location_frame, text="Reporting region:")
-                location_label.pack (side = Tkinter.LEFT, expand=True)
-                self.location_entry = Tkinter.Entry(location_frame)
-                self.location_entry.pack(side=Tkinter.RIGHT, expand=True)
+                    location_label = Tkinter.Label(location_frame, text="Reporting region:")
+                    location_label.pack (side = Tkinter.LEFT, expand=True)
+                    self.location_entry = Tkinter.Entry(location_frame)
+                    self.location_entry.pack(side=Tkinter.RIGHT, expand=True)
 
-                # round details
-                round_frame = Tkinter.Frame(self.create_window)
-                round_frame.pack(side = Tkinter.TOP, expand=True)
+                    # round details
+                    round_frame = Tkinter.Frame(self.create_window)
+                    round_frame.pack(side = Tkinter.TOP, expand=True)
 
-                round_label = Tkinter.Label(round_frame, text="Round number:")
-                round_label.pack(padx = 5, side = Tkinter.LEFT, expand=True)
-                self.round_entry = Tkinter.Entry(round_frame)
-                self.round_entry.pack(padx = 7, side=Tkinter.RIGHT, expand=True)
+                    round_label = Tkinter.Label(round_frame, text="Round number:")
+                    round_label.pack(padx = 5, side = Tkinter.LEFT, expand=True)
+                    self.round_entry = Tkinter.Entry(round_frame)
+                    self.round_entry.pack(padx = 7, side=Tkinter.RIGHT, expand=True)
 
-                # done and cancel buttons
-                button_frame = Tkinter.Frame(self.create_window)
-                button_frame.pack(side = Tkinter.TOP, expand=True)
+                    # done and cancel buttons
+                    button_frame = Tkinter.Frame(self.create_window)
+                    button_frame.pack(side = Tkinter.TOP, expand=True)
 
-                btn_cancel = Tkinter.Button(self.create_window, text = "Cancel", command = self.create_window.destroy)
-                btn_cancel.pack(side = Tkinter.RIGHT, expand=True)
-                btn_done = Tkinter.Button(self.create_window, text = "Done", command = self.scores_topline)
-                btn_done.pack(side = Tkinter.RIGHT, expand=True)
-                self.create_window.deiconify()
+                    btn_cancel = Tkinter.Button(self.create_window, text = "Cancel", command = self.create_window.destroy)
+                    btn_cancel.pack(side = Tkinter.RIGHT, expand=True)
+                    btn_done = Tkinter.Button(self.create_window, text = "Done", command = self.scores_topline)
+                    btn_done.pack(side = Tkinter.RIGHT, expand=True)
+                    self.create_window.deiconify()
         except Exception as e:
                 tkMessageBox.showerror("Error", "An error occurred\n" + str(e))
 
@@ -842,40 +706,40 @@ class Internbot:
 
     def issue_trended_window(self):
         try:
-            print "In issue trended window"
-            self.filename = tkFileDialog.askopenfilename(initialdir = self.fpath, title = "Select model file", filetypes = (("comma seperated files","*.csv"),("all files","*.*")))
-            if self.filename is not "":
-                self.create_window = Tkinter.Toplevel(self.redirect_window)
-                self.create_window.withdraw()
-                x = self.__window.winfo_x()
-                y = self.__window.winfo_y()
-                self.create_window.geometry("250x100+%d+%d" % (x + 75, y + 150))
-                self.create_window.title("Issue Trended Report Details")
+            okay = tkMessageBox.askokcancel("Select", "Select a model file")
+            if okay is True:
+                self.filename = tkFileDialog.askopenfilename(initialdir = self.fpath, title = "Select model file", filetypes = (("comma seperated files","*.csv"),("all files","*.*")))
+                if self.filename is not "":
+                    self.create_window = Tkinter.Toplevel(self.redirect_window)
+                    self.create_window.withdraw()
+                    x = self.__window.winfo_x()
+                    y = self.__window.winfo_y()
+                    self.create_window.geometry("250x100+%d+%d" % (x + 175, y + 150))
+                    self.create_window.title("Issue Trended Report Details")
 
-                # round details
-                round_frame = Tkinter.Frame(self.create_window)
-                round_frame.pack(side = Tkinter.TOP, expand=True)
+                    # round details
+                    round_frame = Tkinter.Frame(self.create_window)
+                    round_frame.pack(side = Tkinter.TOP, expand=True)
 
-                round_label = Tkinter.Label(round_frame, text="Round number:")
-                round_label.pack(padx = 5, side = Tkinter.LEFT, expand=True)
-                self.round_entry = Tkinter.Entry(round_frame)
-                self.round_entry.pack(padx = 7, side=Tkinter.RIGHT, expand=True)
+                    round_label = Tkinter.Label(round_frame, text="Round number:")
+                    round_label.pack(padx = 5, side = Tkinter.LEFT, expand=True)
+                    self.round_entry = Tkinter.Entry(round_frame)
+                    self.round_entry.pack(padx = 7, side=Tkinter.RIGHT, expand=True)
 
-                # done and cancel buttons
-                button_frame = Tkinter.Frame(self.create_window)
-                button_frame.pack(side = Tkinter.TOP, expand=True)
+                    # done and cancel buttons
+                    button_frame = Tkinter.Frame(self.create_window)
+                    button_frame.pack(side = Tkinter.TOP, expand=True)
 
-                btn_cancel = Tkinter.Button(self.create_window, text = "Cancel", command = self.create_window.destroy)
-                btn_cancel.pack(side = Tkinter.RIGHT, expand=True)
-                btn_done = Tkinter.Button(self.create_window, text = "Done", command = self.issue_trended)
-                btn_done.pack(side = Tkinter.RIGHT, expand=True)
-                self.create_window.deiconify()
+                    btn_cancel = Tkinter.Button(self.create_window, text = "Cancel", command = self.create_window.destroy)
+                    btn_cancel.pack(side = Tkinter.RIGHT, expand=True)
+                    btn_done = Tkinter.Button(self.create_window, text = "Done", command = self.issue_trended)
+                    btn_done.pack(side = Tkinter.RIGHT, expand=True)
+                    self.create_window.deiconify()
         except Exception as e:
             tkMessageBox.showerror("Error", "An error occurred\n" + str(e))
 
     def issue_trended(self):
         try:
-            print "In issue trended"
             filename = self.filename
             #fields entered by the user
             round = self.round_entry.get()
@@ -896,41 +760,41 @@ class Internbot:
 
     def trended_scores_window(self):
         try:
-            print "In trended scores window"
-            self.filename = tkFileDialog.askopenfilename(initialdir = self.fpath, title = "Select model file", filetypes = (("comma seperated files","*.csv"),("all files","*.*")))
-            if self.filename is not "":
-                self.create_window = Tkinter.Toplevel(self.redirect_window)
-                self.create_window.withdraw()
-                x = self.__window.winfo_x()
-                y = self.__window.winfo_y()
-                self.create_window.geometry("250x100+%d+%d" % (x +75, y + 150))
-                self.create_window.title("Trended Issue Reports Details")
+            okay = tkMessageBox.askokcancel("Select", "Select a model file")
+            if okay is True:
+                self.filename = tkFileDialog.askopenfilename(initialdir = self.fpath, title = "Select model file", filetypes = (("comma seperated files","*.csv"),("all files","*.*")))
+                if self.filename is not "":
+                    self.create_window = Tkinter.Toplevel(self.redirect_window)
+                    self.create_window.withdraw()
+                    x = self.__window.winfo_x()
+                    y = self.__window.winfo_y()
+                    self.create_window.geometry("250x100+%d+%d" % (x + 175, y + 150))
+                    self.create_window.title("Trended Issue Reports Details")
 
-                # round details
-                round_frame = Tkinter.Frame(self.create_window)
-                round_frame.pack(side = Tkinter.TOP, expand=True)
+                    # round details
+                    round_frame = Tkinter.Frame(self.create_window)
+                    round_frame.pack(side = Tkinter.TOP, expand=True)
 
-                round_label = Tkinter.Label(round_frame, text="Round number:")
-                round_label.pack(padx = 5, side = Tkinter.TOP, expand=True)
-                self.round_entry = Tkinter.Entry(round_frame)
-                self.round_entry.pack(padx = 7, side=Tkinter.BOTTOM, expand=True)
+                    round_label = Tkinter.Label(round_frame, text="Round number:")
+                    round_label.pack(padx = 5, side = Tkinter.TOP, expand=True)
+                    self.round_entry = Tkinter.Entry(round_frame)
+                    self.round_entry.pack(padx = 7, side=Tkinter.BOTTOM, expand=True)
 
-                # done and cancel buttons
-                button_frame = Tkinter.Frame(self.create_window)
-                button_frame.pack(side = Tkinter.TOP, expand=True)
+                    # done and cancel buttons
+                    button_frame = Tkinter.Frame(self.create_window)
+                    button_frame.pack(side = Tkinter.TOP, expand=True)
 
-                btn_cancel = Tkinter.Button(self.create_window, text = "Cancel", command = self.create_window.destroy)
-                btn_cancel.pack(side = Tkinter.RIGHT, expand=True)
-                btn_done = Tkinter.Button(self.create_window, text = "Done", command = self.trended_scores)
-                btn_done.pack(side = Tkinter.RIGHT, expand=True)
+                    btn_cancel = Tkinter.Button(self.create_window, text = "Cancel", command = self.create_window.destroy)
+                    btn_cancel.pack(side = Tkinter.RIGHT, expand=True)
+                    btn_done = Tkinter.Button(self.create_window, text = "Done", command = self.trended_scores)
+                    btn_done.pack(side = Tkinter.RIGHT, expand=True)
 
-                self.create_window.deiconify()
+                    self.create_window.deiconify()
         except Exception as e:
             tkMessageBox.showerror("Error", "An error occurred\n" + str(e))
 
     def trended_scores(self):
         try:
-            print "In trended scores"
             filename = self.filename
             #Field entered by user
             round = self.round_entry.get()
@@ -962,11 +826,13 @@ class Internbot:
 
 window = Tkinter.Tk()
 window.title("Internbot: 01011001 00000010") # Internbot: Y2
+if platform.system() == 'Windows':  # Windows
+    window.iconbitmap('y2.ico')
 screen_width = window.winfo_screenwidth()
 screen_height = window.winfo_screenheight()
-mov_x = screen_width / 2 - 200
-mov_y = screen_height / 2 - 200
-window.geometry("400x400+%d+%d" % (mov_x, mov_y))
+mov_x = screen_width / 2 - 300
+mov_y = screen_height / 2 - 300
+window.geometry("600x400+%d+%d" % (mov_x, mov_y))
 window['background'] = 'white'
 y2_logo = "Y2Logo.gif"
 render = Tkinter.PhotoImage(file= y2_logo)
