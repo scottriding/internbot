@@ -2,6 +2,7 @@ from openpyxl import load_workbook, Workbook
 from openpyxl.styles.borders import Border, Side
 from openpyxl.styles import PatternFill, Font, Alignment
 from openpyxl.drawing.image import Image
+from collections import OrderedDict
 
 class QParser(object):
 
@@ -9,7 +10,7 @@ class QParser(object):
         print "Loading workbook"
         self.__workbook = load_workbook(path_to_workbook)
         self.__is_qualtrics = is_qualtrics
-        self.__tables = []
+        self.__tables = OrderedDict()
 
         # fill colors
         if is_qualtrics:
@@ -83,6 +84,7 @@ class QParser(object):
         self.create_toc()
         self.__workbook.save(path_to_output + "/Crosstab Report.xlsx")
         print "Done!"
+        return self.__tables
 
     def create_toc(self):
         sheet = self.__workbook.create_sheet("TOC", 0)
@@ -124,18 +126,18 @@ class QParser(object):
         sheet["D2"].alignment = self.__align_center
 
         current_row = 3
-        for table in self.__tables:
+        for key, value in self.__tables.iteritems():
             table_no_cell = "A%s" % str(current_row)
             question_title_cell = "B%s" % str(current_row)
             base_desc_cell = "C%s" % str(current_row)
             base_size_cell = "D%s" % str(current_row)
 
             sheet[table_no_cell].font = self.__font_toc_table
-            sheet[table_no_cell].value = "=HYPERLINK(\"#'%s'!A1\",\"%s\")" % (table.name, table.name)
+            sheet[table_no_cell].value = "=HYPERLINK(\"#'%s'!A1\",\"%s\")" % (value.name, value.name)
             sheet[table_no_cell].alignment = self.__align_center
             sheet[table_no_cell].border = self.__thin_bottom
 
-            sheet[question_title_cell].value = table.prompt
+            sheet[question_title_cell].value = value.prompt
             sheet[question_title_cell].font = self.__font_reg
             sheet[question_title_cell].alignment = self.__align_left
             sheet[question_title_cell].border = self.__thin_bottom
@@ -160,7 +162,7 @@ class QParser(object):
 
         print "Formatting: %s" % sheet_title
 
-        table = TOCTable(sheet_title)
+        table = TOCTable(sheet_no)
         start_table_row = self.parse_col_names(sheet)
         self.format_hyperlink(sheet)
         table = self.format_titles(sheet, table)
@@ -169,7 +171,7 @@ class QParser(object):
         self.format_table_contents(sheet, start_table_row)
         self.format_stats_def(sheet)
         self.add_table_borders(sheet)
-        self.__tables.append(table)
+        self.__tables[sheet_no] = table
 
         # merge top left table corner
         sheet.merge_cells(start_row=3, start_column=1, end_row=start_table_row-1, end_column=1)
@@ -393,7 +395,7 @@ class QParser(object):
 class TOCTable(object):
 
     def __init__(self, table_name):
-        self.__name = table_name
+        self.__name = str(table_name)
 
     @property
     def prompt(self):

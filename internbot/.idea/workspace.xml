@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="900fcb45-5500-469e-9c58-2908a9a4f128" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/appendix_template.docx" beforeDir="false" afterPath="$PROJECT_DIR$/appendix_template.docx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/crosstabs/Format_Q_Report/format_report.py" beforeDir="false" afterPath="$PROJECT_DIR$/crosstabs/Format_Q_Report/format_report.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/internbot.py" beforeDir="false" afterPath="$PROJECT_DIR$/internbot.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -16,46 +16,24 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/internbot.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-4125">
-              <caret line="228" column="90" lean-forward="true" selection-start-line="228" selection-start-column="90" selection-end-line="228" selection-end-column="90" />
+            <state relative-caret-position="484">
+              <caret line="119" column="59" selection-start-line="119" selection-start-column="59" selection-end-line="119" selection-end-column="59" />
               <folding>
                 <element signature="e#0#11#0" expanded="true" />
                 <element signature="e#299#465#0" />
-                <element signature="e#2713#3837#0" />
-                <element signature="e#3875#5103#0" />
-                <element signature="e#5140#5979#0" />
-                <element signature="e#6013#7362#0" />
-                <element signature="e#7399#8054#0" />
-                <element signature="e#8086#8953#0" />
-                <element signature="e#8996#10354#0" />
-                <element signature="e#10400#10570#0" />
-                <element signature="e#10641#11512#0" />
-                <element signature="e#17512#17913#0" />
-                <element signature="e#17955#18455#0" />
-                <element signature="e#18512#19689#0" />
-                <element signature="e#19725#20130#0" />
-                <element signature="e#20174#20676#0" />
-                <element signature="e#20735#22023#0" />
-                <element signature="e#22062#22485#0" />
-                <element signature="e#22558#23784#0" />
-                <element signature="e#23825#24437#0" />
-                <element signature="e#24519#25638#0" />
-                <element signature="e#25721#26842#0" />
-                <element signature="e#26881#27810#0" />
-                <element signature="e#27849#28238#0" />
-                <element signature="e#28286#29524#0" />
-                <element signature="e#29567#31141#0" />
-                <element signature="e#31178#32234#0" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/crosstabs/Generate_Prelim_SPSS_Script/define_tables.py">
+        <entry file="file://$PROJECT_DIR$/crosstabs/Format_Q_Report/format_report.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1185">
-              <caret line="79" column="2" lean-forward="true" selection-start-line="79" selection-start-column="2" selection-end-line="79" selection-end-column="2" />
+            <state relative-caret-position="584">
+              <caret line="397" column="37" selection-start-line="397" selection-start-column="37" selection-end-line="397" selection-end-column="37" />
+              <folding>
+                <element signature="e#0#44#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -63,7 +41,7 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/topline/QSF/generate_report.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-162">
+            <state>
               <folding>
                 <element signature="e#0#40#0" expanded="true" />
               </folding>
@@ -74,7 +52,7 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/topline/QSF/topline_report.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-2087">
+            <state>
               <folding>
                 <element signature="e#0#25#0" expanded="true" />
               </folding>
@@ -106,14 +84,16 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
+        <option value="$PROJECT_DIR$/crosstabs/Format_Q_Report/format_report.py" />
         <option value="$PROJECT_DIR$/internbot.py" />
       </list>
     </option>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="y" value="23" />
+    <option name="x" value="472" />
+    <option name="y" value="46" />
     <option name="width" value="1440" />
-    <option name="height" value="797" />
+    <option name="height" value="1263" />
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectView">
@@ -133,6 +113,12 @@
               <item name="internbot" type="b2602c69:ProjectViewProjectNode" />
               <item name="internbot" type="462c0819:PsiDirectoryNode" />
               <item name="crosstabs" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="internbot" type="b2602c69:ProjectViewProjectNode" />
+              <item name="internbot" type="462c0819:PsiDirectoryNode" />
+              <item name="crosstabs" type="462c0819:PsiDirectoryNode" />
+              <item name="Format_Q_Report" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="internbot" type="b2602c69:ProjectViewProjectNode" />
@@ -186,10 +172,10 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="0" y="23" width="1440" height="797" extended-state="0" />
+    <frame x="472" y="46" width="1440" height="1263" extended-state="0" />
     <editor active="true" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.27539343" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.27896994" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
@@ -234,7 +220,7 @@
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/topline/QSF/topline_report.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-2087">
+        <state>
           <folding>
             <element signature="e#0#25#0" expanded="true" />
           </folding>
@@ -252,52 +238,31 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/topline/QSF/generate_report.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-162">
+        <state>
           <folding>
             <element signature="e#0#40#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/crosstabs/Generate_Prelim_SPSS_Script/define_tables.py">
+    <entry file="file://$PROJECT_DIR$/crosstabs/Generate_Prelim_SPSS_Script/define_tables.py" />
+    <entry file="file://$PROJECT_DIR$/crosstabs/Format_Q_Report/format_report.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1185">
-          <caret line="79" column="2" lean-forward="true" selection-start-line="79" selection-start-column="2" selection-end-line="79" selection-end-column="2" />
+        <state relative-caret-position="584">
+          <caret line="397" column="37" selection-start-line="397" selection-start-column="37" selection-end-line="397" selection-end-column="37" />
+          <folding>
+            <element signature="e#0#44#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/internbot.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-4125">
-          <caret line="228" column="90" lean-forward="true" selection-start-line="228" selection-start-column="90" selection-end-line="228" selection-end-column="90" />
+        <state relative-caret-position="484">
+          <caret line="119" column="59" selection-start-line="119" selection-start-column="59" selection-end-line="119" selection-end-column="59" />
           <folding>
             <element signature="e#0#11#0" expanded="true" />
             <element signature="e#299#465#0" />
-            <element signature="e#2713#3837#0" />
-            <element signature="e#3875#5103#0" />
-            <element signature="e#5140#5979#0" />
-            <element signature="e#6013#7362#0" />
-            <element signature="e#7399#8054#0" />
-            <element signature="e#8086#8953#0" />
-            <element signature="e#8996#10354#0" />
-            <element signature="e#10400#10570#0" />
-            <element signature="e#10641#11512#0" />
-            <element signature="e#17512#17913#0" />
-            <element signature="e#17955#18455#0" />
-            <element signature="e#18512#19689#0" />
-            <element signature="e#19725#20130#0" />
-            <element signature="e#20174#20676#0" />
-            <element signature="e#20735#22023#0" />
-            <element signature="e#22062#22485#0" />
-            <element signature="e#22558#23784#0" />
-            <element signature="e#23825#24437#0" />
-            <element signature="e#24519#25638#0" />
-            <element signature="e#25721#26842#0" />
-            <element signature="e#26881#27810#0" />
-            <element signature="e#27849#28238#0" />
-            <element signature="e#28286#29524#0" />
-            <element signature="e#29567#31141#0" />
-            <element signature="e#31178#32234#0" />
           </folding>
         </state>
       </provider>

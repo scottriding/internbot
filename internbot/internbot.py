@@ -62,7 +62,7 @@ class Internbot:
         message = "Please select crosstabs software to use"
         Tkinter.Label(sft_window, text = message).pack()
         btn_spss = Tkinter.Button(sft_window, text="SPSS", command=self.tabs_menu, height=1, width=15)
-        btn_q = Tkinter.Button(sft_window, text="Q Research", command=self.qtab_build, height=1, width=15)
+        btn_q = Tkinter.Button(sft_window, text="Q Research", command=self.qtab_menu, height=1, width=15)
         btn_cancel = Tkinter.Button(sft_window, text="Cancel", command=sft_window.destroy, height=1, width=15)
         btn_cancel.pack(padx=5, side=Tkinter.BOTTOM, expand=True)
         btn_q.pack(padx=5, side=Tkinter.BOTTOM, expand=True)
@@ -87,6 +87,20 @@ class Internbot:
         btn_var.pack(padx=5, side=Tkinter.BOTTOM, expand=True)
         redirect_window.deiconify()
 
+    def qtab_menu(self):
+        qtab_window = Tkinter.Toplevel(self.__window)
+        qtab_window.withdraw()
+        x = self.__window.winfo_x()
+        y = self.__window.winfo_y()
+        qtab_window.geometry("300x200+%d+%d" % (x + 150, y + 100))
+        btn_build = Tkinter.Button(qtab_window, text="Format Report", command=self.qtab_build, height=1, width=15)
+        btn_bases = Tkinter.Button(qtab_window, text="Propogate Bases", command=self.qtab_bases, height=1, width=15)
+        btn_cancel = Tkinter.Button(qtab_window, text="Cancel", command=qtab_window.destroy, height=1, width=15)
+        btn_cancel.pack(padx=5, side=Tkinter.BOTTOM, expand=True)
+        btn_bases.pack(padx=5, side=Tkinter.BOTTOM, expand=True)
+        btn_build.pack(padx=5, side=Tkinter.BOTTOM, expand=True)
+        qtab_window.deiconify()
+
     def qtab_build(self):
         ask_tables = tkMessageBox.askokcancel("Select Q Research report file", "Please select the Q Research report file.")
         if ask_tables is True:
@@ -97,7 +111,30 @@ class Internbot:
                 if ask_output is True: # user selected ok
                     savedirectory = tkFileDialog.askdirectory()
                     if savedirectory is not "":
-                        parser.format_report(savedirectory)
+                        self.tables = parser.format_report(savedirectory)
+                        with open(savedirectory+"/tables.csv", "wb") as file:
+                            writer = csv.writer(file, delimiter=",", quotechar= "\"")
+                            writer.writerow(['Table No']+['Prompt']+['Base Description']+['Base Size'])
+                            for key, value in self.tables.iteritems():
+                                prompt = "%s" % value.prompt
+                                writer.writerow([value.name]+[prompt])
+
+
+
+    def qtab_bases(self):
+        ask_tables = tkMessageBox.askokcancel("Select Q Research report file", "Please select the Q Research report file.")
+        if ask_tables is True:
+            reportfilename =  tkFileDialog.askopenfilename(initialdir = self.fpath, title = "Select report file",filetypes = (("excel files","*.xlsx"),("all files","*.*")))
+            if reportfilename is not "":
+                with open(reportfilename) as tables_file:
+                    reader =csv.reader(tables_file, delimiter=",")
+
+                    for row in reader:
+                        pass
+
+
+
+
 
     def topline_menu(self):
         self.redirect_window = Tkinter.Toplevel(self.__window)
