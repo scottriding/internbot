@@ -17,13 +17,13 @@ class Questions(object):
         if self.already_exists(question_name):
             question = self.get(question_name)
             if question_response != "":
-                question.add_response(question_response, question_data, round_no)
+                question.add_response(question_response, question_data, question_pop, round_no)
             if display_logic != "":
                 question.add_display(display_logic)
         else:
-            question = Question(question_name, question_prompt, question_pop)
+            question = Question(question_name, question_prompt)
             if question_response != "":
-                question.add_response(question_response, question_data, round_no)
+                question.add_response(question_response, question_data, question_pop, round_no)
             if display_logic != "":
                 question.add_display(display_logic)
             self.__questions[question.name] = question
@@ -54,10 +54,10 @@ class Questions(object):
 
 class Question(object):
 
-    def __init__(self, name, prompt, n):
+    def __init__(self, name, prompt):
         self.__name = name
         self.__prompt = prompt
-        self.__n = n
+        self.__n = 0
         self.__responses = []
         self.__display_logic = ""
 
@@ -81,7 +81,8 @@ class Question(object):
     def display_logic(self):
         return self.__display_logic
 
-    def add_response(self, response_name, response_data, round_no):
+    def add_response(self, response_name, response_data, response_pop, round_no):
+        self.__n += int(response_pop)
         self.__responses.append(Response(response_name, response_data, round_no))
 
     def add_display(self, logic):

@@ -19,7 +19,7 @@ class Internbot:
             self.__embedded_fields = []
 
     def main_buttons(self):
-        btn_xtabs = Tkinter.Button(self.__window, text="Run crosstabs", command=self.tabs_menu, relief=Tkinter.GROOVE)
+        btn_xtabs = Tkinter.Button(self.__window, text="Run crosstabs", command=self.software_tabs_menu, relief=Tkinter.GROOVE)
         btn_report = Tkinter.Button(self.__window, text="Run topline report", command=self.topline_menu, relief=Tkinter.GROOVE)
         btn_appen = Tkinter.Button(self.__window, text="Run topline appendix", command=self.append_menu, relief=Tkinter.GROOVE)
         btn_rnc = Tkinter.Button(self.__window, text="Run RNC", command=self.rnc_menu, relief=Tkinter.GROOVE)
@@ -53,6 +53,21 @@ class Internbot:
         self.menubar.add_cascade(label="Quit", menu=menu_quit)
         self.__window.config(menu=self.menubar)
         
+    def software_tabs_menu(self):
+        sft_window = Tkinter.Toplevel(self.__window)
+        sft_window.withdraw()
+        x = self.__window.winfo_x()
+        y = self.__window.winfo_y()
+        sft_window.geometry("300x200+%d+%d" % (x + 150, y + 100))
+        message = "Please select crosstabs software to use"
+        Tkinter.Label(sft_window, text = message).pack()
+        btn_spss = Tkinter.Button(sft_window, text="SPSS", command=self.tabs_menu, height=1, width=15)
+        btn_q = Tkinter.Button(sft_window, text="Q Research", command=self.qtab_build, height=1, width=15)
+        btn_cancel = Tkinter.Button(sft_window, text="Cancel", command=sft_window.destroy, height=1, width=15)
+        btn_cancel.pack(padx=5, side=Tkinter.BOTTOM, expand=True)
+        btn_q.pack(padx=5, side=Tkinter.BOTTOM, expand=True)
+        btn_spss.pack(padx=5, side=Tkinter.BOTTOM, expand=True)
+        sft_window.deiconify()
 
     def tabs_menu(self):
         redirect_window = Tkinter.Toplevel(self.__window)
@@ -71,6 +86,18 @@ class Internbot:
         btn_tab.pack(padx=5, side=Tkinter.BOTTOM, expand=True)
         btn_var.pack(padx=5, side=Tkinter.BOTTOM, expand=True)
         redirect_window.deiconify()
+
+    def qtab_build(self):
+        ask_tables = tkMessageBox.askokcancel("Select Q Research report file", "Please select the Q Research report file.")
+        if ask_tables is True:
+            reportfilename = tkFileDialog.askopenfilename(initialdir = self.fpath, title = "Select report file",filetypes = (("excel files","*.xlsx"),("all files","*.*")))
+            if reportfilename is not "":
+                parser = crosstabs.Format_Q_Report.QParser(reportfilename)
+                ask_output = tkMessageBox.askokcancel("Select Output Directory", "Please select the directory for final report.")
+                if ask_output is True: # user selected ok
+                    savedirectory = tkFileDialog.askdirectory()
+                    if savedirectory is not "":
+                        parser.format_report(savedirectory)
 
     def topline_menu(self):
         self.redirect_window = Tkinter.Toplevel(self.__window)
@@ -193,8 +220,6 @@ class Internbot:
 
     def build_topline_leadup(self):
         years = self.year_window_obj.read_years()
-        for i in range(len(years)):
-            print years[i]
         self.build_topline_report(self.isQSF, self.report, years)
 
     def build_topline_report(self, isQSF, report, years=[]):
@@ -226,8 +251,8 @@ class Internbot:
                     if ask_output is True: # user selected ok
                         savedirectory = tkFileDialog.askdirectory()
                         if savedirectory is not "":
-                            variables = crosstabs.Generate_Prelim_SPSS_Script.SPSSTranslator()
-                            tables = crosstabs.Generate_Prelim_SPSS_Script.TableDefiner()
+                            variables = crosstabs.Format_SPSS_Report.Generate_Prelim_SPSS_Script.SPSSTranslator()
+                            tables = crosstabs.Format_SPSS_Report.Generate_Prelim_SPSS_Script.TableDefiner()
                             variables.define_variables(survey, savedirectory)
                             tables.define_tables(survey, savedirectory)
                             open_files = tkMessageBox.askyesno("Info", "Done!\nWould you like to open your finished files?")
@@ -245,9 +270,9 @@ class Internbot:
                 if self.tablesfilename is not "":
                     ask_banners = tkMessageBox.askokcancel("Banner selection", "Please insert/select the banners for this report.")
                     if ask_banners is True:
-                        names = crosstabs.Generate_Table_Script.TablesParser().pull_table_names(self.tablesfilename)
-                        titles = crosstabs.Generate_Table_Script.TablesParser().pull_table_titles(self.tablesfilename)
-                        bases = crosstabs.Generate_Table_Script.TablesParser().pull_table_bases(self.tablesfilename)
+                        names = crosstabs.Format_SPSS_Report.Generate_Table_Script.TablesParser().pull_table_names(self.tablesfilename)
+                        titles = crosstabs.Format_SPSS_Report.Generate_Table_Script.TablesParser().pull_table_titles(self.tablesfilename)
+                        bases = crosstabs.Format_SPSS_Report.Generate_Table_Script.TablesParser().pull_table_bases(self.tablesfilename)
                         self.banner_window(names, titles, bases)
         except Exception as e:
             tkMessageBox.showerror("Error", "An error occurred\n"+ str(e))
@@ -598,7 +623,7 @@ class Internbot:
 
     def save_table_script(self):
         try:
-            generator = crosstabs.Generate_Table_Script.TableScriptGenerator()
+            generator = crosstabs.Format_SPSS_Report.Generate_Table_Script.TableScriptGenerator()
             table_order = OrderedDict()
             banner_list = OrderedDict()
             for item in list(self.tables_box.get(0, Tkinter.END)):
@@ -630,7 +655,7 @@ class Internbot:
             ask_directory = tkMessageBox.askokcancel("Select Tables Folder", "Please select the folder containing SPSS generated .xlsx table files.")
             if ask_directory is True:
                 tablesdirectory = tkFileDialog.askdirectory()
-                builder = crosstabs.Parse_SPSS_Tables.CrosstabGenerator(tablesdirectory)
+                builder = crosstabs.Format_SPSS_Report.Parse_SPSS_Tables.CrosstabGenerator(tablesdirectory)
                 ask_output = tkMessageBox.askokcancel("Output directory", "Please select the directory for finished report.")
                 if ask_output is True:
                     outputdirectory = tkFileDialog.askdirectory()
@@ -812,7 +837,6 @@ class Internbot:
             tkMessageBox.showerror("Error", "An error occurred\n" + str(e))
 
     def open_file_for_user(self, file_path):
-        print "Save Dir: " + str(file_path)
         try:
             if os.path.exists(file_path):
                 if platform.system() == 'Darwin':  # macOS
@@ -832,17 +856,11 @@ if platform.system() == 'Windows':  # Windows
 screen_width = window.winfo_screenwidth()
 
 screen_height = window.winfo_screenheight()
-print screen_width
-print screen_height
 mov_x = screen_width / 2 - 300
 mov_y = screen_height / 2 - 200
-print mov_x
-print mov_y
 window.geometry("600x400+%d+%d" % (mov_x, mov_y))
 x = window.winfo_x()
 y = window.winfo_y()
-print x
-print y
 window['background'] = 'white'
 y2_logo = "Y2Logo.gif"
 render = Tkinter.PhotoImage(file= y2_logo)
