@@ -9,6 +9,10 @@ import os, subprocess, platform
 import csv
 from collections import OrderedDict
 from years_window import YearsWindow
+from openpyxl import load_workbook, Workbook
+from openpyxl.styles.borders import Border, Side
+from openpyxl.styles import PatternFill, Font, Alignment
+from openpyxl.drawing.image import Image
 
 class Internbot:
 
@@ -124,13 +128,37 @@ class Internbot:
     def qtab_bases(self):
         ask_tables = tkMessageBox.askokcancel("Select Q Research report file", "Please select the Q Research report file.")
         if ask_tables is True:
-            reportfilename =  tkFileDialog.askopenfilename(initialdir = self.fpath, title = "Select report file",filetypes = (("excel files","*.xlsx"),("all files","*.*")))
+            reportfilename =  "/Users/tristanbowler/Desktop/tables test.csv"
             if reportfilename is not "":
                 with open(reportfilename) as tables_file:
-                    reader =csv.reader(tables_file, delimiter=",")
+                    reader = csv.DictReader(tables_file, delimiter=",")
 
                     for row in reader:
-                        pass
+                        index = int(row['Table No'])
+                        self.tables[index].description = row['Base Description']
+                        self.tables[index].size = row['Base Size']
+
+                    reportfilename = "/Users/tristanbowler/Desktop/Crosstab Report.xlsx"
+                    workbook = load_workbook(reportfilename)
+                    current_row = 3
+                    for key, table in self.tables.iteritems():
+                        if int(table.name) < 10:
+                            sheet_name = "Table 0%s" % str(table.name)
+                        else:
+                            sheet_name = "Table %s" % str(table.name)
+                        sheet = workbook.get_sheet_by_name(sheet_name)
+                        sheet[table.location].value = table.description
+                        toc_sheet = workbook.get_sheet_by_name("TOC")
+                        base_description_cell = "C%s" % str(current_row)
+                        base_size_cell = "D%s" % str(current_row)
+                        toc_sheet[base_description_cell].value = table.description
+                        toc_sheet[base_size_cell].value = table.size
+                        current_row += 1
+
+                    workbook.save("/Users/tristanbowler/Desktop/Final Report.xlsx")
+
+   
+
 
 
 

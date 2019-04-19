@@ -133,7 +133,11 @@ class QParser(object):
             base_size_cell = "D%s" % str(current_row)
 
             sheet[table_no_cell].font = self.__font_toc_table
-            sheet[table_no_cell].value = "=HYPERLINK(\"#'%s'!A1\",\"%s\")" % (value.name, value.name)
+            if int(value.name) < 10:
+                table_name = "Table 0%s" % value.name
+            else:
+                table_name = "Table %s" % value.name
+            sheet[table_no_cell].value = "=HYPERLINK(\"#'%s'!A1\",\"%s\")" % (table_name, table_name)
             sheet[table_no_cell].alignment = self.__align_center
             sheet[table_no_cell].border = self.__thin_bottom
 
@@ -279,7 +283,7 @@ class QParser(object):
         sheet[next_row_cell].font = self.__font_reg
         sheet[next_row_cell].alignment = self.__align_names
 
-        self.__base_cell = "%s%s" % (self.__extend_alphabet[current_col-3], str(2))
+        table.location = "%s%s" % (self.__extend_alphabet[current_col-3], str(2))
 
         # merge table title and base description cells
         sheet.merge_cells(start_column=1, end_column=current_col-3, start_row=2, end_row=2)
@@ -413,6 +417,10 @@ class TOCTable(object):
     def name(self):
         return self.__name
 
+    @property
+    def location(self):
+        return self.__location
+
     @prompt.setter
     def prompt(self, prompt):
         self.__prompt = prompt
@@ -424,4 +432,8 @@ class TOCTable(object):
     @size.setter
     def size(self, pop):
         self.__size = pop
+
+    @location.setter
+    def location(self, location):
+        self.__location = location
 
