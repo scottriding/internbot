@@ -9,10 +9,7 @@ import os, subprocess, platform
 import csv
 from collections import OrderedDict
 from years_window import YearsWindow
-from openpyxl import load_workbook, Workbook
-from openpyxl.styles.borders import Border, Side
-from openpyxl.styles import PatternFill, Font, Alignment
-from openpyxl.drawing.image import Image
+
 
 class Internbot:
 
@@ -23,16 +20,20 @@ class Internbot:
             self.__embedded_fields = []
 
     def main_buttons(self):
-        btn_xtabs = Tkinter.Button(self.__window, text="Run crosstabs", command=self.software_tabs_menu, relief=Tkinter.GROOVE)
-        btn_report = Tkinter.Button(self.__window, text="Run topline report", command=self.topline_menu, relief=Tkinter.GROOVE)
-        btn_appen = Tkinter.Button(self.__window, text="Run topline appendix", command=self.append_menu, relief=Tkinter.GROOVE)
-        btn_rnc = Tkinter.Button(self.__window, text="Run RNC", command=self.rnc_menu, relief=Tkinter.GROOVE)
-        btn_quit = Tkinter.Button(self.__window, text="Quit", command=self.__window.destroy, relief=Tkinter.GROOVE)
-        btn_xtabs.pack(padx=2, side=Tkinter.LEFT, expand=True)
-        btn_report.pack(padx=2, side=Tkinter.LEFT, expand=True)
-        btn_appen.pack(padx=2, side=Tkinter.LEFT, expand=True)
-        btn_rnc.pack(padx=2, side=Tkinter.LEFT, expand=True)
-        btn_quit.pack(padx=2, side=Tkinter.LEFT, expand=True)
+        button_frame =Tkinter.Frame(self.__window)
+        button_frame.pack(side=Tkinter.LEFT, fill=Tkinter.BOTH)
+        btn_xtabs = Tkinter.Button(button_frame, text="Run crosstabs", padx=4, width=20, height=4, command=self.software_tabs_menu, relief=Tkinter.GROOVE)
+        btn_report = Tkinter.Button(button_frame, text="Run topline report", padx=4, width=20, height=4,command=self.topline_menu, relief=Tkinter.GROOVE)
+        btn_appen = Tkinter.Button(button_frame, text="Run topline appendix", padx=4, width=20, height=4,command=self.append_menu, relief=Tkinter.GROOVE)
+        btn_rnc = Tkinter.Button(button_frame, text="Run RNC", padx=4, width=20, height=4,command=self.rnc_menu, relief=Tkinter.GROOVE)
+        btn_quit = Tkinter.Button(button_frame, text="Quit", padx=4, width=20, height=4,command=self.__window.destroy, relief=Tkinter.GROOVE)
+        btn_bot = Tkinter.Button(button_frame, image=bot_render, padx=4, pady=10, width=180, height=50, borderwidth=0, highlightthickness=0, relief=Tkinter.FLAT, bg="white")
+        btn_bot.pack(side=Tkinter.TOP)
+        btn_xtabs.pack(padx=2, side=Tkinter.TOP, expand=True)
+        btn_report.pack(padx=2, side=Tkinter.TOP, expand=True)
+        btn_appen.pack(padx=2, side=Tkinter.TOP, expand=True)
+        btn_rnc.pack(padx=2, side=Tkinter.TOP, expand=True)
+        btn_quit.pack(padx=2, side=Tkinter.TOP, expand=True)
         
         self.menubar = Tkinter.Menu(self.__window)
         menu_xtabs = Tkinter.Menu(self.menubar, tearoff = 0)
@@ -107,15 +108,15 @@ class Internbot:
 
     def bases_window(self, prompts):
         base_sizes = ["[Enter base details]"] * len(prompts)
-        self.edit_window = Tkinter.Toplevel(self.__window)
-        self.edit_window.withdraw()
+        self.base_window = Tkinter.Toplevel(self.__window)
+        self.base_window.withdraw()
         x = self.__window.winfo_x()
         y = self.__window.winfo_y()
-        self.edit_window.geometry("1500x500+%d+%d" % (x - 450 , y - 50))
+        self.base_window.geometry("1500x500+%d+%d" % (x - 450 , y - 50))
 
-        self.edit_window.title("Base assignment")
+        self.base_window.title("Base assignment")
         
-        self.boxes_frame = Tkinter.Frame(self.edit_window)
+        self.boxes_frame = Tkinter.Frame(self.base_window)
         self.boxes_frame.pack(side=Tkinter.LEFT, fill=Tkinter.BOTH)
         horiz_scrollbar = Tkinter.Scrollbar(self.boxes_frame)
         horiz_scrollbar.config(orient= Tkinter.HORIZONTAL )
@@ -126,7 +127,7 @@ class Internbot:
         
         self.tables_box = Tkinter.Listbox(self.boxes_frame, selectmode="single", width=80, height=15, yscrollcommand=vert_scrollbar.set, xscrollcommand = horiz_scrollbar.set)
         self.tables_box.pack(padx = 15, pady=10,expand=True, side = Tkinter.LEFT, fill=Tkinter.BOTH)
-        self.bases_box = Tkinter.Listbox(self.edit_window)
+        self.bases_box = Tkinter.Listbox(self.base_window, selectmode=Tkinter.EXTENDED)
         self.bases_box.pack(padx = 15, pady=10, expand=True, side=Tkinter.RIGHT, fill=Tkinter.BOTH)
         
         for prompt in prompts:
@@ -134,11 +135,14 @@ class Internbot:
 
         for size in base_sizes:
             self.bases_box.insert(Tkinter.END, size)
+
+        self.focus_index = 0
+        self.bases_box.select_set(self.focus_index)
         
         vert_scrollbar.config(command=self.tables_box.yview)
         horiz_scrollbar.config(command=self.tables_box.xview)
         
-        buttons_frame = Tkinter.Frame(self.edit_window)
+        buttons_frame = Tkinter.Frame(self.base_window)
         buttons_frame.pack(side = Tkinter.RIGHT, fill=Tkinter.BOTH)
         btn_edit = Tkinter.Button(buttons_frame, text =   "Edit", command = self.parse_bases)
         btn_done = Tkinter.Button(buttons_frame, text = "Done", command = self.finish_bases)
@@ -146,7 +150,15 @@ class Internbot:
         btn_done.pack(side=Tkinter.BOTTOM, pady=15)
         btn_edit.pack(side=Tkinter.BOTTOM)
 
-        self.edit_window.deiconify()
+        def enter_pressed(event):
+            self.parse_bases()
+
+
+
+        self.base_window.bind("<Return>", enter_pressed)
+        self.base_window.bind("<KP_Enter>", enter_pressed)
+
+        self.base_window.deiconify()
 
     def parse_bases(self):
         for index in self.bases_box.curselection():
@@ -155,14 +167,23 @@ class Internbot:
 
 
     def edit_base(self, base, index):
-        edit_window = Tkinter.Toplevel(self.edit_window)
+        edit_window = Tkinter.Toplevel(self.base_window)
+        x = self.__window.winfo_x()
+        y = self.__window.winfo_y()
+        edit_window.geometry("400x100+%d+%d" % (x + 100, y + 200))
         edit_window.title("Add base")
         lbl_banner = Tkinter.Label(edit_window, text="Base description:")
         entry_des = Tkinter.Entry(edit_window)
         entry_des.insert(0, "")
+        entry_des.focus_set()
         lbl_title = Tkinter.Label(edit_window, text="Size (n):")
         entry_size = Tkinter.Entry(edit_window)
         entry_size.insert(0, "")
+
+        def enter_pressed(event):
+            edit()
+
+
 
         def edit():
             base_desc = entry_des.get()
@@ -170,6 +191,11 @@ class Internbot:
             self.bases_box.delete(int(index))
             self.bases_box.insert(int(index), base_desc + " - " + base_size)
             edit_window.destroy()
+            self.focus_index += 1
+            self.bases_box.select_set(self.focus_index)
+
+
+
 
         btn_cancel = Tkinter.Button(edit_window, text="Cancel", command=edit_window.destroy)
         btn_edit = Tkinter.Button(edit_window, text="Edit", command=edit)
@@ -180,6 +206,9 @@ class Internbot:
 
         btn_edit.grid(row = 2, column = 0)
         btn_cancel.grid(row = 2, column = 1)
+        edit_window.bind("<Return>", enter_pressed)
+        edit_window.bind("<KP_Enter>", enter_pressed)
+
 
     def finish_bases(self):
         index = 1
@@ -963,8 +992,12 @@ x = window.winfo_x()
 y = window.winfo_y()
 window['background'] = 'white'
 y2_logo = "Y2Logo.gif"
-render = Tkinter.PhotoImage(file= y2_logo)
-Tkinter.Label(window, image=render, borderwidth=0, highlightthickness=0, relief=Tkinter.FLAT).pack()
+help_bot = "Internbot.gif"
+bot_render = Tkinter.PhotoImage(file=help_bot)
+logo_render = Tkinter.PhotoImage(file= y2_logo)
+logo_label = Tkinter.Label(window, image=logo_render, borderwidth=0, highlightthickness=0, relief=Tkinter.FLAT)
+logo_label.pack(side=Tkinter.RIGHT)
+
 window.deiconify()
 Internbot(window)
 window.mainloop()
