@@ -98,10 +98,10 @@ class Internbot:
         y = self.__window.winfo_y()
         qtab_window.geometry("300x200+%d+%d" % (x + 150, y + 100))
         btn_build = Tkinter.Button(qtab_window, text="Format Report", command=self.qtab_build, height=1, width=15)
-        btn_bases = Tkinter.Button(qtab_window, text="Propogate Bases", command=self.qtab_bases, height=1, width=15)
+        #btn_bases = Tkinter.Button(qtab_window, text="Propogate Bases", command=self.qtab_bases, height=1, width=15)
         btn_cancel = Tkinter.Button(qtab_window, text="Cancel", command=qtab_window.destroy, height=1, width=15)
         btn_cancel.pack(padx=5, side=Tkinter.BOTTOM, expand=True)
-        btn_bases.pack(padx=5, side=Tkinter.BOTTOM, expand=True)
+        #btn_bases.pack(padx=5, side=Tkinter.BOTTOM, expand=True)
         btn_build.pack(padx=5, side=Tkinter.BOTTOM, expand=True)
         qtab_window.deiconify()
 
@@ -110,59 +110,106 @@ class Internbot:
         if ask_tables is True:
             reportfilename = tkFileDialog.askopenfilename(initialdir = self.fpath, title = "Select report file",filetypes = (("excel files","*.xlsx"),("all files","*.*")))
             if reportfilename is not "":
-                parser = crosstabs.Format_Q_Report.QParser(reportfilename)
-                ask_output = tkMessageBox.askokcancel("Select Output Directory", "Please select the directory for final report.")
-                if ask_output is True: # user selected ok
-                    savedirectory = tkFileDialog.askdirectory()
-                    if savedirectory is not "":
-                        self.tables = parser.format_report(savedirectory)
-                        with open(savedirectory+"/tables.csv", "wb") as file:
-                            writer = csv.writer(file, delimiter=",", quotechar= "\"")
-                            writer.writerow(['Table No']+['Prompt']+['Base Description']+['Base Size'])
-                            for key, value in self.tables.iteritems():
-                                prompt = "%s" % value.prompt
-                                writer.writerow([value.name]+[prompt])
+                self.__parser = crosstabs.Format_Q_Report.QParser(reportfilename)
+                self.tables = self.__parser.format_report()
+                prompts = []
+                for key, value in self.tables.iteritems():
+                    prompts.append(value.prompt)
+                self.bases_window(prompts)
+
+    def bases_window(self, prompts):
+        base_sizes = ["[Enter base details]"] * len(prompts)
+        self.edit_window = Tkinter.Toplevel(self.__window)
+        self.edit_window.withdraw()
+        x = self.__window.winfo_x()
+        y = self.__window.winfo_y()
+        self.edit_window.geometry("1500x500+%d+%d" % (x - 450 , y - 50))
+
+        self.edit_window.title("Base assignment")
+        
+        self.boxes_frame = Tkinter.Frame(self.edit_window)
+        self.boxes_frame.pack(side=Tkinter.LEFT, fill=Tkinter.BOTH)
+        horiz_scrollbar = Tkinter.Scrollbar(self.boxes_frame)
+        horiz_scrollbar.config(orient= Tkinter.HORIZONTAL )
+        horiz_scrollbar.pack(side=Tkinter.BOTTOM, fill=Tkinter.X)
+        vert_scrollbar = Tkinter.Scrollbar(self.boxes_frame)
+        vert_scrollbar.pack(side=Tkinter.RIGHT, fill=Tkinter.Y)
+        
+        
+        self.tables_box = Tkinter.Listbox(self.boxes_frame, selectmode="single", width=80, height=15, yscrollcommand=vert_scrollbar.set, xscrollcommand = horiz_scrollbar.set)
+        self.tables_box.pack(padx = 15, pady=10,expand=True, side = Tkinter.LEFT, fill=Tkinter.BOTH)
+        self.bases_box = Tkinter.Listbox(self.edit_window)
+        self.bases_box.pack(padx = 15, pady=10, expand=True, side=Tkinter.RIGHT, fill=Tkinter.BOTH)
+        
+        for prompt in prompts:
+            self.tables_box.insert(Tkinter.END, prompt)
+
+        for size in base_sizes:
+            self.bases_box.insert(Tkinter.END, size)
+        
+        vert_scrollbar.config(command=self.tables_box.yview)
+        horiz_scrollbar.config(command=self.tables_box.xview)
+        
+        buttons_frame = Tkinter.Frame(self.edit_window)
+        buttons_frame.pack(side = Tkinter.RIGHT, fill=Tkinter.BOTH)
+        btn_edit = Tkinter.Button(buttons_frame, text =   "Edit", command = self.parse_bases)
+        btn_done = Tkinter.Button(buttons_frame, text = "Done", command = self.finish_bases)
+
+        btn_done.pack(side=Tkinter.BOTTOM, pady=15)
+        btn_edit.pack(side=Tkinter.BOTTOM)
+
+        self.edit_window.deiconify()
+
+    def parse_bases(self):
+        for index in self.bases_box.curselection():
+            base = self.bases_box.get(int(index))
+            self.edit_base(base, index)
 
 
+    def edit_base(self, base, index):
+        edit_window = Tkinter.Toplevel(self.edit_window)
+        edit_window.title("Add base")
+        lbl_banner = Tkinter.Label(edit_window, text="Base description:")
+        entry_des = Tkinter.Entry(edit_window)
+        entry_des.insert(0, "")
+        lbl_title = Tkinter.Label(edit_window, text="Size (n):")
+        entry_size = Tkinter.Entry(edit_window)
+        entry_size.insert(0, "")
 
-    def qtab_bases(self):
-        ask_tables = tkMessageBox.askokcancel("Select Q Research report file", "Please select the Q Research report file.")
-        if ask_tables is True:
-            reportfilename =  "/Users/tristanbowler/Desktop/tables test.csv"
-            if reportfilename is not "":
-                with open(reportfilename) as tables_file:
-                    reader = csv.DictReader(tables_file, delimiter=",")
+        def edit():
+            base_desc = entry_des.get()
+            base_size = entry_size.get()
+            self.bases_box.delete(int(index))
+            self.bases_box.insert(int(index), base_desc + " - " + base_size)
+            edit_window.destroy()
 
-                    for row in reader:
-                        index = int(row['Table No'])
-                        self.tables[index].description = row['Base Description']
-                        self.tables[index].size = row['Base Size']
+        btn_cancel = Tkinter.Button(edit_window, text="Cancel", command=edit_window.destroy)
+        btn_edit = Tkinter.Button(edit_window, text="Edit", command=edit)
+        lbl_banner.grid(row = 0, column = 0)
+        lbl_title.grid(row = 0, column = 1)
+        entry_des.grid(row = 1, column = 0)
+        entry_size.grid(row = 1, column = 1)
 
-                    reportfilename = "/Users/tristanbowler/Desktop/Crosstab Report.xlsx"
-                    workbook = load_workbook(reportfilename)
-                    current_row = 3
-                    for key, table in self.tables.iteritems():
-                        if int(table.name) < 10:
-                            sheet_name = "Table 0%s" % str(table.name)
-                        else:
-                            sheet_name = "Table %s" % str(table.name)
-                        sheet = workbook.get_sheet_by_name(sheet_name)
-                        sheet[table.location].value = table.description
-                        toc_sheet = workbook.get_sheet_by_name("TOC")
-                        base_description_cell = "C%s" % str(current_row)
-                        base_size_cell = "D%s" % str(current_row)
-                        toc_sheet[base_description_cell].value = table.description
-                        toc_sheet[base_size_cell].value = table.size
-                        current_row += 1
+        btn_edit.grid(row = 2, column = 0)
+        btn_cancel.grid(row = 2, column = 1)
 
-                    workbook.save("/Users/tristanbowler/Desktop/Final Report.xlsx")
+    def finish_bases(self):
+        index = 1
+        for item in list(self.bases_box.get(0, Tkinter.END)):
+            #base = item.split(" - ")
+            current_table = self.tables.get(index)
+            current_table.description = item
+            current_table.size = 0
+            index += 1
 
-   
+        self.__parser.add_bases(self.tables)
 
-
-
-
-
+        ask_output = tkMessageBox.askokcancel("Select Output Directory", "Please select the directory for final report.")
+        if ask_output is True: # user selected ok
+            savedirectory = tkFileDialog.askdirectory()
+            if savedirectory is not "":
+                self.__parser.save(savedirectory)
+        self.edit_window.destroy()
 
     def topline_menu(self):
         self.redirect_window = Tkinter.Toplevel(self.__window)

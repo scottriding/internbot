@@ -68,7 +68,7 @@ class QParser(object):
                 self.__extend_alphabet.append(triple_letters)
             index += 1    
 
-    def format_report(self, path_to_output):
+    def format_report(self):
         sheet_no = 1
         for sheet in self.__workbook.worksheets:
             if sheet.title != 'TOC':
@@ -81,12 +81,10 @@ class QParser(object):
         except KeyError:
             pass
 
-        self.create_toc()
-        self.__workbook.save(path_to_output + "/Crosstab Report.xlsx")
         print "Done!"
         return self.__tables
 
-    def create_toc(self):
+    def create_toc(self, tables):
         sheet = self.__workbook.create_sheet("TOC", 0)
         if not self.__is_qualtrics:
             sheet.row_dimensions[1].height = 52
@@ -126,7 +124,7 @@ class QParser(object):
         sheet["D2"].alignment = self.__align_center
 
         current_row = 3
-        for key, value in self.__tables.iteritems():
+        for key, value in tables.iteritems():
             table_no_cell = "A%s" % str(current_row)
             question_title_cell = "B%s" % str(current_row)
             base_desc_cell = "C%s" % str(current_row)
@@ -146,10 +144,12 @@ class QParser(object):
             sheet[question_title_cell].alignment = self.__align_left
             sheet[question_title_cell].border = self.__thin_bottom
 
+            sheet[base_desc_cell].value = value.description
             sheet[base_desc_cell].font = self.__font_reg
             sheet[base_desc_cell].alignment = self.__align_left
             sheet[base_desc_cell].border = self.__thin_bottom
 
+            sheet[base_size_cell].value = value.size
             sheet[base_size_cell].font = self.__font_reg
             sheet[base_size_cell].alignment = self.__align_left
             sheet[base_size_cell].border = self.__thin_bottom
@@ -395,6 +395,24 @@ class QParser(object):
             current_cell = "%s%s" % (self.__extend_alphabet[col_no], str(current_row))
             sheet[current_cell].border = self.__thick_left
             current_row += 1
+
+    def add_bases(self, tables):
+        for key, value in tables.iteritems():
+            if int(value.name) < 10:
+                table_name = "Table 0%s" % value.name
+            else:
+                table_name = "Table %s" % value.name
+            
+            sheet = self.__workbook.get_sheet_by_name(table_name)
+
+            sheet[value.location].value = value.description
+            sheet[value.location].font = self.__font_reg
+            sheet[value.location].alignment = self.__align_names
+
+        self.create_toc(tables)
+
+    def save(self, path_to_output):
+        self.__workbook.save(path_to_output + "/Crosstab Report.xlsx")
 
 class TOCTable(object):
 
