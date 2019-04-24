@@ -27,7 +27,7 @@ class Internbot:
         btn_appen = Tkinter.Button(button_frame, text="Run topline appendix", padx=4, width=20, height=4,command=self.append_menu, relief=Tkinter.GROOVE)
         btn_rnc = Tkinter.Button(button_frame, text="Run RNC", padx=4, width=20, height=4,command=self.rnc_menu, relief=Tkinter.GROOVE)
         btn_quit = Tkinter.Button(button_frame, text="Quit", padx=4, width=20, height=4,command=self.__window.destroy, relief=Tkinter.GROOVE)
-        btn_bot = Tkinter.Button(button_frame, image=bot_render, padx=4, pady=10, width=180, height=50, borderwidth=0, highlightthickness=0, relief=Tkinter.FLAT, bg="white")
+        btn_bot = Tkinter.Button(button_frame, image=bot_render, padx=4, pady=10, width=180, height=50, borderwidth=0, highlightthickness=0, relief=Tkinter.FLAT, bg="white", command=self.main_help_window)
         btn_bot.pack(side=Tkinter.TOP)
         btn_xtabs.pack(padx=2, side=Tkinter.TOP, expand=True)
         btn_report.pack(padx=2, side=Tkinter.TOP, expand=True)
@@ -57,6 +57,20 @@ class Internbot:
         menu_quit.add_command(label="Good Bye", command=self.__window.destroy)
         self.menubar.add_cascade(label="Quit", menu=menu_quit)
         self.__window.config(menu=self.menubar)
+
+    def main_help_window(self):
+        help_window = Tkinter.Toplevel(self.__window)
+        help_window.withdraw()
+        x = self.__window.winfo_x()
+        y = self.__window.winfo_y()
+        help_window.geometry("300x200+%d+%d" % (x + 150, y + 100))
+        message = "\nWelcome to Internbot"
+        Tkinter.Label(help_window, text=message, font='Arial 14 bold').pack()
+        info_message = "\nYou can find help information \nthroughout internbot by \nclicking the bot icon.\nShe will tell you a little bit about\n what you need to input for the \nreport you are trying to create\n"
+        Tkinter.Label(help_window, text=info_message).pack()
+        btn_ok = Tkinter.Button(help_window, text="Cancel", command=help_window.destroy, height=1, width=15)
+        btn_ok.pack(padx=5, side=Tkinter.BOTTOM, expand=False)
+        help_window.deiconify()
         
     def software_tabs_menu(self):
         sft_window = Tkinter.Toplevel(self.__window)
@@ -67,7 +81,7 @@ class Internbot:
         message = "Please select crosstabs software to use"
         Tkinter.Label(sft_window, text = message).pack()
         btn_spss = Tkinter.Button(sft_window, text="SPSS", command=self.tabs_menu, height=1, width=15)
-        btn_q = Tkinter.Button(sft_window, text="Q Research", command=self.qtab_build, height=1, width=15)
+        btn_q = Tkinter.Button(sft_window, text="Q Research", command=self.bases_window, height=1, width=15)
         btn_cancel = Tkinter.Button(sft_window, text="Cancel", command=sft_window.destroy, height=1, width=15)
         btn_cancel.pack(padx=5, side=Tkinter.BOTTOM, expand=True)
         btn_q.pack(padx=5, side=Tkinter.BOTTOM, expand=True)
@@ -95,8 +109,7 @@ class Internbot:
 
 
     def qtab_build(self):
-        ask_tables = tkMessageBox.askokcancel("Select Q Research report file", "Please select the Q Research report file.")
-        if ask_tables is True:
+        if(not self.loaded_qfile):
             reportfilename = tkFileDialog.askopenfilename(initialdir = self.fpath, title = "Select report file",filetypes = (("excel files","*.xlsx"),("all files","*.*")))
             if reportfilename is not "":
                 self.__parser = crosstabs.Format_Q_Report.QParser(reportfilename)
@@ -104,66 +117,148 @@ class Internbot:
                 prompts = []
                 for key, value in self.tables.iteritems():
                     prompts.append(value.prompt)
-                self.bases_window(prompts)
+                #self.bases_window(prompts)
+                for prompt in prompts:
+                    self.tables_box.insert(Tkinter.END, prompt)
+                base_sizes = ["[Enter base details]"] * len(prompts)
+                for size in base_sizes:
+                    self.bases_box.insert(Tkinter.END, size)
 
-    def bases_window(self, prompts):
-        base_sizes = ["[Enter base details]"] * len(prompts)
+                self.focus_index = 0
+
+                self.tables_box.select_set(self.focus_index)
+                self.bases_box.select_set(self.focus_index)
+
+                self.loaded_qfile = True
+                self.base_window.focus_force()
+        else:
+            ask_lost_work = tkMessageBox.askyesno("Select Q Research report file",
+                                                  "You will lose your work. \nDo you want to continue?")
+            if ask_lost_work:
+                self.loaded_qfile=False
+                self.qtab_build()
+
+    def bases_window(self):
+
         self.base_window = Tkinter.Toplevel(self.__window)
         self.base_window.withdraw()
         x = self.__window.winfo_x()
         y = self.__window.winfo_y()
-        self.base_window.geometry("1500x500+%d+%d" % (x - 450 , y - 50))
-
+        self.base_window.geometry("1100x350+%d+%d" % (x - 200 , y - 50))
         self.base_window.title("Base assignment")
+
+        self.loaded_qfile = False
         
         self.boxes_frame = Tkinter.Frame(self.base_window)
         self.boxes_frame.pack(side=Tkinter.LEFT, fill=Tkinter.BOTH)
-        horiz_scrollbar = Tkinter.Scrollbar(self.boxes_frame)
-        horiz_scrollbar.config(orient= Tkinter.HORIZONTAL )
-        horiz_scrollbar.pack(side=Tkinter.BOTTOM, fill=Tkinter.X)
-        vert_scrollbar = Tkinter.Scrollbar(self.boxes_frame)
-        vert_scrollbar.pack(side=Tkinter.RIGHT, fill=Tkinter.Y)
+        tables_horiz_scrollbar = Tkinter.Scrollbar(self.boxes_frame)
+        tables_horiz_scrollbar.config(orient= Tkinter.HORIZONTAL )
+        tables_horiz_scrollbar.pack(side=Tkinter.BOTTOM, fill=Tkinter.X)
+        tables_vert_scrollbar = Tkinter.Scrollbar(self.boxes_frame)
+        tables_vert_scrollbar.pack(side=Tkinter.RIGHT, fill=Tkinter.Y)
         
-        
-        self.tables_box = Tkinter.Listbox(self.boxes_frame, selectmode="single", width=80, height=15, yscrollcommand=vert_scrollbar.set, xscrollcommand = horiz_scrollbar.set)
-        self.tables_box.pack(padx = 15, pady=10,expand=True, side = Tkinter.LEFT, fill=Tkinter.BOTH)
-        self.bases_box = Tkinter.Listbox(self.base_window, selectmode=Tkinter.EXTENDED)
-        self.bases_box.pack(padx = 15, pady=10, expand=True, side=Tkinter.RIGHT, fill=Tkinter.BOTH)
-        
-        for prompt in prompts:
-            self.tables_box.insert(Tkinter.END, prompt)
+        self.tables_box = Tkinter.Listbox(self.boxes_frame, selectmode=Tkinter.SINGLE, width=53, height=10, yscrollcommand=tables_vert_scrollbar.set, xscrollcommand = tables_horiz_scrollbar.set, exportselection=False)
+        self.tables_box.pack(padx = 10, pady=10,expand=True, side = Tkinter.LEFT, fill=Tkinter.BOTH)
 
-        for size in base_sizes:
-            self.bases_box.insert(Tkinter.END, size)
+        self.bases_frame = Tkinter.Frame(self.base_window)
+        self.bases_frame.pack(side = Tkinter.RIGHT, fill=Tkinter.BOTH)
+        bases_horiz_scrollbar = Tkinter.Scrollbar(self.bases_frame)
+        bases_horiz_scrollbar.config(orient=Tkinter.HORIZONTAL)
+        bases_horiz_scrollbar.pack(side=Tkinter.BOTTOM, fill=Tkinter.X)
+        bases_vert_scrollbar = Tkinter.Scrollbar(self.bases_frame)
+        bases_vert_scrollbar.pack(side=Tkinter.RIGHT, fill=Tkinter.Y)
+
+        self.bases_box = Tkinter.Listbox(self.bases_frame, selectmode=Tkinter.SINGLE, width =52, height = 10, yscrollcommand=bases_vert_scrollbar.set, xscrollcommand = bases_horiz_scrollbar.set, exportselection=False)
+        self.bases_box.pack(pady=10, expand=False, side=Tkinter.RIGHT, fill=Tkinter.BOTH)
 
         self.focus_index = 0
+
+        self.tables_box.select_set(self.focus_index)
         self.bases_box.select_set(self.focus_index)
+
         
-        vert_scrollbar.config(command=self.tables_box.yview)
-        horiz_scrollbar.config(command=self.tables_box.xview)
-        
+        tables_vert_scrollbar.config(command=self.tables_box.yview)
+        tables_horiz_scrollbar.config(command=self.tables_box.xview)
+        bases_vert_scrollbar.config(command=self.bases_box.yview)
+        bases_horiz_scrollbar.config(command=self.bases_box.xview)
+
         buttons_frame = Tkinter.Frame(self.base_window)
         buttons_frame.pack(side = Tkinter.RIGHT, fill=Tkinter.BOTH)
-        btn_edit = Tkinter.Button(buttons_frame, text =   "Edit", command = self.parse_bases)
-        btn_done = Tkinter.Button(buttons_frame, text = "Done", command = self.finish_bases)
-
-        btn_done.pack(side=Tkinter.BOTTOM, pady=15)
+        btn_edit = Tkinter.Button(buttons_frame, text="Edit", command=self.parse_bases, width=11, height=4)
+        btn_done = Tkinter.Button(buttons_frame, text="Done", command=self.finish_bases, width=11, height =4)
+        btn_open = Tkinter.Button(buttons_frame, text="Open", command=self.qtab_build, width=11, height=4)
+        btn_cancel = Tkinter.Button(buttons_frame, text="Cancel", command=self.base_window.destroy, width=11, height=4)
+        btn_bot = Tkinter.Button(buttons_frame, image=bot_render, borderwidth=0,
+                                 highlightthickness=0, relief=Tkinter.FLAT, bg="white", height=70, width=96,
+                                 command=self.topline_help_window)
+        btn_cancel.pack(side=Tkinter.BOTTOM)
+        btn_done.pack(side=Tkinter.BOTTOM)
         btn_edit.pack(side=Tkinter.BOTTOM)
+        btn_open.pack(side=Tkinter.BOTTOM)
+        btn_bot.pack(side=Tkinter.BOTTOM)
 
         def enter_pressed(event):
             self.parse_bases()
 
+        def mouse_clicked(event):
+            for index in self.tables_box.curselection():
+                self.tables_box.select_clear(index)
+            for index in self.bases_box.curselection():
+                self.focus_index = index
+                self.tables_box.select_set(self.focus_index)
+                self.bases_box.select_set(self.focus_index)
 
+        def up_pressed(event):
+            for index in self.tables_box.curselection():
+                self.tables_box.select_clear(index)
+
+            for index in self.bases_box.curselection():
+                self.bases_box.select_clear(index)
+
+            if self.focus_index > 0:
+                self.focus_index-=1
+            self.tables_box.select_set(self.focus_index)
+            self.bases_box.select_set(self.focus_index)
+
+        def down_pressed(event):
+            for index in self.tables_box.curselection():
+                self.tables_box.select_clear(index)
+
+            for index in self.bases_box.curselection():
+                self.bases_box.select_clear(index)
+
+            if self.focus_index <self.tables_box.size() -1:
+                self.focus_index += 1
+            self.tables_box.select_set(self.focus_index)
+            self.bases_box.select_set(self.focus_index)
 
         self.base_window.bind("<Return>", enter_pressed)
         self.base_window.bind("<KP_Enter>", enter_pressed)
 
+        self.base_window.bind("<Up>", up_pressed)
+
+        self.base_window.bind("<Down>", down_pressed)
+
+        self.base_window.bind("<Button-1>", mouse_clicked)
+
         self.base_window.deiconify()
 
     def parse_bases(self):
-        for index in self.bases_box.curselection():
-            base = self.bases_box.get(int(index))
-            self.edit_base(base, index)
+        if self.loaded_qfile:
+            if len(self.bases_box.curselection()) is 0:
+                tkMessageBox.askokcancel("Select from Right",
+                                         "Please make a selection from the list on the right.")
+            else:
+                for index in self.tables_box.curselection():
+                    self.tables_box.select_clear(index)
+                for index in self.bases_box.curselection():
+                    self.focus_index = index
+                    base = self.bases_box.get(int(index))
+                    self.edit_base(base, index)
+
+        else:
+            tkMessageBox.askokcancel("Select Q Research report file",
+                                     "Please open the Q Research report file first.")
 
 
     def edit_base(self, base, index):
@@ -183,8 +278,6 @@ class Internbot:
         def enter_pressed(event):
             edit()
 
-
-
         def edit():
             base_desc = entry_des.get()
             base_size = entry_size.get()
@@ -192,41 +285,46 @@ class Internbot:
             self.bases_box.insert(int(index), base_desc + " - " + base_size)
             edit_window.destroy()
             self.focus_index += 1
+            self.tables_box.select_set(self.focus_index)
             self.bases_box.select_set(self.focus_index)
-
-
-
 
         btn_cancel = Tkinter.Button(edit_window, text="Cancel", command=edit_window.destroy)
         btn_edit = Tkinter.Button(edit_window, text="Edit", command=edit)
-        lbl_banner.grid(row = 0, column = 0)
-        lbl_title.grid(row = 0, column = 1)
-        entry_des.grid(row = 1, column = 0)
-        entry_size.grid(row = 1, column = 1)
+        btn_bot = Tkinter.Button(edit_window, image=bot_render, borderwidth=0, highlightthickness=0, relief=Tkinter.FLAT, bg="white", height=40, width=40, command=self.topline_help_window)
 
-        btn_edit.grid(row = 2, column = 0)
-        btn_cancel.grid(row = 2, column = 1)
+        lbl_banner.grid(row=0, column=0)
+        lbl_title.grid(row=0, column=1)
+        entry_des.grid(row=1, column=0)
+        entry_size.grid(row=1, column=1)
+
+        btn_edit.grid(row=2, column=0)
+        btn_cancel.grid(row=2, column=1)
+        btn_bot.grid(row=2, column=2)
         edit_window.bind("<Return>", enter_pressed)
         edit_window.bind("<KP_Enter>", enter_pressed)
 
 
     def finish_bases(self):
-        index = 1
-        for item in list(self.bases_box.get(0, Tkinter.END)):
-            #base = item.split(" - ")
-            current_table = self.tables.get(index)
-            current_table.description = item
-            current_table.size = 0
-            index += 1
+        if self.loaded_qfile:
+            index = 1
+            for item in list(self.bases_box.get(0, Tkinter.END)):
+                #base=item.split(" - ")
+                current_table = self.tables.get(index)
+                current_table.description = item
+                current_table.size = 0
+                index += 1
 
-        self.__parser.add_bases(self.tables)
+            self.__parser.add_bases(self.tables)
 
-        ask_output = tkMessageBox.askokcancel("Select Output Directory", "Please select the directory for final report.")
-        if ask_output is True: # user selected ok
-            savedirectory = tkFileDialog.askdirectory()
-            if savedirectory is not "":
-                self.__parser.save(savedirectory)
-        self.edit_window.destroy()
+            ask_output = tkMessageBox.askokcancel("Select Output Directory", "Please select the directory for final report.")
+            if ask_output is True: # user selected ok
+                savedirectory = tkFileDialog.askdirectory()
+                if savedirectory is not "":
+                    self.__parser.save(savedirectory)
+            self.edit_window.destroy()
+        else:
+            tkMessageBox.askokcancel("Select Q Research report file",
+                                     "Please open the Q Research report file first.")
 
     def topline_menu(self):
         self.redirect_window = Tkinter.Toplevel(self.__window)
@@ -247,22 +345,39 @@ class Internbot:
         self.round_entry = Tkinter.Entry(round_frame)
         self.round_entry.pack(side=Tkinter.RIGHT, expand=True)
         
-        btn_open = Tkinter.Button(self.redirect_window, text = "Open", command = self.read_topline)
-        btn_cancel = Tkinter.Button(self.redirect_window, text = "Cancel", command = self.redirect_window.destroy)
-        btn_open.pack(ipadx = 10, side = Tkinter.LEFT, expand=True)
-        btn_cancel.pack(ipadx = 10, side = Tkinter.LEFT, expand=True)
+        btn_open = Tkinter.Button(self.redirect_window, text = "Open", command = self.read_topline, height=20, width=10)
+        btn_bot = Tkinter.Button(self.redirect_window, image=bot_render,  borderwidth=0,
+                                 highlightthickness=0, relief=Tkinter.FLAT, bg="white", height=40, width=40, command=self.topline_help_window)
+
+        btn_cancel = Tkinter.Button(self.redirect_window, text="Cancel", command=self.redirect_window.destroy, height=20, width=10)
+        btn_open.pack(side = Tkinter.LEFT, expand=True)
+        btn_cancel.pack(side = Tkinter.LEFT, expand=True)
+        btn_bot.pack(side=Tkinter.LEFT, ipadx=10, ipady=10)
         self.redirect_window.deiconify()
 
+    def topline_help_window(self):
+        help_window = Tkinter.Toplevel(self.__window)
+        help_window.withdraw()
+        x = self.__window.winfo_x()
+        y = self.__window.winfo_y()
+        help_window.geometry("300x200+%d+%d" % (x + 150, y + 100))
+        message = "\nTopline Help"
+        Tkinter.Label(help_window, text=message, font='Arial 14 bold').pack()
+        info_message = "\nRound Number: \nleave it blank for non-trended reports\nor enter 1-10 for trended reports.\n"
+        Tkinter.Label(help_window, text=info_message).pack()
+        btn_ok = Tkinter.Button(help_window, text="Cancel", command=help_window.destroy, height=1, width=15)
+        btn_ok.pack(padx=5, side=Tkinter.BOTTOM, expand=False)
+        help_window.deiconify()
+
     def append_menu(self):
-        self.redirect_window = Tkinter.Toplevel(self.__window)
+        self.redirect_window=Tkinter.Toplevel(self.__window)
         self.redirect_window.withdraw()
         x = self.__window.winfo_x()
         y = self.__window.winfo_y()
         self.redirect_window.geometry("250x100+%d+%d" % (x + 175, y + 150))
         self.redirect_window.title("Y2 Topline Appendix Report Automation")
-        message = "Please open a appendix file."
-        Tkinter.Label(self.redirect_window, text = message).pack(expand=True)
-
+        message="Please open a appendix file."
+        Tkinter.Label(self.redirect_window, text=message).pack(expand=True)
         btn_open = Tkinter.Button(self.redirect_window, text = "Open", command = self.read_append)
         btn_cancel = Tkinter.Button(self.redirect_window, text = "Cancel", command = self.redirect_window.destroy)
         btn_open.pack(ipadx = 10, side = Tkinter.LEFT, expand=True)
@@ -683,13 +798,13 @@ class Internbot:
 
         btn_cancel = Tkinter.Button(edit_window, text="Cancel", command=edit_window.destroy)
         btn_edit = Tkinter.Button(edit_window, text="Edit", command=edit)
-        lbl_banner.grid(row = 0, column = 0)
-        lbl_title.grid(row = 0, column = 1)
-        entry_banner.grid(row = 1, column = 0)
-        entry_title.grid(row = 1, column = 1)
+        lbl_banner.grid(row=0, column=0)
+        lbl_title.grid(row=0, column=1)
+        entry_banner.grid(row=1, column=0)
+        entry_title.grid(row=1, column=1)
 
-        btn_edit.grid(row = 2, column = 0)
-        btn_cancel.grid(row = 2, column = 1)
+        btn_edit.grid(row=2, column=0)
+        btn_cancel.grid(row=2, column=1)
 
     def remove_banner(self):
         indexes_to_delete = []
@@ -775,7 +890,7 @@ class Internbot:
                      generator.compile_scripts(self.tablesfilename, banner_list.keys(), self.__embedded_fields, filtering_variable, savedirectory)
                      open_files = tkMessageBox.askyesno("Info","Done!\nWould you like to open your finished files?")
                      if open_files is True:
-                     	self.open_file_for_user(savedirectory + "/table script.sps")
+                         self.open_file_for_user(savedirectory + "/table script.sps")
         except Exception as e:
             tkMessageBox.showerror("Error", "An error occurred\n" + str(e))
 
@@ -819,21 +934,21 @@ class Internbot:
 
                     # round details
                     round_frame = Tkinter.Frame(self.create_window)
-                    round_frame.pack(side = Tkinter.TOP, expand=True)
+                    round_frame.pack(side=Tkinter.TOP, expand=True)
 
                     round_label = Tkinter.Label(round_frame, text="Round number:")
-                    round_label.pack(padx = 5, side = Tkinter.LEFT, expand=True)
+                    round_label.pack(padx=5, side=Tkinter.LEFT, expand=True)
                     self.round_entry = Tkinter.Entry(round_frame)
-                    self.round_entry.pack(padx = 7, side=Tkinter.RIGHT, expand=True)
+                    self.round_entry.pack(padx=7, side=Tkinter.RIGHT, expand=True)
 
                     # done and cancel buttons
                     button_frame = Tkinter.Frame(self.create_window)
-                    button_frame.pack(side = Tkinter.TOP, expand=True)
+                    button_frame.pack(side=Tkinter.TOP, expand=True)
 
-                    btn_cancel = Tkinter.Button(self.create_window, text = "Cancel", command = self.create_window.destroy)
-                    btn_cancel.pack(side = Tkinter.RIGHT, expand=True)
-                    btn_done = Tkinter.Button(self.create_window, text = "Done", command = self.scores_topline)
-                    btn_done.pack(side = Tkinter.RIGHT, expand=True)
+                    btn_cancel = Tkinter.Button(self.create_window, text="Cancel", command=self.create_window.destroy)
+                    btn_cancel.pack(side=Tkinter.RIGHT, expand=True)
+                    btn_done = Tkinter.Button(self.create_window, text="Done", command=self.scores_topline)
+                    btn_done.pack(side=Tkinter.RIGHT, expand=True)
                     self.create_window.deiconify()
         except Exception as e:
                 tkMessageBox.showerror("Error", "An error occurred\n" + str(e))

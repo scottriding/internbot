@@ -15,11 +15,10 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/internbot.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="375">
-              <caret line="29" column="104" selection-start-line="29" selection-start-column="104" selection-end-line="29" selection-end-column="104" />
+            <state relative-caret-position="790">
+              <caret line="229" column="58" selection-start-line="229" selection-start-column="58" selection-end-line="229" selection-end-column="58" />
               <folding>
                 <element signature="e#0#11#0" expanded="true" />
-                <element signature="e#299#465#0" />
               </folding>
             </state>
           </provider>
@@ -84,6 +83,7 @@
   <component name="FindInProjectRecents">
     <findStrings>
       <find>tables</find>
+      <find>btn_bot</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -98,9 +98,9 @@
     </option>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="1895" />
-    <option name="y" value="31" />
-    <option name="width" value="1534" />
+    <option name="x" value="162" />
+    <option name="y" value="34" />
+    <option name="width" value="1740" />
     <option name="height" value="1276" />
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
@@ -180,10 +180,10 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="1895" y="31" width="1534" height="1276" extended-state="0" />
+    <frame x="162" y="34" width="1740" height="1276" extended-state="0" />
     <editor active="true" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.10857909" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.09540636" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
@@ -273,11 +273,10 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/internbot.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="375">
-          <caret line="29" column="104" selection-start-line="29" selection-start-column="104" selection-end-line="29" selection-end-column="104" />
+        <state relative-caret-position="790">
+          <caret line="229" column="58" selection-start-line="229" selection-start-column="58" selection-end-line="229" selection-end-column="58" />
           <folding>
             <element signature="e#0#11#0" expanded="true" />
-            <element signature="e#299#465#0" />
           </folding>
         </state>
       </provider>
