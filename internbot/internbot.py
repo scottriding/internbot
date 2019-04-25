@@ -14,78 +14,96 @@ from years_window import YearsWindow
 class Internbot:
 
     def __init__ (self, root):
-            self.__window = root
-            self.main_buttons()
-            self.fpath = os.path.join(os.path.expanduser("~"), "Desktop")
-            self.__embedded_fields = []
+        self.__window = root
+        self.main_buttons()
+        self.fpath = os.path.join(os.path.expanduser("~"), "Desktop")
+        self.__embedded_fields = []
 
     def main_buttons(self):
+        """
+        Function establishes all the components of the main window
+        :return: None
+        """
+        #Button definitions
         button_frame =Tkinter.Frame(self.__window)
-        button_frame.pack(side=Tkinter.LEFT, fill=Tkinter.BOTH)
-        btn_xtabs = Tkinter.Button(button_frame, text="Run crosstabs", padx=4, width=20, height=4, command=self.software_tabs_menu, relief=Tkinter.GROOVE)
-        btn_report = Tkinter.Button(button_frame, text="Run topline report", padx=4, width=20, height=4,command=self.topline_menu, relief=Tkinter.GROOVE)
-        btn_appen = Tkinter.Button(button_frame, text="Run topline appendix", padx=4, width=20, height=4,command=self.append_menu, relief=Tkinter.GROOVE)
-        btn_rnc = Tkinter.Button(button_frame, text="Run RNC", padx=4, width=20, height=4,command=self.rnc_menu, relief=Tkinter.GROOVE)
-        btn_quit = Tkinter.Button(button_frame, text="Quit", padx=4, width=20, height=4,command=self.__window.destroy, relief=Tkinter.GROOVE)
-        btn_bot = Tkinter.Button(button_frame, image=bot_render, padx=4, pady=10, width=180, height=50, borderwidth=0, highlightthickness=0, relief=Tkinter.FLAT, bg="white", command=self.main_help_window)
-        btn_bot.pack(side=Tkinter.TOP)
-        btn_xtabs.pack(padx=2, side=Tkinter.TOP, expand=True)
-        btn_report.pack(padx=2, side=Tkinter.TOP, expand=True)
-        btn_appen.pack(padx=2, side=Tkinter.TOP, expand=True)
-        btn_rnc.pack(padx=2, side=Tkinter.TOP, expand=True)
-        btn_quit.pack(padx=2, side=Tkinter.TOP, expand=True)
-        
+        button_frame.pack(side=Tkinter.LEFT, fill=Tkinter.BOTH, )
+        btn_xtabs = Tkinter.Button(button_frame, text="Run crosstabs", padx=4, width=20, height=3, command=self.software_tabs_menu, relief=Tkinter.FLAT, highlightthickness=0)
+        btn_report = Tkinter.Button(button_frame, text="Run topline report", padx=4, width=20, height=3,command=self.topline_menu, relief=Tkinter.FLAT, highlightthickness=0)
+        btn_appen = Tkinter.Button(button_frame, text="Run topline appendix", padx=4, width=20, height=3,command=self.append_menu, relief=Tkinter.FLAT, highlightthickness=0)
+        btn_rnc = Tkinter.Button(button_frame, text="Run RNC", padx=4, width=20, height=3,command=self.rnc_menu, relief=Tkinter.FLAT, highlightthickness=0)
+        btn_quit = Tkinter.Button(button_frame, text="Quit", padx=4, width=20, height=3,command=self.__window.destroy, relief=Tkinter.GROOVE, highlightthickness=0)
+        btn_bot = Tkinter.Button(button_frame, image=bot_render, padx=4, pady=10, width=158, height=45, borderwidth=0, highlightthickness=0, relief=Tkinter.FLAT, command=self.main_help_window)
+        btn_bot.pack(padx=5, pady=3, side=Tkinter.TOP)
+        btn_xtabs.pack(padx=5, side=Tkinter.TOP, expand=True)
+        btn_report.pack(padx=5, side=Tkinter.TOP, expand=True)
+        btn_appen.pack(padx=5, side=Tkinter.TOP, expand=True)
+        btn_rnc.pack(padx=5, side=Tkinter.TOP, expand=True)
+        btn_quit.pack(padx=5, side=Tkinter.TOP, expand=True)
+
+        #Menubar Set Up
         self.menubar = Tkinter.Menu(self.__window)
         menu_xtabs = Tkinter.Menu(self.menubar, tearoff = 0)
         menu_xtabs.add_command(label="Variable Script", command=self.variable_script)
         menu_xtabs.add_command(label="Table Script", command=self.table_script)
         menu_xtabs.add_command(label="Build Report", command=self.build_xtabs)
         self.menubar.add_cascade(label="Crosstabs", menu=menu_xtabs)
-        
-        menu_report = Tkinter.Menu(self.menubar, tearoff = 0)
+        menu_report = Tkinter.Menu(self.menubar, tearoff=0)
         menu_report.add_command(label="Run Topline", command=self.topline_menu)
         menu_report.add_command(label="Run Appendix", command=self.append_menu)
         self.menubar.add_cascade(label="Topline", menu=menu_report)
-        
         menu_rnc = Tkinter.Menu(self.menubar, tearoff=0)
         menu_rnc.add_command(label="Scores Topline", command=self.scores_window)
         menu_rnc.add_command(label="Issue Trended", command=self.issue_trended_window)
         menu_rnc.add_command(label="Trended Score", command=self.trended_scores_window)
         self.menubar.add_cascade(label="RNC", menu=menu_rnc)
-        
-        menu_quit = Tkinter.Menu(self.menubar, tearoff = 0)
+        menu_quit = Tkinter.Menu(self.menubar, tearoff=0)
         menu_quit.add_command(label="Good Bye", command=self.__window.destroy)
         self.menubar.add_cascade(label="Quit", menu=menu_quit)
         self.__window.config(menu=self.menubar)
 
     def main_help_window(self):
+        """
+        Function serves as an intro to internbot. Explains the help bot to the user.
+        :return: None
+        """
         help_window = Tkinter.Toplevel(self.__window)
         help_window.withdraw()
+
         x = self.__window.winfo_x()
         y = self.__window.winfo_y()
-        help_window.geometry("300x200+%d+%d" % (x + 150, y + 100))
+        help_window.geometry("250x250+%d+%d" % (x + 125, y + 125))
+
         message = "\nWelcome to Internbot"
-        Tkinter.Label(help_window, text=message, font='Arial 14 bold').pack()
-        info_message = "\nYou can find help information \nthroughout internbot by \nclicking the bot icon.\nShe will tell you a little bit about\n what you need to input for the \nreport you are trying to create\n"
-        Tkinter.Label(help_window, text=info_message).pack()
-        btn_ok = Tkinter.Button(help_window, text="Cancel", command=help_window.destroy, height=1, width=15)
-        btn_ok.pack(padx=5, side=Tkinter.BOTTOM, expand=False)
+        Tkinter.Label(help_window, text=message, font=('Trade Gothic LT Pro', 18, 'bold'), fg='midnight blue').pack()
+        info_message = "You can find help information throughout"\
+                       "\nInternbot by clicking the bot icon" \
+                       "\n\nShe will tell you a little bit about" \
+                       "\n what you need to input for the" \
+                       "\nreport you are trying to create\n"
+        Tkinter.Label(help_window, text=info_message, font=('Trade Gothic LT Pro', 14, )).pack()
+        btn_ok = Tkinter.Button(help_window, text="Ok", command=help_window.destroy, height=3, width=20, fg='midnight blue', highlightthickness=0, font=('Trade Gothic LT Pro', 18, 'bold'))
+        btn_ok.pack(pady= 5, side=Tkinter.BOTTOM, expand=False)
+
         help_window.deiconify()
         
     def software_tabs_menu(self):
+        """
+        Function sets up the Software Type selection for crosstabs
+        :return:
+        """
         sft_window = Tkinter.Toplevel(self.__window)
         sft_window.withdraw()
         x = self.__window.winfo_x()
         y = self.__window.winfo_y()
-        sft_window.geometry("300x200+%d+%d" % (x + 150, y + 100))
-        message = "Please select crosstabs software to use"
-        Tkinter.Label(sft_window, text = message).pack()
-        btn_spss = Tkinter.Button(sft_window, text="SPSS", command=self.tabs_menu, height=1, width=15)
-        btn_q = Tkinter.Button(sft_window, text="Q Research", command=self.bases_window, height=1, width=15)
-        btn_cancel = Tkinter.Button(sft_window, text="Cancel", command=sft_window.destroy, height=1, width=15)
-        btn_cancel.pack(padx=5, side=Tkinter.BOTTOM, expand=True)
-        btn_q.pack(padx=5, side=Tkinter.BOTTOM, expand=True)
-        btn_spss.pack(padx=5, side=Tkinter.BOTTOM, expand=True)
+        sft_window.geometry("200x250+%d+%d" % (x + 150, y + 125))
+        message = "Please select crosstabs\nsoftware to use"
+        Tkinter.Label(sft_window, text = message, font=('Trade Gothic LT Pro', 16, "bold"), fg="midnight blue").pack()
+        btn_spss = Tkinter.Button(sft_window, text="SPSS", command=self.tabs_menu, height=3, width=20)
+        btn_q = Tkinter.Button(sft_window, text="Q Research", command=self.bases_window, height=3, width=20)
+        btn_cancel = Tkinter.Button(sft_window, text="Cancel", command=sft_window.destroy, height=3, width=20)
+        btn_cancel.pack(side=Tkinter.BOTTOM, expand=True)
+        btn_q.pack(side=Tkinter.BOTTOM, expand=True)
+        btn_spss.pack(side=Tkinter.BOTTOM, expand=True)
         sft_window.deiconify()
 
     def tabs_menu(self):
@@ -107,37 +125,6 @@ class Internbot:
         redirect_window.deiconify()
 
 
-
-    def qtab_build(self):
-        if(not self.loaded_qfile):
-            reportfilename = tkFileDialog.askopenfilename(initialdir = self.fpath, title = "Select report file",filetypes = (("excel files","*.xlsx"),("all files","*.*")))
-            if reportfilename is not "":
-                self.__parser = crosstabs.Format_Q_Report.QParser(reportfilename)
-                self.tables = self.__parser.format_report()
-                prompts = []
-                for key, value in self.tables.iteritems():
-                    prompts.append(value.prompt)
-                #self.bases_window(prompts)
-                for prompt in prompts:
-                    self.tables_box.insert(Tkinter.END, prompt)
-                base_sizes = ["[Enter base details]"] * len(prompts)
-                for size in base_sizes:
-                    self.bases_box.insert(Tkinter.END, size)
-
-                self.focus_index = 0
-
-                self.tables_box.select_set(self.focus_index)
-                self.bases_box.select_set(self.focus_index)
-
-                self.loaded_qfile = True
-                self.base_window.focus_force()
-        else:
-            ask_lost_work = tkMessageBox.askyesno("Select Q Research report file",
-                                                  "You will lose your work. \nDo you want to continue?")
-            if ask_lost_work:
-                self.loaded_qfile=False
-                self.qtab_build()
-
     def bases_window(self):
 
         self.base_window = Tkinter.Toplevel(self.__window)
@@ -150,26 +137,26 @@ class Internbot:
         self.loaded_qfile = False
         
         self.boxes_frame = Tkinter.Frame(self.base_window)
-        self.boxes_frame.pack(side=Tkinter.LEFT, fill=Tkinter.BOTH)
+        self.boxes_frame.pack(padx=10, pady=10, side=Tkinter.LEFT, fill=Tkinter.BOTH)
         tables_horiz_scrollbar = Tkinter.Scrollbar(self.boxes_frame)
         tables_horiz_scrollbar.config(orient= Tkinter.HORIZONTAL )
         tables_horiz_scrollbar.pack(side=Tkinter.BOTTOM, fill=Tkinter.X)
         tables_vert_scrollbar = Tkinter.Scrollbar(self.boxes_frame)
         tables_vert_scrollbar.pack(side=Tkinter.RIGHT, fill=Tkinter.Y)
         
-        self.tables_box = Tkinter.Listbox(self.boxes_frame, selectmode=Tkinter.SINGLE, width=53, height=10, yscrollcommand=tables_vert_scrollbar.set, xscrollcommand = tables_horiz_scrollbar.set, exportselection=False)
-        self.tables_box.pack(padx = 10, pady=10,expand=True, side = Tkinter.LEFT, fill=Tkinter.BOTH)
+        self.tables_box = Tkinter.Listbox(self.boxes_frame, selectmode=Tkinter.SINGLE, width=55, height=10, yscrollcommand=tables_vert_scrollbar.set, xscrollcommand = tables_horiz_scrollbar.set, exportselection=False)
+        self.tables_box.pack(expand=True, side = Tkinter.LEFT, fill=Tkinter.BOTH)
 
         self.bases_frame = Tkinter.Frame(self.base_window)
-        self.bases_frame.pack(side = Tkinter.RIGHT, fill=Tkinter.BOTH)
+        self.bases_frame.pack(padx=10, pady=10, side=Tkinter.RIGHT, fill=Tkinter.BOTH)
         bases_horiz_scrollbar = Tkinter.Scrollbar(self.bases_frame)
         bases_horiz_scrollbar.config(orient=Tkinter.HORIZONTAL)
         bases_horiz_scrollbar.pack(side=Tkinter.BOTTOM, fill=Tkinter.X)
         bases_vert_scrollbar = Tkinter.Scrollbar(self.bases_frame)
         bases_vert_scrollbar.pack(side=Tkinter.RIGHT, fill=Tkinter.Y)
 
-        self.bases_box = Tkinter.Listbox(self.bases_frame, selectmode=Tkinter.SINGLE, width =52, height = 10, yscrollcommand=bases_vert_scrollbar.set, xscrollcommand = bases_horiz_scrollbar.set, exportselection=False)
-        self.bases_box.pack(pady=10, expand=False, side=Tkinter.RIGHT, fill=Tkinter.BOTH)
+        self.bases_box = Tkinter.Listbox(self.bases_frame, selectmode=Tkinter.SINGLE, width =54, height = 10, yscrollcommand=bases_vert_scrollbar.set, xscrollcommand = bases_horiz_scrollbar.set, exportselection=False)
+        self.bases_box.pack(expand=False, side=Tkinter.RIGHT, fill=Tkinter.BOTH)
 
         self.focus_index = 0
 
@@ -183,19 +170,19 @@ class Internbot:
         bases_horiz_scrollbar.config(command=self.bases_box.xview)
 
         buttons_frame = Tkinter.Frame(self.base_window)
-        buttons_frame.pack(side = Tkinter.RIGHT, fill=Tkinter.BOTH)
-        btn_edit = Tkinter.Button(buttons_frame, text="Edit", command=self.parse_bases, width=11, height=4)
-        btn_done = Tkinter.Button(buttons_frame, text="Done", command=self.finish_bases, width=11, height =4)
-        btn_open = Tkinter.Button(buttons_frame, text="Open", command=self.qtab_build, width=11, height=4)
-        btn_cancel = Tkinter.Button(buttons_frame, text="Cancel", command=self.base_window.destroy, width=11, height=4)
+        buttons_frame.pack(pady=10, side = Tkinter.RIGHT, fill=Tkinter.BOTH)
+        btn_edit = Tkinter.Button(buttons_frame, text="Edit", command=self.parse_bases, width=20, height=3)
+        btn_done = Tkinter.Button(buttons_frame, text="Done", command=self.finish_bases, width=20, height =3)
+        btn_open = Tkinter.Button(buttons_frame, text="Open", command=self.qtab_build, width=20, height=3)
+        btn_cancel = Tkinter.Button(buttons_frame, text="Cancel", command=self.base_window.destroy, width=20, height=3)
         btn_bot = Tkinter.Button(buttons_frame, image=bot_render, borderwidth=0,
-                                 highlightthickness=0, relief=Tkinter.FLAT, bg="white", height=70, width=96,
-                                 command=self.topline_help_window)
-        btn_cancel.pack(side=Tkinter.BOTTOM)
-        btn_done.pack(side=Tkinter.BOTTOM)
-        btn_edit.pack(side=Tkinter.BOTTOM)
-        btn_open.pack(side=Tkinter.BOTTOM)
-        btn_bot.pack(side=Tkinter.BOTTOM)
+                                 highlightthickness=0, relief=Tkinter.FLAT, bg="white", height=65, width=158,
+                                 command=self.bases_help_window)
+        btn_cancel.pack(pady=2, side=Tkinter.BOTTOM)
+        btn_done.pack(pady=2, side=Tkinter.BOTTOM)
+        btn_edit.pack(pady=2, side=Tkinter.BOTTOM)
+        btn_open.pack(pady=2, side=Tkinter.BOTTOM)
+        btn_bot.pack(pady=2, side=Tkinter.BOTTOM)
 
         def enter_pressed(event):
             self.parse_bases()
@@ -243,7 +230,76 @@ class Internbot:
 
         self.base_window.deiconify()
 
+    def qtab_build(self):
+        """
+        Funtion opens a Q Research .xlsx file and loads the table information into base_window for display to user
+        :return: None
+        """
+
+        if not self.loaded_qfile:
+            report_file_name = tkFileDialog.askopenfilename(initialdir = self.fpath, title = "Select report file",filetypes = (("excel files","*.xlsx"),("all files","*.*")))
+            if report_file_name is not "":
+                self.__parser = crosstabs.Format_Q_Report.QParser(report_file_name)
+                self.tables = self.__parser.format_report()
+                prompts = []
+                for key, value in self.tables.iteritems():
+                    prompts.append(value.prompt)
+
+                for prompt in prompts:
+                    self.tables_box.insert(Tkinter.END, prompt)
+                base_sizes = ["[Enter base details]"] * len(prompts)
+                for size in base_sizes:
+                    self.bases_box.insert(Tkinter.END, size)
+
+                self.focus_index = 0
+
+                self.tables_box.select_set(self.focus_index)
+                self.bases_box.select_set(self.focus_index)
+
+                self.loaded_qfile = True
+                self.base_window.focus_force()
+        else:
+            ask_lost_work = tkMessageBox.askyesno("Select Q Research report file",
+                                                  "You will lose your work. \nDo you want to continue?")
+            if ask_lost_work:
+                self.loaded_qfile=False
+                self.qtab_build()
+
+    def bases_help_window(self):
+        """
+        Function displays help information about how to use bases window.
+        A part of the Q Research crosstabs process.
+        :return: None
+        """
+        help_window = Tkinter.Toplevel(self.__window)
+        help_window.lift()
+        help_window.withdraw()
+        x = self.__window.winfo_x()
+        y = self.__window.winfo_y()
+        help_window.geometry("300x310+%d+%d" % (x + 150, y + 155))
+        message = "\nBase Input Help"
+        Tkinter.Label(help_window, text=message, font='Arial 14 bold').pack()
+        info_message = "Select Open to import a Q output file."\
+                       "\nThis should be a .xlsx file."\
+                       "\n\nYou can change the current selection with"\
+                       "\nthe up/down arrow keys or your mouse."\
+                       "\n\nEdit the base and n info of the current"\
+                       "\nselection by selecting Edit or hitting enter."\
+                       "\n\nWhen you're done, select Done and you"\
+                       "\nwill be prompted to select the directory of"\
+                       "\nyour finished report.\n"
+        Tkinter.Label(help_window, text=info_message, justify=Tkinter.LEFT).pack()
+        btn_ok = Tkinter.Button(help_window, text="Ok", command=help_window.destroy, height=4, width=20)
+        btn_ok.pack(padx=5, side=Tkinter.BOTTOM, expand=False)
+        help_window.deiconify()
+
+
+
     def parse_bases(self):
+        """
+        Function calls edit_base for every entry in current selection of base_window
+        :return: None
+        """
         if self.loaded_qfile:
             if len(self.bases_box.curselection()) is 0:
                 tkMessageBox.askokcancel("Select from Right",
@@ -253,15 +309,20 @@ class Internbot:
                     self.tables_box.select_clear(index)
                 for index in self.bases_box.curselection():
                     self.focus_index = index
-                    base = self.bases_box.get(int(index))
-                    self.edit_base(base, index)
+                    self.edit_base_window(index)
 
         else:
             tkMessageBox.askokcancel("Select Q Research report file",
                                      "Please open the Q Research report file first.")
 
 
-    def edit_base(self, base, index):
+    def edit_base_window(self, index):
+        """
+        Function defines a window for the user to input Base and N for a table.
+        :param base:
+        :param index:
+        :return:
+        """
         edit_window = Tkinter.Toplevel(self.base_window)
         x = self.__window.winfo_x()
         y = self.__window.winfo_y()
@@ -275,10 +336,11 @@ class Internbot:
         entry_size = Tkinter.Entry(edit_window)
         entry_size.insert(0, "")
 
-        def enter_pressed(event):
-            edit()
-
         def edit():
+            """
+            Internal function used by edit_base to edit the text of what appears in bases_window
+            :return: None
+            """
             base_desc = entry_des.get()
             base_size = entry_size.get()
             self.bases_box.delete(int(index))
@@ -288,9 +350,9 @@ class Internbot:
             self.tables_box.select_set(self.focus_index)
             self.bases_box.select_set(self.focus_index)
 
+
         btn_cancel = Tkinter.Button(edit_window, text="Cancel", command=edit_window.destroy)
         btn_edit = Tkinter.Button(edit_window, text="Edit", command=edit)
-        btn_bot = Tkinter.Button(edit_window, image=bot_render, borderwidth=0, highlightthickness=0, relief=Tkinter.FLAT, bg="white", height=40, width=40, command=self.topline_help_window)
 
         lbl_banner.grid(row=0, column=0)
         lbl_title.grid(row=0, column=1)
@@ -299,12 +361,20 @@ class Internbot:
 
         btn_edit.grid(row=2, column=0)
         btn_cancel.grid(row=2, column=1)
-        btn_bot.grid(row=2, column=2)
+
+        #Key Bindings
+        def enter_pressed(event):
+            edit()
+
         edit_window.bind("<Return>", enter_pressed)
         edit_window.bind("<KP_Enter>", enter_pressed)
 
 
     def finish_bases(self):
+        """
+        Function gets save directory for finished crosstab report.
+        :return: None
+        """
         if self.loaded_qfile:
             index = 1
             for item in list(self.bases_box.get(0, Tkinter.END)):
@@ -1106,12 +1176,17 @@ window.geometry("600x400+%d+%d" % (mov_x, mov_y))
 x = window.winfo_x()
 y = window.winfo_y()
 window['background'] = 'white'
+
 y2_logo = "Y2Logo.gif"
 help_bot = "Internbot.gif"
 bot_render = Tkinter.PhotoImage(file=help_bot)
 logo_render = Tkinter.PhotoImage(file= y2_logo)
-logo_label = Tkinter.Label(window, image=logo_render, borderwidth=0, highlightthickness=0, relief=Tkinter.FLAT)
+logo_label = Tkinter.Label(window, image=logo_render, borderwidth=0, highlightthickness=0, relief=Tkinter.FLAT, padx=50)
 logo_label.pack(side=Tkinter.RIGHT)
+
+window.option_add("*Font", ('Trade Gothic LT Pro', 16, ))
+window.option_add("*Button.Foreground", "midnight blue")
+
 
 window.deiconify()
 Internbot(window)
