@@ -9,6 +9,7 @@ import os, subprocess, platform
 import csv
 from collections import OrderedDict
 from years_window import YearsWindow
+from SPSS_Crosstabs import SPSSCrosstabs
 import sys
 
 class Internbot:
@@ -41,25 +42,25 @@ class Internbot:
         btn_quit.pack(padx=5, side=Tkinter.TOP, expand=True)
 
         #Menubar Set Up
-        self.menubar = Tkinter.Menu(self.__window)
-        menu_xtabs = Tkinter.Menu(self.menubar, tearoff = 0)
-        menu_xtabs.add_command(label="Variable Script", command=self.variable_script)
-        menu_xtabs.add_command(label="Table Script", command=self.table_script)
-        menu_xtabs.add_command(label="Build Report", command=self.build_xtabs)
-        self.menubar.add_cascade(label="Crosstabs", menu=menu_xtabs)
-        menu_report = Tkinter.Menu(self.menubar, tearoff=0)
-        menu_report.add_command(label="Run Topline", command=self.topline_menu)
-        menu_report.add_command(label="Run Appendix", command=self.append_menu)
-        self.menubar.add_cascade(label="Topline", menu=menu_report)
-        menu_rnc = Tkinter.Menu(self.menubar, tearoff=0)
-        menu_rnc.add_command(label="Scores Topline", command=self.scores_window)
-        menu_rnc.add_command(label="Issue Trended", command=self.issue_trended_window)
-        menu_rnc.add_command(label="Trended Score", command=self.trended_scores_window)
-        self.menubar.add_cascade(label="RNC", menu=menu_rnc)
-        menu_quit = Tkinter.Menu(self.menubar, tearoff=0)
-        menu_quit.add_command(label="Good Bye", command=self.__window.destroy)
-        self.menubar.add_cascade(label="Quit", menu=menu_quit)
-        self.__window.config(menu=self.menubar)
+        # self.menubar = Tkinter.Menu(self.__window)
+        # menu_xtabs = Tkinter.Menu(self.menubar, tearoff = 0)
+        # menu_xtabs.add_command(label="Variable Script", command=self.variable_script)
+        # menu_xtabs.add_command(label="Table Script", command=self.table_script)
+        # menu_xtabs.add_command(label="Build Report", command=self.build_xtabs)
+        # self.menubar.add_cascade(label="Crosstabs", menu=menu_xtabs)
+        # menu_report = Tkinter.Menu(self.menubar, tearoff=0)
+        # menu_report.add_command(label="Run Topline", command=self.topline_menu)
+        # menu_report.add_command(label="Run Appendix", command=self.append_menu)
+        # self.menubar.add_cascade(label="Topline", menu=menu_report)
+        # menu_rnc = Tkinter.Menu(self.menubar, tearoff=0)
+        # menu_rnc.add_command(label="Scores Topline", command=self.scores_window)
+        # menu_rnc.add_command(label="Issue Trended", command=self.issue_trended_window)
+        # menu_rnc.add_command(label="Trended Score", command=self.trended_scores_window)
+        # self.menubar.add_cascade(label="RNC", menu=menu_rnc)
+        # menu_quit = Tkinter.Menu(self.menubar, tearoff=0)
+        # menu_quit.add_command(label="Good Bye", command=self.__window.destroy)
+        # self.menubar.add_cascade(label="Quit", menu=menu_quit)
+        # self.__window.config(menu=self.menubar)
 
         def help_pressed(event):
             self.main_help_window()
@@ -74,19 +75,19 @@ class Internbot:
         help_window = Tkinter.Toplevel(self.__window)
         help_window.withdraw()
 
-        x = self.__window.winfo_x()
-        y = self.__window.winfo_y()
-        help_window.geometry("250x250+%d+%d" % (x + 125, y + 125))
+        width = 250
+        height = 250
+        help_window.geometry("%dx%d+%d+%d" % (width,height,mov_x + window_width / 2 - width / 2, mov_y + window_height / 2 - height / 2))
 
         message = "\nWelcome to Internbot"
-        Tkinter.Label(help_window, text=message, font=header_font, fg='midnight blue').pack()
+        Tkinter.Label(help_window, text=message, font=header_font, fg=header_color).pack()
         info_message = "You can find help information throughout"\
                        "\nInternbot by clicking the bot icon" \
                        "\n\nShe will tell you a little bit about" \
                        "\n what you need to input for the" \
                        "\nreport you are trying to create\n"
         Tkinter.Label(help_window, text=info_message, font=('Trade Gothic LT Pro', 14, )).pack()
-        btn_ok = Tkinter.Button(help_window, text="Ok", command=help_window.destroy, height=3, width=20, fg='midnight blue', highlightthickness=0, font=('Trade Gothic LT Pro', 18, 'bold'))
+        btn_ok = Tkinter.Button(help_window, text="Ok", command=help_window.destroy, height=3, width=20,  highlightthickness=0)
         btn_ok.pack(pady= 5, side=Tkinter.BOTTOM, expand=False)
         help_window.deiconify()
         
@@ -97,12 +98,15 @@ class Internbot:
         """
         sft_window = Tkinter.Toplevel(self.__window)
         sft_window.withdraw()
-        x = self.__window.winfo_x()
-        y = self.__window.winfo_y()
-        sft_window.geometry("200x250+%d+%d" % (x + 100, y + 125))
+        self.spss = SPSSCrosstabs(self.__window, mov_x, mov_y, window_width, window_height, header_font, header_color)
+        width = 200
+        height = 250
+        sft_window.geometry(
+            "%dx%d+%d+%d" % (width,height,mov_x + window_width / 2 - width / 2, mov_y + window_height / 2 - height / 2))
+
         message = "Please select crosstabs\nsoftware to use"
-        Tkinter.Label(sft_window, text = message, font=header_font, fg="midnight blue").pack()
-        btn_spss = Tkinter.Button(sft_window, text="SPSS", command=self.tabs_menu, height=3, width=20)
+        Tkinter.Label(sft_window, text = message, font=header_font, fg=header_color).pack()
+        btn_spss = Tkinter.Button(sft_window, text="SPSS", command=self.spss.spss_crosstabs_menu, height=3, width=20)
         btn_q = Tkinter.Button(sft_window, text="Q Research", command=self.bases_window, height=3, width=20)
         btn_cancel = Tkinter.Button(sft_window, text="Cancel", command=sft_window.destroy, height=3, width=20)
         btn_cancel.pack(side=Tkinter.BOTTOM, expand=True)
@@ -110,32 +114,19 @@ class Internbot:
         btn_spss.pack(side=Tkinter.BOTTOM, expand=True)
         sft_window.deiconify()
 
-    def tabs_menu(self):
-        redirect_window = Tkinter.Toplevel(self.__window)
-        redirect_window.withdraw()
-        x = self.__window.winfo_x()
-        y = self.__window.winfo_y()
-        redirect_window.geometry("200x300+%d+%d" % (x + 100, y + 150))
-        message = "Please select the\nfiles to produce."
-        Tkinter.Label(redirect_window, text = message, font=header_font, fg='midnight blue').pack()
-        btn_var = Tkinter.Button(redirect_window, text="Variable script", command=self.variable_script, height=3, width=20)
-        btn_tab = Tkinter.Button(redirect_window, text="Table script", command=self.table_script, height=3, width=20)
-        btn_compile = Tkinter.Button(redirect_window, text="Build report", command=self.build_xtabs, height=3, width=20)
-        btn_cancel = Tkinter.Button(redirect_window, text="Cancel", command=redirect_window.destroy, height=3, width=20)
-        btn_cancel.pack(padx=5, side=Tkinter.BOTTOM, expand=True)
-        btn_compile.pack(padx=5, side=Tkinter.BOTTOM, expand=True)
-        btn_tab.pack(padx=5, side=Tkinter.BOTTOM, expand=True)
-        btn_var.pack(padx=5, side=Tkinter.BOTTOM, expand=True)
-        redirect_window.deiconify()
 
 
     def bases_window(self):
+        """
+        Function sets up window for bases entry of Q crosstab reports
+        :return:
+        """
 
         self.base_window = Tkinter.Toplevel(self.__window)
         self.base_window.withdraw()
-        x = self.__window.winfo_x()
-        y = self.__window.winfo_y()
-        self.base_window.geometry("1100x350+%d+%d" % (x - 200 , y - 50))
+        width = 1100
+        height = 350
+        self.base_window.geometry("%dx%d+%d+%d" % (width, height, mov_x + window_width / 2 - width / 2, mov_y + window_height / 2 - height / 2))
         self.base_window.title("Base assignment")
         self.loaded_qfile = False
         
@@ -282,9 +273,9 @@ class Internbot:
         help_window = Tkinter.Toplevel(self.__window)
         help_window.lift()
         help_window.withdraw()
-        x = self.__window.winfo_x()
-        y = self.__window.winfo_y()
-        help_window.geometry("300x400+%d+%d" % (x + 150, y + 200))
+        width=300
+        height=400
+        help_window.geometry("%dx%d+%d+%d" % (width,height,mov_x + window_width / 2 - width / 2, mov_y + window_height / 2 - height / 2))
         message = "\nBase Input Help"
         Tkinter.Label(help_window, text=message, font=header_font).pack()
         info_message = "Select Open to import a Q output file."\
@@ -297,11 +288,9 @@ class Internbot:
                        "\nwill be prompted to select the directory of"\
                        "\nyour finished report.\n"
         Tkinter.Label(help_window, text=info_message, justify=Tkinter.LEFT).pack()
-        btn_ok = Tkinter.Button(help_window, text="Ok", command=help_window.destroy, height=4, width=20)
+        btn_ok = Tkinter.Button(help_window, text="Ok", command=help_window.destroy, height=3, width=20)
         btn_ok.pack(padx=5, side=Tkinter.BOTTOM, expand=False)
         help_window.deiconify()
-
-
 
     def parse_bases(self):
         """
@@ -323,7 +312,6 @@ class Internbot:
             tkMessageBox.askokcancel("Select Q Research report file",
                                      "Please open the Q Research report file first.")
 
-
     def edit_base_window(self, index):
         """
         Function defines a window for the user to input Base and N for a table.
@@ -332,9 +320,9 @@ class Internbot:
         :return:
         """
         edit_window = Tkinter.Toplevel(self.base_window)
-        x = self.__window.winfo_x()
-        y = self.__window.winfo_y()
-        edit_window.geometry("400x150+%d+%d" % (x + 100, y + 200))
+        width=400
+        height=150
+        edit_window.geometry("%dx%d+%d+%d" % (width,height,mov_x + window_width / 2 - width / 2, mov_y + window_height / 2 - height / 2))
         edit_window.title("Add base and n")
         edit_frame =Tkinter.Frame(edit_window)
         edit_frame.pack(side=Tkinter.TOP)
@@ -395,7 +383,6 @@ class Internbot:
         edit_window.bind("<Right>", right_pressed)
         edit_window.bind("<Escape>", escape_pressed)
 
-
     def finish_bases(self):
         """
         Function gets save directory for finished crosstab report.
@@ -423,95 +410,123 @@ class Internbot:
                                      "Please open the Q Research report file first.")
 
     def topline_menu(self):
+        """
+        Function sets up menu for entry of round number and open of topline file.
+        :return: None
+        """
         self.redirect_window = Tkinter.Toplevel(self.__window)
         self.redirect_window.withdraw()
-        x = self.__window.winfo_x()
-        y = self.__window.winfo_y()
-        self.redirect_window.geometry("250x100+%d+%d" % (x + 175, y + 150))
+        width=200
+        height=300
+        self.redirect_window.geometry("%dx%d+%d+%d" % (width,height,mov_x + window_width / 2 - width / 2, mov_y + window_height / 2 - height / 2))
         self.redirect_window.title("Y2 Topline Report Automation")
         message = "Please open a survey file."
-        Tkinter.Label(self.redirect_window, text = message).pack(expand=True)
+        Tkinter.Label(self.redirect_window, text=message, font=header_font, fg=header_color).pack(side=Tkinter.TOP, pady=10)
 
         # round details
-        round_frame = Tkinter.Frame(self.redirect_window)
-        round_frame.pack(side = Tkinter.TOP, expand = True)
+        round_frame = Tkinter.Frame(self.redirect_window, width=20)
+        round_frame.pack(side=Tkinter.TOP, padx=20)
 
-        round_label = Tkinter.Label(round_frame, text="Round number:")
-        round_label.pack(side = Tkinter.LEFT, expand=True)
+        round_label = Tkinter.Label(round_frame, text="Round number:", width=15)
+        round_label.pack(side=Tkinter.LEFT)
         self.round_entry = Tkinter.Entry(round_frame)
         self.round_entry.pack(side=Tkinter.RIGHT, expand=True)
         
-        btn_open = Tkinter.Button(self.redirect_window, text = "Open", command = self.read_topline, height=20, width=10)
+        btn_open = Tkinter.Button(self.redirect_window, text="Open", command = self.read_topline, height=3, width=20)
+        btn_cancel = Tkinter.Button(self.redirect_window, text="Cancel", command=self.redirect_window.destroy, height=3, width=20)
         btn_bot = Tkinter.Button(self.redirect_window, image=bot_render,  borderwidth=0,
-                                 highlightthickness=0, relief=Tkinter.FLAT, bg="white", height=40, width=40, command=self.topline_help_window)
+                                 highlightthickness=0, relief=Tkinter.FLAT, bg="white", height=65, width=158, command=self.topline_help_window)
 
-        btn_cancel = Tkinter.Button(self.redirect_window, text="Cancel", command=self.redirect_window.destroy, height=20, width=10)
-        btn_open.pack(side = Tkinter.LEFT, expand=True)
-        btn_cancel.pack(side = Tkinter.LEFT, expand=True)
-        btn_bot.pack(side=Tkinter.LEFT, ipadx=10, ipady=10)
+        btn_bot.pack(side=Tkinter.TOP, padx=10, pady=5)
+        btn_open.pack(side = Tkinter.TOP, padx=10, pady=5)
+        btn_cancel.pack(side = Tkinter.TOP, padx=10, pady=5)
+
         self.redirect_window.deiconify()
 
     def topline_help_window(self):
+        """
+        Funtion sets up help window to give the user info about round numbers.
+        :return: None
+        """
         help_window = Tkinter.Toplevel(self.__window)
         help_window.withdraw()
-        x = self.__window.winfo_x()
-        y = self.__window.winfo_y()
-        help_window.geometry("300x200+%d+%d" % (x + 150, y + 100))
+        width=250
+        height=400
+        help_window.geometry("%dx%d+%d+%d" % (width,height,mov_x + window_width / 2 - width / 2, mov_y + window_height / 2 - height / 2))
         message = "\nTopline Help"
-        Tkinter.Label(help_window, text=message, font=header_font).pack()
-        info_message = "\nRound Number: \n" \
-                       "leave it blank for non-trended reports\n" \
-                       "or enter 1-10 for trended reports.\n"
-        Tkinter.Label(help_window, text=info_message).pack()
-        btn_ok = Tkinter.Button(help_window, text="Cancel", command=help_window.destroy, height=1, width=15)
-        btn_ok.pack(padx=5, side=Tkinter.BOTTOM, expand=False)
+        Tkinter.Label(help_window, text=message, font=header_font, fg=header_color).pack(side=Tkinter.TOP, padx=10)
+        info_message = "\nRound Number:\n\n" \
+                       "Leave it blank  or enter 1 for \n" \
+                       "non-trended reports.\n" \
+                       "Enter  a number (2-10) for the \n" \
+                       "corresponding number of years/\n" \
+                       "quarters for trended reports.\n\n"\
+                       "When done, select open and you\n" \
+                       "will be prompted to open the \n" \
+                       "Topline file and selesct a save\n" \
+                       "directory."
+
+        Tkinter.Label(help_window, text=info_message, justify=Tkinter.LEFT).pack(side=Tkinter.TOP)
+        btn_ok = Tkinter.Button(help_window, text="Ok", command=help_window.destroy, height=3, width=20)
+        btn_ok.pack(padx=5, pady=10, side=Tkinter.TOP, expand=False)
         help_window.deiconify()
 
     def append_menu(self):
+        """
+        Function sets up Topline Appendix menu.
+        :return: None
+        """
         self.redirect_window=Tkinter.Toplevel(self.__window)
         self.redirect_window.withdraw()
-        x = self.__window.winfo_x()
-        y = self.__window.winfo_y()
-        self.redirect_window.geometry("250x100+%d+%d" % (x + 175, y + 150))
+        width=200
+        height=300
+
+        self.redirect_window.geometry("%dx%d+%d+%d" % (width,height,mov_x + window_width / 2 - width / 2, mov_y + window_height / 2 - height / 2))
         self.redirect_window.title("Y2 Topline Appendix Report Automation")
-        message="Please open a appendix file."
-        Tkinter.Label(self.redirect_window, text=message).pack(expand=True)
-        btn_open = Tkinter.Button(self.redirect_window, text = "Open", command = self.read_append)
-        btn_cancel = Tkinter.Button(self.redirect_window, text = "Cancel", command = self.redirect_window.destroy)
-        btn_open.pack(ipadx = 10, side = Tkinter.LEFT, expand=True)
-        btn_cancel.pack(ipadx = 10, side = Tkinter.LEFT, expand=True)
+        message="Please open a survey \nfile and open ends file."
+        Tkinter.Label(self.redirect_window, text=message, font=header_font, fg=header_color).pack(expand=True, pady=5)
+        btn_open = Tkinter.Button(self.redirect_window, text="Open", command=self.read_topline, height=3, width=20)
+        btn_cancel = Tkinter.Button(self.redirect_window, text="Cancel", command=self.redirect_window.destroy, height=3,
+                                    width=20)
+        btn_bot = Tkinter.Button(self.redirect_window, image=bot_render, borderwidth=0,
+                                 highlightthickness=0, relief=Tkinter.FLAT, bg="white", height=65, width=158,
+                                 command=self.topline_help_window)
+        btn_bot.pack(side=Tkinter.TOP, padx=10, pady=5)
+        btn_open.pack(side=Tkinter.TOP, padx=10, pady=5)
+        btn_cancel.pack(side=Tkinter.TOP, padx=10, pady=5)
         self.redirect_window.deiconify()
 
-    def rnc_menu(self):
-        self.redirect_window = Tkinter.Toplevel(self.__window)
-        self.redirect_window.withdraw()
-        x = self.__window.winfo_x()
-        y = self.__window.winfo_y()
-        self.redirect_window.geometry("250x150+%d+%d" % (x + 175, y + 125))
-        self.redirect_window.title("RNC Scores Topline Automation")
-        message = "Please open a model scores file."
-        Tkinter.Label(self.redirect_window, text = message).pack(expand=True)
-        btn_topline = Tkinter.Button(self.redirect_window, text="Scores Topline Report", command=self.scores_window, height = 1, width = 20)
-        btn_trended = Tkinter.Button(self.redirect_window, text="Issue Trended Report", command=self.issue_trended_window, height = 1, width = 20)
-        btn_ind_trended = Tkinter.Button(self.redirect_window, text="Trended Score Reports", command=self.trended_scores_window, height = 1, width = 20)
-        btn_cancel = Tkinter.Button(self.redirect_window, text="Cancel", command = self.redirect_window.destroy, height = 1, width = 20)
-        btn_cancel.pack(ipadx = 5, side = Tkinter.BOTTOM, expand=False)
-        btn_topline.pack(ipadx=5, side=Tkinter.BOTTOM, expand=False)
-        btn_trended.pack(ipadx=5, side = Tkinter.BOTTOM, expand=False)
-        btn_ind_trended.pack(ipadx = 5, side = Tkinter.BOTTOM, expand=False)
-        self.redirect_window.deiconify()
+
 
     def read_append(self):
+        """
+        Funtion reads in the appendix file and creates a .docx
+        :return: None
+        """
         qsffilename = tkFileDialog.askopenfilename(initialdir = self.fpath, title = "Select survey file", filetypes = (("Qualtrics files","*.qsf"), ("all files", "*.*")))
         compiler = base.QSFSurveyCompiler()
-        survey = compiler.compile(qsffilename)            
+        survey = compiler.compile(qsffilename)
+
         filename = tkFileDialog.askopenfilename(initialdir = self.fpath, title = "Select open ends file",filetypes = (("comma seperated files","*.csv"),("all files","*.*")))
-        output = tkFileDialog.askdirectory()
-        builder = topline.QSF.ReportGenerator(survey)
-        builder.generate_appendix("appendix_template.docx", filename, output)
-        self.redirect_window.destroy()
+        ask_save_dir = tkMessageBox.askokcancel("Select save directory", "Select the save directory of your appendix file, note that it may take several minutes to create your report. \nThe program will appear to be unresponsive. \nYour file will open when it is done.")
+        if ask_save_dir:
+            output_directory = tkFileDialog.askdirectory()
+            self.redirect_window.update()
+            self.redirect_window.destroy()
+            if output_directory is not "":
+                builder = topline.QSF.ReportGenerator(survey)
+                builder.generate_appendix("appendix_template.docx", filename, output_directory)
+                self.open_file_for_user(output_directory+"/appendix.docx")
+
+
+
+
 
     def read_topline(self):
+        """
+        Funtion reads in a topline file
+        :return: None
+        """
         try:
             filename = tkFileDialog.askopenfilename(initialdir = self.fpath, title = "Select survey file",filetypes = (("Qualtrics files","*.qsf"),("comma seperated files","*.csv"),("all files","*.*")))
             if filename is not "":
@@ -538,33 +553,49 @@ class Internbot:
             tkMessageBox.showerror("Error", "An error occurred\n"+ str(e))
 
     def year_window_setup(self):
+        """
+        Funtion sets up the window for entry of trend labels for trended Toplines
+        :return: None
+        """
         try:
             self.year_window = Tkinter.Toplevel(self.__window)
             self.year_window.withdraw()
-            x = self.__window.winfo_x()
-            y = self.__window.winfo_y()
-            self.year_window.geometry("500x%d+%d+%d" % (100+self.round*25, x + 50, y + (200-(100+self.round*25)/2)))
+            width=300
+            height=200+self.round*25
+            self.year_window.geometry("%dx%d+%d+%d" % (width,height,mov_x + window_width / 2 - width / 2, mov_y + window_height / 2 - height / 2))
             self.year_window.title("Trended report years")
-            message = "Please input the applicable years for the trended topline report."
-            Tkinter.Label(self.year_window, text=message).pack(expand=True)
+            message = "Please input the applicable years \nfor the trended topline report."
+            Tkinter.Label(self.year_window, text=message, font=header_font, fg=header_color).pack(expand=True)
 
             year_frame = Tkinter.Frame(self.year_window)
-            year_frame.pack(side = Tkinter.TOP, expand = True)
+            year_frame.pack(side=Tkinter.TOP, expand = True)
             self.year_window_obj = YearsWindow(self.__window, self.year_window, self.round)
             self.year_window_obj.packing_years(year_frame)
-            btn_finish = Tkinter.Button(self.year_window, text = "Done", command=self.build_topline_leadup, height = 1, width = 20)
-            btn_cancel = Tkinter.Button(self.year_window, text = "Cancel", command=self.year_window.destroy, height = 1, width = 20)
-            btn_finish.pack(ipadx=5, side = Tkinter.LEFT, expand=False)
-            btn_cancel.pack(ipadx=5, side = Tkinter.RIGHT, expand=False)
+            btn_finish = Tkinter.Button(self.year_window, text="Done", command=self.build_topline_leadup, height=3, width=17)
+            btn_cancel = Tkinter.Button(self.year_window, text="Cancel", command=self.year_window.destroy, height=3, width=17)
+            btn_finish.pack(ipadx=5, side=Tkinter.LEFT, expand=False)
+            btn_cancel.pack(ipadx=5, side=Tkinter.RIGHT, expand=False)
             self.year_window.deiconify()
         except Exception as e:
             tkMessageBox.showerror("Error", "An error occurred\n"+ str(e))
 
     def build_topline_leadup(self):
+        """
+        Function serves as a segue between the year_window_setup and the YearsWindow object
+        for trended topline reports.
+        :return: None
+        """
         years = self.year_window_obj.read_years()
         self.build_topline_report(self.isQSF, self.report, years)
 
     def build_topline_report(self, isQSF, report, years=[]):
+        """
+        Function builds topline report and requests if the user would like to have the files opened.
+        :param isQSF: Boolean value
+        :param report: topline report object
+        :param years: array of trend titles
+        :return: None
+        """
         try:
             template_file = open("topline_template.docx", "r")
             ask_output = tkMessageBox.askokcancel("Output directory", "Please select the directory for finished report.")
@@ -581,433 +612,31 @@ class Internbot:
         except Exception as e:
             tkMessageBox.showerror("Error", "An error occurred\n" + str(e))
 
-    def variable_script(self):
-        try:
-            ask_qsf = tkMessageBox.askokcancel("Select Qualtrics File", "Please select the Qualtrics survey .qsf file.")
-            if ask_qsf is True: # user selected ok
-                qsffilename = tkFileDialog.askopenfilename(initialdir = self.fpath, title = "Select Qualtrics survey file",filetypes = (("Qualtrics file","*.qsf"),("all files","*.*")))
-                if qsffilename is not "":
-                    compiler = base.QSFSurveyCompiler()
-                    survey = compiler.compile(qsffilename)
-                    ask_output = tkMessageBox.askokcancel("Output directory", "Please select the directory for finished variable script.")
-                    if ask_output is True: # user selected ok
-                        savedirectory = tkFileDialog.askdirectory()
-                        if savedirectory is not "":
-                            variables = crosstabs.Format_SPSS_Report.Generate_Prelim_SPSS_Script.SPSSTranslator()
-                            tables = crosstabs.Format_SPSS_Report.Generate_Prelim_SPSS_Script.TableDefiner()
-                            variables.define_variables(survey, savedirectory)
-                            tables.define_tables(survey, savedirectory)
-                            open_files = tkMessageBox.askyesno("Info", "Done!\nWould you like to open your finished files?")
-                            if open_files is True:
-                                self.open_file_for_user(savedirectory+"/Tables to run.csv")
-                                self.open_file_for_user(savedirectory+"/rename variables.sps")
-        except Exception as e:
-            tkMessageBox.showerror("Error", "An error occurred\n"+ str(e))
 
-    def table_script(self):
-        try:
-            ask_tables = tkMessageBox.askokcancel("Select Tables to Run.csv File", "Please select the tables to run .csv file.")
-            if ask_tables is True:
-                self.tablesfilename = tkFileDialog.askopenfilename(initialdir = self.fpath, title = "Select tables file",filetypes = (("comma seperated files","*.csv"),("all files","*.*")))
-                if self.tablesfilename is not "":
-                    ask_banners = tkMessageBox.askokcancel("Banner selection", "Please insert/select the banners for this report.")
-                    if ask_banners is True:
-                        names = crosstabs.Format_SPSS_Report.Generate_Table_Script.TablesParser().pull_table_names(self.tablesfilename)
-                        titles = crosstabs.Format_SPSS_Report.Generate_Table_Script.TablesParser().pull_table_titles(self.tablesfilename)
-                        bases = crosstabs.Format_SPSS_Report.Generate_Table_Script.TablesParser().pull_table_bases(self.tablesfilename)
-                        self.banner_window(names, titles, bases)
-        except Exception as e:
-            tkMessageBox.showerror("Error", "An error occurred\n"+ str(e))
-            
-   
-    def banner_window(self, names, titles, bases):
-        try:
-            self.edit_window = Tkinter.Toplevel(self.__window)
-            self.edit_window.withdraw()
-            x = self.__window.winfo_x()
-            y = self.__window.winfo_y()
-            self.edit_window.geometry("1500x500+%d+%d" % (x - 450 , y - 50))
-
-            self.edit_window.title("Banner selection")
-            
-            self.boxes_frame = Tkinter.Frame(self.edit_window)
-            self.boxes_frame.pack(side=Tkinter.LEFT, fill=Tkinter.BOTH)
-            horiz_scrollbar = Tkinter.Scrollbar(self.boxes_frame)
-            horiz_scrollbar.config(orient= Tkinter.HORIZONTAL )
-            horiz_scrollbar.pack(side=Tkinter.BOTTOM, fill=Tkinter.X)
-            vert_scrollbar = Tkinter.Scrollbar(self.boxes_frame)
-            vert_scrollbar.pack(side=Tkinter.RIGHT, fill=Tkinter.Y)
-            
-            
-            self.tables_box = Tkinter.Listbox(self.boxes_frame, selectmode="multiple", width=80, height=15, yscrollcommand=vert_scrollbar.set, xscrollcommand = horiz_scrollbar.set)
-            self.tables_box.pack(padx = 15, pady=10,expand=True, side = Tkinter.LEFT, fill=Tkinter.BOTH)
-            self.banners_box = Tkinter.Listbox(self.edit_window)
-            self.banners_box.pack(padx = 15, pady=10, expand=True, side=Tkinter.RIGHT, fill=Tkinter.BOTH)
-            
-            
-
-            index = 0
-            while index < len(names):
-                self.tables_box.insert(Tkinter.END, names[index] + ": " + titles[index])
-                index += 1
-            
-            vert_scrollbar.config(command=self.tables_box.yview)
-            horiz_scrollbar.config(command=self.tables_box.xview)
-            
-            buttons_frame = Tkinter.Frame(self.edit_window)
-            buttons_frame.pack(side = Tkinter.RIGHT, fill=Tkinter.BOTH)
-            btn_up = Tkinter.Button(buttons_frame, text = "Up", command = self.shift_up)
-            btn_down = Tkinter.Button(buttons_frame, text = "Down", command = self.shift_down)
-            btn_insert = Tkinter.Button(buttons_frame, text = "Insert", command = self.insert_banner)
-            btn_edit = Tkinter.Button(buttons_frame, text =   "Edit", command = self.parse_selection)
-            btn_create = Tkinter.Button(buttons_frame, text = "Create", command = self.create_banner)
-            btn_remove = Tkinter.Button(buttons_frame, text = "Remove", command = self.remove_banner)
-            btn_done = Tkinter.Button(buttons_frame, text = "Done", command = self.finish_banner)
-
-            btn_done.pack(side=Tkinter.BOTTOM, pady=15)
-            btn_remove.pack(side=Tkinter.BOTTOM)
-            btn_create.pack(side=Tkinter.BOTTOM)
-            btn_edit.pack(side=Tkinter.BOTTOM)
-            btn_insert.pack(side=Tkinter.BOTTOM, pady=5)
-            btn_down.pack(side=Tkinter.BOTTOM)
-            btn_up.pack(side=Tkinter.BOTTOM) 
-
-            self.edit_window.deiconify()
-        except Exception as e:
-            tkMessageBox.showerror("Error", "An error occurred" + str(e))
-
-    def shift_up(self):
-        current_banners = []
-        for banner in self.banners_box.curselection():
-            current_banners.append(banner)
-
-        if len(current_banners) > 0:
-            self.shift_banners_up()
-
-        current_tables = []
-        for table in self.tables_box.curselection():
-            current_tables.append(table)
-
-        if len(current_tables) > 0:
-            self.shift_tables_up(current_tables)
-
-    def shift_banners_up(self):
-        old_index = -1
-        new_index = -1
-        for index in self.banners_box.curselection():
-            table = self.banners_box.get(int(index))
-            old_index = index
-            new_index = old_index - 1
-            if old_index > -1 and new_index > -1:
-                self.banners_box.delete(old_index)
-                self.banners_box.insert(new_index, table)
-                self.banners_box.selection_clear(old_index, old_index)
-                self.banners_box.selection_set(new_index)
-
-    def shift_tables_up(self, current_tables):
-        shifted_indexes = []
-        index = 0
-        while index < len(current_tables):
-            selection_index = current_tables[index]
-            new_index = selection_index - 1
-            if new_index > -1:
-                if new_index not in shifted_indexes:
-                    shifted_indexes.append(new_index)
-                else:
-                    shifted_indexes.append(selection_index)
-            else:
-                shifted_indexes.append(selection_index)
-            index += 1
-
-        iteration = 0
-        self.tables_box.selection_clear(0, Tkinter.END)
-        for table_index in current_tables:
-            is_highlighted = False
-            current_table = self.tables_box.get(table_index)
-            if '#C00201' in self.tables_box.itemconfig(table_index)['foreground']:
-                is_highlighted = True
-            self.tables_box.delete(table_index)
-            self.tables_box.insert(shifted_indexes[iteration], current_table)
-            if is_highlighted:
-                self.tables_box.itemconfig(shifted_indexes[iteration], {'fg': '#C00201'})
-            self.tables_box.selection_set(shifted_indexes[iteration])
-            iteration += 1
-
-    def shift_down(self):
-        current_banners = []
-        for banner in self.banners_box.curselection():
-            current_banners.append(banner)
-
-        if len(current_banners) > 0:
-            self.shift_banners_down()
-
-        current_tables = []
-        for table in self.tables_box.curselection():
-            current_tables.append(table)
-
-        if len(current_tables) > 0:
-            self.shift_tables_down(current_tables)
-
-    def shift_banners_down(self):
-        old_index = -1
-        new_index = -1
-        for index in self.banners_box.curselection():
-            table = self.banners_box.get(int(index))
-            old_index = index
-            new_index = old_index + 1
-            if new_index < self.banners_box.size():
-                self.banners_box.delete(old_index)
-                self.banners_box.insert(new_index, table)
-                self.banners_box.selection_clear(old_index, old_index)
-                self.banners_box.selection_set(new_index)
-
-    def shift_tables_down(self, current_tables):
-        shifted_indexes = []
-        index = len(current_tables) - 1
-        while index >= 0:
-            selection_index = current_tables[index]
-            new_index = selection_index + 1
-            if new_index < self.tables_box.size():
-                if new_index not in shifted_indexes:
-                    shifted_indexes.append(new_index)
-                else:
-                    shifted_indexes.append(selection_index)
-            else:
-                shifted_indexes.append(selection_index)
-            index -= 1
-
-        current_tables.sort(reverse=True)
-        shifted_indexes.sort(reverse=True)
-
-        iteration = 0
-        self.tables_box.selection_clear(0, Tkinter.END)
-        for table_index in current_tables:
-            is_highlighted = False
-            current_table = self.tables_box.get(table_index)
-            if '#C00201' in self.tables_box.itemconfig(table_index)['foreground']:
-                is_highlighted = True
-            self.tables_box.delete(table_index)
-            self.tables_box.insert(shifted_indexes[iteration], current_table)
-            if is_highlighted:
-                self.tables_box.itemconfig(shifted_indexes[iteration], {'fg': '#C00201'})
-            self.tables_box.selection_set(shifted_indexes[iteration])
-            iteration += 1
-
-    def insert_banner(self):
-        indexes_to_clear = []
-        for index in self.tables_box.curselection():
-            table = self.tables_box.get(int(index))
-            question = table.split(": ")
-            name = question[0]
-            title = question[1]
-            self.banners_box.insert(Tkinter.END, name + ": " + title)
-            self.tables_box.itemconfig(index, {'fg': '#C00201'})
-            self.tables_box.selection_clear(index, index)
-
-    def create_banner(self, initial_name='', intial_title=''):
-        create_window = Tkinter.Toplevel(self.edit_window)
-        create_window.title("Create banner")
-        lbl_name = Tkinter.Label(create_window, text="Banner name:")
-        lbl_title = Tkinter.Label(create_window, text="Banner title:")
-        entry_name = Tkinter.Entry(create_window)
-        entry_name.insert(0, initial_name)
-        entry_title = Tkinter.Entry(create_window)
-        entry_title.insert(0, intial_title)
-        def create():
-            name = entry_name.get()
-            title = entry_title.get()
-            self.banners_box.insert(Tkinter.END, name + ": " + title)
-            self.__embedded_fields.append(name)
-            self.tables_box.insert(0, name + ": " + title)
-            self.tables_box.itemconfig(0, {'fg': '#C00201'})
-            create_window.destroy()
-
-        createButton = Tkinter.Button(create_window, text="Create", command=create)
-        cancelButton = Tkinter.Button(create_window, text="Cancel", command=create_window.destroy)
-
-        lbl_name.grid(row=0, column=0)
-        lbl_title.grid(row=0, column=1)
-        entry_name.grid(row=1, column=0)
-        entry_title.grid(row=1, column=1)
-        createButton.grid(row=2, column=0)
-        cancelButton.grid(row=2, column=1)
-
-    def parse_selection(self):
-        name = ''
-        title = ''
-        for index in self.tables_box.curselection():
-            table = self.tables_box.get(int(index))
-            question = table.split(": ")
-            name = question[0]
-            title = question[1]
-        if name is not '':
-            self.edit_table(name, title, index)
-        else:
-            for index in self.banners_box.curselection():
-                banner = self.banners_box.get(int(index))
-                question = banner.split(": ")
-                name = question[0]
-                title = question[1]
-                self.edit_banner(name, title, index)
-
-    def edit_table(self, initial_names='', initial_title='', index=-1):
-        edit_window = Tkinter.Toplevel(self.edit_window)
-        edit_window.title("Edit banner")
-        lbl_banner = Tkinter.Label(edit_window, text="Banner name:")
-        entry_banner = Tkinter.Entry(edit_window)
-        entry_banner.insert(0, initial_names)
-        lbl_title = Tkinter.Label(edit_window, text="Title:")
-        entry_title = Tkinter.Entry(edit_window)
-        entry_title.insert(0, initial_title)
-
-        def edit():
-            banner_name = entry_banner.get()
-            title_name = entry_title.get()
-            self.tables_box.delete(int(index))
-            self.tables_box.insert(int(index), banner_name + ": " + title_name)
-            edit_window.destroy()
-
-        btn_cancel = Tkinter.Button(edit_window, text="Cancel", command=edit_window.destroy)
-        btn_edit = Tkinter.Button(edit_window, text="Edit", command=edit)
-        lbl_banner.grid(row = 0, column = 0)
-        lbl_title.grid(row = 0, column = 1)
-        entry_banner.grid(row = 1, column = 0)
-        entry_title.grid(row = 1, column = 1)
-
-        btn_edit.grid(row = 2, column = 0)
-        btn_cancel.grid(row = 2, column = 1)
-
-    def edit_banner(self, initial_names='', initial_title='', index=-1):
-        edit_window = Tkinter.Toplevel(self.edit_window)
-        edit_window.title("Edit banner")
-        lbl_banner = Tkinter.Label(edit_window, text="Banner name:")
-        entry_banner = Tkinter.Entry(edit_window)
-        entry_banner.insert(0, initial_names)
-        lbl_title = Tkinter.Label(edit_window, text="Title:")
-        entry_title = Tkinter.Entry(edit_window)
-        entry_title.insert(0, initial_title)
-
-        def edit():
-            banner_name = entry_banner.get()
-            title_name = entry_title.get()
-            self.banners_box.delete(int(index))
-            self.banners_box.insert(int(index), banner_name + ": " + title_name)
-            edit_window.destroy()
-
-        btn_cancel = Tkinter.Button(edit_window, text="Cancel", command=edit_window.destroy)
-        btn_edit = Tkinter.Button(edit_window, text="Edit", command=edit)
-        lbl_banner.grid(row=0, column=0)
-        lbl_title.grid(row=0, column=1)
-        entry_banner.grid(row=1, column=0)
-        entry_title.grid(row=1, column=1)
-
-        btn_edit.grid(row=2, column=0)
-        btn_cancel.grid(row=2, column=1)
-
-    def remove_banner(self):
-        indexes_to_delete = []
-        for index in self.tables_box.curselection():
-            if '#C00201' not in self.tables_box.itemconfig(index)['foreground']:
-                item = self.tables_box.get(index)
-                indexes_to_delete.append(index)
-                question = item.split(": ")
-        indexes_to_delete.sort(reverse=True)
-        for index in indexes_to_delete:
-            self.tables_box.delete(int(index))
-        for index in self.banners_box.curselection():
-            item = self.banners_box.get(int(index))
-            self.banners_box.delete(int(index))
-            banner_to_remove = item.split(": ")
-            index = 0
-            while index < self.tables_box.size():
-                to_compare = self.tables_box.get(index).split(": ")
-                if to_compare[0] == banner_to_remove[0]:
-                    self.tables_box.itemconfig(index, {'fg': '#000000'})
-                index += 1
-
-    def finish_banner(self):
-        try:
-            self.variable_entry = None
-            ask_trended = tkMessageBox.askyesno("Trended Follow-up", "Is this a trended report?")
-            if ask_trended is True:
-                self.filter_variable_window()
-            else:
-                self.save_table_script()
-        except Exception as e:
-            tkMessageBox.showerror("Error", "An error occurred\n" + str(e))
-
-    def filter_variable_window(self):
-        self.create_window = Tkinter.Toplevel(self.__window)
-        self.create_window.withdraw()
+    def rnc_menu(self):
+        self.redirect_window = Tkinter.Toplevel(self.__window)
+        self.redirect_window.withdraw()
         x = self.__window.winfo_x()
         y = self.__window.winfo_y()
-        self.create_window.geometry("250x100+%d+%d" % (x + 175, y + 150))
-        self.create_window.title("Trended report details")
+        self.redirect_window.geometry("250x150+%d+%d" % (x + 175, y + 125))
+        self.redirect_window.title("RNC Scores Topline Automation")
+        message = "Please open a model scores file."
+        Tkinter.Label(self.redirect_window, text=message).pack(expand=True)
+        btn_topline = Tkinter.Button(self.redirect_window, text="Scores Topline Report", command=self.scores_window,
+                                     height=1, width=20)
+        btn_trended = Tkinter.Button(self.redirect_window, text="Issue Trended Report",
+                                     command=self.issue_trended_window, height=1, width=20)
+        btn_ind_trended = Tkinter.Button(self.redirect_window, text="Trended Score Reports",
+                                         command=self.trended_scores_window, height=1, width=20)
+        btn_cancel = Tkinter.Button(self.redirect_window, text="Cancel", command=self.redirect_window.destroy, height=1,
+                                    width=20)
+        btn_cancel.pack(ipadx=5, side=Tkinter.BOTTOM, expand=False)
+        btn_topline.pack(ipadx=5, side=Tkinter.BOTTOM, expand=False)
+        btn_trended.pack(ipadx=5, side=Tkinter.BOTTOM, expand=False)
+        btn_ind_trended.pack(ipadx=5, side=Tkinter.BOTTOM, expand=False)
+        self.redirect_window.deiconify()
 
-        # filtering  variable
-        variable_frame = Tkinter.Frame(self.create_window)
-        variable_frame.pack(side = Tkinter.TOP, expand=True)
 
-        variable_frame = Tkinter.Label(variable_frame, text="Trended variable:")
-        variable_frame.pack (side = Tkinter.LEFT, expand=True)
-        self.variable_entry = Tkinter.Entry(variable_frame)
-        self.variable_entry.pack(side=Tkinter.RIGHT, expand=True)
-
-        # done and cancel buttons
-        button_frame = Tkinter.Frame(self.create_window)
-        button_frame.pack(side = Tkinter.TOP, expand=True)
-
-        btn_cancel = Tkinter.Button(self.create_window, text = "Cancel", command = self.create_window.destroy)
-        btn_cancel.pack(side = Tkinter.RIGHT, expand=True)
-        btn_done = Tkinter.Button(self.create_window, text = "Done", command = self.save_table_script)
-        btn_done.pack(side = Tkinter.RIGHT, expand=True)
-        self.create_window.deiconify()
-
-    def save_table_script(self):
-        try:
-            generator = crosstabs.Format_SPSS_Report.Generate_Table_Script.TableScriptGenerator()
-            table_order = OrderedDict()
-            banner_list = OrderedDict()
-            for item in list(self.tables_box.get(0, Tkinter.END)):
-                question = item.split(": ")
-                table_order[question[0]] = question[1]
-            for item in list(self.banners_box.get(0, Tkinter.END)):
-                question = item.split(": ")
-                banner_list[question[0]] = question[1]
-            self.edit_window.destroy()
-            ask_output = tkMessageBox.askokcancel("Output directory", "Please select the directory for finished table script.")
-            filtering_variable = None
-            if self.variable_entry is not None:
-                variable = str(self.variable_entry.get())
-                if variable != "":
-                    filtering_variable = variable
-                self.create_window.destroy()
-            if ask_output is True:
-                savedirectory = tkFileDialog.askdirectory()
-                if savedirectory is not "":
-                     generator.compile_scripts(self.tablesfilename, banner_list.keys(), self.__embedded_fields, filtering_variable, savedirectory)
-                     open_files = tkMessageBox.askyesno("Info","Done!\nWould you like to open your finished files?")
-                     if open_files is True:
-                         self.open_file_for_user(savedirectory + "/table script.sps")
-        except Exception as e:
-            tkMessageBox.showerror("Error", "An error occurred\n" + str(e))
-
-    def build_xtabs(self):
-        try:
-            ask_directory = tkMessageBox.askokcancel("Select Tables Folder", "Please select the folder containing SPSS generated .xlsx table files.")
-            if ask_directory is True:
-                tablesdirectory = tkFileDialog.askdirectory()
-                builder = crosstabs.Format_SPSS_Report.Parse_SPSS_Tables.CrosstabGenerator(tablesdirectory)
-                ask_output = tkMessageBox.askokcancel("Output directory", "Please select the directory for finished report.")
-                if ask_output is True:
-                    outputdirectory = tkFileDialog.askdirectory()
-                    if outputdirectory is not "":
-                        builder.write_report(outputdirectory)
-                        open_files = tkMessageBox.askyesno("Info", "Done!\nWould you like to open your finished files?")
-                        if open_files is True:
-                            self.open_file_for_user(outputdirectory + "/Crosstab Report.xlsx")
-        except Exception as e:
-            tkMessageBox.showerror("Error", "An error occurred\n" + str(e))
 
     def scores_window(self):
         try:
@@ -1200,9 +829,11 @@ screen_width = window.winfo_screenwidth()
 screen_height = window.winfo_screenheight()
 mov_x = screen_width / 2 - 300
 mov_y = screen_height / 2 - 200
-window.geometry("600x400+%d+%d" % (mov_x, mov_y))
-x = window.winfo_x()
-y = window.winfo_y()
+window_height = 400
+window_width = 600
+window.geometry("%dx%d+%d+%d" % (window_width, window_height, mov_x, mov_y))
+
+
 window['background'] = 'white'
 
 y2_logo = "Y2Logo.gif"
@@ -1216,6 +847,7 @@ window.option_add("*Font", ('Trade Gothic LT Pro', 16, ))
 window.option_add("*Button.Foreground", "midnight blue")
 
 header_font = ('Trade Gothic LT Pro', 18, 'bold')
+header_color = "midnight blue"
 def close(event):
     window.withdraw() # if you want to bring it back
     sys.exit() # if you want to exit the entire thing

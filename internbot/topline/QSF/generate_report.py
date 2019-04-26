@@ -24,10 +24,10 @@ class ReportGenerator(object):
         report.save(str(path_to_output) + '/full_topline.docx')
 
     def generate_appendix(self, path_to_template, path_to_appendix, path_to_output):
-        #self.assign_text_responses(path_to_appendix)
+        self.assign_text_responses(path_to_appendix)
         report = ToplineAppendix()
-        #open_ended_questions = [question for question in self.__questions \
-        #                        if question.text_entry == True]
+        open_ended_questions = [question for question in self.__questions \
+                                if question.text_entry == True]
         report.write_independent(open_ended_questions, path_to_template)
         report.save(str(path_to_output) + '/appendix.docx')
 

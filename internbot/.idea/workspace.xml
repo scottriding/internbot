@@ -2,7 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="900fcb45-5500-469e-9c58-2908a9a4f128" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/internbot.py" beforeDir="false" afterPath="$PROJECT_DIR$/internbot.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/topline/QSF/generate_report.py" beforeDir="false" afterPath="$PROJECT_DIR$/topline/QSF/generate_report.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -11,80 +13,126 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="FileEditorManager">
-    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/internbot.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="615">
-              <caret line="113" column="57" lean-forward="true" selection-start-line="113" selection-start-column="57" selection-end-line="113" selection-end-column="57" />
-              <folding>
-                <element signature="e#0#11#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/years_window.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="30">
-              <caret line="2" column="14" selection-start-line="2" selection-start-column="14" selection-end-line="2" selection-end-column="14" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/crosstabs/Format_Q_Report/format_report.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1366">
-              <caret line="429" column="13" selection-start-line="429" selection-start-column="13" selection-end-line="429" selection-end-column="13" />
-              <folding>
-                <element signature="e#0#44#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/topline/QSF/generate_report.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state>
-              <folding>
-                <element signature="e#0#40#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/topline/QSF/topline_report.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state>
-              <folding>
-                <element signature="e#0#25#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/topline/QSF/topline_appendix.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state>
-              <folding>
-                <element signature="e#0#25#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-    </leaf>
+    <splitter split-orientation="horizontal" split-proportion="0.41354033">
+      <split-first>
+        <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
+          <file pinned="false" current-in-tab="true">
+            <entry file="file://$PROJECT_DIR$/internbot.py">
+              <provider selected="true" editor-type-id="text-editor">
+                <state relative-caret-position="345">
+                  <caret line="26" column="11" lean-forward="true" selection-start-line="26" selection-start-column="11" selection-end-line="26" selection-end-column="11" />
+                  <folding>
+                    <element signature="e#0#11#0" expanded="true" />
+                    <element signature="e#504#546#1" />
+                    <element signature="e#3435#3477#1" />
+                    <element signature="e#17229#18146#0" />
+                    <element signature="e#20216#21798#0" />
+                    <element signature="e#21972#22982#0" />
+                    <element signature="e#21963#22005#1" />
+                    <element signature="e#23143#23975#0" />
+                    <element signature="e#24313#25561#0" />
+                    <element signature="e#25120#26316#0" />
+                    <element signature="e#26445#27785#0" />
+                    <element signature="e#27955#28062#0" />
+                    <element signature="e#28312#29183#0" />
+                  </folding>
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file pinned="false" current-in-tab="false">
+            <entry file="file://$PROJECT_DIR$/years_window.py">
+              <provider selected="true" editor-type-id="text-editor">
+                <state>
+                  <caret selection-end-line="9" selection-end-column="35" />
+                  <folding>
+                    <element signature="e#0#11#0" expanded="true" />
+                  </folding>
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file pinned="false" current-in-tab="false">
+            <entry file="file://$PROJECT_DIR$/crosstabs/Format_Q_Report/format_report.py">
+              <provider selected="true" editor-type-id="text-editor">
+                <state relative-caret-position="1366">
+                  <caret line="429" column="13" selection-start-line="429" selection-start-column="13" selection-end-line="429" selection-end-column="13" />
+                  <folding>
+                    <element signature="e#0#44#0" expanded="true" />
+                  </folding>
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file pinned="false" current-in-tab="false">
+            <entry file="file://$PROJECT_DIR$/topline/QSF/generate_report.py">
+              <provider selected="true" editor-type-id="text-editor">
+                <state relative-caret-position="435">
+                  <caret line="29" column="8" lean-forward="true" selection-start-line="29" selection-start-column="8" selection-end-line="29" selection-end-column="8" />
+                  <folding>
+                    <element signature="e#0#40#0" expanded="true" />
+                  </folding>
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file pinned="false" current-in-tab="false">
+            <entry file="file://$PROJECT_DIR$/topline/QSF/topline_report.py">
+              <provider selected="true" editor-type-id="text-editor">
+                <state>
+                  <folding>
+                    <element signature="e#0#25#0" expanded="true" />
+                  </folding>
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file pinned="false" current-in-tab="false">
+            <entry file="file://$PROJECT_DIR$/topline/QSF/topline_appendix.py">
+              <provider selected="true" editor-type-id="text-editor">
+                <state>
+                  <folding>
+                    <element signature="e#0#25#0" expanded="true" />
+                  </folding>
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file pinned="false" current-in-tab="false">
+            <entry file="file://$PROJECT_DIR$/SPSS_Crosstabs.py">
+              <provider selected="true" editor-type-id="text-editor">
+                <state relative-caret-position="30">
+                  <caret line="13" column="27" selection-start-line="13" selection-start-column="27" selection-end-line="13" selection-end-column="27" />
+                </state>
+              </provider>
+            </entry>
+          </file>
+        </leaf>
+      </split-first>
+      <split-second>
+        <leaf>
+          <file pinned="false" current-in-tab="true">
+            <entry file="file://$PROJECT_DIR$/SPSS_Crosstabs.py">
+              <provider selected="true" editor-type-id="text-editor">
+                <state relative-caret-position="360">
+                  <caret line="24" column="35" selection-start-line="24" selection-start-column="35" selection-end-line="24" selection-end-column="35" />
+                  <folding>
+                    <element signature="e#0#11#0" expanded="true" />
+                  </folding>
+                </state>
+              </provider>
+            </entry>
+          </file>
+        </leaf>
+      </split-second>
+    </splitter>
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
       <find>tables</find>
       <find>btn_bot</find>
       <find>topline_he</find>
+      <find>midnight</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -94,14 +142,17 @@
     <option name="CHANGED_PATHS">
       <list>
         <option value="$PROJECT_DIR$/crosstabs/Format_Q_Report/format_report.py" />
+        <option value="$PROJECT_DIR$/topline/QSF/generate_report.py" />
         <option value="$PROJECT_DIR$/internbot.py" />
+        <option value="$PROJECT_DIR$/SPSS_Crosstabs.py" />
       </list>
     </option>
   </component>
-  <component name="ProjectFrameBounds" fullScreen="true">
-    <option name="x" value="-2490" />
-    <option name="width" value="1050" />
-    <option name="height" value="1680" />
+  <component name="ProjectFrameBounds">
+    <option name="x" value="8" />
+    <option name="y" value="28" />
+    <option name="width" value="2724" />
+    <option name="height" value="1412" />
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectView">
@@ -145,6 +196,12 @@
               <item name="internbot" type="462c0819:PsiDirectoryNode" />
               <item name="topline" type="462c0819:PsiDirectoryNode" />
             </path>
+            <path>
+              <item name="internbot" type="b2602c69:ProjectViewProjectNode" />
+              <item name="internbot" type="462c0819:PsiDirectoryNode" />
+              <item name="topline" type="462c0819:PsiDirectoryNode" />
+              <item name="CSV" type="462c0819:PsiDirectoryNode" />
+            </path>
           </expand>
           <select />
         </subPane>
@@ -180,14 +237,14 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="-2490" y="0" width="1050" height="1680" extended-state="0" />
+    <frame x="8" y="28" width="2724" height="1412" extended-state="0" />
     <editor active="true" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.16071428" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.13534676" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
-      <window_info anchor="bottom" id="Find" order="1" />
+      <window_info anchor="bottom" id="Find" order="1" weight="0.32954547" />
       <window_info anchor="bottom" id="Run" order="2" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
@@ -235,32 +292,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/topline/QSF/topline_appendix.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state>
-          <folding>
-            <element signature="e#0#25#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/topline/QSF/generate_report.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state>
-          <folding>
-            <element signature="e#0#40#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/crosstabs/Generate_Prelim_SPSS_Script/define_tables.py" />
-    <entry file="file://$PROJECT_DIR$/years_window.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="30">
-          <caret line="2" column="14" selection-start-line="2" selection-start-column="14" selection-end-line="2" selection-end-column="14" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/crosstabs/Format_Q_Report/format_report.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1366">
@@ -271,10 +303,61 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/topline/QSF/generate_report.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="435">
+          <caret line="29" column="8" lean-forward="true" selection-start-line="29" selection-start-column="8" selection-end-line="29" selection-end-column="8" />
+          <folding>
+            <element signature="e#0#40#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/topline/QSF/topline_appendix.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state>
+          <folding>
+            <element signature="e#0#25#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/years_window.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state>
+          <caret selection-end-line="9" selection-end-column="35" />
+          <folding>
+            <element signature="e#0#11#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/internbot.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="615">
-          <caret line="113" column="57" lean-forward="true" selection-start-line="113" selection-start-column="57" selection-end-line="113" selection-end-column="57" />
+        <state relative-caret-position="345">
+          <caret line="26" column="11" lean-forward="true" selection-start-line="26" selection-start-column="11" selection-end-line="26" selection-end-column="11" />
+          <folding>
+            <element signature="e#0#11#0" expanded="true" />
+            <element signature="e#504#546#1" />
+            <element signature="e#3435#3477#1" />
+            <element signature="e#17229#18146#0" />
+            <element signature="e#20216#21798#0" />
+            <element signature="e#21972#22982#0" />
+            <element signature="e#21963#22005#1" />
+            <element signature="e#23143#23975#0" />
+            <element signature="e#24313#25561#0" />
+            <element signature="e#25120#26316#0" />
+            <element signature="e#26445#27785#0" />
+            <element signature="e#27955#28062#0" />
+            <element signature="e#28312#29183#0" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/SPSS_Crosstabs.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="360">
+          <caret line="24" column="35" selection-start-line="24" selection-start-column="35" selection-end-line="24" selection-end-column="35" />
           <folding>
             <element signature="e#0#11#0" expanded="true" />
           </folding>
