@@ -9,8 +9,10 @@ import os, subprocess, platform
 import csv
 from collections import OrderedDict
 from years_window import YearsWindow
-from SPSS_Crosstabs import SPSSCrosstabs
+from SPSS_Crosstabs_GUI import SPSSCrosstabsView
+from RNC_GUI import RNCView
 import sys
+
 
 class Internbot:
 
@@ -25,13 +27,15 @@ class Internbot:
         Function establishes all the components of the main window
         :return: None
         """
+
+        self.rnc = RNCView(self.__window, mov_x, mov_y, window_width, window_height, header_font, header_color, bot_render)
         #Button definitions
         button_frame =Tkinter.Frame(self.__window)
         button_frame.pack(side=Tkinter.LEFT, fill=Tkinter.BOTH, )
         btn_xtabs = Tkinter.Button(button_frame, text="Run crosstabs", padx=4, width=20, height=3, command=self.software_tabs_menu, relief=Tkinter.FLAT, highlightthickness=0)
         btn_report = Tkinter.Button(button_frame, text="Run topline report", padx=4, width=20, height=3,command=self.topline_menu, relief=Tkinter.FLAT, highlightthickness=0)
         btn_appen = Tkinter.Button(button_frame, text="Run topline appendix", padx=4, width=20, height=3,command=self.append_menu, relief=Tkinter.FLAT, highlightthickness=0)
-        btn_rnc = Tkinter.Button(button_frame, text="Run RNC", padx=4, width=20, height=3,command=self.rnc_menu, relief=Tkinter.FLAT, highlightthickness=0)
+        btn_rnc = Tkinter.Button(button_frame, text="Run RNC", padx=4, width=20, height=3,command=self.rnc.rnc_menu, relief=Tkinter.FLAT, highlightthickness=0)
         btn_quit = Tkinter.Button(button_frame, text="Quit", padx=4, width=20, height=3,command=self.__window.destroy, relief=Tkinter.GROOVE, highlightthickness=0)
         btn_bot = Tkinter.Button(button_frame, image=bot_render, padx=4, pady=10, width=158, height=45, borderwidth=0, highlightthickness=0, relief=Tkinter.FLAT, command=self.main_help_window)
         btn_bot.pack(padx=5, pady=3, side=Tkinter.TOP)
@@ -98,7 +102,7 @@ class Internbot:
         """
         sft_window = Tkinter.Toplevel(self.__window)
         sft_window.withdraw()
-        self.spss = SPSSCrosstabs(self.__window, mov_x, mov_y, window_width, window_height, header_font, header_color)
+        self.spss = SPSSCrosstabsView(self.__window, mov_x, mov_y, window_width, window_height, header_font, header_color)
         width = 200
         height = 250
         sft_window.geometry(
@@ -277,7 +281,7 @@ class Internbot:
         height=400
         help_window.geometry("%dx%d+%d+%d" % (width,height,mov_x + window_width / 2 - width / 2, mov_y + window_height / 2 - height / 2))
         message = "\nBase Input Help"
-        Tkinter.Label(help_window, text=message, font=header_font).pack()
+        Tkinter.Label(help_window, text=message, font=header_font, fg = header_color).pack()
         info_message = "Select Open to import a Q output file."\
                        "\nThis should be a .xlsx file."\
                        "\n\nYou can change the current selection with"\
@@ -496,8 +500,6 @@ class Internbot:
         btn_cancel.pack(side=Tkinter.TOP, padx=10, pady=5)
         self.redirect_window.deiconify()
 
-
-
     def read_append(self):
         """
         Funtion reads in the appendix file and creates a .docx
@@ -517,10 +519,6 @@ class Internbot:
                 builder = topline.QSF.ReportGenerator(survey)
                 builder.generate_appendix("appendix_template.docx", filename, output_directory)
                 self.open_file_for_user(output_directory+"/appendix.docx")
-
-
-
-
 
     def read_topline(self):
         """
@@ -616,27 +614,53 @@ class Internbot:
     def rnc_menu(self):
         self.redirect_window = Tkinter.Toplevel(self.__window)
         self.redirect_window.withdraw()
-        x = self.__window.winfo_x()
-        y = self.__window.winfo_y()
-        self.redirect_window.geometry("250x150+%d+%d" % (x + 175, y + 125))
+        width = 250
+        height = 350
+        self.redirect_window.geometry("%dx%d+%d+%d" % (
+        width, height, mov_x + window_width / 2 - width / 2, mov_y + window_height / 2 - height / 2))
+
         self.redirect_window.title("RNC Scores Topline Automation")
         message = "Please open a model scores file."
-        Tkinter.Label(self.redirect_window, text=message).pack(expand=True)
+        Tkinter.Label(self.redirect_window, text=message, font=header_font, fg=header_color).pack(expand=True)
         btn_topline = Tkinter.Button(self.redirect_window, text="Scores Topline Report", command=self.scores_window,
-                                     height=1, width=20)
+                                     height=3, width=20)
         btn_trended = Tkinter.Button(self.redirect_window, text="Issue Trended Report",
-                                     command=self.issue_trended_window, height=1, width=20)
+                                     command=self.issue_trended_window, height=3, width=20)
         btn_ind_trended = Tkinter.Button(self.redirect_window, text="Trended Score Reports",
-                                         command=self.trended_scores_window, height=1, width=20)
-        btn_cancel = Tkinter.Button(self.redirect_window, text="Cancel", command=self.redirect_window.destroy, height=1,
+                                         command=self.trended_scores_window, height=3, width=20)
+        btn_cancel = Tkinter.Button(self.redirect_window, text="Cancel", command=self.redirect_window.destroy, height=3,
                                     width=20)
+        btn_bot = Tkinter.Button(self.redirect_window, image=bot_render, borderwidth=0,
+                                 highlightthickness=0, relief=Tkinter.FLAT, bg="white", height=65, width=158,
+                                 command=self.rnc_help_window)
         btn_cancel.pack(ipadx=5, side=Tkinter.BOTTOM, expand=False)
         btn_topline.pack(ipadx=5, side=Tkinter.BOTTOM, expand=False)
         btn_trended.pack(ipadx=5, side=Tkinter.BOTTOM, expand=False)
         btn_ind_trended.pack(ipadx=5, side=Tkinter.BOTTOM, expand=False)
+        btn_bot.pack(ipadx=5, side=Tkinter.BOTTOM, expand=False)
         self.redirect_window.deiconify()
 
+    def rnc_help_window(self):
+        """
+        Function serves as an intro to internbot. Explains the help bot to the user.
+        :return: None
+        """
+        help_window = Tkinter.Toplevel(self.__window)
+        help_window.withdraw()
 
+        width = 250
+        height = 250
+        help_window.geometry("%dx%d+%d+%d" % (
+        width, height, mov_x + window_width / 2 - width / 2, mov_y + window_height / 2 - height / 2))
+
+        message = "\nRNC Report Help"
+        Tkinter.Label(help_window, text=message, font=header_font, fg=header_color).pack()
+        info_message = ""
+        Tkinter.Label(help_window, text=info_message, font=('Trade Gothic LT Pro', 14,)).pack()
+        btn_ok = Tkinter.Button(help_window, text="Ok", command=help_window.destroy, height=3, width=20,
+                                highlightthickness=0)
+        btn_ok.pack(pady=5, side=Tkinter.BOTTOM, expand=False)
+        help_window.deiconify()
 
     def scores_window(self):
         try:
@@ -646,9 +670,9 @@ class Internbot:
                 if self.filename is not "":
                     self.create_window = Tkinter.Toplevel(self.redirect_window)
                     self.create_window.withdraw()
-                    x = self.__window.winfo_x()
-                    y = self.__window.winfo_y()
-                    self.create_window.geometry("250x100+%d+%d" % (x + 175, y + 150))
+                    width = 250
+                    height = 100
+                    self.create_window.geometry("%dx%d+%d+%d" % (width, height, mov_x + window_width / 2 - width / 2, mov_y + window_height / 2 - height / 2))
                     self.create_window.title("Scores Topline Report Details")
                     # location details
                     location_frame = Tkinter.Frame(self.create_window)
@@ -708,9 +732,9 @@ class Internbot:
                 if self.filename is not "":
                     self.create_window = Tkinter.Toplevel(self.redirect_window)
                     self.create_window.withdraw()
-                    x = self.__window.winfo_x()
-                    y = self.__window.winfo_y()
-                    self.create_window.geometry("250x100+%d+%d" % (x + 175, y + 150))
+                    width=250
+                    height=100
+                    self.create_window.geometry("%dx%d+%d+%d" % (width, height, mov_x + window_width / 2 - width / 2, mov_y + window_height / 2 - height / 2))
                     self.create_window.title("Issue Trended Report Details")
 
                     # round details
@@ -762,9 +786,9 @@ class Internbot:
                 if self.filename is not "":
                     self.create_window = Tkinter.Toplevel(self.redirect_window)
                     self.create_window.withdraw()
-                    x = self.__window.winfo_x()
-                    y = self.__window.winfo_y()
-                    self.create_window.geometry("250x100+%d+%d" % (x + 175, y + 150))
+                    width=250
+                    height=100
+                    self.create_window.geometry("%dx%d+%d+%d" % (width, height, mov_x + window_width / 2 - width / 2, mov_y + window_height / 2 - height / 2))
                     self.create_window.title("Trended Issue Reports Details")
 
                     # round details
@@ -797,9 +821,11 @@ class Internbot:
             if round is not "":
                 self.create_window.destroy()
                 report = rnc_automation.TrendedScoresReportGenerator(filename, int(round))
-                ask_output = tkMessageBox.askokcancel("Output directory", "Please select the directory for finished report.")
+                ask_output = tkMessageBox.askokcancel("Output directory", "Please select the directory for finished report\n This report will create a lot of file and may take several minutes. The program will appear to be unresponsive.")
+
                 if ask_output is True:
                     savedirectory = tkFileDialog.askdirectory()
+                    self.create_window.update()
                     if savedirectory is not "":
                         report.generate_trended_scores(savedirectory, round)
                         self.create_window.destroy()

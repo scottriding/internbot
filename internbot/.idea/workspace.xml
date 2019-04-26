@@ -3,8 +3,8 @@
   <component name="ChangeListManager">
     <list default="true" id="900fcb45-5500-469e-9c58-2908a9a4f128" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SPSS_Crosstabs.py" beforeDir="false" afterPath="$PROJECT_DIR$/SPSS_Crosstabs_GUI.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/internbot.py" beforeDir="false" afterPath="$PROJECT_DIR$/internbot.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/topline/QSF/generate_report.py" beforeDir="false" afterPath="$PROJECT_DIR$/topline/QSF/generate_report.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -13,18 +13,21 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="FileEditorManager">
-    <splitter split-orientation="horizontal" split-proportion="0.41354033">
+    <splitter split-orientation="horizontal" split-proportion="0.5">
       <split-first>
         <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-          <file pinned="false" current-in-tab="true">
+          <file pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/internbot.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="345">
-                  <caret line="26" column="11" lean-forward="true" selection-start-line="26" selection-start-column="11" selection-end-line="26" selection-end-column="11" />
+                <state relative-caret-position="-848">
+                  <caret line="49" column="62" lean-forward="true" selection-start-line="49" selection-start-column="62" selection-end-line="49" selection-end-column="62" />
                   <folding>
                     <element signature="e#0#11#0" expanded="true" />
                     <element signature="e#504#546#1" />
                     <element signature="e#3435#3477#1" />
+                    <element signature="e#11425#12793#0" />
+                    <element signature="e#14252#15028#0" />
+                    <element signature="e#16020#18625#0" />
                     <element signature="e#17229#18146#0" />
                     <element signature="e#20216#21798#0" />
                     <element signature="e#21972#22982#0" />
@@ -35,6 +38,34 @@
                     <element signature="e#26445#27785#0" />
                     <element signature="e#27955#28062#0" />
                     <element signature="e#28312#29183#0" />
+                  </folding>
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file pinned="false" current-in-tab="false">
+            <entry file="file://$PROJECT_DIR$/rnc_automation/__init__.py">
+              <provider selected="true" editor-type-id="text-editor" />
+            </entry>
+          </file>
+          <file pinned="false" current-in-tab="false">
+            <entry file="file://$PROJECT_DIR$/rnc_automation/generate_report.py">
+              <provider selected="true" editor-type-id="text-editor">
+                <state relative-caret-position="795">
+                  <caret line="53" column="52" selection-start-line="53" selection-start-column="52" selection-end-line="53" selection-end-column="52" />
+                  <folding>
+                    <element signature="e#0#10#0" expanded="true" />
+                  </folding>
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file pinned="false" current-in-tab="false">
+            <entry file="file://$PROJECT_DIR$/rnc_automation/trended_score_report.py">
+              <provider selected="true" editor-type-id="text-editor">
+                <state relative-caret-position="-332">
+                  <folding>
+                    <element signature="e#0#44#0" expanded="true" />
                   </folding>
                 </state>
               </provider>
@@ -65,23 +96,24 @@
             </entry>
           </file>
           <file pinned="false" current-in-tab="false">
-            <entry file="file://$PROJECT_DIR$/topline/QSF/generate_report.py">
+            <entry file="file://$PROJECT_DIR$/RNC_GUI.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="435">
-                  <caret line="29" column="8" lean-forward="true" selection-start-line="29" selection-start-column="8" selection-end-line="29" selection-end-column="8" />
+                <state relative-caret-position="360">
+                  <caret line="24" column="35" selection-start-line="24" selection-start-column="35" selection-end-line="24" selection-end-column="35" />
                   <folding>
-                    <element signature="e#0#40#0" expanded="true" />
+                    <element signature="e#0#11#0" expanded="true" />
                   </folding>
                 </state>
               </provider>
             </entry>
           </file>
           <file pinned="false" current-in-tab="false">
-            <entry file="file://$PROJECT_DIR$/topline/QSF/topline_report.py">
+            <entry file="file://$PROJECT_DIR$/topline/QSF/generate_report.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state>
+                <state relative-caret-position="435">
+                  <caret line="29" column="8" selection-start-line="29" selection-start-column="8" selection-end-line="29" selection-end-column="8" />
                   <folding>
-                    <element signature="e#0#25#0" expanded="true" />
+                    <element signature="e#0#40#0" expanded="true" />
                   </folding>
                 </state>
               </provider>
@@ -98,11 +130,14 @@
               </provider>
             </entry>
           </file>
-          <file pinned="false" current-in-tab="false">
-            <entry file="file://$PROJECT_DIR$/SPSS_Crosstabs.py">
+          <file pinned="false" current-in-tab="true">
+            <entry file="file://$PROJECT_DIR$/SPSS_Crosstabs_GUI.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="30">
-                  <caret line="13" column="27" selection-start-line="13" selection-start-column="27" selection-end-line="13" selection-end-column="27" />
+                <state relative-caret-position="-897">
+                  <caret line="10" selection-start-line="10" selection-end-line="10" />
+                  <folding>
+                    <element signature="e#0#11#0" expanded="true" />
+                  </folding>
                 </state>
               </provider>
             </entry>
@@ -112,10 +147,10 @@
       <split-second>
         <leaf>
           <file pinned="false" current-in-tab="true">
-            <entry file="file://$PROJECT_DIR$/SPSS_Crosstabs.py">
+            <entry file="file://$PROJECT_DIR$/RNC_GUI.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="360">
-                  <caret line="24" column="35" selection-start-line="24" selection-start-column="35" selection-end-line="24" selection-end-column="35" />
+                <state relative-caret-position="735">
+                  <caret line="231" column="36" lean-forward="true" selection-start-line="231" selection-start-column="36" selection-end-line="231" selection-end-column="36" />
                   <folding>
                     <element signature="e#0#11#0" expanded="true" />
                   </folding>
@@ -126,6 +161,13 @@
         </leaf>
       </split-second>
     </splitter>
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Python Script" />
+      </list>
+    </option>
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
@@ -143,15 +185,17 @@
       <list>
         <option value="$PROJECT_DIR$/crosstabs/Format_Q_Report/format_report.py" />
         <option value="$PROJECT_DIR$/topline/QSF/generate_report.py" />
-        <option value="$PROJECT_DIR$/internbot.py" />
         <option value="$PROJECT_DIR$/SPSS_Crosstabs.py" />
+        <option value="$PROJECT_DIR$/internbot.py" />
+        <option value="$PROJECT_DIR$/SPSS_Crosstabs_GUI.py" />
+        <option value="$PROJECT_DIR$/RNC_GUI.py" />
       </list>
     </option>
   </component>
   <component name="ProjectFrameBounds">
     <option name="x" value="8" />
     <option name="y" value="28" />
-    <option name="width" value="2724" />
+    <option name="width" value="2484" />
     <option name="height" value="1412" />
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
@@ -190,6 +234,11 @@
               <item name="internbot" type="462c0819:PsiDirectoryNode" />
               <item name="crosstabs" type="462c0819:PsiDirectoryNode" />
               <item name="Generate_Table_Script" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="internbot" type="b2602c69:ProjectViewProjectNode" />
+              <item name="internbot" type="462c0819:PsiDirectoryNode" />
+              <item name="rnc_automation" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="internbot" type="b2602c69:ProjectViewProjectNode" />
@@ -237,10 +286,10 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="8" y="28" width="2724" height="1412" extended-state="0" />
+    <frame x="8" y="28" width="2484" height="1412" extended-state="0" />
     <editor active="true" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.13534676" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.14864865" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
@@ -306,7 +355,7 @@
     <entry file="file://$PROJECT_DIR$/topline/QSF/generate_report.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="435">
-          <caret line="29" column="8" lean-forward="true" selection-start-line="29" selection-start-column="8" selection-end-line="29" selection-end-column="8" />
+          <caret line="29" column="8" selection-start-line="29" selection-start-column="8" selection-end-line="29" selection-end-column="8" />
           <folding>
             <element signature="e#0#40#0" expanded="true" />
           </folding>
@@ -332,14 +381,39 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/rnc_automation/__init__.py">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/rnc_automation/generate_report.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="795">
+          <caret line="53" column="52" selection-start-line="53" selection-start-column="52" selection-end-line="53" selection-end-column="52" />
+          <folding>
+            <element signature="e#0#10#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/rnc_automation/trended_score_report.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-332">
+          <folding>
+            <element signature="e#0#44#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/internbot.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="345">
-          <caret line="26" column="11" lean-forward="true" selection-start-line="26" selection-start-column="11" selection-end-line="26" selection-end-column="11" />
+        <state relative-caret-position="-848">
+          <caret line="49" column="62" lean-forward="true" selection-start-line="49" selection-start-column="62" selection-end-line="49" selection-end-column="62" />
           <folding>
             <element signature="e#0#11#0" expanded="true" />
             <element signature="e#504#546#1" />
             <element signature="e#3435#3477#1" />
+            <element signature="e#11425#12793#0" />
+            <element signature="e#14252#15028#0" />
+            <element signature="e#16020#18625#0" />
             <element signature="e#17229#18146#0" />
             <element signature="e#20216#21798#0" />
             <element signature="e#21972#22982#0" />
@@ -354,10 +428,20 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/SPSS_Crosstabs.py">
+    <entry file="file://$PROJECT_DIR$/SPSS_Crosstabs_GUI.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="360">
-          <caret line="24" column="35" selection-start-line="24" selection-start-column="35" selection-end-line="24" selection-end-column="35" />
+        <state relative-caret-position="-897">
+          <caret line="10" selection-start-line="10" selection-end-line="10" />
+          <folding>
+            <element signature="e#0#11#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/RNC_GUI.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="735">
+          <caret line="231" column="36" lean-forward="true" selection-start-line="231" selection-start-column="36" selection-end-line="231" selection-end-column="36" />
           <folding>
             <element signature="e#0#11#0" expanded="true" />
           </folding>

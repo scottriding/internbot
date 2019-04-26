@@ -9,9 +9,9 @@ import os, subprocess, platform
 import csv
 from collections import OrderedDict
 
-import sys
 
-class SPSSCrosstabs(object):
+
+class SPSSCrosstabsView(object):
 
     def __init__(self, main_window, mov_x, mov_y, window_width, window_height, header_font, header_color):
         self.__window = main_window
