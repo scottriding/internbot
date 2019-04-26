@@ -1,5 +1,4 @@
 from topline_report import ToplineReport
-from topline_appendix import ToplineAppendix
 import csv
 import re
 
@@ -12,38 +11,6 @@ class ReportGenerator(object):
         self.assign_frequencies(path_to_csv)
         report = ToplineReport(self.__questions, path_to_template)
         report.save(str(path_to_output) + '/basic_topline.docx')
-
-    def generate_full_topline(self, path_to_csv, path_to_template, path_to_output, path_to_appendix):
-        self.assign_text_responses(path_to_appendix)
-        self.generate_basic_topline(path_to_csv, path_to_template, path_to_output)
-        self.assign_frequencies(path_to_csv)
-        open_ended_questions = [question for question in self.__questions \
-                                if question.text_entry == True]
-        report = ToplineAppendix()
-        report.write_with_topline(open_ended_questions, str(path_to_output) + '/basic_topline.docx')
-        report.save(str(path_to_output) + '/full_topline.docx')
-
-    def generate_appendix(self, path_to_template, path_to_appendix, path_to_output):
-        self.assign_text_responses(path_to_appendix)
-        report = ToplineAppendix()
-        open_ended_questions = [question for question in self.__questions \
-                                if question.text_entry == True]
-        report.write_independent(open_ended_questions, path_to_template)
-        report.save(str(path_to_output) + '/appendix.docx')
-
-    def unicode_dict_reader(self, utf8_data, **kwargs):
-        csv_reader = csv.DictReader(utf8_data, **kwargs)
-        for row in csv_reader:
-            if row['variable'] != "":
-                yield {key:value.decode('iso-8859-1').encode('utf8') for key, value in row.iteritems()}
-    
-    def assign_text_responses(self, path_to_appendix):
-        text_responses = self.unicode_dict_reader(open(path_to_appendix))
-        for response in text_responses:
-            matching_question = self.find_question(response["variable"], self.survey)
-            if matching_question is not None:
-                matching_question.add_text_response(response['label'])
-                matching_question.text_entry = True
 
     def assign_frequencies(self, path_to_csv):
         question_data = self.unicode_dict_reader(open(path_to_csv))

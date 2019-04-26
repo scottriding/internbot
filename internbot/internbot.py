@@ -441,6 +441,15 @@ class Internbot:
         btn_bot = Tkinter.Button(self.redirect_window, image=bot_render,  borderwidth=0,
                                  highlightthickness=0, relief=Tkinter.FLAT, bg="white", height=65, width=158, command=self.topline_help_window)
 
+    def append_menu(self):
+        self.redirect_window = Tkinter.Toplevel(self.__window)
+        self.redirect_window.withdraw()
+        x = self.__window.winfo_x()
+        y = self.__window.winfo_y()
+        self.redirect_window.geometry("250x100+%d+%d" % (x + 175, y + 150))
+        self.redirect_window.title("Y2 Topline Appendix Report Automation")
+        message = "Please open an appendix file."
+        Tkinter.Label(self.redirect_window, text = message).pack(expand=True)
         btn_bot.pack(side=Tkinter.TOP, padx=10, pady=5)
         btn_open.pack(side = Tkinter.TOP, padx=10, pady=5)
         btn_cancel.pack(side = Tkinter.TOP, padx=10, pady=5)
@@ -501,24 +510,28 @@ class Internbot:
         self.redirect_window.deiconify()
 
     def read_append(self):
-        """
+      """
         Funtion reads in the appendix file and creates a .docx
         :return: None
         """
-        qsffilename = tkFileDialog.askopenfilename(initialdir = self.fpath, title = "Select survey file", filetypes = (("Qualtrics files","*.qsf"), ("all files", "*.*")))
-        compiler = base.QSFSurveyCompiler()
-        survey = compiler.compile(qsffilename)
+        generator = topline.Appendix.AppendixGenerator()
+        csvfilename = tkFileDialog.askopenfilename(initialdir = self.fpath, title = "Select open ends file", filetypes = (("Comma separated files", "*csv"), ("all files", "*.*")))
+        if csvfilename != "":
+            generator.parse_file(csvfilename)
+            ask_docx = tkMessageBox.askyesno("Appendix Type", "Create a docx report?")
+            if ask_docx is True:
+                ask_output = tkMessageBox.askokcancel("Output directory", "Please select the directory for finished report.")
+                if ask_output is True:
+                    savedirectory = tkFileDialog.askdirectory()
+                    generator.write_appendix(savedirectory, "appendix_template.docx", False)
 
-        filename = tkFileDialog.askopenfilename(initialdir = self.fpath, title = "Select open ends file",filetypes = (("comma seperated files","*.csv"),("all files","*.*")))
-        ask_save_dir = tkMessageBox.askokcancel("Select save directory", "Select the save directory of your appendix file, note that it may take several minutes to create your report. \nThe program will appear to be unresponsive. \nYour file will open when it is done.")
-        if ask_save_dir:
-            output_directory = tkFileDialog.askdirectory()
-            self.redirect_window.update()
-            self.redirect_window.destroy()
-            if output_directory is not "":
-                builder = topline.QSF.ReportGenerator(survey)
-                builder.generate_appendix("appendix_template.docx", filename, output_directory)
-                self.open_file_for_user(output_directory+"/appendix.docx")
+            elif ask_docx is False:
+                ask_output = tkMessageBox.askokcancel("Output directory", "Please select the directory for finished report.")
+                if ask_output is True:
+                    savedirectory = tkFileDialog.askdirectory()
+                    generator.write_appendix(savedirectory, '', True)
+
+        self.redirect_window.destroy()
 
     def read_topline(self):
         """
@@ -609,15 +622,6 @@ class Internbot:
                             self.open_file_for_user(savedirectory+"/topline_report.docx")
         except Exception as e:
             tkMessageBox.showerror("Error", "An error occurred\n" + str(e))
-
-
-    def rnc_menu(self):
-        self.redirect_window = Tkinter.Toplevel(self.__window)
-        self.redirect_window.withdraw()
-        width = 250
-        height = 350
-        self.redirect_window.geometry("%dx%d+%d+%d" % (
-        width, height, mov_x + window_width / 2 - width / 2, mov_y + window_height / 2 - height / 2))
 
         self.redirect_window.title("RNC Scores Topline Automation")
         message = "Please open a model scores file."

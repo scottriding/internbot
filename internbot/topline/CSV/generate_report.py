@@ -11,8 +11,8 @@ class ReportGenerator(object):
     def unicode_dict_reader(self, utf8_data, **kwargs):
         csv_reader = csv.DictReader(utf8_data, **kwargs)
         for row in csv_reader:
-        	if row["variable"] is not "":
-        		yield {unicode(key, 'utf-8'):unicode(value, 'utf-8') for key, value in row.iteritems()}
+            if row['variable'] != "":
+                yield {unicode(key, 'iso-8859-1'):unicode(value, 'iso-8859-1') for key, value in row.iteritems()}
 
     def create_questions(self, question_data, round_no):
         for question in question_data:
