@@ -231,7 +231,7 @@ class Internbot:
         y = self.__window.winfo_y()
         self.redirect_window.geometry("250x100+%d+%d" % (x + 175, y + 150))
         self.redirect_window.title("Y2 Topline Appendix Report Automation")
-        message = "Please open a appendix file."
+        message = "Please open an appendix file."
         Tkinter.Label(self.redirect_window, text = message).pack(expand=True)
 
         btn_open = Tkinter.Button(self.redirect_window, text = "Open", command = self.read_append)
@@ -260,13 +260,23 @@ class Internbot:
         self.redirect_window.deiconify()
 
     def read_append(self):
-        qsffilename = tkFileDialog.askopenfilename(initialdir = self.fpath, title = "Select survey file", filetypes = (("Qualtrics files","*.qsf"), ("all files", "*.*")))
-        compiler = base.QSFSurveyCompiler()
-        survey = compiler.compile(qsffilename)            
-        filename = tkFileDialog.askopenfilename(initialdir = self.fpath, title = "Select open ends file",filetypes = (("comma seperated files","*.csv"),("all files","*.*")))
-        output = tkFileDialog.askdirectory()
-        builder = topline.QSF.ReportGenerator(survey)
-        builder.generate_appendix("appendix_template.docx", filename, output)
+        generator = topline.Appendix.AppendixGenerator()
+        csvfilename = tkFileDialog.askopenfilename(initialdir = self.fpath, title = "Select open ends file", filetypes = (("Comma separated files", "*csv"), ("all files", "*.*")))
+        if csvfilename != "":
+            generator.parse_file(csvfilename)
+            ask_docx = tkMessageBox.askyesno("Appendix Type", "Create a docx report?")
+            if ask_docx is True:
+                ask_output = tkMessageBox.askokcancel("Output directory", "Please select the directory for finished report.")
+                if ask_output is True:
+                    savedirectory = tkFileDialog.askdirectory()
+                    generator.write_appendix(savedirectory, "appendix_template.docx", False)
+
+            elif ask_docx is False:
+                ask_output = tkMessageBox.askokcancel("Output directory", "Please select the directory for finished report.")
+                if ask_output is True:
+                    savedirectory = tkFileDialog.askdirectory()
+                    generator.write_appendix(savedirectory, '', True)
+
         self.redirect_window.destroy()
 
     def read_topline(self):
@@ -401,8 +411,6 @@ class Internbot:
             self.tables_box.pack(padx = 15, pady=10,expand=True, side = Tkinter.LEFT, fill=Tkinter.BOTH)
             self.banners_box = Tkinter.Listbox(self.edit_window)
             self.banners_box.pack(padx = 15, pady=10, expand=True, side=Tkinter.RIGHT, fill=Tkinter.BOTH)
-            
-            
 
             index = 0
             while index < len(names):
