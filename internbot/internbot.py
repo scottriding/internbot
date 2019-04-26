@@ -9,7 +9,7 @@ import os, subprocess, platform
 import csv
 from collections import OrderedDict
 from years_window import YearsWindow
-
+import sys
 
 class Internbot:
 
@@ -61,6 +61,11 @@ class Internbot:
         self.menubar.add_cascade(label="Quit", menu=menu_quit)
         self.__window.config(menu=self.menubar)
 
+        def help_pressed(event):
+            self.main_help_window()
+
+        self.__window.bind("<F1>", help_pressed)
+
     def main_help_window(self):
         """
         Function serves as an intro to internbot. Explains the help bot to the user.
@@ -74,7 +79,7 @@ class Internbot:
         help_window.geometry("250x250+%d+%d" % (x + 125, y + 125))
 
         message = "\nWelcome to Internbot"
-        Tkinter.Label(help_window, text=message, font=('Trade Gothic LT Pro', 18, 'bold'), fg='midnight blue').pack()
+        Tkinter.Label(help_window, text=message, font=header_font, fg='midnight blue').pack()
         info_message = "You can find help information throughout"\
                        "\nInternbot by clicking the bot icon" \
                        "\n\nShe will tell you a little bit about" \
@@ -83,7 +88,6 @@ class Internbot:
         Tkinter.Label(help_window, text=info_message, font=('Trade Gothic LT Pro', 14, )).pack()
         btn_ok = Tkinter.Button(help_window, text="Ok", command=help_window.destroy, height=3, width=20, fg='midnight blue', highlightthickness=0, font=('Trade Gothic LT Pro', 18, 'bold'))
         btn_ok.pack(pady= 5, side=Tkinter.BOTTOM, expand=False)
-
         help_window.deiconify()
         
     def software_tabs_menu(self):
@@ -95,9 +99,9 @@ class Internbot:
         sft_window.withdraw()
         x = self.__window.winfo_x()
         y = self.__window.winfo_y()
-        sft_window.geometry("200x250+%d+%d" % (x + 150, y + 125))
+        sft_window.geometry("200x250+%d+%d" % (x + 100, y + 125))
         message = "Please select crosstabs\nsoftware to use"
-        Tkinter.Label(sft_window, text = message, font=('Trade Gothic LT Pro', 16, "bold"), fg="midnight blue").pack()
+        Tkinter.Label(sft_window, text = message, font=header_font, fg="midnight blue").pack()
         btn_spss = Tkinter.Button(sft_window, text="SPSS", command=self.tabs_menu, height=3, width=20)
         btn_q = Tkinter.Button(sft_window, text="Q Research", command=self.bases_window, height=3, width=20)
         btn_cancel = Tkinter.Button(sft_window, text="Cancel", command=sft_window.destroy, height=3, width=20)
@@ -111,13 +115,13 @@ class Internbot:
         redirect_window.withdraw()
         x = self.__window.winfo_x()
         y = self.__window.winfo_y()
-        redirect_window.geometry("300x200+%d+%d" % (x + 150, y + 100))
-        message = "Please select the files to produce."
-        Tkinter.Label(redirect_window, text = message).pack()
-        btn_var = Tkinter.Button(redirect_window, text="Variable script", command=self.variable_script, height=1, width=15)
-        btn_tab = Tkinter.Button(redirect_window, text="Table script", command=self.table_script, height=1, width=15)
-        btn_compile = Tkinter.Button(redirect_window, text="Build report", command=self.build_xtabs, height=1, width=15)
-        btn_cancel = Tkinter.Button(redirect_window, text="Cancel", command=redirect_window.destroy, height=1, width=15)
+        redirect_window.geometry("200x300+%d+%d" % (x + 100, y + 150))
+        message = "Please select the\nfiles to produce."
+        Tkinter.Label(redirect_window, text = message, font=header_font, fg='midnight blue').pack()
+        btn_var = Tkinter.Button(redirect_window, text="Variable script", command=self.variable_script, height=3, width=20)
+        btn_tab = Tkinter.Button(redirect_window, text="Table script", command=self.table_script, height=3, width=20)
+        btn_compile = Tkinter.Button(redirect_window, text="Build report", command=self.build_xtabs, height=3, width=20)
+        btn_cancel = Tkinter.Button(redirect_window, text="Cancel", command=redirect_window.destroy, height=3, width=20)
         btn_cancel.pack(padx=5, side=Tkinter.BOTTOM, expand=True)
         btn_compile.pack(padx=5, side=Tkinter.BOTTOM, expand=True)
         btn_tab.pack(padx=5, side=Tkinter.BOTTOM, expand=True)
@@ -133,7 +137,6 @@ class Internbot:
         y = self.__window.winfo_y()
         self.base_window.geometry("1100x350+%d+%d" % (x - 200 , y - 50))
         self.base_window.title("Base assignment")
-
         self.loaded_qfile = False
         
         self.boxes_frame = Tkinter.Frame(self.base_window)
@@ -219,6 +222,11 @@ class Internbot:
             self.tables_box.select_set(self.focus_index)
             self.bases_box.select_set(self.focus_index)
 
+        def help_pressed(event):
+            self.bases_help_window()
+
+        self.base_window.bind("<F1>", help_pressed)
+
         self.base_window.bind("<Return>", enter_pressed)
         self.base_window.bind("<KP_Enter>", enter_pressed)
 
@@ -276,9 +284,9 @@ class Internbot:
         help_window.withdraw()
         x = self.__window.winfo_x()
         y = self.__window.winfo_y()
-        help_window.geometry("300x310+%d+%d" % (x + 150, y + 155))
+        help_window.geometry("300x400+%d+%d" % (x + 150, y + 200))
         message = "\nBase Input Help"
-        Tkinter.Label(help_window, text=message, font='Arial 14 bold').pack()
+        Tkinter.Label(help_window, text=message, font=header_font).pack()
         info_message = "Select Open to import a Q output file."\
                        "\nThis should be a .xlsx file."\
                        "\n\nYou can change the current selection with"\
@@ -326,14 +334,20 @@ class Internbot:
         edit_window = Tkinter.Toplevel(self.base_window)
         x = self.__window.winfo_x()
         y = self.__window.winfo_y()
-        edit_window.geometry("400x100+%d+%d" % (x + 100, y + 200))
-        edit_window.title("Add base")
-        lbl_banner = Tkinter.Label(edit_window, text="Base description:")
-        entry_des = Tkinter.Entry(edit_window)
+        edit_window.geometry("400x150+%d+%d" % (x + 100, y + 200))
+        edit_window.title("Add base and n")
+        edit_frame =Tkinter.Frame(edit_window)
+        edit_frame.pack(side=Tkinter.TOP)
+        base_frame = Tkinter.Frame(edit_frame)
+        base_frame.pack(side=Tkinter.LEFT, padx=5, pady=5)
+        lbl_base = Tkinter.Label(base_frame, text="Base description:")
+        entry_des = Tkinter.Entry(base_frame, width =30)
         entry_des.insert(0, "")
         entry_des.focus_set()
-        lbl_title = Tkinter.Label(edit_window, text="Size (n):")
-        entry_size = Tkinter.Entry(edit_window)
+        size_frame = Tkinter.Frame(edit_frame)
+        size_frame.pack(side=Tkinter.RIGHT, padx=5, pady=5)
+        lbl_title = Tkinter.Label(size_frame, text="Size (n):")
+        entry_size = Tkinter.Entry(size_frame, width= 10)
         entry_size.insert(0, "")
 
         def edit():
@@ -351,23 +365,35 @@ class Internbot:
             self.bases_box.select_set(self.focus_index)
 
 
-        btn_cancel = Tkinter.Button(edit_window, text="Cancel", command=edit_window.destroy)
-        btn_edit = Tkinter.Button(edit_window, text="Edit", command=edit)
+        btn_cancel = Tkinter.Button(edit_window, text="Cancel", command=edit_window.destroy, width = 20, height =3)
+        btn_edit = Tkinter.Button(edit_window, text="Edit", command=edit, width = 20, height =3)
 
-        lbl_banner.grid(row=0, column=0)
-        lbl_title.grid(row=0, column=1)
-        entry_des.grid(row=1, column=0)
-        entry_size.grid(row=1, column=1)
+        lbl_base.pack(side=Tkinter.TOP)
+        lbl_title.pack(side=Tkinter.TOP)
+        entry_des.pack(side=Tkinter.TOP)
+        entry_size.pack(side=Tkinter.TOP)
 
-        btn_edit.grid(row=2, column=0)
-        btn_cancel.grid(row=2, column=1)
+        btn_edit.pack(side=Tkinter.LEFT, padx=20)
+        btn_cancel.pack(side=Tkinter.RIGHT, padx=20)
 
         #Key Bindings
         def enter_pressed(event):
             edit()
 
+        def right_pressed(event):
+            entry_size.focus_set()
+
+        def left_pressed(event):
+            entry_des.focus_set()
+
+        def escape_pressed(event):
+            edit_window.destroy()
+
         edit_window.bind("<Return>", enter_pressed)
         edit_window.bind("<KP_Enter>", enter_pressed)
+        edit_window.bind("<Left>", left_pressed)
+        edit_window.bind("<Right>", right_pressed)
+        edit_window.bind("<Escape>", escape_pressed)
 
 
     def finish_bases(self):
@@ -432,8 +458,10 @@ class Internbot:
         y = self.__window.winfo_y()
         help_window.geometry("300x200+%d+%d" % (x + 150, y + 100))
         message = "\nTopline Help"
-        Tkinter.Label(help_window, text=message, font='Arial 14 bold').pack()
-        info_message = "\nRound Number: \nleave it blank for non-trended reports\nor enter 1-10 for trended reports.\n"
+        Tkinter.Label(help_window, text=message, font=header_font).pack()
+        info_message = "\nRound Number: \n" \
+                       "leave it blank for non-trended reports\n" \
+                       "or enter 1-10 for trended reports.\n"
         Tkinter.Label(help_window, text=info_message).pack()
         btn_ok = Tkinter.Button(help_window, text="Cancel", command=help_window.destroy, height=1, width=15)
         btn_ok.pack(padx=5, side=Tkinter.BOTTOM, expand=False)
@@ -484,30 +512,30 @@ class Internbot:
         self.redirect_window.destroy()
 
     def read_topline(self):
-		try:
-			filename = tkFileDialog.askopenfilename(initialdir = self.fpath, title = "Select survey file",filetypes = (("Qualtrics files","*.qsf"),("comma seperated files","*.csv"),("all files","*.*")))
-			if filename is not "":
-				self.isQSF = False
-				if ".qsf" in filename:
-					pass
-				elif ".csv" in filename:
-					round_int = self.round_entry.get()
-					is_trended = False
-					if round_int == "":
-						round_int = 1
-					else:
-						round_int = int(round_int)
-						if round_int != 1:
-							is_trended = True
-					self.report = topline.CSV.ReportGenerator(filename, round_int)
-					self.redirect_window.destroy()
-					self.round = round_int
-					if is_trended is True:
-						self.year_window_setup()
-					else:
-						self.build_topline_report(self.isQSF, self.report)
-		except Exception as e:
-				tkMessageBox.showerror("Error", "An error occurred\n"+ str(e))
+        try:
+            filename = tkFileDialog.askopenfilename(initialdir = self.fpath, title = "Select survey file",filetypes = (("Qualtrics files","*.qsf"),("comma seperated files","*.csv"),("all files","*.*")))
+            if filename is not "":
+                self.isQSF = False
+                if ".qsf" in filename:
+                    pass
+                elif ".csv" in filename:
+                    round_int = self.round_entry.get()
+                    is_trended = False
+                    if round_int == "":
+                        round_int = 1
+                    else:
+                        round_int = int(round_int)
+                        if round_int != 1:
+                            is_trended = True
+                    self.report = topline.CSV.ReportGenerator(filename, round_int)
+                    self.redirect_window.destroy()
+                    self.round = round_int
+                    if is_trended is True:
+                        self.year_window_setup()
+                    else:
+                        self.build_topline_report(self.isQSF, self.report)
+        except Exception as e:
+            tkMessageBox.showerror("Error", "An error occurred\n"+ str(e))
 
     def year_window_setup(self):
         try:
@@ -1187,6 +1215,12 @@ logo_label.pack(side=Tkinter.RIGHT)
 window.option_add("*Font", ('Trade Gothic LT Pro', 16, ))
 window.option_add("*Button.Foreground", "midnight blue")
 
+header_font = ('Trade Gothic LT Pro', 18, 'bold')
+def close(event):
+    window.withdraw() # if you want to bring it back
+    sys.exit() # if you want to exit the entire thing
+
+window.bind('<Escape>', close)
 
 window.deiconify()
 Internbot(window)
