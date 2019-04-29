@@ -36,6 +36,7 @@ class Internbot:
         btn_report = Tkinter.Button(button_frame, text="Run topline report", padx=4, width=20, height=3,command=self.topline_menu, relief=Tkinter.FLAT, highlightthickness=0)
         btn_appen = Tkinter.Button(button_frame, text="Run topline appendix", padx=4, width=20, height=3,command=self.append_menu, relief=Tkinter.FLAT, highlightthickness=0)
         btn_rnc = Tkinter.Button(button_frame, text="Run RNC", padx=4, width=20, height=3,command=self.rnc.rnc_menu, relief=Tkinter.FLAT, highlightthickness=0)
+        btn_terminal = Tkinter.Button(button_frame, text="Terminal Window", padx=4, width=20, height=3, command=self.terminal_window, relief=Tkinter.FLAT, highlightthickness=0)
         btn_quit = Tkinter.Button(button_frame, text="Quit", padx=4, width=20, height=3,command=self.__window.destroy, relief=Tkinter.GROOVE, highlightthickness=0)
         btn_bot = Tkinter.Button(button_frame, image=bot_render, padx=4, pady=10, width=158, height=45, borderwidth=0, highlightthickness=0, relief=Tkinter.FLAT, command=self.main_help_window)
         btn_bot.pack(padx=5, pady=3, side=Tkinter.TOP)
@@ -43,6 +44,7 @@ class Internbot:
         btn_report.pack(padx=5, side=Tkinter.TOP, expand=True)
         btn_appen.pack(padx=5, side=Tkinter.TOP, expand=True)
         btn_rnc.pack(padx=5, side=Tkinter.TOP, expand=True)
+        btn_terminal.pack(padx=5, side=Tkinter.TOP, expand=True)
         btn_quit.pack(padx=5, side=Tkinter.TOP, expand=True)
 
         #Menubar Set Up
@@ -94,7 +96,38 @@ class Internbot:
         btn_ok = Tkinter.Button(help_window, text="Ok", command=help_window.destroy, height=3, width=20,  highlightthickness=0)
         btn_ok.pack(pady= 5, side=Tkinter.BOTTOM, expand=False)
         help_window.deiconify()
-        
+
+    def terminal_window(self):
+        self.term_window = Tkinter.Toplevel(self.__window)
+        self.term_window.withdraw()
+        width = 500
+        height = 600
+        self.term_window.geometry("%dx%d+%d+%d" % (
+            width, height, mov_x + window_width / 2 - width , mov_y + window_height / 2 - height/2))
+
+
+        t1 = Tkinter.Text(self.term_window, height=100, width=500, fg='white', background=header_color)
+        t1.pack()
+
+        class PrintToT1(object):
+            def __init__(self, stream):
+                self.stream = stream
+
+            def write(self, s):
+                self.stream.write(s)
+                t1.insert(Tkinter.END, s)
+                self.stream.flush()
+
+        #sys.stdout = os.fdopen(sys.stdout.fileno(), 'w', 0)
+        sys.stdout = PrintToT1(sys.stdout)
+        sys.stderr = PrintToT1(sys.stderr)
+
+
+        #self.__window.wm_attributes("-topmost", 1)
+        #self.__window.focus_force()
+        print "Hello World"
+        self.term_window.deiconify()
+
     def software_tabs_menu(self):
         """
         Function sets up the Software Type selection for crosstabs
@@ -679,7 +712,7 @@ screen_width = window.winfo_screenwidth()
 screen_height = window.winfo_screenheight()
 mov_x = screen_width / 2 - 300
 mov_y = screen_height / 2 - 200
-window_height = 400
+window_height = 450
 window_width = 600
 window.geometry("%dx%d+%d+%d" % (window_width, window_height, mov_x, mov_y))
 
