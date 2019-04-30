@@ -26,7 +26,6 @@ class RNCView(object):
         self.bot_render = bot_render
 
     def rnc_menu(self):
-        print "File RNC"
         self.redirect_window = Tkinter.Toplevel(self.__window)
         self.redirect_window.withdraw()
         width = 250

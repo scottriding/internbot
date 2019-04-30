@@ -98,9 +98,9 @@ class SSAppendixBuilder(object):
         sheet["C1"].fill = self.__header_fill
 
         if self.__is_qualtrics:
-            logo = Image("QLogo.png")
+            logo = Image("templates_images/QLogo.png")
         else:
-            logo = Image("y2_xtabs.png")
+            logo = Image("templates_images/y2_xtabs.png")
         sheet.add_image(logo, "C1")
 
     def write_question(self, question, sheet):

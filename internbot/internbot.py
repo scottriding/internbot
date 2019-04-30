@@ -12,6 +12,7 @@ from years_window import YearsWindow
 from SPSS_Crosstabs_GUI import SPSSCrosstabsView
 from RNC_GUI import RNCView
 import sys
+import templates_images
 
 
 class Internbot:
@@ -131,7 +132,7 @@ class Internbot:
             if ask_output is True:
                 savedirectory = tkFileDialog.askdirectory()
                 renamer = crosstabs.Format_Amazon_Report.RenameTabs()
-                renamed_wb = renamer.rename(tablefile, savedirectory)
+                renamed_wb = renamer.rename(tablefile, "templates_images/Amazon TOC.csv", savedirectory)
                 highlighter = crosstabs.Format_Amazon_Report.Highlighter(renamed_wb)
                 highlighter.highlight(savedirectory)
                 tkMessageBox.showinfo("Finished", "The highlighted report is saved in your chosen directory.")
@@ -539,7 +540,7 @@ class Internbot:
                 ask_output = tkMessageBox.askokcancel("Output directory", "Please select the directory for finished report.")
                 if ask_output is True:
                     savedirectory = tkFileDialog.askdirectory()
-                    generator.write_appendix(savedirectory, "appendix_template.docx", False)
+                    generator.write_appendix(savedirectory, "templates_images/appendix_template.docx", False)
 
             elif ask_docx is False:
                 ask_output = tkMessageBox.askokcancel("Output directory", "Please select the directory for finished report.")
@@ -624,7 +625,7 @@ class Internbot:
         :return: None
         """
         try:
-            template_file = open("topline_template.docx", "r")
+            template_file = open("templates_images/topline_template.docx", "r")
             ask_output = tkMessageBox.askokcancel("Output directory", "Please select the directory for finished report.")
             if ask_output is True:
                 savedirectory = tkFileDialog.askdirectory()
@@ -869,7 +870,7 @@ window = Tkinter.Tk()
 window.withdraw()
 window.title("Internbot: 01011001 00000010") # Internbot: Y2
 if platform.system() == 'Windows':  # Windows
-    window.iconbitmap('y2.ico')
+    window.iconbitmap('templates_images/y2.ico')
 screen_width = window.winfo_screenwidth()
 
 screen_height = window.winfo_screenheight()
@@ -882,8 +883,8 @@ window.geometry("%dx%d+%d+%d" % (window_width, window_height, mov_x, mov_y))
 
 window['background'] = 'white'
 
-y2_logo = "Y2Logo.gif"
-help_bot = "Internbot.gif"
+y2_logo = "templates_images/Y2Logo.gif"
+help_bot = "templates_images/Internbot.gif"
 bot_render = Tkinter.PhotoImage(file=help_bot)
 logo_render = Tkinter.PhotoImage(file= y2_logo)
 logo_label = Tkinter.Label(window, image=logo_render, borderwidth=0, highlightthickness=0, relief=Tkinter.FLAT, padx=50)

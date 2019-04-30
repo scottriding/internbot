@@ -46,15 +46,15 @@ class RenameTabs(object):
                 self.extend_alphabet.append(triple_letters)
             index += 1
 
-    def rename(self, path_to_xlsx, path_to_output):
+    def rename(self, path_to_xlsx, path_to_toc, path_to_output):
         print "Reading in workbook"
         output_workbook = load_workbook(path_to_xlsx)
         try:
             toc_sheet = output_workbook.create_sheet("TOC", 0)
-            self.create_toc("Amazon TOC.csv", toc_sheet)
+            self.create_toc(path_to_toc, toc_sheet)
         except:
             toc_sheet = output_workbook["TOC"]
-            self.write_table_of_contents("Amazon TOC.csv", toc_sheet)
+            self.write_table_of_contents(path_to_toc, toc_sheet)
         self.rename_worksheets(output_workbook)
         return output_workbook
 
@@ -113,7 +113,7 @@ class RenameTabs(object):
 
         toc_sheet.column_dimensions['C'].hidden= True
 
-        logo = Image("Old_QLogo.png")
+        logo = Image("templates_images/Old_QLogo.png")
         toc_sheet.add_image(logo, "B2")
 
     def write_table_of_contents(self, path_to_tables, toc_sheet):

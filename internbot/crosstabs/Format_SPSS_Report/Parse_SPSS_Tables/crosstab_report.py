@@ -196,7 +196,7 @@ class CrosstabReportWriter(object):
             index += 1
 
         current_cell = "%s%s" % (self.extend_alphabet[index - 3], current_row)
-        logo = Image("QLogo.png")
+        logo = Image("templates_images/QLogo.png")
         sheet.add_image(logo, current_cell)
 
         next_row_cell = "%s%s" % (self.extend_alphabet[index - 3], current_row + 1)
