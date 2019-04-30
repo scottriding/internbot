@@ -104,21 +104,37 @@ class Internbot:
         sft_window.withdraw()
         self.spss = SPSSCrosstabsView(self.__window, mov_x, mov_y, window_width, window_height, header_font, header_color)
         width = 200
-        height = 250
+        height = 300
         sft_window.geometry(
             "%dx%d+%d+%d" % (width,height,mov_x + window_width / 2 - width / 2, mov_y + window_height / 2 - height / 2))
 
         message = "Please select crosstabs\nsoftware to use"
         Tkinter.Label(sft_window, text = message, font=header_font, fg=header_color).pack()
+        btn_amaz = Tkinter.Button(sft_window, text="Amazon CX", command=self.amazon_xtabs, height=3, width=20)
         btn_spss = Tkinter.Button(sft_window, text="SPSS", command=self.spss.spss_crosstabs_menu, height=3, width=20)
         btn_q = Tkinter.Button(sft_window, text="Q Research", command=self.bases_window, height=3, width=20)
         btn_cancel = Tkinter.Button(sft_window, text="Cancel", command=sft_window.destroy, height=3, width=20)
         btn_cancel.pack(side=Tkinter.BOTTOM, expand=True)
         btn_q.pack(side=Tkinter.BOTTOM, expand=True)
         btn_spss.pack(side=Tkinter.BOTTOM, expand=True)
+        btn_amaz.pack(side=Tkinter.BOTTOM, expand=True)
         sft_window.deiconify()
 
-
+    def amazon_xtabs(self):
+        """
+        Function runs legacy report for Amazon CX Wave Series.
+        """
+        ask_xlsx = tkMessageBox.askokcancel("Select XLSX Report File", "Please select combined tables .xlsx file")
+        if ask_xlsx is True:
+            tablefile = tkFileDialog.askopenfilename(initialdir = self.fpath, title = "Select report file",filetypes = (("excel files","*.xlsx"),("all files","*.*")))
+            ask_output = tkMessageBox.askokcancel("Select output directory", "Please select folder for final report.")
+            if ask_output is True:
+                savedirectory = tkFileDialog.askdirectory()
+                renamer = crosstabs.Format_Amazon_Report.RenameTabs()
+                renamed_wb = renamer.rename(tablefile, savedirectory)
+                highlighter = crosstabs.Format_Amazon_Report.Highlighter(renamed_wb)
+                highlighter.highlight(savedirectory)
+                tkMessageBox.showinfo("Finished", "The highlighted report is saved in your chosen directory.")
 
     def bases_window(self):
         """
@@ -510,7 +526,7 @@ class Internbot:
         self.redirect_window.deiconify()
 
     def read_append(self):
-      """
+        """
         Funtion reads in the appendix file and creates a .docx
         :return: None
         """
