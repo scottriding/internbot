@@ -67,6 +67,8 @@ class Internbot:
         # menu_quit.add_command(label="Good Bye", command=self.__window.destroy)
         # self.menubar.add_cascade(label="Quit", menu=menu_quit)
         # self.__window.config(menu=self.menubar)
+        self.terminal_window()
+
 
         def help_pressed(event):
             self.main_help_window()
@@ -100,13 +102,13 @@ class Internbot:
     def terminal_window(self):
         self.term_window = Tkinter.Toplevel(self.__window)
         self.term_window.withdraw()
+        self.term_window['background'] = header_color
         width = 500
         height = 600
         self.term_window.geometry("%dx%d+%d+%d" % (
             width, height, mov_x + window_width / 2 - width , mov_y + window_height / 2 - height/2))
 
-
-        t1 = Tkinter.Text(self.term_window, height=100, width=500, fg='white', background=header_color)
+        t1 = Tkinter.Text(self.term_window, fg='white', height= 600, width=500, background=header_color, padx=5, pady=5)
         t1.pack()
 
         class PrintToT1(object):
@@ -117,14 +119,11 @@ class Internbot:
                 self.stream.write(s)
                 t1.insert(Tkinter.END, s)
                 self.stream.flush()
+                t1.see(Tkinter.END)
 
-        #sys.stdout = os.fdopen(sys.stdout.fileno(), 'w', 0)
         sys.stdout = PrintToT1(sys.stdout)
         sys.stderr = PrintToT1(sys.stderr)
 
-
-        #self.__window.wm_attributes("-topmost", 1)
-        #self.__window.focus_force()
         print "Hello World"
         self.term_window.deiconify()
 
@@ -730,7 +729,7 @@ window.option_add("*Font", ('Trade Gothic LT Pro', 16, ))
 window.option_add("*Button.Foreground", "midnight blue")
 
 header_font = ('Trade Gothic LT Pro', 18, 'bold')
-header_color = "midnight blue"
+header_color = '#112C4E'
 def close(event):
     window.withdraw() # if you want to bring it back
     sys.exit() # if you want to exit the entire thing

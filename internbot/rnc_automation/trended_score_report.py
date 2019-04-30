@@ -2,6 +2,7 @@ from openpyxl import load_workbook, Workbook
 from openpyxl.styles.borders import Border, Side
 from openpyxl.styles import PatternFill, Font, Alignment
 from collections import OrderedDict
+import sys
    
 class TrendedScoreReport(object):
 
@@ -152,7 +153,7 @@ class TrendedScoreReport(object):
             
             if grouping.name == 'All Voters':
                 print(grouping.frequencies)
-            
+
             field_cell = "A%s" % (current_row)
             grouping_cell = "B%s" % (current_row)
             count_cell = "C%s" % (current_row)
