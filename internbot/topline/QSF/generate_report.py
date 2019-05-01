@@ -12,6 +12,12 @@ class ReportGenerator(object):
         report = ToplineReport(self.__questions, path_to_template)
         report.save(str(path_to_output) + '/basic_topline.docx')
 
+    def unicode_dict_reader(self, utf8_data, **kwargs):
+        csv_reader = csv.DictReader(utf8_data, **kwargs)
+        for row in csv_reader:
+            if row['variable'] != "":
+                yield {unicode(key, 'iso-8859-1'):unicode(value, 'iso-8859-1') for key, value in row.iteritems()}
+
     def assign_frequencies(self, path_to_csv):
         question_data = self.unicode_dict_reader(open(path_to_csv))
         for row in question_data:

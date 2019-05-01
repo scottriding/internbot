@@ -97,6 +97,9 @@ class Response(object):
         round_col = "percent" 
         if frequency_data.get(round_col) is not None:
             self.__frequencies.append(frequency_data[round_col])
+        if int(round_no) == 1:
+            if frequency_data["percent"] != '':
+                self.__frequencies.append(frequency_data["percent"])
         else:
         	iteration = 1
         	round_int = int(round_no)
