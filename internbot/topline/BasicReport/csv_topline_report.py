@@ -3,7 +3,7 @@ from docx.shared import Inches
 from docx.enum.text import WD_ALIGN_PARAGRAPH
 from docx.shared import Cm
 
-class ToplineReport(object):
+class CSVToplineReport(object):
 
     def __init__(self, questions, path_to_template, years):
         self.doc = Document(path_to_template)
@@ -78,10 +78,12 @@ class ToplineReport(object):
         if float(freq) >= 1.0:
             result = int(freq) * 100
         else:
-            percent = float(freq) * 100
+            percent = float(freq)
+            percent = percent * 100
             if percent >= 0 and percent < 1:
-                return "<1"
-            result = int(round(percent))
+                result = "<1"
+            else:
+                result = int(round(percent))
         if is_first:
-            result = str(result) +"%"
+            result = str(result) + "%"
         return str(result)

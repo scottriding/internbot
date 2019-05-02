@@ -1,7 +1,7 @@
 from collections import OrderedDict
 
 
-class Questions(object):
+class CSVQuestions(object):
 
     def __init__(self, questions_data=[]):
         self.__questions = OrderedDict()
@@ -52,7 +52,7 @@ class Questions(object):
         return result
 
 
-class Question(object):
+class CSVQuestion(object):
 
     def __init__(self, name, prompt):
         self.__name = name
@@ -89,7 +89,7 @@ class Question(object):
         self.__display_logic = logic
 
 
-class Response(object):
+class CSVResponse(object):
 
     def __init__(self, label, frequency_data, round_no):
         self.__name = label

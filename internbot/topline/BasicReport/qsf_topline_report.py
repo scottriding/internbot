@@ -1,12 +1,13 @@
 from docx import Document
 from docx.shared import Inches
 
-class ToplineReport(object):
+class QSFToplineReport(object):
 
-    def __init__ (self, questions, path_to_template):
+    def __init__ (self, questions, path_to_template, years):
         self.doc = Document(path_to_template)
         self.line_break = self.doc.styles['LineBreak']
         self.questions = questions
+        self.headers = years
 
     def save(self, path_to_output):
         self.write_questions()
@@ -72,26 +73,30 @@ class ToplineReport(object):
             paragraph.add_run(" (n = " + str(n) + ")")
 
     def write_responses(self, responses):
-        table = self.doc.add_table(rows = 1, cols = 5)
+        first_response_freqs = responses.get_first().frequencies
+        data_columns = len(first_response_freqs)
+        table = self.doc.add_table(rows = 1, cols = data_columns+5)
+        if data_columns > 1:
+            titles_row = table.add_row().cells
+            headers_index = 0
+            for i in range(5, data_columns+5):
+                header_text = "Total %s" % self.headers[headers_index]
+                titles_row[i].text = header_text
+                headerse_index += 1
         first_row = True
+        first_freq = True
         for response in responses:
             if response.type == 'Response' or response.type == 'NAResponse':
                 response_cells = table.add_row().cells
-                response_cells[1].merge(response_cells[2])
-                if response.type == 'NAResponse':
-                    response_cells[1].text = 'Don\'t know / Skipped'
-                else:
-                    response_cells[1].text = response.response
-                if response.has_frequency is True and first_row is True:
-                    response_cells[3].text = self.freqs_percent(response.frequency) + "%"
-                    first_row = False
-                elif response.has_frequency is True and first_row is False:
-                    response_cells[3].text = self.freqs_percent(response.frequency)
-                elif response.has_frequency is False and first_row is True:
-                    response_cells[3].text = '--%'
-                    first_row = False
-                else:
-                    response_cells[3].text = '--'
+                response_cells[2].merge(response_cells[3])
+                response_cells[2].text = response.response
+                freq_col = 5
+                for freq in response.frequencies:
+                    text = self.freqs_percent(freq, first_freq)
+                    if first_freq is True:
+                        first_freq = False
+                    response_cells[freq_col].text = text
+                    freq_col += 1
 
     def write_binary(self, sub_questions):
         table = self.doc.add_table(rows = 1, cols = 5)
@@ -161,13 +166,19 @@ class ToplineReport(object):
     def get_doc(self):
         return self.doc
 
-    def freqs_percent(self, freq):
-        percent = freq * 100
-        if percent > 0 and percent < 1:
-            return "<1"
-        elif percent == 0:
-            return "*"
-        result = int(round(percent))
+    def freqs_percent(self, freq, is_first):
+        result = 0
+        if float(freq) >= 1.0:
+            result = int(freq) * 100
+        else:
+            percent = float(freq)
+            percent = percent * 100
+            if percent >= 0 and percent < 1:
+                result = "<1"
+            else:
+                result = int(round(percent))
+        if is_first:
+            result = str(result) + "%"
         return str(result)
 
     def avgs_percent(self, average):
