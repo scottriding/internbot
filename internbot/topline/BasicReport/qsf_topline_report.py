@@ -82,7 +82,7 @@ class QSFToplineReport(object):
             for i in range(5, data_columns+5):
                 header_text = "Total %s" % self.headers[headers_index]
                 titles_row[i].text = header_text
-                headerse_index += 1
+                headers_index += 1
         first_row = True
         first_freq = True
         for response in responses:

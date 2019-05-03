@@ -37,7 +37,7 @@ class ReportGenerator(object):
             if matching_question is not None:
                 matching_response = self.find_response(row["label"], matching_question)
                 if matching_response is not None:
-                    self.add_frequency(matching_response, row)
+                    self.add_frequency(matching_response, row, round_no)
                     self.add_n(matching_question, row)
                     if question_display != "":
                         self.add_display_logic(matching_question, question_display)
@@ -73,12 +73,12 @@ class ReportGenerator(object):
             matching_response = next((response for response in responses if response.response == '1'), None)
         return matching_response
 
-    def add_frequency(self, matching_response, frequency_data):
+    def add_frequency(self, matching_response, frequency_data, round_no):
         round_col = "percent"
         self.__frequencies = []
-        if frequency_data[round_col] is not None:
+        try:
             self.__frequencies.append(frequency_data[round_col])
-        else:
+        except:
         	iteration = 1
         	round_int = int(round_no)
         	while iteration <= round_int:

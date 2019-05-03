@@ -9,8 +9,8 @@ import os, subprocess, platform
 import csv
 from collections import OrderedDict
 from years_window import YearsWindow
-from SPSS_Crosstabs_GUI import SPSSCrosstabsView
-from RNC_GUI import RNCView
+from spss_xtabs_gui import SPSSCrosstabsView
+from rnc_gui import RNCView
 import sys
 import templates_images
 
@@ -462,21 +462,6 @@ class Internbot:
         btn_cancel.pack(side=Tkinter.TOP, padx=10, pady=5)
         self.redirect_window.deiconify()
 
-    def append_menu(self):
-        self.redirect_window = Tkinter.Toplevel(self.__window)
-        self.redirect_window.withdraw()
-        x = self.__window.winfo_x()
-        y = self.__window.winfo_y()
-        self.redirect_window.geometry("250x100+%d+%d" % (x + 175, y + 150))
-        self.redirect_window.title("Y2 Topline Appendix Report Automation")
-        message = "Please open an appendix file."
-        Tkinter.Label(self.redirect_window, text = message).pack(expand=True)
-        btn_bot.pack(side=Tkinter.TOP, padx=10, pady=5)
-        btn_open.pack(side = Tkinter.TOP, padx=10, pady=5)
-        btn_cancel.pack(side = Tkinter.TOP, padx=10, pady=5)
-
-        self.redirect_window.deiconify()
-
     def topline_help_window(self):
         """
         Funtion sets up help window to give the user info about round numbers.
@@ -517,9 +502,9 @@ class Internbot:
 
         self.redirect_window.geometry("%dx%d+%d+%d" % (width,height,mov_x + window_width / 2 - width / 2, mov_y + window_height / 2 - height / 2))
         self.redirect_window.title("Y2 Topline Appendix Report Automation")
-        message="Please open a survey \nfile and open ends file."
+        message="Please open a .csv file with open ended responses."
         Tkinter.Label(self.redirect_window, text=message, font=header_font, fg=header_color).pack(expand=True, pady=5)
-        btn_open = Tkinter.Button(self.redirect_window, text="Open", command=self.read_topline, height=3, width=20)
+        btn_open = Tkinter.Button(self.redirect_window, text="Open", command=self.read_append, height=3, width=20)
         btn_cancel = Tkinter.Button(self.redirect_window, text="Cancel", command=self.redirect_window.destroy, height=3,
                                     width=20)
         btn_bot = Tkinter.Button(self.redirect_window, image=bot_render, borderwidth=0,

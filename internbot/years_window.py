@@ -16,7 +16,6 @@ class YearsWindow(object):
         self.round=round
         self.__window = main_window
         self.year_window = root
-        print "In init"
 
 
     def packing_years(self, year_frame):
@@ -147,8 +146,6 @@ class YearsWindow(object):
         elif (self.round == 2):
             self.pull_two_years(years)
         self.year_window.destroy()
-        for i in range(len(years)):
-            print years[i]
         return years
 
     def pull_ten_years(self, years):
