@@ -10,6 +10,7 @@ class ReportGenerator(object):
     def __init__(self, path_to_freqs, round_no = 1, survey = None):
         question_data = self.unicode_dict_reader(open(path_to_freqs))
         self.__frequencies = []
+        self.__survey = survey
         if survey is not None:
             self.__survey = survey
             self.__questions = survey.get_questions()

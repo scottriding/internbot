@@ -21,7 +21,7 @@ class CSVQuestions(object):
             if display_logic != "":
                 question.add_display(display_logic)
         else:
-            question = Question(question_name, question_prompt)
+            question = CSVQuestion(question_name, question_prompt)
             if question_response != "":
                 question.add_response(question_response, question_data, question_pop, round_no)
             if display_logic != "":
@@ -83,7 +83,7 @@ class CSVQuestion(object):
 
     def add_response(self, response_name, response_data, response_pop, round_no):
         self.__n += int(response_pop)
-        self.__responses.append(Response(response_name, response_data, round_no))
+        self.__responses.append(CSVResponse(response_name, response_data, round_no))
 
     def add_display(self, logic):
         self.__display_logic = logic
@@ -116,3 +116,7 @@ class CSVResponse(object):
     @property
     def frequencies(self):
         return self.__frequencies
+
+    @property
+    def sort(self):
+        self.__frequencies.reverse()
