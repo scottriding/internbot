@@ -1,6 +1,6 @@
 import csv
 from collections import OrderedDict
-from format_report import SSAppendixBuilder, DocAppendixBuilder
+from format_report import SSAppendixBuilder, DocAppendixBuilder, OpenEndQuestion
 
 class AppendixGenerator(object):
 

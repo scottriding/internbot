@@ -273,9 +273,9 @@ class QParser(object):
         # add logos
         current_cell = "%s%s" % (self.__extend_alphabet[current_col - 3], str(current_row))
         if self.__is_qualtrics:
-            logo = Image("QLogo.png")
+            logo = Image("templates_images/QLogo.png")
         else:
-            logo = Image("y2_xtabs.png")
+            logo = Image("templates_images/y2_xtabs.png")
         sheet.add_image(logo, current_cell)
 
         # figure out where the base description of table will be added
