@@ -30,6 +30,9 @@ class Responses(object):
         return next((response for response in self.__responses \
                      if response.type == 'NAResponse'), None)
 
+    def get_first(self):
+        return self.__responses[0]
+
     def sort(self, response_order):
         sorter = ResponseSorter(response_order)
         self.__responses = sorter.sort(self.__responses)
@@ -53,6 +56,7 @@ class Response(object):
         self.code = code
         self.__has_frequency = False
         self.__is_dynamic = False
+        self.__frequencies = []
 
     @property
     def type(self):
@@ -75,12 +79,12 @@ class Response(object):
         self.__code = str(code)
 
     @property
-    def frequency(self):
-        return self.__frequency
+    def frequencies(self):
+        return self.__frequencies
 
-    @frequency.setter
-    def frequency(self, frequency):
-        self.__frequency = float(frequency)
+    @frequencies.setter
+    def frequencies(self, frequency):
+        self.__frequencies.extend(frequency)
         self.__has_frequency = True
 
     @property

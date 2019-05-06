@@ -3,7 +3,7 @@ from docx.shared import Inches
 from docx.enum.text import WD_ALIGN_PARAGRAPH
 from docx.shared import Cm
 
-class ToplineReport(object):
+class CSVToplineReport(object):
 
     def __init__(self, questions, path_to_template, years):
         self.doc = Document(path_to_template)
@@ -46,27 +46,39 @@ class ToplineReport(object):
         paragraph.add_run(" (n = " + str(n) + ")")
     
     def write_responses(self, responses):
-        first_response_freqs = responses[0].frequencies
-        data_columns  = len(first_response_freqs)
-        table = self.doc.add_table(rows=1, cols=data_columns+5)
-        if data_columns > 1:
-            titles_row = table.add_row().cells  
-            headers_index = 0
-            for i in range(5, data_columns+5):
-                header_text = "Total %s" % self.headers[headers_index]
-                titles_row[i].text = header_text
-                headers_index += 1
+        if len(self.headers) > 0:
+            self.write_trended_responses(responses)
+        else:
+            table = self.doc.add_table(rows = 1, cols = 5)
+            first_row = True
+            for response in responses:
+                response_cells = table.add_row().cells
+                response_cells[1].merge(response_cells[2])
+                response_cells[1].text = response.name
+                response_cells[3].text = self.freqs_percent(response.frequencies[0], first_row)
+                first_row = False
+
+    def write_trended_responses(self, responses):
+        table = self.doc.add_table(rows=1, cols=len(self.headers)+4)
+        titles_row = table.add_row().cells  
+        titles_row[1].merge(titles_row[2])
+        headers_index = 0
+        while headers_index < len(self.headers):
+            header_text = "Total %s" % self.headers[headers_index]
+            titles_row[headers_index+4].text = header_text
+            headers_index += 1
         first_row = True
         first_freq = True
         for response in responses:
             response_cells = table.add_row().cells
-            response_cells[2].merge(response_cells[3])
-            response_cells[2].text = response.name
-            freq_col = 5
+            response_cells[1].merge(response_cells[3])
+            response_cells[1].text = response.name
+            freq_col = 4
+            response.sort
             for freq in response.frequencies:
                 text = self.freqs_percent(freq, first_freq)
                 if first_freq is True:
-                	first_freq = False
+                    first_freq = False
                 response_cells[freq_col].text = text
                 freq_col += 1
 
@@ -78,10 +90,14 @@ class ToplineReport(object):
         if float(freq) >= 1.0:
             result = int(freq) * 100
         else:
-            percent = float(freq) * 100
-            if percent >= 0 and percent < 1:
-                return "<1"
-            result = int(round(percent))
+            percent = float(freq)
+            percent = percent * 100
+            if percent > 0 and percent < 1:
+                result = "<1"
+            elif percent == 0:
+                result = "*"
+            else:
+                result = int(round(percent))
         if is_first:
-            result = str(result) +"%"
+            result = str(result) + "%"
         return str(result)

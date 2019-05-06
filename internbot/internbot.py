@@ -9,9 +9,10 @@ import os, subprocess, platform
 import csv
 from collections import OrderedDict
 from years_window import YearsWindow
-from SPSS_Crosstabs_GUI import SPSSCrosstabsView
-from RNC_GUI import RNCView
+from spss_xtabs_gui import SPSSCrosstabsView
+from rnc_gui import RNCView
 import sys
+import templates_images
 
 
 class Internbot:
@@ -148,21 +149,37 @@ class Internbot:
         sft_window.withdraw()
         self.spss = SPSSCrosstabsView(self.__window, mov_x, mov_y, window_width, window_height, header_font, header_color)
         width = 200
-        height = 250
+        height = 300
         sft_window.geometry(
             "%dx%d+%d+%d" % (width,height,mov_x + window_width / 2 - width / 2, mov_y + window_height / 2 - height / 2))
 
         message = "Please select crosstabs\nsoftware to use"
         Tkinter.Label(sft_window, text = message, font=header_font, fg=header_color).pack()
+        btn_amaz = Tkinter.Button(sft_window, text="Amazon CX", command=self.amazon_xtabs, height=3, width=20)
         btn_spss = Tkinter.Button(sft_window, text="SPSS", command=self.spss.spss_crosstabs_menu, height=3, width=20)
         btn_q = Tkinter.Button(sft_window, text="Q Research", command=self.bases_window, height=3, width=20)
         btn_cancel = Tkinter.Button(sft_window, text="Cancel", command=sft_window.destroy, height=3, width=20)
         btn_cancel.pack(side=Tkinter.BOTTOM, expand=True)
         btn_q.pack(side=Tkinter.BOTTOM, expand=True)
         btn_spss.pack(side=Tkinter.BOTTOM, expand=True)
+        btn_amaz.pack(side=Tkinter.BOTTOM, expand=True)
         sft_window.deiconify()
 
-
+    def amazon_xtabs(self):
+        """
+        Function runs legacy report for Amazon CX Wave Series.
+        """
+        ask_xlsx = tkMessageBox.askokcancel("Select XLSX Report File", "Please select combined tables .xlsx file")
+        if ask_xlsx is True:
+            tablefile = tkFileDialog.askopenfilename(initialdir = self.fpath, title = "Select report file",filetypes = (("excel files","*.xlsx"),("all files","*.*")))
+            ask_output = tkMessageBox.askokcancel("Select output directory", "Please select folder for final report.")
+            if ask_output is True:
+                savedirectory = tkFileDialog.askdirectory()
+                renamer = crosstabs.Format_Amazon_Report.RenameTabs()
+                renamed_wb = renamer.rename(tablefile, "templates_images/Amazon TOC.csv", savedirectory)
+                highlighter = crosstabs.Format_Amazon_Report.Highlighter(renamed_wb)
+                highlighter.highlight(savedirectory)
+                tkMessageBox.showinfo("Finished", "The highlighted report is saved in your chosen directory.")
 
     def bases_window(self):
         """
@@ -485,6 +502,8 @@ class Internbot:
         btn_cancel = Tkinter.Button(self.redirect_window, text="Cancel", command=self.redirect_window.destroy, height=3, width=20)
         btn_bot = Tkinter.Button(self.redirect_window, image=bot_render,  borderwidth=0,
                                  highlightthickness=0, relief=Tkinter.FLAT, bg="white", height=65, width=158, command=self.topline_help_window)
+
+
         btn_bot.pack(side=Tkinter.TOP, padx=10, pady=5)
         btn_open.pack(side=Tkinter.TOP, padx=10, pady=5)
         btn_cancel.pack(side=Tkinter.TOP, padx=10, pady=5)
@@ -505,10 +524,10 @@ class Internbot:
         btn_bot = Tkinter.Button(self.redirect_window, image=bot_render, borderwidth=0,
                                  highlightthickness=0, relief=Tkinter.FLAT, bg="white", height=65, width=158,
                                  command=self.topline_help_window)
-        btn_bot.pack(side=Tkinter.TOP, padx=10, pady=5)
-        btn_open.pack(side = Tkinter.TOP, padx=10, pady=5)
-        btn_cancel.pack(side = Tkinter.TOP, padx=10, pady=5)
 
+        btn_bot.pack(side=Tkinter.TOP, padx=10, pady=5)
+        btn_open.pack(side=Tkinter.TOP, padx=10, pady=5)
+        btn_cancel.pack(side=Tkinter.TOP, padx=10, pady=5)
         self.redirect_window.deiconify()
 
     def topline_help_window(self):
@@ -531,7 +550,7 @@ class Internbot:
                        "quarters for trended reports.\n\n"\
                        "When done, select open and you\n" \
                        "will be prompted to open the \n" \
-                       "Topline file and selesct a save\n" \
+                       "Topline file and select a save\n" \
                        "directory."
 
         Tkinter.Label(help_window, text=info_message, justify=Tkinter.LEFT).pack(side=Tkinter.TOP)
@@ -551,24 +570,25 @@ class Internbot:
 
         self.redirect_window.geometry("%dx%d+%d+%d" % (width,height,mov_x + window_width / 2 - width / 2, mov_y + window_height / 2 - height / 2))
         self.redirect_window.title("Y2 Topline Appendix Report Automation")
-        message="Please open a survey \nfile and open ends file."
+        message="Please open a .csv file with open ended responses."
         Tkinter.Label(self.redirect_window, text=message, font=header_font, fg=header_color).pack(expand=True, pady=5)
-        btn_open = Tkinter.Button(self.redirect_window, text="Open", command=self.read_topline, height=3, width=20)
+        btn_open = Tkinter.Button(self.redirect_window, text="Open", command=self.read_append, height=3, width=20)
         btn_cancel = Tkinter.Button(self.redirect_window, text="Cancel", command=self.redirect_window.destroy, height=3,
                                     width=20)
         btn_bot = Tkinter.Button(self.redirect_window, image=bot_render, borderwidth=0,
                                  highlightthickness=0, relief=Tkinter.FLAT, bg="white", height=65, width=158,
                                  command=self.topline_help_window)
         btn_bot.pack(side=Tkinter.TOP, padx=10, pady=5)
-        btn_open.pack(side=Tkinter.TOP, padx=10, pady=5)
-        btn_cancel.pack(side=Tkinter.TOP, padx=10, pady=5)
+        btn_open.pack(side=Tkinter.BOTTOM, padx=10, pady=5)
+        btn_cancel.pack(side=Tkinter.BOTTOM, padx=10, pady=5)
         self.redirect_window.deiconify()
 
     def read_append(self):
         """
-        reads in the appendix file and creates a .docx
-        :return:
+        Funtion reads in the appendix file and creates a .docx
+        :return: None
         """
+
         generator = topline.Appendix.AppendixGenerator()
         csvfilename = tkFileDialog.askopenfilename(initialdir = self.fpath, title = "Select open ends file", filetypes = (("Comma separated files", "*csv"), ("all files", "*.*")))
         if csvfilename != "":
@@ -578,7 +598,7 @@ class Internbot:
                 ask_output = tkMessageBox.askokcancel("Output directory", "Please select the directory for finished report.")
                 if ask_output is True:
                     savedirectory = tkFileDialog.askdirectory()
-                    generator.write_appendix(savedirectory, "appendix_template.docx", False)
+                    generator.write_appendix(savedirectory, "templates_images/appendix_template.docx", False)
 
             elif ask_docx is False:
                 ask_output = tkMessageBox.askokcancel("Output directory", "Please select the directory for finished report.")
@@ -593,30 +613,34 @@ class Internbot:
         Funtion reads in a topline file
         :return: None
         """
-        try:
-            filename = tkFileDialog.askopenfilename(initialdir = self.fpath, title = "Select survey file",filetypes = (("Qualtrics files","*.qsf"),("comma seperated files","*.csv"),("all files","*.*")))
-            if filename is not "":
-                self.isQSF = False
-                if ".qsf" in filename:
-                    pass
-                elif ".csv" in filename:
-                    round_int = self.round_entry.get()
-                    is_trended = False
-                    if round_int == "":
-                        round_int = 1
-                    else:
-                        round_int = int(round_int)
-                        if round_int != 1:
-                            is_trended = True
-                    self.report = topline.CSV.ReportGenerator(filename, round_int)
-                    self.redirect_window.destroy()
-                    self.round = round_int
-                    if is_trended is True:
-                        self.year_window_setup()
-                    else:
-                        self.build_topline_report(self.isQSF, self.report)
-        except Exception as e:
-            tkMessageBox.showerror("Error", "An error occurred\n"+ str(e))
+        #try:
+        filename = tkFileDialog.askopenfilename(initialdir = self.fpath, title = "Select survey file",filetypes = (("Qualtrics files","*.qsf"),("comma seperated files","*.csv"),("all files","*.*")))
+        if filename is not "":
+            round_int = self.round_entry.get()
+            is_trended = False
+            if round_int == "":
+                round_int = 1
+            else:
+                round_int = int(round_int)
+                if round_int != 1:
+                    is_trended = True
+            if ".qsf" in filename:
+                survey = base.QSFSurveyCompiler().compile(filename)
+                ask_freqs = tkMessageBox.askokcancel("Frequency file", "Please select .csv file with survey result frequencies.")
+                if ask_freqs is True:
+                    frequency_file = tkFileDialog.askopenfilename(initialdir = self.fpath, title = "Select frequency file", filetypes = (("Command separated files", "*.csv"), ("all files", "*.*")))
+                    if frequency_file is not "":
+                        self.report_generator = topline.BasicReport.ReportGenerator(frequency_file, round_int, survey)
+            elif ".csv" in filename:
+                self.report_generator = topline.BasicReport.ReportGenerator(filename, round_int)
+                self.redirect_window.destroy()
+            self.round = round_int
+            if is_trended is True:
+                self.year_window_setup()
+            else:
+                self.build_topline_report()
+        #except Exception as e:
+        #    tkMessageBox.showerror("Error", "An error occurred\n"+ str(e))
 
     def year_window_setup(self):
         """
@@ -652,9 +676,9 @@ class Internbot:
         :return: None
         """
         years = self.year_window_obj.read_years()
-        self.build_topline_report(self.isQSF, self.report, years)
+        self.build_topline_report(years)
 
-    def build_topline_report(self, isQSF, report, years=[]):
+    def build_topline_report(self, years=[]):
         """
         Function builds topline report and requests if the user would like to have the files opened.
         :param isQSF: Boolean value
@@ -662,22 +686,21 @@ class Internbot:
         :param years: array of trend titles
         :return: None
         """
-        try:
-            template_file = open("topline_template.docx", "r")
-            ask_output = tkMessageBox.askokcancel("Output directory", "Please select the directory for finished report.")
-            if ask_output is True:
-                savedirectory = tkFileDialog.askdirectory()
-                if savedirectory is not "":
-                    if isQSF is True:
-                        pass
-                    else:
-                        report.generate_topline(template_file, savedirectory, years)
-                        open_files = tkMessageBox.askyesno("Info", "Done!\nWould you like to open your finished files?")
-                        if open_files is True:
-                            self.open_file_for_user(savedirectory+"/topline_report.docx")
-        except Exception as e:
-            tkMessageBox.showerror("Error", "An error occurred\n" + str(e))
+        #try:
+        template_file = open("templates_images/topline_template.docx", "r")
+        ask_output = tkMessageBox.askokcancel("Output directory", "Please select the directory for finished report.")
+        if ask_output is True:
+            savedirectory = tkFileDialog.askdirectory()
+            if savedirectory is not "":
+                self.report_generator.generate_topline(template_file, savedirectory, years)
+                open_files = tkMessageBox.askyesno("Info", "Done!\nWould you like to open your finished files?")
+                if open_files is True:
+                    self.open_file_for_user(savedirectory+"/topline_report.docx")
+        #except Exception as e:
+        #    tkMessageBox.showerror("Error", "An error occurred\n" + str(e))
 
+        
+    def rnc_menu(self):
         self.redirect_window.title("RNC Scores Topline Automation")
         message = "Please open a model scores file."
         Tkinter.Label(self.redirect_window, text=message, font=header_font, fg=header_color).pack(expand=True)
@@ -717,7 +740,7 @@ window = Tkinter.Tk()
 window.withdraw()
 window.title("Internbot: 01011001 00000010") # Internbot: Y2
 if platform.system() == 'Windows':  # Windows
-    window.iconbitmap('y2.ico')
+    window.iconbitmap('templates_images/y2.ico')
 screen_width = window.winfo_screenwidth()
 
 screen_height = window.winfo_screenheight()
@@ -730,8 +753,8 @@ window.geometry("%dx%d+%d+%d" % (window_width, window_height, mov_x, mov_y))
 
 window['background'] = 'white'
 
-y2_logo = "Y2Logo.gif"
-help_bot = "Internbot.gif"
+y2_logo = "templates_images/Y2Logo.gif"
+help_bot = "templates_images/Internbot.gif"
 bot_render = Tkinter.PhotoImage(file=help_bot)
 logo_render = Tkinter.PhotoImage(file= y2_logo)
 logo_label = Tkinter.Label(window, image=logo_render, borderwidth=0, highlightthickness=0, relief=Tkinter.FLAT, padx=50)

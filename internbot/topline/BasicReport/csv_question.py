@@ -1,7 +1,7 @@
 from collections import OrderedDict
 
 
-class Questions(object):
+class CSVQuestions(object):
 
     def __init__(self, questions_data=[]):
         self.__questions = OrderedDict()
@@ -21,7 +21,7 @@ class Questions(object):
             if display_logic != "":
                 question.add_display(display_logic)
         else:
-            question = Question(question_name, question_prompt)
+            question = CSVQuestion(question_name, question_prompt)
             if question_response != "":
                 question.add_response(question_response, question_data, question_pop, round_no)
             if display_logic != "":
@@ -52,7 +52,7 @@ class Questions(object):
         return result
 
 
-class Question(object):
+class CSVQuestion(object):
 
     def __init__(self, name, prompt):
         self.__name = name
@@ -83,13 +83,13 @@ class Question(object):
 
     def add_response(self, response_name, response_data, response_pop, round_no):
         self.__n += int(response_pop)
-        self.__responses.append(Response(response_name, response_data, round_no))
+        self.__responses.append(CSVResponse(response_name, response_data, round_no))
 
     def add_display(self, logic):
         self.__display_logic = logic
 
 
-class Response(object):
+class CSVResponse(object):
 
     def __init__(self, label, frequency_data, round_no):
         self.__name = label
@@ -97,6 +97,9 @@ class Response(object):
         round_col = "percent" 
         if frequency_data.get(round_col) is not None:
             self.__frequencies.append(frequency_data[round_col])
+        if int(round_no) == 1:
+            if frequency_data["percent"] != '':
+                self.__frequencies.append(frequency_data["percent"])
         else:
         	iteration = 1
         	round_int = int(round_no)
@@ -113,3 +116,7 @@ class Response(object):
     @property
     def frequencies(self):
         return self.__frequencies
+
+    @property
+    def sort(self):
+        self.__frequencies.reverse()
