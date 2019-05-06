@@ -8,7 +8,7 @@ import tkFileDialog
 import os, subprocess, platform
 import csv
 from collections import OrderedDict
-
+import threading
 import sys
 
 class RNCView(object):
@@ -240,9 +240,10 @@ class RNCView(object):
                     savedirectory = tkFileDialog.askdirectory()
                     self.create_window.update()
                     if savedirectory is not "":
-                        report.generate_trended_scores(savedirectory, round)
+                        t1 = threading.Thread(target=report.generate_trended_scores, args=(savedirectory,round))
+                        t1.start()
+                        #report.generate_trended_scores(savedirectory, round)
                         self.create_window.destroy()
-                        tkMessageBox.showinfo("Info", "Done!")
         except Exception as e:
             tkMessageBox.showerror("Error", "An error occurred\n" + str(e))
 

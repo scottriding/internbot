@@ -22,6 +22,7 @@ class Internbot:
         self.main_buttons()
         self.fpath = os.path.join(os.path.expanduser("~"), "Desktop")
         self.__embedded_fields = []
+        self.terminal_open = False
 
     def main_buttons(self):
         """
@@ -37,6 +38,7 @@ class Internbot:
         btn_report = Tkinter.Button(button_frame, text="Run topline report", padx=4, width=20, height=3,command=self.topline_menu, relief=Tkinter.FLAT, highlightthickness=0)
         btn_appen = Tkinter.Button(button_frame, text="Run topline appendix", padx=4, width=20, height=3,command=self.append_menu, relief=Tkinter.FLAT, highlightthickness=0)
         btn_rnc = Tkinter.Button(button_frame, text="Run RNC", padx=4, width=20, height=3,command=self.rnc.rnc_menu, relief=Tkinter.FLAT, highlightthickness=0)
+        btn_terminal = Tkinter.Button(button_frame, text="Terminal Window", padx=4, width=20, height=3, command=self.reopen_terminal_window, relief=Tkinter.FLAT, highlightthickness=0)
         btn_quit = Tkinter.Button(button_frame, text="Quit", padx=4, width=20, height=3,command=self.__window.destroy, relief=Tkinter.GROOVE, highlightthickness=0)
         btn_bot = Tkinter.Button(button_frame, image=bot_render, padx=4, pady=10, width=158, height=45, borderwidth=0, highlightthickness=0, relief=Tkinter.FLAT, command=self.main_help_window)
         btn_bot.pack(padx=5, pady=3, side=Tkinter.TOP)
@@ -44,6 +46,7 @@ class Internbot:
         btn_report.pack(padx=5, side=Tkinter.TOP, expand=True)
         btn_appen.pack(padx=5, side=Tkinter.TOP, expand=True)
         btn_rnc.pack(padx=5, side=Tkinter.TOP, expand=True)
+        btn_terminal.pack(padx=5, side=Tkinter.TOP, expand=True)
         btn_quit.pack(padx=5, side=Tkinter.TOP, expand=True)
 
         #Menubar Set Up
@@ -66,6 +69,8 @@ class Internbot:
         # menu_quit.add_command(label="Good Bye", command=self.__window.destroy)
         # self.menubar.add_cascade(label="Quit", menu=menu_quit)
         # self.__window.config(menu=self.menubar)
+        self.terminal_window()
+
 
         def help_pressed(event):
             self.main_help_window()
@@ -95,7 +100,46 @@ class Internbot:
         btn_ok = Tkinter.Button(help_window, text="Ok", command=help_window.destroy, height=3, width=20,  highlightthickness=0)
         btn_ok.pack(pady= 5, side=Tkinter.BOTTOM, expand=False)
         help_window.deiconify()
-        
+
+    def terminal_window(self):
+        self.term_window = True
+        self.term_window = Tkinter.Toplevel(self.__window)
+        self.term_window.withdraw()
+        self.term_window['background'] = header_color
+        width = 500
+        height = 600
+        self.term_window.geometry("%dx%d+%d+%d" % (
+            width, height, mov_x + window_width / 2 - width , mov_y + window_height / 2 - height/2))
+
+        term_text = Tkinter.Text(self.term_window, fg='white', height= 600, width=500, background=header_color, padx=5, pady=5)
+        term_text.pack()
+
+        class PrintToT1(object):
+            def __init__(self, stream):
+                self.stream = stream
+
+            def write(self, s):
+                self.stream.write(s)
+                term_text.insert(Tkinter.END, s)
+                self.stream.flush()
+                term_text.see(Tkinter.END)
+
+        sys.stdout = PrintToT1(sys.stdout)
+        sys.stderr = PrintToT1(sys.stderr)
+
+        def update_terminal_flag():
+            self.terminal_open = False
+            self.term_window.withdraw()
+
+
+        print "Hello World"
+        self.term_window.protocol('WM_DELETE_WINDOW', update_terminal_flag)
+        self.term_window.deiconify()
+
+    def reopen_terminal_window(self):
+        self.terminal_open = True
+        self.term_window.deiconify()
+
     def software_tabs_menu(self):
         """
         Function sets up the Software Type selection for crosstabs
@@ -435,6 +479,7 @@ class Internbot:
         Function sets up menu for entry of round number and open of topline file.
         :return: None
         """
+        print "Here"
         self.redirect_window = Tkinter.Toplevel(self.__window)
         self.redirect_window.withdraw()
         width=200
@@ -457,6 +502,29 @@ class Internbot:
         btn_cancel = Tkinter.Button(self.redirect_window, text="Cancel", command=self.redirect_window.destroy, height=3, width=20)
         btn_bot = Tkinter.Button(self.redirect_window, image=bot_render,  borderwidth=0,
                                  highlightthickness=0, relief=Tkinter.FLAT, bg="white", height=65, width=158, command=self.topline_help_window)
+
+
+        btn_bot.pack(side=Tkinter.TOP, padx=10, pady=5)
+        btn_open.pack(side=Tkinter.TOP, padx=10, pady=5)
+        btn_cancel.pack(side=Tkinter.TOP, padx=10, pady=5)
+        self.redirect_window.deiconify()
+
+    def append_menu(self):
+        self.redirect_window = Tkinter.Toplevel(self.__window)
+        self.redirect_window.withdraw()
+        x = self.__window.winfo_x()
+        y = self.__window.winfo_y()
+        self.redirect_window.geometry("250x100+%d+%d" % (x + 175, y + 150))
+        self.redirect_window.title("Y2 Topline Appendix Report Automation")
+        message = "Please open an appendix file."
+        Tkinter.Label(self.redirect_window, text = message).pack(expand=True)
+        btn_open = Tkinter.Button(self.redirect_window, text="Open", command=self.read_topline, height=3, width=20)
+        btn_cancel = Tkinter.Button(self.redirect_window, text="Cancel", command=self.redirect_window.destroy, height=3,
+                                    width=20)
+        btn_bot = Tkinter.Button(self.redirect_window, image=bot_render, borderwidth=0,
+                                 highlightthickness=0, relief=Tkinter.FLAT, bg="white", height=65, width=158,
+                                 command=self.topline_help_window)
+
         btn_bot.pack(side=Tkinter.TOP, padx=10, pady=5)
         btn_open.pack(side=Tkinter.TOP, padx=10, pady=5)
         btn_cancel.pack(side=Tkinter.TOP, padx=10, pady=5)
@@ -520,6 +588,7 @@ class Internbot:
         Funtion reads in the appendix file and creates a .docx
         :return: None
         """
+
         generator = topline.Appendix.AppendixGenerator()
         csvfilename = tkFileDialog.askopenfilename(initialdir = self.fpath, title = "Select open ends file", filetypes = (("Comma separated files", "*csv"), ("all files", "*.*")))
         if csvfilename != "":
@@ -653,198 +722,7 @@ class Internbot:
         btn_bot.pack(ipadx=5, side=Tkinter.BOTTOM, expand=False)
         self.redirect_window.deiconify()
 
-    def rnc_help_window(self):
-        """
-        Function serves as an intro to internbot. Explains the help bot to the user.
-        :return: None
-        """
-        help_window = Tkinter.Toplevel(self.__window)
-        help_window.withdraw()
 
-        width = 250
-        height = 250
-        help_window.geometry("%dx%d+%d+%d" % (
-        width, height, mov_x + window_width / 2 - width / 2, mov_y + window_height / 2 - height / 2))
-
-        message = "\nRNC Report Help"
-        Tkinter.Label(help_window, text=message, font=header_font, fg=header_color).pack()
-        info_message = ""
-        Tkinter.Label(help_window, text=info_message, font=('Trade Gothic LT Pro', 14,)).pack()
-        btn_ok = Tkinter.Button(help_window, text="Ok", command=help_window.destroy, height=3, width=20,
-                                highlightthickness=0)
-        btn_ok.pack(pady=5, side=Tkinter.BOTTOM, expand=False)
-        help_window.deiconify()
-
-    def scores_window(self):
-        try:
-            okay = tkMessageBox.askokcancel("Select", "Select a model file")
-            if okay is True:
-                self.filename = tkFileDialog.askopenfilename(initialdir = self.fpath, title = "Select model file", filetypes = (("comma seperated files","*.csv"),("all files","*.*")))
-                if self.filename is not "":
-                    self.create_window = Tkinter.Toplevel(self.redirect_window)
-                    self.create_window.withdraw()
-                    width = 250
-                    height = 100
-                    self.create_window.geometry("%dx%d+%d+%d" % (width, height, mov_x + window_width / 2 - width / 2, mov_y + window_height / 2 - height / 2))
-                    self.create_window.title("Scores Topline Report Details")
-                    # location details
-                    location_frame = Tkinter.Frame(self.create_window)
-                    location_frame.pack(side = Tkinter.TOP, expand=True)
-
-                    location_label = Tkinter.Label(location_frame, text="Reporting region:")
-                    location_label.pack (side = Tkinter.LEFT, expand=True)
-                    self.location_entry = Tkinter.Entry(location_frame)
-                    self.location_entry.pack(side=Tkinter.RIGHT, expand=True)
-
-                    # round details
-                    round_frame = Tkinter.Frame(self.create_window)
-                    round_frame.pack(side=Tkinter.TOP, expand=True)
-
-                    round_label = Tkinter.Label(round_frame, text="Round number:")
-                    round_label.pack(padx=5, side=Tkinter.LEFT, expand=True)
-                    self.round_entry = Tkinter.Entry(round_frame)
-                    self.round_entry.pack(padx=7, side=Tkinter.RIGHT, expand=True)
-
-                    # done and cancel buttons
-                    button_frame = Tkinter.Frame(self.create_window)
-                    button_frame.pack(side=Tkinter.TOP, expand=True)
-
-                    btn_cancel = Tkinter.Button(self.create_window, text="Cancel", command=self.create_window.destroy)
-                    btn_cancel.pack(side=Tkinter.RIGHT, expand=True)
-                    btn_done = Tkinter.Button(self.create_window, text="Done", command=self.scores_topline)
-                    btn_done.pack(side=Tkinter.RIGHT, expand=True)
-                    self.create_window.deiconify()
-        except Exception as e:
-                tkMessageBox.showerror("Error", "An error occurred\n" + str(e))
-
-    def scores_topline(self):
-        try:
-            filename = self.filename
-            #fields entered by user
-            report_location = self.location_entry.get()
-            round = self.round_entry.get()
-            if round is not "" and report_location is not "":
-                self.create_window.destroy()
-                report = rnc_automation.ScoresToplineReportGenerator(filename, int(round))
-                ask_output = tkMessageBox.askokcancel("Output directory", "Please select the directory for finished report.")
-                if ask_output is True:
-                    savedirectory = tkFileDialog.askdirectory()
-                    if savedirectory is not "":
-                        report.generate_scores_topline(savedirectory, report_location, round)
-                        open_files = tkMessageBox.askyesno("Info", "Done!\nWould you like to open your finished files?")
-                        if open_files is True:
-                            self.open_file_for_user(savedirectory + "/scores_topline.xlsx")
-        except Exception as e:
-            tkMessageBox.showerror("Error", "An error occurred\n" + str(e))
-
-    def issue_trended_window(self):
-        try:
-            okay = tkMessageBox.askokcancel("Select", "Select a model file")
-            if okay is True:
-                self.filename = tkFileDialog.askopenfilename(initialdir = self.fpath, title = "Select model file", filetypes = (("comma seperated files","*.csv"),("all files","*.*")))
-                if self.filename is not "":
-                    self.create_window = Tkinter.Toplevel(self.redirect_window)
-                    self.create_window.withdraw()
-                    width=250
-                    height=100
-                    self.create_window.geometry("%dx%d+%d+%d" % (width, height, mov_x + window_width / 2 - width / 2, mov_y + window_height / 2 - height / 2))
-                    self.create_window.title("Issue Trended Report Details")
-
-                    # round details
-                    round_frame = Tkinter.Frame(self.create_window)
-                    round_frame.pack(side = Tkinter.TOP, expand=True)
-
-                    round_label = Tkinter.Label(round_frame, text="Round number:")
-                    round_label.pack(padx = 5, side = Tkinter.LEFT, expand=True)
-                    self.round_entry = Tkinter.Entry(round_frame)
-                    self.round_entry.pack(padx = 7, side=Tkinter.RIGHT, expand=True)
-
-                    # done and cancel buttons
-                    button_frame = Tkinter.Frame(self.create_window)
-                    button_frame.pack(side = Tkinter.TOP, expand=True)
-
-                    btn_cancel = Tkinter.Button(self.create_window, text = "Cancel", command = self.create_window.destroy)
-                    btn_cancel.pack(side = Tkinter.RIGHT, expand=True)
-                    btn_done = Tkinter.Button(self.create_window, text = "Done", command = self.issue_trended)
-                    btn_done.pack(side = Tkinter.RIGHT, expand=True)
-                    self.create_window.deiconify()
-        except Exception as e:
-            tkMessageBox.showerror("Error", "An error occurred\n" + str(e))
-
-    def issue_trended(self):
-        try:
-            filename = self.filename
-            #fields entered by the user
-            round = self.round_entry.get()
-            self.create_window.destroy()
-            report = rnc_automation.IssueTrendedReportGenerator(filename, int(round))
-            ask_output = tkMessageBox.askokcancel("Output directory", "Please select the directory for finished report.")
-            if ask_output is True:
-                savedirectory = tkFileDialog.askdirectory()
-                if savedirectory is not "":
-                    report.generate_issue_trended(savedirectory, round)
-                    self.create_window.destroy
-                    open_files = tkMessageBox.askyesno("Info", "Done!\nWould you like to open your finished files?")
-                    if open_files is True:
-                        self.open_file_for_user(savedirectory + "/trended.xlsx")
-        except Exception as e:
-            tkMessageBox.showerror("Error", "An error occurred\n" + str(e))
-
-
-    def trended_scores_window(self):
-        try:
-            okay = tkMessageBox.askokcancel("Select", "Select a model file")
-            if okay is True:
-                self.filename = tkFileDialog.askopenfilename(initialdir = self.fpath, title = "Select model file", filetypes = (("comma seperated files","*.csv"),("all files","*.*")))
-                if self.filename is not "":
-                    self.create_window = Tkinter.Toplevel(self.redirect_window)
-                    self.create_window.withdraw()
-                    width=250
-                    height=100
-                    self.create_window.geometry("%dx%d+%d+%d" % (width, height, mov_x + window_width / 2 - width / 2, mov_y + window_height / 2 - height / 2))
-                    self.create_window.title("Trended Issue Reports Details")
-
-                    # round details
-                    round_frame = Tkinter.Frame(self.create_window)
-                    round_frame.pack(side = Tkinter.TOP, expand=True)
-
-                    round_label = Tkinter.Label(round_frame, text="Round number:")
-                    round_label.pack(padx = 5, side = Tkinter.TOP, expand=True)
-                    self.round_entry = Tkinter.Entry(round_frame)
-                    self.round_entry.pack(padx = 7, side=Tkinter.BOTTOM, expand=True)
-
-                    # done and cancel buttons
-                    button_frame = Tkinter.Frame(self.create_window)
-                    button_frame.pack(side = Tkinter.TOP, expand=True)
-
-                    btn_cancel = Tkinter.Button(self.create_window, text = "Cancel", command = self.create_window.destroy)
-                    btn_cancel.pack(side = Tkinter.RIGHT, expand=True)
-                    btn_done = Tkinter.Button(self.create_window, text = "Done", command = self.trended_scores)
-                    btn_done.pack(side = Tkinter.RIGHT, expand=True)
-
-                    self.create_window.deiconify()
-        except Exception as e:
-            tkMessageBox.showerror("Error", "An error occurred\n" + str(e))
-
-    def trended_scores(self):
-        try:
-            filename = self.filename
-            #Field entered by user
-            round = self.round_entry.get()
-            if round is not "":
-                self.create_window.destroy()
-                report = rnc_automation.TrendedScoresReportGenerator(filename, int(round))
-                ask_output = tkMessageBox.askokcancel("Output directory", "Please select the directory for finished report\n This report will create a lot of file and may take several minutes. The program will appear to be unresponsive.")
-
-                if ask_output is True:
-                    savedirectory = tkFileDialog.askdirectory()
-                    self.create_window.update()
-                    if savedirectory is not "":
-                        report.generate_trended_scores(savedirectory, round)
-                        self.create_window.destroy()
-                        tkMessageBox.showinfo("Info", "Done!")
-        except Exception as e:
-            tkMessageBox.showerror("Error", "An error occurred\n" + str(e))
 
     def open_file_for_user(self, file_path):
         try:
@@ -868,7 +746,7 @@ screen_width = window.winfo_screenwidth()
 screen_height = window.winfo_screenheight()
 mov_x = screen_width / 2 - 300
 mov_y = screen_height / 2 - 200
-window_height = 400
+window_height = 450
 window_width = 600
 window.geometry("%dx%d+%d+%d" % (window_width, window_height, mov_x, mov_y))
 
@@ -886,7 +764,7 @@ window.option_add("*Font", ('Trade Gothic LT Pro', 16, ))
 window.option_add("*Button.Foreground", "midnight blue")
 
 header_font = ('Trade Gothic LT Pro', 18, 'bold')
-header_color = "midnight blue"
+header_color = '#112C4E'
 def close(event):
     window.withdraw() # if you want to bring it back
     sys.exit() # if you want to exit the entire thing
