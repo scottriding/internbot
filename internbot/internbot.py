@@ -21,6 +21,7 @@ class Internbot:
         self.main_buttons()
         self.fpath = os.path.join(os.path.expanduser("~"), "Desktop")
         self.__embedded_fields = []
+        self.terminal_open = False
 
     def main_buttons(self):
         """
@@ -36,7 +37,7 @@ class Internbot:
         btn_report = Tkinter.Button(button_frame, text="Run topline report", padx=4, width=20, height=3,command=self.topline_menu, relief=Tkinter.FLAT, highlightthickness=0)
         btn_appen = Tkinter.Button(button_frame, text="Run topline appendix", padx=4, width=20, height=3,command=self.append_menu, relief=Tkinter.FLAT, highlightthickness=0)
         btn_rnc = Tkinter.Button(button_frame, text="Run RNC", padx=4, width=20, height=3,command=self.rnc.rnc_menu, relief=Tkinter.FLAT, highlightthickness=0)
-        btn_terminal = Tkinter.Button(button_frame, text="Terminal Window", padx=4, width=20, height=3, command=self.terminal_window, relief=Tkinter.FLAT, highlightthickness=0)
+        btn_terminal = Tkinter.Button(button_frame, text="Terminal Window", padx=4, width=20, height=3, command=self.reopen_terminal_window, relief=Tkinter.FLAT, highlightthickness=0)
         btn_quit = Tkinter.Button(button_frame, text="Quit", padx=4, width=20, height=3,command=self.__window.destroy, relief=Tkinter.GROOVE, highlightthickness=0)
         btn_bot = Tkinter.Button(button_frame, image=bot_render, padx=4, pady=10, width=158, height=45, borderwidth=0, highlightthickness=0, relief=Tkinter.FLAT, command=self.main_help_window)
         btn_bot.pack(padx=5, pady=3, side=Tkinter.TOP)
@@ -100,6 +101,7 @@ class Internbot:
         help_window.deiconify()
 
     def terminal_window(self):
+        self.term_window = True
         self.term_window = Tkinter.Toplevel(self.__window)
         self.term_window.withdraw()
         self.term_window['background'] = header_color
@@ -108,8 +110,8 @@ class Internbot:
         self.term_window.geometry("%dx%d+%d+%d" % (
             width, height, mov_x + window_width / 2 - width , mov_y + window_height / 2 - height/2))
 
-        t1 = Tkinter.Text(self.term_window, fg='white', height= 600, width=500, background=header_color, padx=5, pady=5)
-        t1.pack()
+        term_text = Tkinter.Text(self.term_window, fg='white', height= 600, width=500, background=header_color, padx=5, pady=5)
+        term_text.pack()
 
         class PrintToT1(object):
             def __init__(self, stream):
@@ -117,14 +119,24 @@ class Internbot:
 
             def write(self, s):
                 self.stream.write(s)
-                t1.insert(Tkinter.END, s)
+                term_text.insert(Tkinter.END, s)
                 self.stream.flush()
-                t1.see(Tkinter.END)
+                term_text.see(Tkinter.END)
 
         sys.stdout = PrintToT1(sys.stdout)
         sys.stderr = PrintToT1(sys.stderr)
 
+        def update_terminal_flag():
+            self.terminal_open = False
+            self.term_window.withdraw()
+
+
         print "Hello World"
+        self.term_window.protocol('WM_DELETE_WINDOW', update_terminal_flag)
+        self.term_window.deiconify()
+
+    def reopen_terminal_window(self):
+        self.terminal_open = True
         self.term_window.deiconify()
 
     def software_tabs_menu(self):
