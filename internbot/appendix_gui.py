@@ -37,42 +37,69 @@ class AppendixView(object):
 
         self.redirect_window.geometry("%dx%d+%d+%d" % (width,height,self.mov_x + self.window_width / 2 - width / 2, self.mov_y + self.window_height / 2 - height / 2))
         self.redirect_window.title("Y2 Topline Appendix Report Automation")
-        message="Please open a .csv file \nwith open ended responses."
+        message = "Please open a .csv file \nwith open ended responses."
         Tkinter.Label(self.redirect_window, text=message, font=self.header_font, fg=self.header_color).pack(expand=True, pady=5)
-        btn_open = Tkinter.Button(self.redirect_window, text="Open", command=self.read_append, height=3, width=20)
+        btn_open = Tkinter.Button(self.redirect_window, text="Open", command=self.append_type, height=3, width=20)
         btn_cancel = Tkinter.Button(self.redirect_window, text="Cancel", command=self.redirect_window.destroy, height=3,
                                     width=20)
         btn_bot = Tkinter.Button(self.redirect_window, image=self.bot_render, borderwidth=0,
                                  highlightthickness=0, relief=Tkinter.FLAT, bg="white", height=65, width=158,
                                  command=self.appendix_help_window)
         btn_bot.pack(side=Tkinter.TOP, padx=10, pady=5)
-        btn_open.pack(side=Tkinter.BOTTOM, padx=10, pady=5)
         btn_cancel.pack(side=Tkinter.BOTTOM, padx=10, pady=5)
+        btn_open.pack(side=Tkinter.BOTTOM, padx=10, pady=5)
+
         self.redirect_window.deiconify()
 
-    def read_append(self):
+    def append_type(self):
         """
         Funtion reads in the appendix file and creates a .docx
         :return: None
         """
+        self.choose_window = Tkinter.Toplevel(self.__window)
+        self.choose_window.withdraw()
+        width = 250
+        height = 300
+        self.choose_window.geometry("%dx%d+%d+%d" % (
+            width, height, self.mov_x + self.window_width / 2 - width / 2,
+            self.mov_y + self.window_height / 2 - height / 2))
+        message = "Choose the format of\nyour appendix report"
+        Tkinter.Label(self.choose_window, text=message, font=self.header_font, fg=self.header_color).pack(expand=True)
+        btn_doc = Tkinter.Button(self.choose_window, text="Word Appendix", command=self.doc_appendix,
+                                     height=3, width=20)
 
+        btn_excel = Tkinter.Button(self.choose_window, text="Excel Appendix",
+                                   command=self.excel_appendix, height=3, width=20)
+        btn_cancel = Tkinter.Button(self.choose_window, text="Cancel",
+                                   command=self.choose_window.destroy, height=3, width=20)
+
+        btn_cancel.pack(ipadx=5, side=Tkinter.BOTTOM, expand=False)
+        btn_excel.pack(ipadx=5, side=Tkinter.BOTTOM, expand=False)
+        btn_doc.pack(ipadx=5, side=Tkinter.BOTTOM, expand=False)
+        self.choose_window.deiconify()
+
+
+
+
+
+    def doc_appendix(self):
         generator = topline.Appendix.AppendixGenerator()
-        csvfilename = tkFileDialog.askopenfilename(initialdir = self.fpath, title = "Select open ends file", filetypes = (("Comma separated files", "*csv"), ("all files", "*.*")))
-        if csvfilename != "":
-            generator.parse_file(csvfilename)
-            ask_docx = tkMessageBox.askyesno("Appendix Type", "Create a docx report?")
-            if ask_docx is True:
-                ask_output = tkMessageBox.askokcancel("Output directory", "Please select the directory for finished report.")
-                if ask_output is True:
-                    savedirectory = tkFileDialog.askdirectory()
-                    generator.write_appendix(savedirectory, "templates_images/appendix_template.docx", False)
+        csvfilename = tkFileDialog.askopenfilename(initialdir=self.fpath, title="Select open ends file",
+                                                   filetypes=(("Comma separated files", "*csv"), ("all files", "*.*")))
+        generator.parse_file(csvfilename)
+        savedirectory = tkFileDialog.asksaveasfilename(defaultextension='.docx', filetypes=[('word files', '.docx')])
+        if savedirectory is not "":
+            generator.write_appendix(savedirectory, "templates_images/appendix_template.docx", False)
+        self.redirect_window.destroy()
 
-            elif ask_docx is False:
-                ask_output = tkMessageBox.askokcancel("Output directory", "Please select the directory for finished report.")
-                if ask_output is True:
-                    savedirectory = tkFileDialog.askdirectory()
-                    generator.write_appendix(savedirectory, '', True)
-
+    def excel_appendix(self):
+        generator = topline.Appendix.AppendixGenerator()
+        csvfilename = tkFileDialog.askopenfilename(initialdir=self.fpath, title="Select open ends file",
+                                                   filetypes=(("Comma separated files", "*csv"), ("all files", "*.*")))
+        generator.parse_file(csvfilename)
+        savedirectory = tkFileDialog.asksaveasfilename(defaultextension='.xlsx', filetypes=[('excel files', '.xlsx')])
+        if savedirectory is not "":
+            generator.write_appendix(savedirectory, '', True)
         self.redirect_window.destroy()
 
     def appendix_help_window(self):

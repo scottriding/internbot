@@ -143,7 +143,7 @@ class SSAppendixBuilder(object):
             current_row += 1
 
     def save(self, path_to_output):
-        self.__workbook.save(path_to_output + "/Appendix.xlsx")
+        self.__workbook.save(path_to_output)
 
 class DocAppendixBuilder(object):
 
@@ -180,7 +180,7 @@ class DocAppendixBuilder(object):
             response_cells[0].text = response
 
     def save(self, path_to_output):
-        self.__doc.save(path_to_output + "/Appendix.docx")
+        self.__doc.save(path_to_output)
 
 class OpenEndQuestion(object):
 

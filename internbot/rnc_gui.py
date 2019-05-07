@@ -64,8 +64,7 @@ class RNCView(object):
 
         width = 250
         height = 250
-        help_window.geometry("%dx%d+%d+%d" % (
-            width, height, self.mov_x + self.window_width / 2 - width / 2, self.mov_y + self.window_height / 2 - height / 2))
+        help_window.geometry("%dx%d+%d+%d" % (width, height, self.mov_x + self.window_width/2 - width/2, self.mov_y + self.window_height/2 - height/2))
 
         message = "\nRNC Report Help"
         Tkinter.Label(help_window, text=message, font=self.header_font, fg=self.header_color).pack()
@@ -78,43 +77,41 @@ class RNCView(object):
 
     def scores_window(self):
         try:
-            okay = tkMessageBox.askokcancel("Select", "Select a model file")
-            if okay is True:
-                self.filename = tkFileDialog.askopenfilename(initialdir = self.fpath, title = "Select model file", filetypes = (("comma seperated files","*.csv"),("all files","*.*")))
-                if self.filename is not "":
-                    self.create_window = Tkinter.Toplevel(self.redirect_window)
-                    self.create_window.withdraw()
-                    width = 250
-                    height = 100
-                    self.create_window.geometry("%dx%d+%d+%d" % (width, height, self.mov_x + self.window_width / 2 - width / 2, self.mov_y + self.window_height / 2 - height / 2))
-                    self.create_window.title("Scores Topline Report Details")
-                    # location details
-                    location_frame = Tkinter.Frame(self.create_window)
-                    location_frame.pack(side = Tkinter.TOP, expand=True)
+            self.filename = tkFileDialog.askopenfilename(initialdir = self.fpath, title = "Select model file for scores report", filetypes = (("comma seperated files","*.csv"),("all files","*.*")))
+            if self.filename is not "":
+                self.create_window = Tkinter.Toplevel(self.redirect_window)
+                self.create_window.withdraw()
+                width = 250
+                height = 100
+                self.create_window.geometry("%dx%d+%d+%d" % (width, height, self.mov_x + self.window_width / 2 - width / 2, self.mov_y + self.window_height / 2 - height / 2))
+                self.create_window.title("Scores Topline Report Details")
+                # location details
+                location_frame = Tkinter.Frame(self.create_window)
+                location_frame.pack(side = Tkinter.TOP, expand=True)
 
-                    location_label = Tkinter.Label(location_frame, text="Reporting region:")
-                    location_label.pack (side = Tkinter.LEFT, expand=True)
-                    self.location_entry = Tkinter.Entry(location_frame)
-                    self.location_entry.pack(side=Tkinter.RIGHT, expand=True)
+                location_label = Tkinter.Label(location_frame, text="Reporting region:")
+                location_label.pack (side = Tkinter.LEFT, expand=True)
+                self.location_entry = Tkinter.Entry(location_frame)
+                self.location_entry.pack(side=Tkinter.RIGHT, expand=True)
 
-                    # round details
-                    round_frame = Tkinter.Frame(self.create_window)
-                    round_frame.pack(side=Tkinter.TOP, expand=True)
+                # round details
+                round_frame = Tkinter.Frame(self.create_window)
+                round_frame.pack(side=Tkinter.TOP, expand=True)
 
-                    round_label = Tkinter.Label(round_frame, text="Round number:")
-                    round_label.pack(padx=5, side=Tkinter.LEFT, expand=True)
-                    self.round_entry = Tkinter.Entry(round_frame)
-                    self.round_entry.pack(padx=7, side=Tkinter.RIGHT, expand=True)
+                round_label = Tkinter.Label(round_frame, text="Round number:")
+                round_label.pack(padx=5, side=Tkinter.LEFT, expand=True)
+                self.round_entry = Tkinter.Entry(round_frame)
+                self.round_entry.pack(padx=7, side=Tkinter.RIGHT, expand=True)
 
-                    # done and cancel buttons
-                    button_frame = Tkinter.Frame(self.create_window)
-                    button_frame.pack(side=Tkinter.TOP, expand=True)
+                # done and cancel buttons
+                button_frame = Tkinter.Frame(self.create_window)
+                button_frame.pack(side=Tkinter.TOP, expand=True)
 
-                    btn_cancel = Tkinter.Button(self.create_window, text="Cancel", command=self.create_window.destroy)
-                    btn_cancel.pack(side=Tkinter.RIGHT, expand=True)
-                    btn_done = Tkinter.Button(self.create_window, text="Done", command=self.scores_topline)
-                    btn_done.pack(side=Tkinter.RIGHT, expand=True)
-                    self.create_window.deiconify()
+                btn_cancel = Tkinter.Button(self.create_window, text="Cancel", command=self.create_window.destroy)
+                btn_cancel.pack(side=Tkinter.RIGHT, expand=True)
+                btn_done = Tkinter.Button(self.create_window, text="Done", command=self.scores_topline)
+                btn_done.pack(side=Tkinter.RIGHT, expand=True)
+                self.create_window.deiconify()
         except Exception as e:
                 tkMessageBox.showerror("Error", "An error occurred\n" + str(e))
 
@@ -127,48 +124,42 @@ class RNCView(object):
             if round is not "" and report_location is not "":
                 self.create_window.destroy()
                 report = rnc_automation.ScoresToplineReportGenerator(filename, int(round))
-                ask_output = tkMessageBox.askokcancel("Output directory", "Please select the directory for finished report.")
-                if ask_output is True:
-                    savedirectory = tkFileDialog.askdirectory()
-                    if savedirectory is not "":
-                        report.generate_scores_topline(savedirectory, report_location, round)
-                        open_files = tkMessageBox.askyesno("Info", "Done!\nWould you like to open your finished files?")
-                        if open_files is True:
-                            self.open_file_for_user(savedirectory + "/scores_topline.xlsx")
+                savedirectory = tkFileDialog.asksaveasfilename(defaultextension='.xlsx', filetypes=[('excel files', '.xlsx')])
+                if savedirectory is not "":
+                    report.generate_scores_topline(savedirectory, report_location, round)
+                    self.open_file_for_user(savedirectory)
         except Exception as e:
             tkMessageBox.showerror("Error", "An error occurred\n" + str(e))
 
     def issue_trended_window(self):
         try:
-            okay = tkMessageBox.askokcancel("Select", "Select a model file")
-            if okay is True:
-                self.filename = tkFileDialog.askopenfilename(initialdir = self.fpath, title = "Select model file", filetypes = (("comma seperated files","*.csv"),("all files","*.*")))
-                if self.filename is not "":
-                    self.create_window = Tkinter.Toplevel(self.redirect_window)
-                    self.create_window.withdraw()
-                    width=250
-                    height=100
-                    self.create_window.geometry("%dx%d+%d+%d" % (width, height, self.mov_x + self.window_width / 2 - width / 2, self.mov_y + self.window_height / 2 - height / 2))
-                    self.create_window.title("Issue Trended Report Details")
+            self.filename = tkFileDialog.askopenfilename(initialdir = self.fpath, title = "Select model file for issuse trended report", filetypes = (("comma seperated files","*.csv"),("all files","*.*")))
+            if self.filename is not "":
+                self.create_window = Tkinter.Toplevel(self.redirect_window)
+                self.create_window.withdraw()
+                width=250
+                height=100
+                self.create_window.geometry("%dx%d+%d+%d" % (width, height, self.mov_x + self.window_width / 2 - width / 2, self.mov_y + self.window_height / 2 - height / 2))
+                self.create_window.title("Issue Trended Report Details")
 
-                    # round details
-                    round_frame = Tkinter.Frame(self.create_window)
-                    round_frame.pack(side = Tkinter.TOP, expand=True)
+                # round details
+                round_frame = Tkinter.Frame(self.create_window)
+                round_frame.pack(side = Tkinter.TOP, expand=True)
 
-                    round_label = Tkinter.Label(round_frame, text="Round number:")
-                    round_label.pack(padx = 5, side = Tkinter.LEFT, expand=True)
-                    self.round_entry = Tkinter.Entry(round_frame)
-                    self.round_entry.pack(padx = 7, side=Tkinter.RIGHT, expand=True)
+                round_label = Tkinter.Label(round_frame, text="Round number:")
+                round_label.pack(padx = 5, side = Tkinter.LEFT, expand=True)
+                self.round_entry = Tkinter.Entry(round_frame)
+                self.round_entry.pack(padx = 7, side=Tkinter.RIGHT, expand=True)
 
-                    # done and cancel buttons
-                    button_frame = Tkinter.Frame(self.create_window)
-                    button_frame.pack(side = Tkinter.TOP, expand=True)
+                # done and cancel buttons
+                button_frame = Tkinter.Frame(self.create_window)
+                button_frame.pack(side = Tkinter.TOP, expand=True)
 
-                    btn_cancel = Tkinter.Button(self.create_window, text = "Cancel", command = self.create_window.destroy)
-                    btn_cancel.pack(side = Tkinter.RIGHT, expand=True)
-                    btn_done = Tkinter.Button(self.create_window, text = "Done", command = self.issue_trended)
-                    btn_done.pack(side = Tkinter.RIGHT, expand=True)
-                    self.create_window.deiconify()
+                btn_cancel = Tkinter.Button(self.create_window, text = "Cancel", command = self.create_window.destroy)
+                btn_cancel.pack(side = Tkinter.RIGHT, expand=True)
+                btn_done = Tkinter.Button(self.create_window, text = "Done", command = self.issue_trended)
+                btn_done.pack(side = Tkinter.RIGHT, expand=True)
+                self.create_window.deiconify()
         except Exception as e:
             tkMessageBox.showerror("Error", "An error occurred\n" + str(e))
 
@@ -179,15 +170,11 @@ class RNCView(object):
             round = self.round_entry.get()
             self.create_window.destroy()
             report = rnc_automation.IssueTrendedReportGenerator(filename, int(round))
-            ask_output = tkMessageBox.askokcancel("Output directory", "Please select the directory for finished report.")
-            if ask_output is True:
-                savedirectory = tkFileDialog.askdirectory()
-                if savedirectory is not "":
-                    report.generate_issue_trended(savedirectory, round)
-                    self.create_window.destroy
-                    open_files = tkMessageBox.askyesno("Info", "Done!\nWould you like to open your finished files?")
-                    if open_files is True:
-                        self.open_file_for_user(savedirectory + "/trended.xlsx")
+            savedirectory = tkFileDialog.asksaveasfilename(defaultextension='.xlsx', filetypes=[('excel files', '.xlsx')])
+            if savedirectory is not "":
+                report.generate_issue_trended(savedirectory, round)
+                self.create_window.destroy
+                self.open_file_for_user(savedirectory)
         except Exception as e:
             tkMessageBox.showerror("Error", "An error occurred\n" + str(e))
 
