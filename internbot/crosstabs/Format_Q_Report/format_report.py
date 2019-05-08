@@ -412,7 +412,7 @@ class QParser(object):
         self.create_toc(tables)
 
     def save(self, path_to_output):
-        self.__workbook.save(path_to_output + "/Crosstab Report.xlsx")
+        self.__workbook.save(path_to_output)
 
 class TOCTable(object):
 

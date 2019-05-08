@@ -34,7 +34,7 @@ class ToplineView(object):
         width = 200
         height = 300
         self.redirect_window.geometry("%dx%d+%d+%d" % (
-        width, height, self.mov_x + self.window_width / 2 - width / 2, self.mov_y + self.window_height / 2 - height / 2))
+        width, height, self.mov_x + self.window_width/2 - width/2, self.mov_y + self.window_height / 2 - height / 2))
         self.redirect_window.title("Y2 Topline Report Automation")
         message = "Please open a survey file."
         Tkinter.Label(self.redirect_window, text=message, font=self.header_font, fg=self.header_color).pack(side=Tkinter.TOP,
@@ -134,6 +134,13 @@ class ToplineView(object):
             btn_finish.pack(ipadx=5, side=Tkinter.LEFT, expand=False)
             btn_cancel.pack(ipadx=5, side=Tkinter.RIGHT, expand=False)
             self.year_window.deiconify()
+
+            def enter_pressed(event):
+                self.build_topline_leadup()
+
+            self.year_window.bind("<Return>", enter_pressed)
+            self.year_window.bind("<KP_Enter>", enter_pressed)
+
         except Exception as e:
             tkMessageBox.showerror("Error", "An error occurred\n" + str(e))
 
@@ -168,12 +175,10 @@ class ToplineView(object):
             ask_output = tkMessageBox.askokcancel("Output directory",
                                                   "Please select the directory for finished report.")
             if ask_output is True:
-                savedirectory = tkFileDialog.askdirectory()
-                if savedirectory is not "" and report_generator is not None:
-                    report_generator.generate_topline(template_file, savedirectory, years)
-                    open_files = tkMessageBox.askyesno("Info", "Done!\nWould you like to open your finished files?")
-                    if open_files is True:
-                        self.open_file_for_user(savedirectory + "/topline_report.docx")
+                savedirectory = tkFileDialog.asksaveasfilename(defaultextension='.docx', filetypes=[('word files', '.docx')])
+                if savedirectory is not "":
+                    self.report_generator.generate_topline(template_file, savedirectory, years)
+                    self.open_file_for_user(savedirectory)
         except Exception as e:
            tkMessageBox.showerror("Error", "An error occurred\n" + str(e))
 

@@ -48,7 +48,7 @@ class ReportGenerator(object):
             report = QSFToplineReport(self.__survey.get_questions(), path_to_template, years)
         else:
             report = CSVToplineReport(self.__questions, path_to_template, years)
-        report.save(str(path_to_output) + '/topline_report.docx')
+        report.save(str(path_to_output))
 
     def find_question(self, question_to_find):
         matching_question = self.__survey.blocks.find_question_by_name(question_to_find)

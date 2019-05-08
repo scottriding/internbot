@@ -21,7 +21,7 @@ class IssueTrendedReportGenerator(object):
 
     def generate_issue_trended(self, path_to_output, number_of_rounds):
         report = IssueTrendedReport(self.__models, number_of_rounds)
-        report.save(str(path_to_output) + '/trended.xlsx')
+        report.save(str(path_to_output))
 
 class ScoresToplineReportGenerator(object):
 
@@ -37,7 +37,7 @@ class ScoresToplineReportGenerator(object):
 
     def generate_scores_topline(self, path_to_output, report_location, number_of_rounds):
         report = ScoresToplineReport(self.__models, report_location, number_of_rounds)
-        report.save(str(path_to_output) + '/scores_topline.xlsx')
+        report.save(str(path_to_output))
 
 class TrendedScoresReportGenerator(object):
 

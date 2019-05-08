@@ -22,6 +22,7 @@ class QCrosstabsView(object):
         self.bot_render=bot_render
         self.fpath = os.path.join(os.path.expanduser("~"), "Desktop")
         self.__embedded_fields = []
+        self.bases_history = ["Select from history"]
 
     def bases_window(self):
         """
@@ -271,16 +272,19 @@ class QCrosstabsView(object):
         self.edit_window.title("Add base and n")
         edit_frame = Tkinter.Frame(self.edit_window)
         edit_frame.pack(side=Tkinter.TOP)
-        base_frame = Tkinter.Frame(edit_frame)
+        entry_frame = Tkinter.Frame(edit_frame)
+        entry_frame.pack(side=Tkinter.TOP)
+        base_frame = Tkinter.Frame(entry_frame)
         base_frame.pack(side=Tkinter.LEFT, padx=5, pady=5)
         lbl_base = Tkinter.Label(base_frame, text="Base description:")
         entry_des = Tkinter.Entry(base_frame, width=30)
-
+        spinbox_frame = Tkinter.Frame(edit_frame)
+        spinbox_frame.pack(side=Tkinter.BOTTOM)
         entry_des.focus_set()
-        size_frame = Tkinter.Frame(edit_frame)
+        size_frame = Tkinter.Frame(entry_frame)
         size_frame.pack(side=Tkinter.RIGHT, padx=5, pady=5)
         lbl_title = Tkinter.Label(size_frame, text="Size (n):")
-        entry_size = Tkinter.Entry(size_frame, width=10)
+        entry_size = Tkinter.Entry(size_frame, width=20)
 
         current_base = self.bases_box.get(int(index)).split(" ~ ")
 
@@ -292,10 +296,16 @@ class QCrosstabsView(object):
             Internal function used by edit_base to edit the text of what appears in bases_window
             :return: None
             """
-            base_desc = entry_des.get()
-            base_size = entry_size.get()
+
+            base_desc = str.strip(entry_des.get())
+            base_size = str.strip(entry_size.get())
             self.bases_box.delete(int(index))
             self.bases_box.insert(int(index), base_desc + " ~ " + base_size)
+            if not self.bases_history.__contains__(base_desc + " ~ " + base_size) and not (entry_des.get() =="[Enter base description]" or entry_size.get() == "[Enter base size]"):
+                self.bases_history.append(base_desc + " ~ " + base_size)
+                self.bases_history.remove("Select from history")
+                self.bases_history = sorted(self.bases_history)
+                self.bases_history.insert(0, "Select from history")
             self.edit_window.destroy()
             self.focus_index += 1
             self.tables_box.select_set(self.focus_index)
@@ -305,6 +315,30 @@ class QCrosstabsView(object):
                                     height=3)
         btn_edit = Tkinter.Button(self.edit_window, text="Edit", command=edit, width=20, height=3)
 
+        string_var = Tkinter.StringVar(edit_frame)
+        string_var.set(self.bases_history[0])  # default value
+
+        optionbox_bases = Tkinter.OptionMenu(edit_frame, string_var, *self.bases_history)
+        self.optionmenu_seletion_index = 0
+
+        def update_from_option(*args):
+            if not (string_var.get() == "Select from history"):
+                base = string_var.get().split(" ~ ")
+                entry_des.delete(0, Tkinter.END)
+                entry_size.delete(0, Tkinter.END)
+                entry_des.insert(0, base[0])
+                entry_size.insert(0, base[1])
+            else:
+
+                entry_size.delete(0, Tkinter.END)
+                entry_des.delete(0, Tkinter.END)
+                entry_des.insert(0, "[Enter base description]")
+                entry_size.insert(0, "[Enter base size]")
+
+        string_var.trace('w', update_from_option)
+        optionbox_bases.config(width=40)
+        optionbox_bases.pack(side=Tkinter.BOTTOM)
+
         lbl_base.pack(side=Tkinter.TOP)
         lbl_title.pack(side=Tkinter.TOP)
         entry_des.pack(side=Tkinter.TOP)
@@ -312,6 +346,7 @@ class QCrosstabsView(object):
 
         btn_edit.pack(side=Tkinter.LEFT, padx=20)
         btn_cancel.pack(side=Tkinter.RIGHT, padx=20)
+        entry_des.selection_range(0, Tkinter.END)
 
         # Key Bindings
         def enter_pressed(event):
@@ -319,17 +354,47 @@ class QCrosstabsView(object):
 
         def right_pressed(event):
             entry_size.focus_set()
+            entry_size.selection_range(0, Tkinter.END)
 
         def left_pressed(event):
             entry_des.focus_set()
+            entry_des.selection_range(0, Tkinter.END)
+
+        def down_pressed(event):
+            optionbox_bases.focus_set()
+            if self.optionmenu_seletion_index < len(self.bases_history)-1:
+                self.optionmenu_seletion_index += 1
+                string_var.set(self.bases_history[self.optionmenu_seletion_index])
+
+        def up_pressed(event):
+            if self.optionmenu_seletion_index > 0:
+                optionbox_bases.focus_set()
+                self.optionmenu_seletion_index -= 1
+                string_var.set(self.bases_history[self.optionmenu_seletion_index])
+            elif self.optionmenu_seletion_index == 0:
+                entry_des.focus_set()
+                entry_des.selection_range(0, Tkinter.END)
+                self.optionmenu_seletion_index -= 1
+                string_var.set(self.bases_history[self.optionmenu_seletion_index])
+                entry_size.delete(0, Tkinter.END)
+                entry_des.delete(0, Tkinter.END)
+                entry_des.insert(0, "[Enter base description]")
+                entry_size.insert(0, "[Enter base size]")
+
+            else:
+                entry_des.focus_set()
+                entry_des.selection_range(0, Tkinter.END)
 
         def escape_pressed(event):
             self.edit_window.destroy()
 
         self.edit_window.bind("<Return>", enter_pressed)
         self.edit_window.bind("<KP_Enter>", enter_pressed)
+        self.edit_window.bind("<Down>", down_pressed)
+        self.edit_window.bind("<Up>", up_pressed)
         self.edit_window.bind("<Left>", left_pressed)
         self.edit_window.bind("<Right>", right_pressed)
+
         self.edit_window.bind("<Escape>", escape_pressed)
 
     def finish_bases(self):
@@ -348,13 +413,39 @@ class QCrosstabsView(object):
 
             self.__parser.add_bases(self.tables)
 
-            ask_output = tkMessageBox.askokcancel("Select Output Directory",
-                                                  "Please select the directory for final report.")
-            if ask_output is True:  # user selected ok
-                savedirectory = tkFileDialog.askdirectory()
-                if savedirectory is not "":
-                    self.__parser.save(savedirectory)
+
+            savedirectory = tkFileDialog.asksaveasfilename(defaultextension='.xlsx', filetypes=[('excel files', '.xlsx')])
+            print savedirectory
+            if savedirectory is not "":
+                self.__parser.save(savedirectory)
+                self.open_file_for_user(savedirectory)
             self.base_window.destroy()
+
+
+    def open_file_for_user(self, file_path):
+        try:
+            if os.path.exists(file_path):
+                if platform.system() == 'Darwin':  # macOS
+                    subprocess.call(('open', file_path))
+                elif platform.system() == 'Windows':  # Windows
+                    os.startfile(file_path)
+            else:
+                tkMessageBox.showerror("Error", "Error: Could not open file for you \n"+file_path)
+        except IOError:
+            tkMessageBox.showerror("Error", "Error: Could not open file for you \n" + file_path)
+
+    def saveBox(self, title=None, fileName=None, dirName=None, fileExt=".txt", fileTypes=None, asFile=False):
+
+        if fileTypes is None:
+            fileTypes = [('all files', '.*'), ('text files', '.txt')]
+        # define options for opening
+        options = {}
+        options['defaultextension'] = fileExt
+        options['filetypes'] = fileTypes
+
+        if asFile:
+            return tkFileDialog.asksaveasfile(mode='w', **options)
+        # will return "" if cancelled
         else:
-            tkMessageBox.askokcancel("Select Q Research report file",
-                                     "Please open the Q Research report file first.")
+            return tkFileDialog.asksaveasfilename(**options)
+

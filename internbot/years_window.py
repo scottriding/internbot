@@ -16,6 +16,8 @@ class YearsWindow(object):
         self.round=round
         self.__window = main_window
         self.year_window = root
+        self.entry_list = []
+
 
 
     def packing_years(self, year_frame):
@@ -38,6 +40,29 @@ class YearsWindow(object):
         elif self.round == 2:
             self.pack_two_years(year_frame)
 
+        self.focus_index = 0
+
+        def down_pressed(event):
+            if self.focus_index < self.round -1:
+                self.focus_index+=1
+                self.entry_list[self.focus_index].focus_set()
+
+        def up_pressed(event):
+            if self.focus_index > 0:
+                self.focus_index-=1
+                self.entry_list[self.focus_index].focus_set()
+
+        def mouse_clicked(event):
+            focus_item = self.year_window.focus_get()
+            for item in range(0, int(self.round)):
+                if focus_item == self.entry_list[item]:
+                    self.focus_index = item
+                    break
+
+        self.year_window.bind("<Down>", down_pressed)
+        self.year_window.bind("<Up>", up_pressed)
+        self.year_window.bind("<Button-1>", mouse_clicked)
+
     def pack_two_years(self, year_frame):
         year_one_frame = Tkinter.Frame(year_frame)
         year_one_label = Tkinter.Label(year_one_frame, text="1st year name:")
@@ -45,6 +70,8 @@ class YearsWindow(object):
         self.year_one_entry = Tkinter.Entry(year_one_frame)
         self.year_one_entry.pack(side=Tkinter.RIGHT, expand=True)
         year_one_frame.pack(side=Tkinter.TOP, expand=True)
+        self.entry_list.append(self.year_one_entry)
+        self.year_one_entry.focus_set()
 
         year_two_frame = Tkinter.Frame(year_frame)
         year_two_label = Tkinter.Label(year_two_frame, text="2nd year name:")
@@ -52,6 +79,7 @@ class YearsWindow(object):
         self.year_two_entry = Tkinter.Entry(year_two_frame)
         self.year_two_entry.pack(side=Tkinter.RIGHT, expand=True)
         year_two_frame.pack(side=Tkinter.TOP, expand=True)
+        self.entry_list.append(self.year_two_entry)
 
     def pack_three_years(self, year_frame):
         self.pack_two_years(year_frame)
@@ -61,6 +89,7 @@ class YearsWindow(object):
         self.year_three_entry = Tkinter.Entry(year_three_frame)
         self.year_three_entry.pack(side=Tkinter.RIGHT, expand=True)
         year_three_frame.pack(side=Tkinter.TOP, expand=True)
+        self.entry_list.append(self.year_three_entry)
 
     def pack_four_years(self, year_frame):
         self.pack_three_years(year_frame)
@@ -70,6 +99,7 @@ class YearsWindow(object):
         self.year_four_entry = Tkinter.Entry(year_four_frame)
         self.year_four_entry.pack(side=Tkinter.RIGHT, expand=True)
         year_four_frame.pack(side=Tkinter.TOP, expand=True)
+        self.entry_list.append(self.year_four_entry)
 
     def pack_five_years(self, year_frame):
         self.pack_four_years(year_frame)
@@ -79,6 +109,7 @@ class YearsWindow(object):
         self.year_five_entry = Tkinter.Entry(year_five_frame)
         self.year_five_entry.pack(side=Tkinter.RIGHT, expand=True)
         year_five_frame.pack(side=Tkinter.TOP, expand=True)
+        self.entry_list.append(self.year_five_entry)
 
     def pack_six_years(self, year_frame):
         self.pack_five_years(year_frame)
@@ -88,6 +119,7 @@ class YearsWindow(object):
         self.year_six_entry = Tkinter.Entry(year_six_frame)
         self.year_six_entry.pack(side=Tkinter.RIGHT, expand=True)
         year_six_frame.pack(side=Tkinter.TOP, expand=True)
+        self.entry_list.append(self.year_six_entry)
 
     def pack_seven_years(self, year_frame):
         self.pack_six_years(year_frame)
@@ -97,6 +129,7 @@ class YearsWindow(object):
         self.year_seven_entry = Tkinter.Entry(year_seven_frame)
         self.year_seven_entry.pack(side=Tkinter.RIGHT, expand=True)
         year_seven_frame.pack(side=Tkinter.TOP, expand=True)
+        self.entry_list.append(self.year_seven_entry)
 
     def pack_eight_years(self, year_frame):
         self.pack_seven_years(year_frame)
@@ -106,6 +139,7 @@ class YearsWindow(object):
         self.year_eight_entry = Tkinter.Entry(year_eight_frame)
         self.year_eight_entry.pack(side=Tkinter.RIGHT, expand=True)
         year_eight_frame.pack(side=Tkinter.TOP, expand=True)
+        self.entry_list.append(self.year_eight_entry)
 
     def pack_nine_years(self, year_frame):
         self.pack_eight_years(year_frame)
@@ -115,6 +149,7 @@ class YearsWindow(object):
         self.year_nine_entry = Tkinter.Entry(year_nine_frame)
         self.year_nine_entry.pack(side=Tkinter.RIGHT, expand=True)
         year_nine_frame.pack(side=Tkinter.TOP, expand=True)
+        self.entry_list.append(self.year_nine_entry)
 
     def pack_ten_years(self, year_frame):
         self.pack_nine_years(year_frame)
@@ -124,6 +159,7 @@ class YearsWindow(object):
         self.year_ten_entry = Tkinter.Entry(year_ten_frame)
         self.year_ten_entry.pack(side=Tkinter.RIGHT, expand=True)
         year_ten_frame.pack(side=Tkinter.TOP, expand=True)
+        self.entry_list.append(self.year_ten_entry)
 
     def read_years(self):
         years = []
