@@ -7,17 +7,17 @@ from collections import OrderedDict
 
 class ReportGenerator(object):
 
-    def __init__(self, path_to_freqs, round_no = 1, survey = None):
+    def __init__(self, path_to_freqs, years = [], survey = None):
         question_data = self.unicode_dict_reader(open(path_to_freqs))
         self.__frequencies = []
         self.__survey = survey
         if survey is not None:
             self.__survey = survey
             self.__questions = survey.get_questions()
-            self.assign_frequencies(question_data, round_no)
+            self.assign_frequencies(question_data, years)
         else:
             self.__questions = CSVQuestions()
-            self.create_questions(question_data, round_no)
+            self.create_questions(question_data, years)
         
     def unicode_dict_reader(self, utf8_data, **kwargs):
         csv_reader = csv.DictReader(utf8_data, **kwargs)
@@ -25,11 +25,11 @@ class ReportGenerator(object):
             if row['variable'] != "":
                 yield {unicode(key, 'iso-8859-1'):unicode(value, 'iso-8859-1') for key, value in row.iteritems()}
 
-    def create_questions(self, question_data, round_no):
+    def create_questions(self, question_data, years):
         for question in question_data:
-            self.__questions.add(question, round_no)
+            self.__questions.add(question, years)
 
-    def assign_frequencies(self, question_data, round_no):
+    def assign_frequencies(self, question_data, years):
         for row in question_data:
             question_name = row["variable"]
             response_label = row["label"]
@@ -38,7 +38,7 @@ class ReportGenerator(object):
             if matching_question is not None:
                 matching_response = self.find_response(row["label"], matching_question)
                 if matching_response is not None:
-                    self.add_frequency(matching_response, row, round_no)
+                    self.add_frequency(matching_response, row, years)
                     self.add_n(matching_question, row)
                     if question_display != "":
                         self.add_display_logic(matching_question, question_display)
@@ -59,6 +59,7 @@ class ReportGenerator(object):
         return matching_question
 
     def find_sub_question(self, composite_question, question_to_find):
+        absolute_match = None
         for sub_question in composite_question.questions:
             if re.match(sub_question.name, question_to_find):
                 absolute_match = sub_question
@@ -69,25 +70,21 @@ class ReportGenerator(object):
             matching_question.add_NA()
             return matching_question.get_NA()
         responses = matching_question.responses
-        matching_response = next((response for response in responses if response.response == response_to_find), None)
+        matching_response = next((response for response in responses if response.code == response_to_find), None)
         if response_to_find == 'On':
             matching_response = next((response for response in responses if response.response == '1'), None)
         return matching_response
 
-    def add_frequency(self, matching_response, frequency_data, round_no):
-        round_col = "percent"
-        self.__frequencies = []
-        try:
-            self.__frequencies.append(frequency_data[round_col])
-        except:
-        	iteration = 1
-        	round_int = int(round_no)
-        	while iteration <= round_int:
-        		round_col = "percent %s" % iteration
-        		if frequency_data[round_col] != '':
-        			self.__frequencies.append(frequency_data[round_col])
-        		iteration += 1
-
+    def add_frequency(self, matching_response, frequency_data, years):
+        self.__frequencies = OrderedDict()
+        if len(years) > 0:
+            for year in years:
+                round_col = "percent %s" % year
+                if frequency_data[round_col] != "":
+                    self.__frequencies[year] = frequency_data[round_col]
+        else:
+            round_col = "percent"
+            self.__frequencies[0] = frequency_data[round_col]
         matching_response.frequencies = self.__frequencies
 
     def add_n(self, matching_question, question_data):

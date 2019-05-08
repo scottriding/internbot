@@ -8,8 +8,8 @@ class CSVQuestions(object):
         for question_data in questions_data:
             self.add(question_data)
 
-    def add(self, question_data, round_no):
-        display_logic = question_data['logic']
+    def add(self, question_data, years):
+        display_logic = question_data['display logic']
         question_name = question_data['variable']
         question_prompt = question_data['prompt']
         question_response = question_data['label']
@@ -17,13 +17,13 @@ class CSVQuestions(object):
         if self.already_exists(question_name):
             question = self.get(question_name)
             if question_response != "":
-                question.add_response(question_response, question_data, question_pop, round_no)
+                question.add_response(question_response, question_data, question_pop, years)
             if display_logic != "":
                 question.add_display(display_logic)
         else:
             question = CSVQuestion(question_name, question_prompt)
             if question_response != "":
-                question.add_response(question_response, question_data, question_pop, round_no)
+                question.add_response(question_response, question_data, question_pop, years)
             if display_logic != "":
                 question.add_display(display_logic)
             self.__questions[question.name] = question
@@ -81,9 +81,9 @@ class CSVQuestion(object):
     def display_logic(self):
         return self.__display_logic
 
-    def add_response(self, response_name, response_data, response_pop, round_no):
+    def add_response(self, response_name, response_data, response_pop, years):
         self.__n += int(response_pop)
-        self.__responses.append(CSVResponse(response_name, response_data, round_no))
+        self.__responses.append(CSVResponse(response_name, response_data, years))
 
     def add_display(self, logic):
         self.__display_logic = logic
@@ -91,23 +91,17 @@ class CSVQuestion(object):
 
 class CSVResponse(object):
 
-    def __init__(self, label, frequency_data, round_no):
+    def __init__(self, label, frequency_data, years):
         self.__name = label
-        self.__frequencies = []
-        round_col = "percent" 
-        if frequency_data.get(round_col) is not None:
-            self.__frequencies.append(frequency_data[round_col])
-        if int(round_no) == 1:
-            if frequency_data["percent"] != '':
-                self.__frequencies.append(frequency_data["percent"])
+        self.__frequencies = OrderedDict() 
+        if len(years) > 0:
+            for year in years:
+                round_col = "percent %s" % year
+                if frequency_data[round_col] != "":
+                    self.__frequencies[year] = frequency_data[round_col]
         else:
-        	iteration = 1
-        	round_int = int(round_no)
-        	while iteration <= round_int:
-        		round_col = "percent %s" % iteration
-        		if frequency_data[round_col] != '':
-        			self.__frequencies.append(frequency_data[round_col])
-        		iteration += 1
+            round_col = "percent"
+            self.__frequencies[0] = frequency_data[round_col] 
 
     @property
     def name(self):
@@ -116,7 +110,3 @@ class CSVResponse(object):
     @property
     def frequencies(self):
         return self.__frequencies
-
-    @property
-    def sort(self):
-        self.__frequencies.reverse()

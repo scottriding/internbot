@@ -29,7 +29,6 @@ class ToplineView(object):
         Function sets up menu for entry of round number and open of topline file.
         :return: None
         """
-        print "File Topline"
         self.redirect_window = Tkinter.Toplevel(self.__window)
         self.redirect_window.withdraw()
         width = 200
@@ -97,40 +96,18 @@ class ToplineView(object):
         :return: None
         """
         try:
-            filename = tkFileDialog.askopenfilename(initialdir=self.fpath, title="Select survey file", filetypes=(
+            self.filename = tkFileDialog.askopenfilename(initialdir=self.fpath, title="Select survey file", filetypes=(
             ("Qualtrics files", "*.qsf"), ("comma seperated files", "*.csv"), ("all files", "*.*")))
-            if filename is not "":
+            if self.filename is not "":
                 round_int = self.round_entry.get()
-                is_trended = False
-                if round_int == "":
-                    round_int = 1
-                else:
-                    round_int = int(round_int)
-                    if round_int != 1:
-                        is_trended = True
-                if ".qsf" in filename:
-                    survey = base.QSFSurveyCompiler().compile(filename)
-                    ask_freqs = tkMessageBox.askokcancel("Frequency file",
-                                                         "Please select .csv file with survey result frequencies.")
-                    if ask_freqs is True:
-                        frequency_file = tkFileDialog.askopenfilename(initialdir=self.fpath,
-                                                                      title="Select frequency file", filetypes=(
-                            ("Command separated files", "*.csv"), ("all files", "*.*")))
-                        if frequency_file is not "":
-                            self.report_generator = topline.BasicReport.ReportGenerator(frequency_file, round_int,
-                                                                                        survey)
-                elif ".csv" in filename:
-                    self.report_generator = topline.BasicReport.ReportGenerator(filename, round_int)
-                    self.redirect_window.destroy()
-                self.round = round_int
-                if is_trended is True:
-                    self.year_window_setup()
+                if round_int != "" and round_int != 1:
+                    self.year_window_setup(int(round_int))
                 else:
                     self.build_topline_report()
         except Exception as e:
             tkMessageBox.showerror("Error", "An error occurred\n" + str(e))
 
-    def year_window_setup(self):
+    def year_window_setup(self, rounds):
         """
         Funtion sets up the window for entry of trend labels for trended Toplines
         :return: None
@@ -139,7 +116,7 @@ class ToplineView(object):
             self.year_window = Tkinter.Toplevel(self.__window)
             self.year_window.withdraw()
             width = 300
-            height = 200 + self.round * 25
+            height = 200 + rounds * 25
             self.year_window.geometry("%dx%d+%d+%d" % (
             width, height, self.mov_x + self.window_width / 2 - width / 2, self.mov_y + self.window_height / 2 - height / 2))
             self.year_window.title("Trended report years")
@@ -148,7 +125,7 @@ class ToplineView(object):
 
             year_frame = Tkinter.Frame(self.year_window)
             year_frame.pack(side=Tkinter.TOP, expand=True)
-            self.year_window_obj = YearsWindow(self.__window, self.year_window, self.round)
+            self.year_window_obj = YearsWindow(self.__window, self.year_window, rounds)
             self.year_window_obj.packing_years(year_frame)
             btn_finish = Tkinter.Button(self.year_window, text="Done", command=self.build_topline_leadup, height=3,
                                         width=17)
@@ -172,24 +149,33 @@ class ToplineView(object):
     def build_topline_report(self, years=[]):
         """
         Function builds topline report and requests if the user would like to have the files opened.
-        :param isQSF: Boolean value
-        :param report: topline report object
         :param years: array of trend titles
         :return: None
         """
         try:
             template_file = open("templates_images/topline_template.docx", "r")
+            report_generator = None
+            if ".qsf" in self.filename:
+                survey = base.QSFSurveyCompiler().compile(self.filename)
+                ask_freqs = tkMessageBox.askokcancel("Frequency file", "Please select .csv file with survey result frequencies.")
+                if ask_freqs is True:
+                    frequency_file = tkFileDialog.askopenfilename(initialdir=self.fpath, title="Select frequency file", filetypes=(("Comma separated files", "*.csv"), ("all files", "*.*")))
+                    if frequency_file is not "":
+                        report_generator = topline.BasicReport.ReportGenerator(frequency_file, years, survey)
+            elif ".csv" in self.filename:
+                report_generator = topline.BasicReport.ReportGenerator(self.filename, years)
+
             ask_output = tkMessageBox.askokcancel("Output directory",
                                                   "Please select the directory for finished report.")
             if ask_output is True:
                 savedirectory = tkFileDialog.askdirectory()
-                if savedirectory is not "":
-                    self.report_generator.generate_topline(template_file, savedirectory, years)
+                if savedirectory is not "" and report_generator is not None:
+                    report_generator.generate_topline(template_file, savedirectory, years)
                     open_files = tkMessageBox.askyesno("Info", "Done!\nWould you like to open your finished files?")
                     if open_files is True:
                         self.open_file_for_user(savedirectory + "/topline_report.docx")
         except Exception as e:
-            tkMessageBox.showerror("Error", "An error occurred\n" + str(e))
+           tkMessageBox.showerror("Error", "An error occurred\n" + str(e))
 
     def open_file_for_user(self, file_path):
         try:

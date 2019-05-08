@@ -1,5 +1,6 @@
 from operator import attrgetter
 from sorter import ResponseSorter
+from collections import OrderedDict
 
 class Responses(object):
 
@@ -56,7 +57,7 @@ class Response(object):
         self.code = code
         self.__has_frequency = False
         self.__is_dynamic = False
-        self.__frequencies = []
+        self.__frequencies = OrderedDict()
 
     @property
     def type(self):
@@ -84,7 +85,7 @@ class Response(object):
 
     @frequencies.setter
     def frequencies(self, frequency):
-        self.__frequencies.extend(frequency)
+        self.__frequencies = frequency
         self.__has_frequency = True
 
     @property

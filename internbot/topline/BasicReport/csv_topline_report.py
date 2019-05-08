@@ -9,7 +9,7 @@ class CSVToplineReport(object):
         self.doc = Document(path_to_template)
         self.line_break = self.doc.styles['LineBreak']
         self.questions = questions
-        self.headers = years
+        self.years = years
         names = questions.list_names()
         for name in names:
             self.write_question(name)
@@ -46,7 +46,7 @@ class CSVToplineReport(object):
         paragraph.add_run(" (n = " + str(n) + ")")
     
     def write_responses(self, responses):
-        if len(self.headers) > 0:
+        if len(self.years) > 0:
             self.write_trended_responses(responses)
         else:
             table = self.doc.add_table(rows = 1, cols = 5)
@@ -55,32 +55,43 @@ class CSVToplineReport(object):
                 response_cells = table.add_row().cells
                 response_cells[1].merge(response_cells[2])
                 response_cells[1].text = response.name
-                response_cells[3].text = self.freqs_percent(response.frequencies[0], first_row)
-                first_row = False
+                for year, response in response.frequencies.iteritems():
+                    response_cells[3].text = self.freqs_percent(response, first_row)
+                if response_cells[3].text != "*":
+                    first_row = False
 
     def write_trended_responses(self, responses):
-        table = self.doc.add_table(rows=1, cols=len(self.headers)+4)
+        headers =  self.max_years(responses)
+        table = self.doc.add_table(rows=1, cols=len(headers)+4)
         titles_row = table.add_row().cells  
         titles_row[1].merge(titles_row[2])
         headers_index = 0
-        while headers_index < len(self.headers):
-            header_text = "Total %s" % self.headers[headers_index]
+        while headers_index < len(headers):
+            header_text = "Total %s" % headers[headers_index]
             titles_row[headers_index+4].text = header_text
             headers_index += 1
         first_row = True
-        first_freq = True
         for response in responses:
             response_cells = table.add_row().cells
             response_cells[1].merge(response_cells[3])
             response_cells[1].text = response.name
             freq_col = 4
-            response.sort
-            for freq in response.frequencies:
-                text = self.freqs_percent(freq, first_freq)
-                if first_freq is True:
-                    first_freq = False
-                response_cells[freq_col].text = text
+            for header in headers:
+                if response.frequencies.get(header) is not None:
+                    freq = response.frequencies.get(header)
+                    text = self.freqs_percent(freq, first_row)
+                    response_cells[freq_col].text = text
+                first_row = False
                 freq_col += 1
+
+    def max_years(self, responses):
+        years_used = []
+        for response in responses:
+            for year in self.years:
+                if response.frequencies.get(year) is not None:
+                    if year not in years_used:
+                        years_used.append(year)
+        return years_used
 
     def save(self, path_to_output):
         self.doc.save(path_to_output)
@@ -98,6 +109,6 @@ class CSVToplineReport(object):
                 result = "*"
             else:
                 result = int(round(percent))
-        if is_first:
+        if is_first and result != "*":
             result = str(result) + "%"
         return str(result)
