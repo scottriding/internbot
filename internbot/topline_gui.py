@@ -9,6 +9,7 @@ import os, subprocess, platform
 import csv
 from collections import OrderedDict
 from years_window import YearsWindow
+import threading
 
 class ToplineView(object):
 
@@ -175,8 +176,14 @@ class ToplineView(object):
         if ask_output is True:
             savedirectory = tkFileDialog.asksaveasfilename(defaultextension='.docx', filetypes=[('word files', '.docx')])
             if savedirectory is not "":
-                report_generator.generate_topline(template_file, savedirectory, years)
-                self.open_file_for_user(savedirectory)
+                thread= threading.Thread(target=self.build_topline_worker, args=(report_generator, template_file, savedirectory, years))
+                thread.start()
+
+    def build_topline_worker(self, report_generator, template_file, savedirectory, years):
+        print "Running report..."
+        report_generator.generate_topline(template_file, savedirectory, years)
+        print "Done!"
+        self.open_file_for_user(savedirectory)
 
 
     def open_file_for_user(self, file_path):

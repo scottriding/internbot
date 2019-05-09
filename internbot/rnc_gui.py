@@ -123,8 +123,15 @@ class RNCView(object):
             report = rnc_automation.ScoresToplineReportGenerator(filename, int(round))
             savedirectory = tkFileDialog.asksaveasfilename(defaultextension='.xlsx', filetypes=[('excel files', '.xlsx')])
             if savedirectory is not "":
-                report.generate_scores_topline(savedirectory, report_location, round)
-                self.open_file_for_user(savedirectory)
+                thread=threading.Thread(target=self.scores_topline_worker, args=(report, savedirectory, report_location, round))
+                thread.start()
+                self.create_window.destroy
+
+    def scores_topline_worker(self, report, savedirectory, report_location, round):
+        print "Running report..."
+        report.generate_scores_topline(savedirectory, report_location, round)
+        self.open_file_for_user(savedirectory)
+        print "Done!"
 
 
     def issue_trended_window(self):
@@ -165,9 +172,16 @@ class RNCView(object):
         report = rnc_automation.IssueTrendedReportGenerator(filename, int(round))
         savedirectory = tkFileDialog.asksaveasfilename(defaultextension='.xlsx', filetypes=[('excel files', '.xlsx')])
         if savedirectory is not "":
-            report.generate_issue_trended(savedirectory, round)
+            thread = threading.Thread(target=self.issue_trended_worker, args=(report, savedirectory, round))
+            thread.start()
             self.create_window.destroy
-            self.open_file_for_user(savedirectory)
+
+
+    def issue_trended_worker(self, report, savedirectory, round):
+        print "Running report..."
+        report.generate_issue_trended(savedirectory, round)
+        self.open_file_for_user(savedirectory)
+        print "Done!"
 
 
     def trended_scores_window(self):
@@ -216,10 +230,16 @@ class RNCView(object):
                 savedirectory = tkFileDialog.askdirectory()
                 self.create_window.update()
                 if savedirectory is not "":
-                    t1 = threading.Thread(target=report.generate_trended_scores, args=(savedirectory,round))
-                    t1.start()
+                    thread = threading.Thread(target=self.trended_scores_worker, args=(report, savedirectory, round))
+                    thread.start()
                     #report.generate_trended_scores(savedirectory, round)
                     self.create_window.destroy()
+
+    def trended_scores_worker(self, report, savedirectory, round):
+        print "Running reports..."
+        report.generate_trended_scores(savedirectory, round)
+        self.open_file_for_user(savedirectory)
+        print "Done Creating Reports!"
 
 
     def open_file_for_user(self, file_path):

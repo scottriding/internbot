@@ -8,6 +8,7 @@ import tkFileDialog
 import os, subprocess, platform
 import csv
 from collections import OrderedDict
+import threading
 
 class QCrosstabsView(object):
 
@@ -29,7 +30,7 @@ class QCrosstabsView(object):
         Function sets up window for bases entry of Q crosstab reports
         :return:
         """
-        
+        print "File Q"
         self.base_window = Tkinter.Toplevel(self.__window)
         self.base_window.withdraw()
         width = 1100
@@ -415,11 +416,17 @@ class QCrosstabsView(object):
 
 
             savedirectory = tkFileDialog.asksaveasfilename(defaultextension='.xlsx', filetypes=[('excel files', '.xlsx')])
-            print savedirectory
+
             if savedirectory is not "":
-                self.__parser.save(savedirectory)
-                self.open_file_for_user(savedirectory)
+                thread = threading.Thread(target=self.finish_bases_worker, args=(True, savedirectory))
+                thread.start()
             self.base_window.destroy()
+
+    def finish_bases_worker(self, necessary, savedirectory):
+        print "Running report..."
+        self.__parser.save(savedirectory)
+        print "Done!"
+        self.open_file_for_user(savedirectory)
 
 
     def open_file_for_user(self, file_path):

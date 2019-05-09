@@ -10,6 +10,7 @@ import csv
 from collections import OrderedDict
 import threading
 import sys
+import time
 
 class AppendixView(object):
 
@@ -89,8 +90,13 @@ class AppendixView(object):
         generator.parse_file(csvfilename)
         savedirectory = tkFileDialog.asksaveasfilename(defaultextension='.docx', filetypes=[('word files', '.docx')])
         if savedirectory is not "":
-            generator.write_appendix(savedirectory, "templates_images/appendix_template.docx", False)
+            thread_worker = threading.Thread(target=self.doc_appendix_worker, args=(generator, savedirectory))
+            thread_worker.start()
         self.redirect_window.destroy()
+
+    def doc_appendix_worker(self, generator, savedirectory):
+        generator.write_appendix(savedirectory, "templates_images/appendix_template.docx", False)
+        self.open_file_for_user(savedirectory)
 
     def excel_appendix(self):
         generator = topline.Appendix.AppendixGenerator()
@@ -99,8 +105,14 @@ class AppendixView(object):
         generator.parse_file(csvfilename)
         savedirectory = tkFileDialog.asksaveasfilename(defaultextension='.xlsx', filetypes=[('excel files', '.xlsx')])
         if savedirectory is not "":
-            generator.write_appendix(savedirectory, '', True)
+            thread_worker = threading.Thread(target=self.excel_appendix_worker, args=(generator, savedirectory))
+            thread_worker.start()
+
         self.redirect_window.destroy()
+
+    def excel_appendix_worker(self, generator, savedirectory):
+        generator.write_appendix(savedirectory, '', True)
+        self.open_file_for_user(savedirectory)
 
     def appendix_help_window(self):
         """
