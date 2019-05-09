@@ -53,102 +53,98 @@ class SPSSCrosstabsView(object):
         :return: None
         """
         print "File variable_spript"
-        try:
-            ask_qsf = tkMessageBox.askokcancel("Select Qualtrics File", "Please select the Qualtrics survey .qsf file.")
-            if ask_qsf is True: # user selected ok
-                qsffilename = tkFileDialog.askopenfilename(initialdir = self.fpath, title = "Select Qualtrics survey file",filetypes = (("Qualtrics file","*.qsf"),("all files","*.*")))
-                if qsffilename is not "":
-                    compiler = base.QSFSurveyCompiler()
-                    survey = compiler.compile(qsffilename)
-                    ask_output = tkMessageBox.askokcancel("Output directory", "Please select the directory for finished variable script.")
-                    if ask_output is True: # user selected ok
-                        savedirectory = tkFileDialog.askdirectory()
-                        if savedirectory is not "":
-                            variables = crosstabs.Format_SPSS_Report.Generate_Prelim_SPSS_Script.SPSSTranslator()
-                            tables = crosstabs.Format_SPSS_Report.Generate_Prelim_SPSS_Script.TableDefiner()
-                            variables.define_variables(survey, savedirectory)
-                            tables.define_tables(survey, savedirectory)
-                            open_files = tkMessageBox.askyesno("Info", "Done!\nWould you like to open your finished files?")
-                            if open_files is True:
-                                self.open_file_for_user(savedirectory+"/Tables to run.csv")
-                                self.open_file_for_user(savedirectory+"/rename variables.sps")
-        except Exception as e:
-            tkMessageBox.showerror("Error", "An error occurred\n"+ str(e))
+
+        ask_qsf = tkMessageBox.askokcancel("Select Qualtrics File", "Please select the Qualtrics survey .qsf file.")
+        if ask_qsf is True: # user selected ok
+            qsffilename = tkFileDialog.askopenfilename(initialdir = self.fpath, title = "Select Qualtrics survey file",filetypes = (("Qualtrics file","*.qsf"),("all files","*.*")))
+            if qsffilename is not "":
+                compiler = base.QSFSurveyCompiler()
+                survey = compiler.compile(qsffilename)
+                ask_output = tkMessageBox.askokcancel("Output directory", "Please select the directory for finished variable script.")
+                if ask_output is True: # user selected ok
+                    savedirectory = tkFileDialog.askdirectory()
+                    if savedirectory is not "":
+                        variables = crosstabs.Format_SPSS_Report.Generate_Prelim_SPSS_Script.SPSSTranslator()
+                        tables = crosstabs.Format_SPSS_Report.Generate_Prelim_SPSS_Script.TableDefiner()
+                        variables.define_variables(survey, savedirectory)
+                        tables.define_tables(survey, savedirectory)
+                        open_files = tkMessageBox.askyesno("Info", "Done!\nWould you like to open your finished files?")
+                        if open_files is True:
+                            self.open_file_for_user(savedirectory+"/Tables to run.csv")
+                            self.open_file_for_user(savedirectory+"/rename variables.sps")
+
 
     def table_script(self):
         """
         Set up for Banner selection from a Tables to run file.
         :return:
         """
-        print "File table_script"
-        try:
-            ask_tables = tkMessageBox.askokcancel("Select Tables to Run.csv File", "Please select the tables to run .csv file.")
-            if ask_tables is True:
-                self.tablesfilename = tkFileDialog.askopenfilename(initialdir = self.fpath, title = "Select tables file",filetypes = (("comma seperated files","*.csv"),("all files","*.*")))
-                if self.tablesfilename is not "":
-                    ask_banners = tkMessageBox.askokcancel("Banner selection", "Please insert/select the banners for this report.")
-                    if ask_banners is True:
-                        names = crosstabs.Format_SPSS_Report.Generate_Table_Script.TablesParser().pull_table_names(self.tablesfilename)
-                        titles = crosstabs.Format_SPSS_Report.Generate_Table_Script.TablesParser().pull_table_titles(self.tablesfilename)
-                        bases = crosstabs.Format_SPSS_Report.Generate_Table_Script.TablesParser().pull_table_bases(self.tablesfilename)
-                        self.banner_window(names, titles, bases)
-        except Exception as e:
-            tkMessageBox.showerror("Error", "An error occurred\n"+ str(e))
+
+
+        ask_tables = tkMessageBox.askokcancel("Select Tables to Run.csv File", "Please select the tables to run .csv file.")
+        if ask_tables is True:
+            self.tablesfilename = tkFileDialog.askopenfilename(initialdir = self.fpath, title = "Select tables file",filetypes = (("comma seperated files","*.csv"),("all files","*.*")))
+            if self.tablesfilename is not "":
+                ask_banners = tkMessageBox.askokcancel("Banner selection", "Please insert/select the banners for this report.")
+                if ask_banners is True:
+                    names = crosstabs.Format_SPSS_Report.Generate_Table_Script.TablesParser().pull_table_names(self.tablesfilename)
+                    titles = crosstabs.Format_SPSS_Report.Generate_Table_Script.TablesParser().pull_table_titles(self.tablesfilename)
+                    bases = crosstabs.Format_SPSS_Report.Generate_Table_Script.TablesParser().pull_table_bases(self.tablesfilename)
+                    self.banner_window(names, titles, bases)
+
 
     def banner_window(self, names, titles, bases):
-        print "File table_script"
-        try:
-            self.edit_window = Tkinter.Toplevel(self.__window)
-            self.edit_window.withdraw()
-            width = 1500
-            height = 500
-            self.edit_window.geometry("%dx%d+%d+%d" % (
-            width, height, self.mov_x + self.window_width / 2 - width / 2, self.mov_y + self.window_height / 2 - height / 2))
 
-            self.edit_window.title("Banner selection")
-            self.boxes_frame = Tkinter.Frame(self.edit_window)
-            self.boxes_frame.pack(side=Tkinter.LEFT, fill=Tkinter.BOTH)
-            horiz_scrollbar = Tkinter.Scrollbar(self.boxes_frame)
-            horiz_scrollbar.config(orient=Tkinter.HORIZONTAL)
-            horiz_scrollbar.pack(side=Tkinter.BOTTOM, fill=Tkinter.X)
-            vert_scrollbar = Tkinter.Scrollbar(self.boxes_frame)
-            vert_scrollbar.pack(side=Tkinter.RIGHT, fill=Tkinter.Y)
+        self.edit_window = Tkinter.Toplevel(self.__window)
+        self.edit_window.withdraw()
+        width = 1500
+        height = 500
+        self.edit_window.geometry("%dx%d+%d+%d" % (
+        width, height, self.mov_x + self.window_width / 2 - width / 2, self.mov_y + self.window_height / 2 - height / 2))
 
-            self.tables_box = Tkinter.Listbox(self.boxes_frame, selectmode="multiple", width=80, height=15,
-                                              yscrollcommand=vert_scrollbar.set, xscrollcommand=horiz_scrollbar.set)
-            self.tables_box.pack(padx=15, pady=10, expand=True, side=Tkinter.LEFT, fill=Tkinter.BOTH)
-            self.banners_box = Tkinter.Listbox(self.edit_window)
-            self.banners_box.pack(padx=15, pady=10, expand=True, side=Tkinter.RIGHT, fill=Tkinter.BOTH)
+        self.edit_window.title("Banner selection")
+        self.boxes_frame = Tkinter.Frame(self.edit_window)
+        self.boxes_frame.pack(side=Tkinter.LEFT, fill=Tkinter.BOTH)
+        horiz_scrollbar = Tkinter.Scrollbar(self.boxes_frame)
+        horiz_scrollbar.config(orient=Tkinter.HORIZONTAL)
+        horiz_scrollbar.pack(side=Tkinter.BOTTOM, fill=Tkinter.X)
+        vert_scrollbar = Tkinter.Scrollbar(self.boxes_frame)
+        vert_scrollbar.pack(side=Tkinter.RIGHT, fill=Tkinter.Y)
 
-            index = 0
-            while index < len(names):
-                self.tables_box.insert(Tkinter.END, names[index] + ": " + titles[index])
-                index += 1
+        self.tables_box = Tkinter.Listbox(self.boxes_frame, selectmode="multiple", width=80, height=15,
+                                          yscrollcommand=vert_scrollbar.set, xscrollcommand=horiz_scrollbar.set)
+        self.tables_box.pack(padx=15, pady=10, expand=True, side=Tkinter.LEFT, fill=Tkinter.BOTH)
+        self.banners_box = Tkinter.Listbox(self.edit_window)
+        self.banners_box.pack(padx=15, pady=10, expand=True, side=Tkinter.RIGHT, fill=Tkinter.BOTH)
 
-            vert_scrollbar.config(command=self.tables_box.yview)
-            horiz_scrollbar.config(command=self.tables_box.xview)
+        index = 0
+        while index < len(names):
+            self.tables_box.insert(Tkinter.END, names[index] + ": " + titles[index])
+            index += 1
 
-            buttons_frame = Tkinter.Frame(self.edit_window)
-            buttons_frame.pack(side=Tkinter.RIGHT, fill=Tkinter.BOTH)
-            btn_up = Tkinter.Button(buttons_frame, text="Up", command=self.shift_up)
-            btn_down = Tkinter.Button(buttons_frame, text="Down", command=self.shift_down)
-            btn_insert = Tkinter.Button(buttons_frame, text="Insert", command=self.insert_banner)
-            btn_edit = Tkinter.Button(buttons_frame, text="Edit", command=self.parse_selection)
-            btn_create = Tkinter.Button(buttons_frame, text="Create", command=self.create_banner)
-            btn_remove = Tkinter.Button(buttons_frame, text="Remove", command=self.remove_banner)
-            btn_done = Tkinter.Button(buttons_frame, text="Done", command=self.finish_banner)
+        vert_scrollbar.config(command=self.tables_box.yview)
+        horiz_scrollbar.config(command=self.tables_box.xview)
 
-            btn_done.pack(side=Tkinter.BOTTOM, pady=15)
-            btn_remove.pack(side=Tkinter.BOTTOM)
-            btn_create.pack(side=Tkinter.BOTTOM)
-            btn_edit.pack(side=Tkinter.BOTTOM)
-            btn_insert.pack(side=Tkinter.BOTTOM, pady=5)
-            btn_down.pack(side=Tkinter.BOTTOM)
-            btn_up.pack(side=Tkinter.BOTTOM)
+        buttons_frame = Tkinter.Frame(self.edit_window)
+        buttons_frame.pack(side=Tkinter.RIGHT, fill=Tkinter.BOTH)
+        btn_up = Tkinter.Button(buttons_frame, text="Up", command=self.shift_up)
+        btn_down = Tkinter.Button(buttons_frame, text="Down", command=self.shift_down)
+        btn_insert = Tkinter.Button(buttons_frame, text="Insert", command=self.insert_banner)
+        btn_edit = Tkinter.Button(buttons_frame, text="Edit", command=self.parse_selection)
+        btn_create = Tkinter.Button(buttons_frame, text="Create", command=self.create_banner)
+        btn_remove = Tkinter.Button(buttons_frame, text="Remove", command=self.remove_banner)
+        btn_done = Tkinter.Button(buttons_frame, text="Done", command=self.finish_banner)
 
-            self.edit_window.deiconify()
-        except Exception as e:
-            tkMessageBox.showerror("Error", "An error occurred" + str(e))
+        btn_done.pack(side=Tkinter.BOTTOM, pady=15)
+        btn_remove.pack(side=Tkinter.BOTTOM)
+        btn_create.pack(side=Tkinter.BOTTOM)
+        btn_edit.pack(side=Tkinter.BOTTOM)
+        btn_insert.pack(side=Tkinter.BOTTOM, pady=5)
+        btn_down.pack(side=Tkinter.BOTTOM)
+        btn_up.pack(side=Tkinter.BOTTOM)
+
+        self.edit_window.deiconify()
+
 
 
     def shift_up(self):
@@ -401,18 +397,16 @@ class SPSSCrosstabsView(object):
                 index += 1
 
     def finish_banner(self):
-        try:
-            self.variable_entry = None
-            ask_trended = tkMessageBox.askyesno("Trended Follow-up", "Is this a trended report?")
-            if ask_trended is True:
-                self.filter_variable_window()
-            else:
-                self.save_table_script()
-        except Exception as e:
-            tkMessageBox.showerror("Error", "An error occurred\n" + str(e))
+
+        self.variable_entry = None
+        ask_trended = tkMessageBox.askyesno("Trended Follow-up", "Is this a trended report?")
+        if ask_trended is True:
+            self.filter_variable_window()
+        else:
+            self.save_table_script()
+
 
     def filter_variable_window(self):
-        print "File variable_window"
         self.create_window = Tkinter.Toplevel(self.__window)
         self.create_window.withdraw()
         x = self.__window.winfo_x()
@@ -440,52 +434,47 @@ class SPSSCrosstabsView(object):
         self.create_window.deiconify()
 
     def save_table_script(self):
-        print "File save_table_script"
-        try:
-            generator = crosstabs.Format_SPSS_Report.Generate_Table_Script.TableScriptGenerator()
-            table_order = OrderedDict()
-            banner_list = OrderedDict()
-            for item in list(self.tables_box.get(0, Tkinter.END)):
-                question = item.split(": ")
-                table_order[question[0]] = question[1]
-            for item in list(self.banners_box.get(0, Tkinter.END)):
-                question = item.split(": ")
-                banner_list[question[0]] = question[1]
-            self.edit_window.destroy()
-            ask_output = tkMessageBox.askokcancel("Output directory", "Please select the directory for finished table script.")
-            filtering_variable = None
-            if self.variable_entry is not None:
-                variable = str(self.variable_entry.get())
-                if variable != "":
-                    filtering_variable = variable
-                self.create_window.destroy()
-            if ask_output is True:
-                savedirectory = tkFileDialog.askdirectory()
-                if savedirectory is not "":
-                     generator.compile_scripts(self.tablesfilename, banner_list.keys(), self.__embedded_fields, filtering_variable, savedirectory)
-                     open_files = tkMessageBox.askyesno("Info","Done!\nWould you like to open your finished files?")
-                     if open_files is True:
-                         self.open_file_for_user(savedirectory + "/table script.sps")
-        except Exception as e:
-            tkMessageBox.showerror("Error", "An error occurred\n" + str(e))
+
+        generator = crosstabs.Format_SPSS_Report.Generate_Table_Script.TableScriptGenerator()
+        table_order = OrderedDict()
+        banner_list = OrderedDict()
+        for item in list(self.tables_box.get(0, Tkinter.END)):
+            question = item.split(": ")
+            table_order[question[0]] = question[1]
+        for item in list(self.banners_box.get(0, Tkinter.END)):
+            question = item.split(": ")
+            banner_list[question[0]] = question[1]
+        self.edit_window.destroy()
+        ask_output = tkMessageBox.askokcancel("Output directory", "Please select the directory for finished table script.")
+        filtering_variable = None
+        if self.variable_entry is not None:
+            variable = str(self.variable_entry.get())
+            if variable != "":
+                filtering_variable = variable
+            self.create_window.destroy()
+        if ask_output is True:
+            savedirectory = tkFileDialog.askdirectory()
+            if savedirectory is not "":
+                 generator.compile_scripts(self.tablesfilename, banner_list.keys(), self.__embedded_fields, filtering_variable, savedirectory)
+                 open_files = tkMessageBox.askyesno("Info","Done!\nWould you like to open your finished files?")
+                 if open_files is True:
+                     self.open_file_for_user(savedirectory + "/table script.sps")
+
 
     def build_xtabs(self):
-        print "File build_xtabs"
-        try:
-            ask_directory = tkMessageBox.askokcancel("Select Tables Folder", "Please select the folder containing SPSS generated .xlsx table files.")
-            if ask_directory is True:
-                tablesdirectory = tkFileDialog.askdirectory()
-                builder = crosstabs.Format_SPSS_Report.Parse_SPSS_Tables.CrosstabGenerator(tablesdirectory)
-                ask_output = tkMessageBox.askokcancel("Output directory", "Please select the directory for finished report.")
-                if ask_output is True:
-                    outputdirectory = tkFileDialog.askdirectory()
-                    if outputdirectory is not "":
-                        builder.write_report(outputdirectory)
-                        open_files = tkMessageBox.askyesno("Info", "Done!\nWould you like to open your finished files?")
-                        if open_files is True:
-                            self.open_file_for_user(outputdirectory + "/Crosstab Report.xlsx")
-        except Exception as e:
-            tkMessageBox.showerror("Error", "An error occurred\n" + str(e))
+        ask_directory = tkMessageBox.askokcancel("Select Tables Folder", "Please select the folder containing SPSS generated .xlsx table files.")
+        if ask_directory is True:
+            tablesdirectory = tkFileDialog.askdirectory()
+            builder = crosstabs.Format_SPSS_Report.Parse_SPSS_Tables.CrosstabGenerator(tablesdirectory)
+            ask_output = tkMessageBox.askokcancel("Output directory", "Please select the directory for finished report.")
+            if ask_output is True:
+                outputdirectory = tkFileDialog.askdirectory()
+                if outputdirectory is not "":
+                    builder.write_report(outputdirectory)
+                    open_files = tkMessageBox.askyesno("Info", "Done!\nWould you like to open your finished files?")
+                    if open_files is True:
+                        self.open_file_for_user(outputdirectory + "/Crosstab Report.xlsx")
+
 
     def open_file_for_user(self, file_path):
         try:

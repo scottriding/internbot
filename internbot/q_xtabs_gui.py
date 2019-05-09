@@ -29,7 +29,7 @@ class QCrosstabsView(object):
         Function sets up window for bases entry of Q crosstab reports
         :return:
         """
-        print "File Q"
+        
         self.base_window = Tkinter.Toplevel(self.__window)
         self.base_window.withdraw()
         width = 1100

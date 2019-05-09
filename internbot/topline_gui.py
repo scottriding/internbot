@@ -95,54 +95,52 @@ class ToplineView(object):
         Funtion reads in a topline file
         :return: None
         """
-        try:
-            self.filename = tkFileDialog.askopenfilename(initialdir=self.fpath, title="Select survey file", filetypes=(
-            ("Qualtrics files", "*.qsf"), ("comma seperated files", "*.csv"), ("all files", "*.*")))
-            if self.filename is not "":
-                round_int = self.round_entry.get()
-                if round_int != "" and round_int != 1:
-                    self.year_window_setup(int(round_int))
-                else:
-                    self.build_topline_report()
-        except Exception as e:
-            tkMessageBox.showerror("Error", "An error occurred\n" + str(e))
+
+        self.filename = tkFileDialog.askopenfilename(initialdir=self.fpath, title="Select survey file", filetypes=(
+        ("Qualtrics files", "*.qsf"), ("comma seperated files", "*.csv"), ("all files", "*.*")))
+        if self.filename is not "":
+            round_int = self.round_entry.get()
+            if round_int != "" and round_int != 1:
+                self.year_window_setup(int(round_int))
+            else:
+                self.build_topline_report()
+
 
     def year_window_setup(self, rounds):
         """
         Funtion sets up the window for entry of trend labels for trended Toplines
         :return: None
         """
-        try:
-            self.year_window = Tkinter.Toplevel(self.__window)
-            self.year_window.withdraw()
-            width = 300
-            height = 200 + rounds * 25
-            self.year_window.geometry("%dx%d+%d+%d" % (
-            width, height, self.mov_x + self.window_width / 2 - width / 2, self.mov_y + self.window_height / 2 - height / 2))
-            self.year_window.title("Trended report years")
-            message = "Please input the applicable years \nfor the trended topline report."
-            Tkinter.Label(self.year_window, text=message, font=self.header_font, fg=self.header_color).pack(expand=True)
 
-            year_frame = Tkinter.Frame(self.year_window)
-            year_frame.pack(side=Tkinter.TOP, expand=True)
-            self.year_window_obj = YearsWindow(self.__window, self.year_window, rounds)
-            self.year_window_obj.packing_years(year_frame)
-            btn_finish = Tkinter.Button(self.year_window, text="Done", command=self.build_topline_leadup, height=3,
-                                        width=17)
-            btn_cancel = Tkinter.Button(self.year_window, text="Cancel", command=self.year_window.destroy, height=3,
-                                        width=17)
-            btn_finish.pack(ipadx=5, side=Tkinter.LEFT, expand=False)
-            btn_cancel.pack(ipadx=5, side=Tkinter.RIGHT, expand=False)
-            self.year_window.deiconify()
+        self.year_window = Tkinter.Toplevel(self.__window)
+        self.year_window.withdraw()
+        width = 300
+        height = 200 + rounds * 25
+        self.year_window.geometry("%dx%d+%d+%d" % (
+        width, height, self.mov_x + self.window_width / 2 - width / 2, self.mov_y + self.window_height / 2 - height / 2))
+        self.year_window.title("Trended report years")
+        message = "Please input the applicable years \nfor the trended topline report."
+        Tkinter.Label(self.year_window, text=message, font=self.header_font, fg=self.header_color).pack(expand=True)
 
-            def enter_pressed(event):
-                self.build_topline_leadup()
+        year_frame = Tkinter.Frame(self.year_window)
+        year_frame.pack(side=Tkinter.TOP, expand=True)
+        self.year_window_obj = YearsWindow(self.__window, self.year_window, rounds)
+        self.year_window_obj.packing_years(year_frame)
+        btn_finish = Tkinter.Button(self.year_window, text="Done", command=self.build_topline_leadup, height=3,
+                                    width=17)
+        btn_cancel = Tkinter.Button(self.year_window, text="Cancel", command=self.year_window.destroy, height=3,
+                                    width=17)
+        btn_finish.pack(ipadx=5, side=Tkinter.LEFT, expand=False)
+        btn_cancel.pack(ipadx=5, side=Tkinter.RIGHT, expand=False)
+        self.year_window.deiconify()
 
-            self.year_window.bind("<Return>", enter_pressed)
-            self.year_window.bind("<KP_Enter>", enter_pressed)
+        def enter_pressed(event):
+            self.build_topline_leadup()
 
-        except Exception as e:
-            tkMessageBox.showerror("Error", "An error occurred\n" + str(e))
+        self.year_window.bind("<Return>", enter_pressed)
+        self.year_window.bind("<KP_Enter>", enter_pressed)
+
+
 
     def build_topline_leadup(self):
         """
@@ -159,28 +157,27 @@ class ToplineView(object):
         :param years: array of trend titles
         :return: None
         """
-        try:
-            template_file = open("templates_images/topline_template.docx", "r")
-            report_generator = None
-            if ".qsf" in self.filename:
-                survey = base.QSFSurveyCompiler().compile(self.filename)
-                ask_freqs = tkMessageBox.askokcancel("Frequency file", "Please select .csv file with survey result frequencies.")
-                if ask_freqs is True:
-                    frequency_file = tkFileDialog.askopenfilename(initialdir=self.fpath, title="Select frequency file", filetypes=(("Comma separated files", "*.csv"), ("all files", "*.*")))
-                    if frequency_file is not "":
-                        report_generator = topline.BasicReport.ReportGenerator(frequency_file, years, survey)
-            elif ".csv" in self.filename:
-                report_generator = topline.BasicReport.ReportGenerator(self.filename, years)
 
-            ask_output = tkMessageBox.askokcancel("Output directory",
-                                                  "Please select the directory for finished report.")
-            if ask_output is True:
-                savedirectory = tkFileDialog.asksaveasfilename(defaultextension='.docx', filetypes=[('word files', '.docx')])
-                if savedirectory is not "":
-                    self.report_generator.generate_topline(template_file, savedirectory, years)
-                    self.open_file_for_user(savedirectory)
-        except Exception as e:
-           tkMessageBox.showerror("Error", "An error occurred\n" + str(e))
+        template_file = open("templates_images/topline_template.docx", "r")
+        report_generator = None
+        if ".qsf" in self.filename:
+            survey = base.QSFSurveyCompiler().compile(self.filename)
+            ask_freqs = tkMessageBox.askokcancel("Frequency file", "Please select .csv file with survey result frequencies.")
+            if ask_freqs is True:
+                frequency_file = tkFileDialog.askopenfilename(initialdir=self.fpath, title="Select frequency file", filetypes=(("Comma separated files", "*.csv"), ("all files", "*.*")))
+                if frequency_file is not "":
+                    report_generator = topline.BasicReport.ReportGenerator(frequency_file, years, survey)
+        elif ".csv" in self.filename:
+            report_generator = topline.BasicReport.ReportGenerator(self.filename, years)
+
+        ask_output = tkMessageBox.askokcancel("Output directory",
+                                              "Please select the directory for finished report.")
+        if ask_output is True:
+            savedirectory = tkFileDialog.asksaveasfilename(defaultextension='.docx', filetypes=[('word files', '.docx')])
+            if savedirectory is not "":
+                report_generator.generate_topline(template_file, savedirectory, years)
+                self.open_file_for_user(savedirectory)
+
 
     def open_file_for_user(self, file_path):
         try:
