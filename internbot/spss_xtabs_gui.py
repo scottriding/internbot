@@ -29,7 +29,6 @@ class SPSSCrosstabsView(object):
         Function sets up a menu for SPSS crosstabs.
         :return:
         """
-        print "File menu"
         redirect_window = Tkinter.Toplevel(self.__window)
         redirect_window.withdraw()
         width = 200
@@ -52,8 +51,6 @@ class SPSSCrosstabsView(object):
         Set up for creation of Tables to run and rename variables for SPSS crosstabs.
         :return: None
         """
-        print "File variable_spript"
-
         ask_qsf = tkMessageBox.askokcancel("Select Qualtrics File", "Please select the Qualtrics survey .qsf file.")
         if ask_qsf is True: # user selected ok
             qsffilename = tkFileDialog.askopenfilename(initialdir = self.fpath, title = "Select Qualtrics survey file",filetypes = (("Qualtrics file","*.qsf"),("all files","*.*")))
@@ -79,8 +76,6 @@ class SPSSCrosstabsView(object):
         Set up for Banner selection from a Tables to run file.
         :return:
         """
-
-
         ask_tables = tkMessageBox.askokcancel("Select Tables to Run.csv File", "Please select the tables to run .csv file.")
         if ask_tables is True:
             self.tablesfilename = tkFileDialog.askopenfilename(initialdir = self.fpath, title = "Select tables file",filetypes = (("comma seperated files","*.csv"),("all files","*.*")))

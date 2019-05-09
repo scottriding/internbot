@@ -87,12 +87,13 @@ class AppendixView(object):
         generator = topline.Appendix.AppendixGenerator()
         csvfilename = tkFileDialog.askopenfilename(initialdir=self.fpath, title="Select open ends file",
                                                    filetypes=(("Comma separated files", "*csv"), ("all files", "*.*")))
-        generator.parse_file(csvfilename)
-        savedirectory = tkFileDialog.asksaveasfilename(defaultextension='.docx', filetypes=[('word files', '.docx')])
-        if savedirectory is not "":
-            thread_worker = threading.Thread(target=self.doc_appendix_worker, args=(generator, savedirectory))
-            thread_worker.start()
-        self.redirect_window.destroy()
+        if csvfilename is not "":
+            generator.parse_file(csvfilename)
+            savedirectory = tkFileDialog.asksaveasfilename(defaultextension='.docx', filetypes=[('word files', '.docx')])
+            if savedirectory is not "":
+                thread_worker = threading.Thread(target=self.doc_appendix_worker, args=(generator, savedirectory))
+                thread_worker.start()
+            self.redirect_window.destroy()
 
     def doc_appendix_worker(self, generator, savedirectory):
         generator.write_appendix(savedirectory, "templates_images/appendix_template.docx", False)
@@ -102,13 +103,14 @@ class AppendixView(object):
         generator = topline.Appendix.AppendixGenerator()
         csvfilename = tkFileDialog.askopenfilename(initialdir=self.fpath, title="Select open ends file",
                                                    filetypes=(("Comma separated files", "*csv"), ("all files", "*.*")))
-        generator.parse_file(csvfilename)
-        savedirectory = tkFileDialog.asksaveasfilename(defaultextension='.xlsx', filetypes=[('excel files', '.xlsx')])
-        if savedirectory is not "":
-            thread_worker = threading.Thread(target=self.excel_appendix_worker, args=(generator, savedirectory))
-            thread_worker.start()
+        if csvfilename is not "":
+            generator.parse_file(csvfilename)
+            savedirectory = tkFileDialog.asksaveasfilename(defaultextension='.xlsx', filetypes=[('excel files', '.xlsx')])
+            if savedirectory is not "":
+                thread_worker = threading.Thread(target=self.excel_appendix_worker, args=(generator, savedirectory))
+                thread_worker.start()
 
-        self.redirect_window.destroy()
+            self.redirect_window.destroy()
 
     def excel_appendix_worker(self, generator, savedirectory):
         generator.write_appendix(savedirectory, '', True)

@@ -62,32 +62,26 @@ class Internbot:
         btn_quit.pack(padx=5, side=Tkinter.TOP, expand=True)
 
         #Menubar Set Up
-        # self.menubar = Tkinter.Menu(self.__window)
-        # menu_xtabs = Tkinter.Menu(self.menubar, tearoff = 0)
-        # menu_xtabs.add_command(label="Variable Script", command=self.variable_script)
-        # menu_xtabs.add_command(label="Table Script", command=self.table_script)
-        # menu_xtabs.add_command(label="Build Report", command=self.build_xtabs)
-        # self.menubar.add_cascade(label="Crosstabs", menu=menu_xtabs)
-        # menu_report = Tkinter.Menu(self.menubar, tearoff=0)
-        # menu_report.add_command(label="Run Topline", command=self.topline_menu)
-        # menu_report.add_command(label="Run Appendix", command=self.append_menu)
-        # self.menubar.add_cascade(label="Topline", menu=menu_report)
-        # menu_rnc = Tkinter.Menu(self.menubar, tearoff=0)
-        # menu_rnc.add_command(label="Scores Topline", command=self.scores_window)
-        # menu_rnc.add_command(label="Issue Trended", command=self.issue_trended_window)
-        # menu_rnc.add_command(label="Trended Score", command=self.trended_scores_window)
-        # self.menubar.add_cascade(label="RNC", menu=menu_rnc)
-        # menu_quit = Tkinter.Menu(self.menubar, tearoff=0)
-        # menu_quit.add_command(label="Good Bye", command=self.__window.destroy)
-        # self.menubar.add_cascade(label="Quit", menu=menu_quit)
-        # self.__window.config(menu=self.menubar)
+        self.menubar = Tkinter.Menu(self.__window)
+        menu_xtabs = Tkinter.Menu(self.menubar, tearoff = 0)
+        menu_xtabs.add_command(label="Choose a Software", command=self.software_tabs_menu)
+        self.menubar.add_cascade(label="Crosstabs", menu=menu_xtabs)
+        menu_report = Tkinter.Menu(self.menubar, tearoff=0)
+        menu_report.add_command(label="Topline Menu", command=self.topline.topline_menu)
+        self.menubar.add_cascade(label="Topline", menu=menu_report)
+        menu_appendix = Tkinter.Menu(self.menubar, tearoff=0)
+        menu_appendix.add_command(label="Appendix Menu", command=self.appendix.append_menu)
+        self.menubar.add_cascade(label="Appendix", menu=menu_appendix)
+        menu_rnc = Tkinter.Menu(self.menubar, tearoff=0)
+        menu_rnc.add_command(label="RNC Menu", command=self.rnc.rnc_menu)
+        self.menubar.add_cascade(label="RNC", menu=menu_rnc)
+        menu_quit = Tkinter.Menu(self.menubar, tearoff=0)
+        menu_quit.add_command(label="Good Bye", command=self.__window.destroy)
+        self.menubar.add_cascade(label="Quit", menu=menu_quit)
+        self.__window.config(menu=self.menubar)
+
         self.terminal_window()
 
-
-        def help_pressed(event):
-            self.main_help_window()
-
-        self.__window.bind("<F1>", help_pressed)
 
     def main_help_window(self):
         """
@@ -144,7 +138,7 @@ class Internbot:
             self.term_window.withdraw()
 
 
-        print "Hello World"
+        print "All information about reports and errors will appear in this window.\n"
         self.term_window.protocol('WM_DELETE_WINDOW', update_terminal_flag)
         self.term_window.deiconify()
 
