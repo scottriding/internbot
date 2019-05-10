@@ -52,15 +52,50 @@ class AppendixView(object):
 
         self.redirect_window.deiconify()
 
+    def appendix_help_window(self):
+        """
+        Funtion sets up help window to give the user info about round numbers.
+        :return: None
+        """
+        help_window = Tkinter.Toplevel(self.__window)
+        help_window.withdraw()
+        width = 250
+        height = 400
+        help_window.geometry("%dx%d+%d+%d" % (
+            width, height, self.mov_x + self.window_width / 2 - width / 2,
+            self.mov_y + self.window_height / 2 - height / 2))
+        message = "\nAppendix Help"
+        Tkinter.Label(help_window, text=message, font=self.header_font, fg=self.header_color).pack(side=Tkinter.TOP,
+                                                                                                   padx=10)
+        info_message = "Open a .csv file containing open ends\n" \
+                       "Column names should include:\n"\
+                       "variable = question name\n" \
+                       "prompt = question asked\n" \
+                       "label = response from user\n" \
+                       "\nThen choose if you would like to\n" \
+                       "create a .docx or .xlsx appendix\n" \
+                       "(Most clients need .docx)"
+
+        Tkinter.Label(help_window, text=info_message, justify=Tkinter.LEFT).pack(side=Tkinter.TOP)
+        btn_ok = Tkinter.Button(help_window, text="Ok", command=help_window.destroy, height=3, width=20)
+        btn_ok.pack(padx=5, pady=10, side=Tkinter.TOP, expand=False)
+        help_window.deiconify()
+
+        def enter_pressed(event):
+            help_window.destroy()
+
+        help_window.bind("<Return>", enter_pressed)
+        help_window.bind("<KP_Enter>", enter_pressed)
+
     def append_type(self):
         """
-        Funtion reads in the appendix file and creates a .docx
+        Funtion asks the user if they would like to create a .docx or a .xlsx
         :return: None
         """
         self.choose_window = Tkinter.Toplevel(self.__window)
         self.choose_window.withdraw()
         width = 250
-        height = 300
+        height = 250
         self.choose_window.geometry("%dx%d+%d+%d" % (
             width, height, self.mov_x + self.window_width / 2 - width / 2,
             self.mov_y + self.window_height / 2 - height / 2))
@@ -96,6 +131,12 @@ class AppendixView(object):
             self.redirect_window.destroy()
 
     def doc_appendix_worker(self, generator, savedirectory):
+        """
+        Funtion is called as worker thread to generate the report and open the finished file for the user.
+        :param generator: topline.Appendix.AppendixGenerator
+        :param savedirectory: string indicating the filename for the file from the user
+        :return: None
+        """
         generator.write_appendix(savedirectory, "templates_images/appendix_template.docx", False)
         self.open_file_for_user(savedirectory)
 
@@ -113,28 +154,15 @@ class AppendixView(object):
             self.redirect_window.destroy()
 
     def excel_appendix_worker(self, generator, savedirectory):
+        """
+        Funtion is called as worker thread to generate the report and open the finished file for the user.
+        :param generator: topline.Appendix.AppendixGenerator
+        :param savedirectory: string indicating the filename for the file from the user
+        :return: None
+        """
         generator.write_appendix(savedirectory, '', True)
         self.open_file_for_user(savedirectory)
 
-    def appendix_help_window(self):
-        """
-        Funtion sets up help window to give the user info about round numbers.
-        :return: None
-        """
-        help_window = Tkinter.Toplevel(self.__window)
-        help_window.withdraw()
-        width = 250
-        height = 400
-        help_window.geometry("%dx%d+%d+%d" % (
-        width, height, self.mov_x + self.window_width / 2 - width / 2, self.mov_y + self.window_height / 2 - height / 2))
-        message = "\nTopline Help"
-        Tkinter.Label(help_window, text=message, font=self.header_font, fg=self.header_color).pack(side=Tkinter.TOP, padx=10)
-        info_message = "\nThings"
-
-        Tkinter.Label(help_window, text=info_message, justify=Tkinter.LEFT).pack(side=Tkinter.TOP)
-        btn_ok = Tkinter.Button(help_window, text="Ok", command=help_window.destroy, height=3, width=20)
-        btn_ok.pack(padx=5, pady=10, side=Tkinter.TOP, expand=False)
-        help_window.deiconify()
 
 
     def open_file_for_user(self, file_path):

@@ -207,7 +207,7 @@ class QCrosstabsView(object):
                        "\n\nYou can change the current selection with" \
                        "\nthe up/down arrow keys or your mouse." \
                        "\n\nEdit the base and n info of the current" \
-                       "\nselection by selecting Edit or hitting enter." \
+                       "\ntable by selecting Edit or hitting enter." \
                        "\n\nWhen you're done, select Done and you" \
                        "\nwill be prompted to select the directory of" \
                        "\nyour finished report.\n"
@@ -215,6 +215,12 @@ class QCrosstabsView(object):
         btn_ok = Tkinter.Button(help_window, text="Ok", command=help_window.destroy, height=3, width=20)
         btn_ok.pack(padx=5, side=Tkinter.BOTTOM, expand=False)
         help_window.deiconify()
+
+        def enter_pressed(event):
+            help_window.destroy()
+
+        help_window.bind("<Return>", enter_pressed)
+        help_window.bind("<KP_Enter>", enter_pressed)
 
     def parse_bases(self):
         """

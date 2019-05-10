@@ -72,6 +72,9 @@ class Internbot:
         menu_appendix = Tkinter.Menu(self.menubar, tearoff=0)
         menu_appendix.add_command(label="Appendix Menu", command=self.appendix.append_menu)
         self.menubar.add_cascade(label="Appendix", menu=menu_appendix)
+        menu_terminal = Tkinter.Menu(self.menubar, tearoff=0)
+        menu_terminal.add_command(label="Open Terminal", command=self.reopen_terminal_window)
+        self.menubar.add_cascade(label="Terminal", menu=menu_terminal)
         menu_rnc = Tkinter.Menu(self.menubar, tearoff=0)
         menu_rnc.add_command(label="RNC Menu", command=self.rnc.rnc_menu)
         self.menubar.add_cascade(label="RNC", menu=menu_rnc)
@@ -92,7 +95,7 @@ class Internbot:
         help_window.withdraw()
 
         width = 250
-        height = 250
+        height = 450
         help_window.geometry("%dx%d+%d+%d" % (width,height,mov_x + window_width / 2 - width / 2, mov_y + window_height / 2 - height / 2))
 
         message = "\nWelcome to Internbot"
@@ -103,9 +106,28 @@ class Internbot:
                        "\n what you need to input for the" \
                        "\nreport you are trying to create\n"
         Tkinter.Label(help_window, text=info_message, font=('Trade Gothic LT Pro', 14, )).pack()
+        term_message = "About the Terminal Window"
+        Tkinter.Label(help_window, text=term_message, font=header_font, fg=header_color).pack()
+        term_info_message = "The terminal window will show info about\n" \
+                            "the reports as you are running them.\n" \
+                            "If an error occurs: Take a screenshot of\n" \
+                            "the terminal window then send a slack to the\n"\
+                            "R&D channel with The screenshot and a link\n" \
+                            "to the input file of the report you were\n" \
+                            "running. If you ever close the terminal window,\n" \
+                            "you can reopen it with the Terminal Window\n" \
+                            "button in the main window or Terminal>Open\n" \
+                            " Terminal in the Menubar."
+        Tkinter.Label(help_window, text=term_info_message, font=('Trade Gothic LT Pro', 14,)).pack()
         btn_ok = Tkinter.Button(help_window, text="Ok", command=help_window.destroy, height=3, width=20,  highlightthickness=0)
         btn_ok.pack(pady= 5, side=Tkinter.BOTTOM, expand=False)
         help_window.deiconify()
+
+        def enter_pressed(event):
+            help_window.destroy()
+
+        help_window.bind("<Return>", enter_pressed)
+        help_window.bind("<KP_Enter>", enter_pressed)
 
     def terminal_window(self):
         self.term_window = True

@@ -63,12 +63,21 @@ class RNCView(object):
         help_window.withdraw()
 
         width = 250
-        height = 250
+        height = 300
         help_window.geometry("%dx%d+%d+%d" % (width, height, self.mov_x + self.window_width/2 - width/2, self.mov_y + self.window_height/2 - height/2))
 
         message = "\nRNC Report Help"
         Tkinter.Label(help_window, text=message, font=self.header_font, fg=self.header_color).pack()
-        info_message = ""
+        info_message = "Each button will prompt you to open\n" \
+                       "a RNC model file.\n" \
+                       "Trended Score Reports creates several reports \n" \
+                       "based on model file that will be placed" \
+                       "\nin a specified directory folder.\n" \
+                       "Issue Trended Report creates a single,\n" \
+                       "large excel file by tabbed by model.\n" \
+                       "Scores Topline Report creates a general\n" \
+                       "breakdown of models in a single excel file tab."
+
         Tkinter.Label(help_window, text=info_message, font=('Trade Gothic LT Pro', 14,)).pack()
         btn_ok = Tkinter.Button(help_window, text="Ok", command=help_window.destroy, height=3, width=20,
                                 highlightthickness=0)
@@ -81,7 +90,7 @@ class RNCView(object):
             self.create_window = Tkinter.Toplevel(self.redirect_window)
             self.create_window.withdraw()
             width = 250
-            height = 100
+            height = 250
             self.create_window.geometry("%dx%d+%d+%d" % (width, height, self.mov_x + self.window_width / 2 - width / 2, self.mov_y + self.window_height / 2 - height / 2))
             self.create_window.title("Scores Topline Report Details")
             # location details
@@ -92,6 +101,7 @@ class RNCView(object):
             location_label.pack (side = Tkinter.LEFT, expand=True)
             self.location_entry = Tkinter.Entry(location_frame)
             self.location_entry.pack(side=Tkinter.RIGHT, expand=True)
+            self.location_entry.focus_set()
 
             # round details
             round_frame = Tkinter.Frame(self.create_window)
@@ -106,11 +116,28 @@ class RNCView(object):
             button_frame = Tkinter.Frame(self.create_window)
             button_frame.pack(side=Tkinter.TOP, expand=True)
 
-            btn_cancel = Tkinter.Button(self.create_window, text="Cancel", command=self.create_window.destroy)
-            btn_cancel.pack(side=Tkinter.RIGHT, expand=True)
-            btn_done = Tkinter.Button(self.create_window, text="Done", command=self.scores_topline)
-            btn_done.pack(side=Tkinter.RIGHT, expand=True)
+            btn_cancel = Tkinter.Button(self.create_window, text="Cancel", command=self.create_window.destroy, height=3, width=20)
+            btn_cancel.pack(side=Tkinter.BOTTOM, expand=True)
+            btn_done = Tkinter.Button(self.create_window, text="Done", command=self.scores_topline, height=3, width=20)
+            btn_done.pack(side=Tkinter.BOTTOM, expand=True)
             self.create_window.deiconify()
+
+            def enter_pressed(event):
+                self.scores_topline()
+
+            self.create_window.bind("<Return>", enter_pressed)
+            self.create_window.bind("<KP_Enter>", enter_pressed)
+
+            def up_pressed(event):
+                self.location_entry.focus_set()
+
+            self.create_window.bind("<Up>", up_pressed)
+
+            def down_pressed(event):
+                self.round_entry.focus_set()
+
+            self.create_window.bind("<Down>", down_pressed)
+
 
 
     def scores_topline(self):
@@ -140,7 +167,7 @@ class RNCView(object):
             self.create_window = Tkinter.Toplevel(self.redirect_window)
             self.create_window.withdraw()
             width=250
-            height=100
+            height=200
             self.create_window.geometry("%dx%d+%d+%d" % (width, height, self.mov_x + self.window_width / 2 - width / 2, self.mov_y + self.window_height / 2 - height / 2))
             self.create_window.title("Issue Trended Report Details")
 
@@ -152,16 +179,23 @@ class RNCView(object):
             round_label.pack(padx = 5, side = Tkinter.LEFT, expand=True)
             self.round_entry = Tkinter.Entry(round_frame)
             self.round_entry.pack(padx = 7, side=Tkinter.RIGHT, expand=True)
+            self.round_entry.focus_set()
 
             # done and cancel buttons
             button_frame = Tkinter.Frame(self.create_window)
             button_frame.pack(side = Tkinter.TOP, expand=True)
 
-            btn_cancel = Tkinter.Button(self.create_window, text = "Cancel", command = self.create_window.destroy)
-            btn_cancel.pack(side = Tkinter.RIGHT, expand=True)
-            btn_done = Tkinter.Button(self.create_window, text = "Done", command = self.issue_trended)
-            btn_done.pack(side = Tkinter.RIGHT, expand=True)
+            btn_cancel = Tkinter.Button(self.create_window, text = "Cancel", command = self.create_window.destroy,height=3, width=20)
+            btn_cancel.pack(side = Tkinter.BOTTOM, expand=True)
+            btn_done = Tkinter.Button(self.create_window, text = "Done", command = self.issue_trended,height=3, width=20)
+            btn_done.pack(side = Tkinter.BOTTOM, expand=True)
             self.create_window.deiconify()
+
+            def enter_pressed(event):
+                self.issue_trended()
+
+            self.create_window.bind("<Return>", enter_pressed)
+            self.create_window.bind("<KP_Enter>", enter_pressed)
 
 
     def issue_trended(self):
@@ -192,7 +226,7 @@ class RNCView(object):
                 self.create_window = Tkinter.Toplevel(self.redirect_window)
                 self.create_window.withdraw()
                 width=250
-                height=100
+                height=200
                 self.create_window.geometry("%dx%d+%d+%d" % (width, height, self.mov_x + self.window_width / 2 - width / 2, self.mov_y + self.window_height / 2 - height / 2))
                 self.create_window.title("Trended Issue Reports Details")
 
@@ -204,17 +238,24 @@ class RNCView(object):
                 round_label.pack(padx = 5, side = Tkinter.TOP, expand=True)
                 self.round_entry = Tkinter.Entry(round_frame)
                 self.round_entry.pack(padx = 7, side=Tkinter.BOTTOM, expand=True)
+                self.round_entry.focus_set()
 
                 # done and cancel buttons
                 button_frame = Tkinter.Frame(self.create_window)
                 button_frame.pack(side = Tkinter.TOP, expand=True)
 
-                btn_cancel = Tkinter.Button(self.create_window, text = "Cancel", command = self.create_window.destroy)
-                btn_cancel.pack(side = Tkinter.RIGHT, expand=True)
-                btn_done = Tkinter.Button(self.create_window, text = "Done", command = self.trended_scores)
-                btn_done.pack(side = Tkinter.RIGHT, expand=True)
+                btn_cancel = Tkinter.Button(self.create_window, text = "Cancel", command = self.create_window.destroy, height=3, width=20)
+                btn_cancel.pack(side = Tkinter.BOTTOM, expand=True)
+                btn_done = Tkinter.Button(self.create_window, text = "Done", command = self.trended_scores, height=3, width=20)
+                btn_done.pack(side = Tkinter.BOTTOM, expand=True)
 
                 self.create_window.deiconify()
+
+                def enter_pressed(event):
+                    self.trended_scores()
+
+                self.create_window.bind("<Return>", enter_pressed)
+                self.create_window.bind("<KP_Enter>", enter_pressed)
 
 
     def trended_scores(self):

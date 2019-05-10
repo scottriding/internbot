@@ -60,7 +60,15 @@ class ToplineView(object):
         btn_bot.pack(side=Tkinter.TOP, padx=10, pady=5)
         btn_open.pack(side=Tkinter.TOP, padx=10, pady=5)
         btn_cancel.pack(side=Tkinter.TOP, padx=10, pady=5)
+
+        self.round_entry.focus_set()
         self.redirect_window.deiconify()
+
+        def enter_pressed(event):
+            self.read_topline()
+
+        self.redirect_window.bind("<Return>", enter_pressed)
+        self.redirect_window.bind("<KP_Enter>", enter_pressed)
 
     def topline_help_window(self):
         """
@@ -69,27 +77,40 @@ class ToplineView(object):
         """
         help_window = Tkinter.Toplevel(self.__window)
         help_window.withdraw()
-        width = 250
-        height = 400
+        width = 400
+        height = 550
         help_window.geometry("%dx%d+%d+%d" % (
         width, height, self.mov_x + self.window_width / 2 - width / 2, self.mov_y + self.window_height / 2 - height / 2))
         message = "\nTopline Help"
         Tkinter.Label(help_window, text=message, font=self.header_font, fg=self.header_color).pack(side=Tkinter.TOP, padx=10)
         info_message = "\nRound Number:\n\n" \
                        "Leave it blank  or enter 1 for \n" \
-                       "non-trended reports.\n" \
-                       "Enter  a number (2-10) for the \n" \
-                       "corresponding number of years/\n" \
-                       "quarters for trended reports.\n\n" \
+                       "non-trended reports.\n\n" \
+                       "For trended reports, enter a number\n" \
+                       "corresponding number of years.\n" \
                        "When done, select open and you\n" \
                        "will be prompted to open the \n" \
                        "Topline file and select a save\n" \
-                       "directory."
+                       "directory.\n\n" \
+                       "Column names should include:\n" \
+                       "variable = name of question,\n" \
+                       "prompt (csv only) = question asked,\n" \
+                       "value = numeric code for response choice,\n" \
+                       "label = wording of response choice,\n" \
+                       "n = population of respondents that selected response,\n" \
+                       "percent = percentage of respondents selected response,\n" \
+                       "display logic = display logic for question if applicable"
 
         Tkinter.Label(help_window, text=info_message, justify=Tkinter.LEFT).pack(side=Tkinter.TOP)
         btn_ok = Tkinter.Button(help_window, text="Ok", command=help_window.destroy, height=3, width=20)
         btn_ok.pack(padx=5, pady=10, side=Tkinter.TOP, expand=False)
         help_window.deiconify()
+
+        def enter_pressed(event):
+            help_window.destroy()
+
+        help_window.bind("<Return>", enter_pressed)
+        help_window.bind("<KP_Enter>", enter_pressed)
 
     def read_topline(self):
         """
@@ -97,8 +118,7 @@ class ToplineView(object):
         :return: None
         """
 
-        self.filename = tkFileDialog.askopenfilename(initialdir=self.fpath, title="Select survey file", filetypes=(
-        ("Qualtrics files", "*.qsf"), ("comma seperated files", "*.csv"), ("all files", "*.*")))
+        self.filename = tkFileDialog.askopenfilename(initialdir=self.fpath, title="Select survey file", filetypes=(("Qualtrics files", "*.qsf"), ("comma seperated files", "*.csv"), ("all files", "*.*")))
         if self.filename is not "":
             round_int = self.round_entry.get()
             if round_int != "" and round_int != 1:
@@ -179,11 +199,14 @@ class ToplineView(object):
                 thread= threading.Thread(target=self.build_topline_worker, args=(report_generator, template_file, savedirectory, years))
                 thread.start()
 
+
+
     def build_topline_worker(self, report_generator, template_file, savedirectory, years):
         print "Running report..."
         report_generator.generate_topline(template_file, savedirectory, years)
         print "Done!"
         self.open_file_for_user(savedirectory)
+        self.redirect_window.destroy()
 
 
     def open_file_for_user(self, file_path):
