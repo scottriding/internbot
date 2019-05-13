@@ -33,7 +33,7 @@ class ReportGenerator(object):
         for row in question_data:
             question_name = row["variable"]
             response_label = row["label"]
-            question_display = row["display"]
+            question_display = row["display logic"]
             matching_question = self.find_question(question_name)
             if matching_question is not None:
                 matching_response = self.find_response(row["label"], matching_question)
