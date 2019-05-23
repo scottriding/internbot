@@ -1,11 +1,11 @@
 import re
-from survey import Survey
-from block import Blocks, Block
-from scoring import Scorings
-from question import Questions, Question 
-from question import CompositeQuestion, CompositeMatrix, CompositeMultipleSelect
-from question import CompositeHotSpot, CompositeConstantSum
-from HTMLParser import HTMLParser
+from base.survey import Survey
+from base.block import Blocks, Block
+from base.scoring import Scorings
+from base.question import Questions, Question 
+from base.question import CompositeQuestion, CompositeMatrix, CompositeMultipleSelect
+from base.question import CompositeHotSpot, CompositeConstantSum
+from html.parser import HTMLParser
 
 class QSFSurveyParser(object):
 

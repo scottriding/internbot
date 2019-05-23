@@ -1,6 +1,6 @@
-from csv_question import CSVQuestions
-from csv_topline_report import CSVToplineReport
-from qsf_topline_report import QSFToplineReport
+from topline.BasicReport.csv_question import CSVQuestions
+from topline.BasicReport.csv_topline_report import CSVToplineReport
+from topline.BasicReport.qsf_topline_report import QSFToplineReport
 import csv
 import re
 from collections import OrderedDict

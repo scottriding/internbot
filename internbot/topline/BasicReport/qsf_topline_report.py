@@ -12,11 +12,12 @@ class QSFToplineReport(object):
     def save(self, path_to_output):
         self.write_questions()
         self.save_file(path_to_output)
-        print "Finished!"
+        print("Finished!")
 
     def write_questions(self):
         for question in self.questions:
-            print "Writing question: %s" % question.name
+            to_print = "Writing question: %s" % question.name
+            print(to_print)
             if question.parent == 'CompositeQuestion':
                 self.write_composite_question(question)
             elif question.type == 'TE':

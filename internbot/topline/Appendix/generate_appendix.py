@@ -1,6 +1,6 @@
 import csv
 from collections import OrderedDict
-from format_report import SSAppendixBuilder, DocAppendixBuilder, OpenEndQuestion
+from topline.Appendix.format_report import SSAppendixBuilder, DocAppendixBuilder, OpenEndQuestion
 
 class AppendixGenerator(object):
 
@@ -15,7 +15,7 @@ class AppendixGenerator(object):
                 yield {unicode(key, 'iso-8859-1'):unicode(value, 'iso-8859-1') for key, value in row.iteritems()}
 
     def parse_file(self, path_to_appendix):
-        print "Reading open-ends"
+        print("Reading open-ends")
         text_responses = self.unicode_dict_reader(open(path_to_appendix))
         for response in text_responses:
             if self.__questions.get(response['variable']) is None:
@@ -35,5 +35,5 @@ class AppendixGenerator(object):
             builder = DocAppendixBuilder(path_to_template)
             builder.write_appendix(self.__questions)
             builder.save(path_to_output)
-        print "Finished!"
+        print("Finished!")
 

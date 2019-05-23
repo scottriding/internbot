@@ -1,11 +1,11 @@
 import csv
-from issue_trended_score_model import IssueTrendedNetModel
-from issue_trended_score_report import IssueTrendedReport
-from scores_topline_model import ScoreToplineModels
-from scores_topline_report import ScoresToplineReport
-from trended_score_model import TrendedModelWorkbooks
-from trended_score_report import TrendedScoreReport
-from model_generator import ModelFileGenerator
+from rnc_automation.issue_trended_score_model import IssueTrendedNetModel
+from rnc_automation.issue_trended_score_report import IssueTrendedReport
+from rnc_automation.scores_topline_model import ScoreToplineModels
+from rnc_automation.scores_topline_report import ScoresToplineReport
+from rnc_automation.trended_score_model import TrendedModelWorkbooks
+from rnc_automation.trended_score_report import TrendedScoreReport
+from rnc_automation.model_generator import ModelFileGenerator
 
 class IssueTrendedReportGenerator(object):
 

@@ -160,7 +160,7 @@ class Internbot:
             self.term_window.withdraw()
 
 
-        print "All information about reports and errors will appear in this window.\n"
+        print("All information about reports and errors will appear in this window.\n")
         self.term_window.protocol('WM_DELETE_WINDOW', update_terminal_flag)
         self.term_window.deiconify()
 

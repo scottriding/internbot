@@ -47,12 +47,14 @@ class SPSSParser(object):
         self.__banners = []
         self.__significant_defintion = []
 
-        print "Loading next workbook"
+        print("Loading next workbook")
         current_workbook = load_workbook(path_to_workbook)
         current_sheet = current_workbook.get_active_sheet()
 
         table_name = current_sheet["A1"].value
-        print "Parsing: %s" % (table_name)
+
+        to_print = "Parsing: %s" % table_name
+        print(to_print)
         table_base_desc = current_sheet["A2"].value
 
         self.parse_table(current_sheet)

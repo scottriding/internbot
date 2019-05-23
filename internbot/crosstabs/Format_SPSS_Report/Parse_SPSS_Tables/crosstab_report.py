@@ -72,10 +72,10 @@ class CrosstabReportWriter(object):
             new_sheet = self.__workbook.create_sheet(table_name)
             self.write_table(new_sheet, table)
             iteration += 1
-        print "Finished!"
+        print("Finished!")
 
     def write_toc(self, sheet):
-        print "Writing table of contents"
+        print("Writing table of contents")
         self.write_toc_titles(sheet)
         current_row = 3
         iteration = 1
@@ -149,7 +149,8 @@ class CrosstabReportWriter(object):
         sheet["D2"].alignment = self.__center_align
 
     def write_table(self, sheet, table):
-        print "Writing: %s" % sheet.title
+        to_print = "Writing: %s" % sheet.title
+        print(to_print)
         self.write_table_titles(sheet, table)
         current_row = self.write_banners(sheet, table)
         self.write_reponse_details(sheet, table, current_row)

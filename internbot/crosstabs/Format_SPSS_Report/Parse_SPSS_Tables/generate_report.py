@@ -1,8 +1,8 @@
 import os
 import fnmatch
 import csv
-from spss_parser import SPSSParser
-from crosstab_report import CrosstabReportWriter
+from crosstabs.Format_SPSS_Report.Parse_SPSS_Tables.spss_parser import SPSSParser
+from crosstabs.Format_SPSS_Report.Parse_SPSS_Tables.crosstab_report import CrosstabReportWriter
 
 class CrosstabGenerator(object):
 

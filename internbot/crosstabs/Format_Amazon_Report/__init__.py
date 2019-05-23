@@ -1,2 +1,2 @@
-from highlighter import Highlighter
-from rename_xlsx_tabs import RenameTabs
+from crosstabs.Format_Amazon_Report.highlighter import Highlighter
+from crosstabs.Format_Amazon_Report.rename_xlsx_tabs import RenameTabs

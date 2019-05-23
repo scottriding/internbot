@@ -8,7 +8,7 @@ import tkFileDialog
 import os, subprocess, platform
 import csv
 from collections import OrderedDict
-from years_window import YearsWindow
+from internbot.years_window import YearsWindow
 import threading
 
 class ToplineView(object):

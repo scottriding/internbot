@@ -1,5 +1,5 @@
-from response import Responses
-from sorter import QuestionSorter, CompositeQuestionSorter
+from base.response import Responses
+from base.sorter import QuestionSorter, CompositeQuestionSorter
 
 class Questions(object):
 

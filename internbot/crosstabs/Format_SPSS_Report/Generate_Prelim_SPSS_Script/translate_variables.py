@@ -1,4 +1,3 @@
-
 class SPSSTranslator(object):
     
     def define_variables(self, survey, path_to_output):

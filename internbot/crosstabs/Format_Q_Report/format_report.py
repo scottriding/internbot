@@ -7,7 +7,7 @@ from collections import OrderedDict
 class QParser(object):
 
     def __init__(self, path_to_workbook, is_qualtrics=True):
-        print "Loading workbook"
+        print("Loading workbook")
         self.__workbook = load_workbook(path_to_workbook)
         self.__is_qualtrics = is_qualtrics
         self.__tables = OrderedDict()
@@ -81,7 +81,7 @@ class QParser(object):
         except KeyError:
             pass
 
-        print "Done!"
+        print("Done!")
         return self.__tables
 
     def create_toc(self, tables):
@@ -164,7 +164,8 @@ class QParser(object):
             sheet_title = "Table %s" % str(sheet_no)
         sheet.title = sheet_title
 
-        print "Formatting: %s" % sheet_title
+        to_print = "Formatting: %s" % sheet_title
+        print(to_print)
 
         table = TOCTable(sheet_no)
         start_table_row = self.parse_col_names(sheet)

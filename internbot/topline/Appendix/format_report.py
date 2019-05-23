@@ -46,7 +46,7 @@ class SSAppendixBuilder(object):
             self.write_question(value, new_sheet)
 
     def write_toc(self, sheet, questions):
-        print "Writing TOC"
+        print("Writing TOC")
         self.write_header(sheet)
 
         sheet["A2"].value = "Question Name"
@@ -104,7 +104,8 @@ class SSAppendixBuilder(object):
         sheet.add_image(logo, "C1")
 
     def write_question(self, question, sheet):
-        print "Writing: %s" % question.name 
+        to_print = "Writing: %s" % question.name
+        print(to_print)
         self.write_header(sheet)
         sheet.row_dimensions[2].height = 36
 
@@ -161,7 +162,8 @@ class DocAppendixBuilder(object):
             first_question = False
 
     def write_question(self, question, paragraph):
-        print "Writing: %s" % question.name
+        to_print = "Writing: %s" % question.name
+        print(to_print)
         paragraph.add_run(question.name + ".")
         paragraph_format = paragraph.paragraph_format
         paragraph_format.keep_together = True

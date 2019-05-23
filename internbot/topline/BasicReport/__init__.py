@@ -1,1 +1,1 @@
-from generate_report import ReportGenerator
+from topline.BasicReport.generate_report import ReportGenerator

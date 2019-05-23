@@ -47,7 +47,7 @@ class RenameTabs(object):
             index += 1
 
     def rename(self, path_to_xlsx, path_to_toc, path_to_output):
-        print "Reading in workbook"
+        print("Reading in workbook")
         output_workbook = load_workbook(path_to_xlsx)
         try:
             toc_sheet = output_workbook.create_sheet("TOC", 0)
@@ -117,7 +117,7 @@ class RenameTabs(object):
         toc_sheet.add_image(logo, "B2")
 
     def write_table_of_contents(self, path_to_tables, toc_sheet):
-        print "Writing TOC"
+        print("Writing TOC")
         table_index = 'C'
         question_name = 'D'
         question_prompt = 'E'
@@ -160,7 +160,7 @@ class RenameTabs(object):
         toc_sheet["B" + str(iteration + 1)].font = self.__font_reg
 
     def rename_worksheets(self, workbook):
-        print "Naming worksheets"
+        print("Naming worksheets")
         index = 0
         for sheet in workbook.worksheets:
             if sheet.title != 'TOC':

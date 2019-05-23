@@ -13,11 +13,12 @@ class CSVToplineReport(object):
         names = questions.list_names()
         for name in names:
             self.write_question(name)
-        print "Finished!"
+        print("Finished!")
         
     def write_question(self, name):
         question = self.questions.get(name)
-        print "Writing question: %s" % name
+        to_print = "Writing question: %s" % name
+        print(to_print)
         if question.display_logic != "":
             display_prompt = self.doc.add_paragraph()
             display_prompt.add_run("(" + question.display_logic + ")")
