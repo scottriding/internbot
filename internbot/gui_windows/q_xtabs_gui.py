@@ -3,6 +3,8 @@ import crosstabs
 import topline
 import rnc_automation
 import tkinter
+from tkinter import messagebox
+from tkinter import filedialog
 import os, subprocess, platform
 import csv
 from collections import OrderedDict
@@ -153,7 +155,7 @@ class QCrosstabsView(object):
         """
 
         if not self.loaded_qfile:
-            report_file_name = tkFileDialog.askopenfilename(initialdir=self.fpath, title="Select report file",
+            report_file_name = filedialog.askopenfilename(initialdir=self.fpath, title="Select report file",
                                                             filetypes=(("excel files", "*.xlsx"), ("all files", "*.*")))
             if report_file_name is not "":
                 self.__parser = crosstabs.Format_Q_Report.QParser(report_file_name)
@@ -179,7 +181,7 @@ class QCrosstabsView(object):
                 self.btn_load.config(state=tkinter.NORMAL)
                 self.btn_edit.config(state=tkinter.NORMAL)
         else:
-            ask_lost_work = tkMessageBox.askyesno("Select Q Research report file",
+            ask_lost_work = messagebox.askyesno("Select Q Research report file",
                                                   "You will lose your work. \nDo you want to continue?")
             if ask_lost_work:
                 self.loaded_qfile = False
@@ -227,7 +229,7 @@ class QCrosstabsView(object):
         """
         if self.loaded_qfile:
             if len(self.bases_box.curselection()) is 0:
-                tkMessageBox.askokcancel("Select from Right",
+                messagebox.askokcancel("Select from Right",
                                          "Please make a selection from the list on the right.")
             else:
                 for index in self.tables_box.curselection():
@@ -237,7 +239,7 @@ class QCrosstabsView(object):
                     self.edit_base_window(index)
 
         else:
-            tkMessageBox.askokcancel("Select Q Research report file",
+            messagebox.askokcancel("Select Q Research report file",
                                      "Please open the Q Research report file first.")
 
     def unicode_dict_reader(self, utf8_data, **kwargs):
@@ -247,7 +249,7 @@ class QCrosstabsView(object):
                 yield {unicode(key, 'iso-8859-1'): unicode(value, 'iso-8859-1') for key, value in row.iteritems()}
 
     def load_csv(self):
-        base_file_name = tkFileDialog.askopenfilename(initialdir=self.fpath, title="Select base file",
+        base_file_name = filedialog.askopenfilename(initialdir=self.fpath, title="Select base file",
                                                       filetypes=(
                                                       ("comma separated files", "*.csv"), ("all files", "*.*")))
         if base_file_name is not "":
@@ -418,7 +420,7 @@ class QCrosstabsView(object):
             self.__parser.add_bases(self.tables)
 
 
-            savedirectory = tkFileDialog.asksaveasfilename(defaultextension='.xlsx', filetypes=[('excel files', '.xlsx')])
+            savedirectory = filedialog.asksaveasfilename(defaultextension='.xlsx', filetypes=[('excel files', '.xlsx')])
 
             if savedirectory is not "":
                 thread = threading.Thread(target=self.finish_bases_worker, args=(True, savedirectory))
@@ -440,9 +442,9 @@ class QCrosstabsView(object):
                 elif platform.system() == 'Windows':  # Windows
                     os.startfile(file_path)
             else:
-                tkMessageBox.showerror("Error", "Error: Could not open file for you \n"+file_path)
+                messagebox.showerror("Error", "Error: Could not open file for you \n"+file_path)
         except IOError:
-            tkMessageBox.showerror("Error", "Error: Could not open file for you \n" + file_path)
+            messagebox.showerror("Error", "Error: Could not open file for you \n" + file_path)
 
     def saveBox(self, title=None, fileName=None, dirName=None, fileExt=".txt", fileTypes=None, asFile=False):
 
@@ -454,8 +456,8 @@ class QCrosstabsView(object):
         options['filetypes'] = fileTypes
 
         if asFile:
-            return tkFileDialog.asksaveasfile(mode='w', **options)
+            return filedialog.asksaveasfile(mode='w', **options)
         # will return "" if cancelled
         else:
-            return tkFileDialog.asksaveasfilename(**options)
+            return filedialog.asksaveasfilename(**options)
 

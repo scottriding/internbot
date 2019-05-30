@@ -3,6 +3,8 @@ import crosstabs
 import topline
 import rnc_automation
 import tkinter
+from tkinter import messagebox
+from tkinter import filedialog
 import os, subprocess, platform
 import csv
 from collections import OrderedDict
@@ -118,11 +120,11 @@ class AppendixView(object):
 
     def doc_appendix(self):
         generator = topline.Appendix.AppendixGenerator()
-        csvfilename = tkFileDialog.askopenfilename(initialdir=self.fpath, title="Select open ends file",
+        csvfilename = filedialog.askopenfilename(initialdir=self.fpath, title="Select open ends file",
                                                    filetypes=(("Comma separated files", "*csv"), ("all files", "*.*")))
         if csvfilename is not "":
             generator.parse_file(csvfilename)
-            savedirectory = tkFileDialog.asksaveasfilename(defaultextension='.docx', filetypes=[('word files', '.docx')])
+            savedirectory = filedialog.asksaveasfilename(defaultextension='.docx', filetypes=[('word files', '.docx')])
             if savedirectory is not "":
                 thread_worker = threading.Thread(target=self.doc_appendix_worker, args=(generator, savedirectory))
                 thread_worker.start()
@@ -140,11 +142,11 @@ class AppendixView(object):
 
     def excel_appendix(self):
         generator = topline.Appendix.AppendixGenerator()
-        csvfilename = tkFileDialog.askopenfilename(initialdir=self.fpath, title="Select open ends file",
+        csvfilename = filedialog.askopenfilename(initialdir=self.fpath, title="Select open ends file",
                                                    filetypes=(("Comma separated files", "*csv"), ("all files", "*.*")))
         if csvfilename is not "":
             generator.parse_file(csvfilename)
-            savedirectory = tkFileDialog.asksaveasfilename(defaultextension='.xlsx', filetypes=[('excel files', '.xlsx')])
+            savedirectory = filedialog.asksaveasfilename(defaultextension='.xlsx', filetypes=[('excel files', '.xlsx')])
             if savedirectory is not "":
                 thread_worker = threading.Thread(target=self.excel_appendix_worker, args=(generator, savedirectory))
                 thread_worker.start()
@@ -171,6 +173,6 @@ class AppendixView(object):
                 elif platform.system() == 'Windows':  # Windows
                     os.startfile(file_path)
             else:
-                tkMessageBox.showerror("Error", "Error: Could not open file for you \n"+file_path)
+                messagebox.showerror("Error", "Error: Could not open file for you \n"+file_path)
         except IOError:
-            tkMessageBox.showerror("Error", "Error: Could not open file for you \n" + file_path)
+            messagebox.showerror("Error", "Error: Could not open file for you \n" + file_path)

@@ -3,6 +3,8 @@ import crosstabs
 import topline
 import rnc_automation
 import tkinter
+from tkinter import messagebox
+from tkinter import filedialog
 import os, subprocess, platform
 import csv
 from collections import OrderedDict
@@ -116,7 +118,7 @@ class ToplineView(object):
         :return: None
         """
 
-        self.filename = tkFileDialog.askopenfilename(initialdir=self.fpath, title="Select survey file", filetypes=(("Qualtrics files", "*.qsf"), ("comma seperated files", "*.csv"), ("all files", "*.*")))
+        self.filename = filedialog.askopenfilename(initialdir=self.fpath, title="Select survey file", filetypes=(("Qualtrics files", "*.qsf"), ("comma seperated files", "*.csv"), ("all files", "*.*")))
         if self.filename is not "":
             round_int = self.round_entry.get()
             if round_int != "" and round_int != 1:
@@ -181,18 +183,18 @@ class ToplineView(object):
         report_generator = None
         if ".qsf" in self.filename:
             survey = base.QSFSurveyCompiler().compile(self.filename)
-            ask_freqs = tkMessageBox.askokcancel("Frequency file", "Please select .csv file with survey result frequencies.")
+            ask_freqs = messagebox.askokcancel("Frequency file", "Please select .csv file with survey result frequencies.")
             if ask_freqs is True:
-                frequency_file = tkFileDialog.askopenfilename(initialdir=self.fpath, title="Select frequency file", filetypes=(("Comma separated files", "*.csv"), ("all files", "*.*")))
+                frequency_file = filedialog.askopenfilename(initialdir=self.fpath, title="Select frequency file", filetypes=(("Comma separated files", "*.csv"), ("all files", "*.*")))
                 if frequency_file is not "":
                     report_generator = topline.BasicReport.ReportGenerator(frequency_file, years, survey)
         elif ".csv" in self.filename:
             report_generator = topline.BasicReport.ReportGenerator(self.filename, years)
 
-        ask_output = tkMessageBox.askokcancel("Output directory",
+        ask_output = messagebox.askokcancel("Output directory",
                                               "Please select the directory for finished report.")
         if ask_output is True:
-            savedirectory = tkFileDialog.asksaveasfilename(defaultextension='.docx', filetypes=[('word files', '.docx')])
+            savedirectory = filedialog.asksaveasfilename(defaultextension='.docx', filetypes=[('word files', '.docx')])
             if savedirectory is not "":
                 thread= threading.Thread(target=self.build_topline_worker, args=(report_generator, template_file, savedirectory, years))
                 thread.start()
@@ -215,6 +217,6 @@ class ToplineView(object):
                 elif platform.system() == 'Windows':  # Windows
                     os.startfile(file_path)
             else:
-                tkMessageBox.showerror("Error", "Error: Could not open file for you \n"+file_path)
+                messagebox.showerror("Error", "Error: Could not open file for you \n"+file_path)
         except IOError:
-            tkMessageBox.showerror("Error", "Error: Could not open file for you \n" + file_path)
+            messagebox.showerror("Error", "Error: Could not open file for you \n" + file_path)

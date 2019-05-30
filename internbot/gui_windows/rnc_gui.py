@@ -3,6 +3,8 @@ import crosstabs
 import topline
 import rnc_automation
 import tkinter
+from tkinter import messagebox
+from tkinter import filedialog
 import os, subprocess, platform
 import csv
 from collections import OrderedDict
@@ -83,7 +85,7 @@ class RNCView(object):
         help_window.deiconify()
 
     def scores_window(self):
-        self.filename = tkFileDialog.askopenfilename(initialdir = self.fpath, title = "Select model file for scores report", filetypes = (("comma seperated files","*.csv"),("all files","*.*")))
+        self.filename = filedialog.askopenfilename(initialdir = self.fpath, title = "Select model file for scores report", filetypes = (("comma seperated files","*.csv"),("all files","*.*")))
         if self.filename is not "":
             self.create_window = tkinter.Toplevel(self.redirect_window)
             self.create_window.withdraw()
@@ -146,7 +148,7 @@ class RNCView(object):
         if round is not "" and report_location is not "":
             self.create_window.destroy()
             report = rnc_automation.ScoresToplineReportGenerator(filename, int(round))
-            savedirectory = tkFileDialog.asksaveasfilename(defaultextension='.xlsx', filetypes=[('excel files', '.xlsx')])
+            savedirectory = filedialog.asksaveasfilename(defaultextension='.xlsx', filetypes=[('excel files', '.xlsx')])
             if savedirectory is not "":
                 thread=threading.Thread(target=self.scores_topline_worker, args=(report, savedirectory, report_location, round))
                 thread.start()
@@ -160,7 +162,7 @@ class RNCView(object):
 
 
     def issue_trended_window(self):
-        self.filename = tkFileDialog.askopenfilename(initialdir = self.fpath, title = "Select model file for issuse trended report", filetypes = (("comma seperated files","*.csv"),("all files","*.*")))
+        self.filename = filedialog.askopenfilename(initialdir = self.fpath, title = "Select model file for issuse trended report", filetypes = (("comma seperated files","*.csv"),("all files","*.*")))
         if self.filename is not "":
             self.create_window = tkinter.Toplevel(self.redirect_window)
             self.create_window.withdraw()
@@ -202,7 +204,7 @@ class RNCView(object):
         round = self.round_entry.get()
         self.create_window.destroy()
         report = rnc_automation.IssueTrendedReportGenerator(filename, int(round))
-        savedirectory = tkFileDialog.asksaveasfilename(defaultextension='.xlsx', filetypes=[('excel files', '.xlsx')])
+        savedirectory = filedialog.asksaveasfilename(defaultextension='.xlsx', filetypes=[('excel files', '.xlsx')])
         if savedirectory is not "":
             thread = threading.Thread(target=self.issue_trended_worker, args=(report, savedirectory, round))
             thread.start()
@@ -217,9 +219,9 @@ class RNCView(object):
 
 
     def trended_scores_window(self):
-        okay = tkMessageBox.askokcancel("Select", "Select a model file")
+        okay = messagebox.askokcancel("Select", "Select a model file")
         if okay is True:
-            self.filename = tkFileDialog.askopenfilename(initialdir = self.fpath, title = "Select model file", filetypes = (("comma seperated files","*.csv"),("all files","*.*")))
+            self.filename = filedialog.askopenfilename(initialdir = self.fpath, title = "Select model file", filetypes = (("comma seperated files","*.csv"),("all files","*.*")))
             if self.filename is not "":
                 self.create_window = tkinter.Toplevel(self.redirect_window)
                 self.create_window.withdraw()
@@ -263,10 +265,10 @@ class RNCView(object):
         if round is not "":
             self.create_window.destroy()
             report = rnc_automation.TrendedScoresReportGenerator(filename, int(round))
-            ask_output = tkMessageBox.askokcancel("Output directory", "Please select the directory for finished report\n This report will create a lot of file and may take several minutes. The program will appear to be unresponsive.")
+            ask_output = messagebox.askokcancel("Output directory", "Please select the directory for finished report\n This report will create a lot of file and may take several minutes. The program will appear to be unresponsive.")
 
             if ask_output is True:
-                savedirectory = tkFileDialog.askdirectory()
+                savedirectory = filedialog.askdirectory()
                 self.create_window.update()
                 if savedirectory is not "":
                     thread = threading.Thread(target=self.trended_scores_worker, args=(report, savedirectory, round))
@@ -289,6 +291,6 @@ class RNCView(object):
                 elif platform.system() == 'Windows':  # Windows
                     os.startfile(file_path)
             else:
-                tkMessageBox.showerror("Error", "Error: Could not open file for you \n"+file_path)
+                messagebox.showerror("Error", "Error: Could not open file for you \n"+file_path)
         except IOError:
-            tkMessageBox.showerror("Error", "Error: Could not open file for you \n" + file_path)
+            messagebox.showerror("Error", "Error: Could not open file for you \n" + file_path)

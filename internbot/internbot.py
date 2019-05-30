@@ -5,6 +5,8 @@ import rnc_automation
 import gui_windows
 import templates_images
 import tkinter
+from tkinter import messagebox
+from tkinter import filedialog
 import os, subprocess, platform
 import csv
 from collections import OrderedDict
@@ -188,17 +190,17 @@ class Internbot:
         """
         Function runs legacy report for Amazon CX Wave Series.
         """
-        ask_xlsx = tkMessageBox.askokcancel("Select XLSX Report File", "Please select combined tables .xlsx file")
+        ask_xlsx = messagebox.askokcancel("Select XLSX Report File", "Please select combined tables .xlsx file")
         if ask_xlsx is True:
-            tablefile = tkFileDialog.askopenfilename(initialdir = self.fpath, title = "Select report file",filetypes = (("excel files","*.xlsx"),("all files","*.*")))
-            ask_output = tkMessageBox.askokcancel("Select output directory", "Please select folder for final report.")
+            tablefile = filedialog.askopenfilename(initialdir = self.fpath, title = "Select report file",filetypes = (("excel files","*.xlsx"),("all files","*.*")))
+            ask_output = messagebox.askokcancel("Select output directory", "Please select folder for final report.")
             if ask_output is True:
-                savedirectory = tkFileDialog.askdirectory()
+                savedirectory = filedialog.askdirectory()
                 renamer = crosstabs.Format_Amazon_Report.RenameTabs()
                 renamed_wb = renamer.rename(tablefile, "templates_images/Amazon TOC.csv", savedirectory)
                 highlighter = crosstabs.Format_Amazon_Report.Highlighter(renamed_wb)
                 highlighter.highlight(savedirectory)
-                tkMessageBox.showinfo("Finished", "The highlighted report is saved in your chosen directory.")
+                messagebox.showinfo("Finished", "The highlighted report is saved in your chosen directory.")
 
     def open_file_for_user(self, file_path):
         try:
@@ -208,9 +210,9 @@ class Internbot:
                 elif platform.system() == 'Windows':  # Windows
                     os.startfile(file_path)
             else:
-                tkMessageBox.showerror("Error", "Error: Could not open file for you \n"+file_path)
+                messagebox.showerror("Error", "Error: Could not open file for you \n"+file_path)
         except IOError:
-            tkMessageBox.showerror("Error", "Error: Could not open file for you \n" + file_path)
+            messagebox.showerror("Error", "Error: Could not open file for you \n" + file_path)
 
 window = tkinter.Tk()
 window.withdraw()

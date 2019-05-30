@@ -3,6 +3,8 @@ import crosstabs
 import topline
 import rnc_automation
 import tkinter
+from tkinter import messagebox
+from tkinter import filedialog
 import os, subprocess, platform
 import csv
 from collections import OrderedDict
@@ -49,21 +51,21 @@ class SPSSCrosstabsView(object):
         Set up for creation of Tables to run and rename variables for SPSS crosstabs.
         :return: None
         """
-        ask_qsf = tkMessageBox.askokcancel("Select Qualtrics File", "Please select the Qualtrics survey .qsf file.")
+        ask_qsf = messagebox.askokcancel("Select Qualtrics File", "Please select the Qualtrics survey .qsf file.")
         if ask_qsf is True: # user selected ok
-            qsffilename = tkFileDialog.askopenfilename(initialdir = self.fpath, title = "Select Qualtrics survey file",filetypes = (("Qualtrics file","*.qsf"),("all files","*.*")))
+            qsffilename = filedialog.askopenfilename(initialdir = self.fpath, title = "Select Qualtrics survey file",filetypes = (("Qualtrics file","*.qsf"),("all files","*.*")))
             if qsffilename is not "":
                 compiler = base.QSFSurveyCompiler()
                 survey = compiler.compile(qsffilename)
-                ask_output = tkMessageBox.askokcancel("Output directory", "Please select the directory for finished variable script.")
+                ask_output = messagebox.askokcancel("Output directory", "Please select the directory for finished variable script.")
                 if ask_output is True: # user selected ok
-                    savedirectory = tkFileDialog.askdirectory()
+                    savedirectory = filedialog.askdirectory()
                     if savedirectory is not "":
                         variables = crosstabs.Format_SPSS_Report.Generate_Prelim_SPSS_Script.SPSSTranslator()
                         tables = crosstabs.Format_SPSS_Report.Generate_Prelim_SPSS_Script.TableDefiner()
                         variables.define_variables(survey, savedirectory)
                         tables.define_tables(survey, savedirectory)
-                        open_files = tkMessageBox.askyesno("Info", "Done!\nWould you like to open your finished files?")
+                        open_files = messagebox.askyesno("Info", "Done!\nWould you like to open your finished files?")
                         if open_files is True:
                             self.open_file_for_user(savedirectory+"/Tables to run.csv")
                             self.open_file_for_user(savedirectory+"/rename variables.sps")
@@ -74,11 +76,11 @@ class SPSSCrosstabsView(object):
         Set up for Banner selection from a Tables to run file.
         :return:
         """
-        ask_tables = tkMessageBox.askokcancel("Select Tables to Run.csv File", "Please select the tables to run .csv file.")
+        ask_tables = messagebox.askokcancel("Select Tables to Run.csv File", "Please select the tables to run .csv file.")
         if ask_tables is True:
-            self.tablesfilename = tkFileDialog.askopenfilename(initialdir = self.fpath, title = "Select tables file",filetypes = (("comma seperated files","*.csv"),("all files","*.*")))
+            self.tablesfilename = filedialog.askopenfilename(initialdir = self.fpath, title = "Select tables file",filetypes = (("comma seperated files","*.csv"),("all files","*.*")))
             if self.tablesfilename is not "":
-                ask_banners = tkMessageBox.askokcancel("Banner selection", "Please insert/select the banners for this report.")
+                ask_banners = messagebox.askokcancel("Banner selection", "Please insert/select the banners for this report.")
                 if ask_banners is True:
                     names = crosstabs.Format_SPSS_Report.Generate_Table_Script.TablesParser().pull_table_names(self.tablesfilename)
                     titles = crosstabs.Format_SPSS_Report.Generate_Table_Script.TablesParser().pull_table_titles(self.tablesfilename)
@@ -392,7 +394,7 @@ class SPSSCrosstabsView(object):
     def finish_banner(self):
 
         self.variable_entry = None
-        ask_trended = tkMessageBox.askyesno("Trended Follow-up", "Is this a trended report?")
+        ask_trended = messagebox.askyesno("Trended Follow-up", "Is this a trended report?")
         if ask_trended is True:
             self.filter_variable_window()
         else:
@@ -438,7 +440,7 @@ class SPSSCrosstabsView(object):
             question = item.split(": ")
             banner_list[question[0]] = question[1]
         self.edit_window.destroy()
-        ask_output = tkMessageBox.askokcancel("Output directory", "Please select the directory for finished table script.")
+        ask_output = messagebox.askokcancel("Output directory", "Please select the directory for finished table script.")
         filtering_variable = None
         if self.variable_entry is not None:
             variable = str(self.variable_entry.get())
@@ -446,25 +448,25 @@ class SPSSCrosstabsView(object):
                 filtering_variable = variable
             self.create_window.destroy()
         if ask_output is True:
-            savedirectory = tkFileDialog.askdirectory()
+            savedirectory = filedialog.askdirectory()
             if savedirectory is not "":
                  generator.compile_scripts(self.tablesfilename, banner_list.keys(), self.__embedded_fields, filtering_variable, savedirectory)
-                 open_files = tkMessageBox.askyesno("Info","Done!\nWould you like to open your finished files?")
+                 open_files = messagebox.askyesno("Info","Done!\nWould you like to open your finished files?")
                  if open_files is True:
                      self.open_file_for_user(savedirectory + "/table script.sps")
 
 
     def build_xtabs(self):
-        ask_directory = tkMessageBox.askokcancel("Select Tables Folder", "Please select the folder containing SPSS generated .xlsx table files.")
+        ask_directory = messagebox.askokcancel("Select Tables Folder", "Please select the folder containing SPSS generated .xlsx table files.")
         if ask_directory is True:
-            tablesdirectory = tkFileDialog.askdirectory()
+            tablesdirectory = filedialog.askdirectory()
             builder = crosstabs.Format_SPSS_Report.Parse_SPSS_Tables.CrosstabGenerator(tablesdirectory)
-            ask_output = tkMessageBox.askokcancel("Output directory", "Please select the directory for finished report.")
+            ask_output = messagebox.askokcancel("Output directory", "Please select the directory for finished report.")
             if ask_output is True:
-                outputdirectory = tkFileDialog.askdirectory()
+                outputdirectory = filedialog.askdirectory()
                 if outputdirectory is not "":
                     builder.write_report(outputdirectory)
-                    open_files = tkMessageBox.askyesno("Info", "Done!\nWould you like to open your finished files?")
+                    open_files = messagebox.askyesno("Info", "Done!\nWould you like to open your finished files?")
                     if open_files is True:
                         self.open_file_for_user(outputdirectory + "/Crosstab Report.xlsx")
 
@@ -477,6 +479,6 @@ class SPSSCrosstabsView(object):
                 elif platform.system() == 'Windows':  # Windows
                     os.startfile(file_path)
             else:
-                tkMessageBox.showerror("Error", "Error: Could not open file for you \n"+file_path)
+                messagebox.showerror("Error", "Error: Could not open file for you \n"+file_path)
         except IOError:
-            tkMessageBox.showerror("Error", "Error: Could not open file for you \n" + file_path)
+            messagebox.showerror("Error", "Error: Could not open file for you \n" + file_path)
