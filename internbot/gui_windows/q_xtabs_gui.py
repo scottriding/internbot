@@ -2,9 +2,7 @@ import base
 import crosstabs
 import topline
 import rnc_automation
-import Tkinter
-import tkMessageBox
-import tkFileDialog
+from tkinter import *
 import os, subprocess, platform
 import csv
 from collections import OrderedDict
@@ -428,9 +426,9 @@ class QCrosstabsView(object):
             self.base_window.destroy()
 
     def finish_bases_worker(self, necessary, savedirectory):
-        print "Running report..."
+        print("Running report...")
         self.__parser.save(savedirectory)
-        print "Done!"
+        print("Done!")
         self.open_file_for_user(savedirectory)
 
 

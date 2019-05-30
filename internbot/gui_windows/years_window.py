@@ -2,9 +2,7 @@ import base
 import crosstabs
 import topline
 import rnc_automation
-import Tkinter
-import tkMessageBox
-import tkFileDialog
+from tkinter import *
 import os, subprocess, platform
 import csv
 from collections import OrderedDict

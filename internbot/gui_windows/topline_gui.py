@@ -2,9 +2,7 @@ import base
 import crosstabs
 import topline
 import rnc_automation
-import Tkinter
-import tkMessageBox
-import tkFileDialog
+from tkinter import *
 import os, subprocess, platform
 import csv
 from collections import OrderedDict
@@ -202,9 +200,9 @@ class ToplineView(object):
 
 
     def build_topline_worker(self, report_generator, template_file, savedirectory, years):
-        print "Running report..."
+        print("Running report...")
         report_generator.generate_topline(template_file, savedirectory, years)
-        print "Done!"
+        print("Done!")
         self.open_file_for_user(savedirectory)
         self.redirect_window.destroy()
 

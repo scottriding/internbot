@@ -2,22 +2,13 @@ import base
 import crosstabs
 import topline
 import rnc_automation
-import Tkinter
-import tkMessageBox
-import tkFileDialog
+import gui_windows
+import templates_images
+from tkinter import *
 import os, subprocess, platform
 import csv
 from collections import OrderedDict
-from years_window import YearsWindow
-from spss_xtabs_gui import SPSSCrosstabsView
-from q_xtabs_gui import QCrosstabsView
-from topline_gui import ToplineView
-from appendix_gui import AppendixView
-from rnc_gui import RNCView
 import sys
-import templates_images
-
-
 
 class Internbot:
 
