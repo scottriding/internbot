@@ -2,7 +2,7 @@ import base
 import crosstabs
 import topline
 import rnc_automation
-from tkinter import *
+import tkinter
 import os, subprocess, platform
 import csv
 from collections import OrderedDict
@@ -27,21 +27,21 @@ class SPSSCrosstabsView(object):
         Function sets up a menu for SPSS crosstabs.
         :return:
         """
-        redirect_window = Tkinter.Toplevel(self.__window)
+        redirect_window = tkinter.Toplevel(self.__window)
         redirect_window.withdraw()
         width = 200
         height = 300
         redirect_window.geometry("%dx%d+%d+%d" % (width,height,self.mov_x + self.window_width / 2 - width / 2, self.mov_y + self.window_height / 2 - height / 2))
         message = "Please select the\nfiles to produce."
-        Tkinter.Label(redirect_window, text = message, font=self.header_font, fg=self.header_color).pack()
-        btn_var = Tkinter.Button(redirect_window, text="Variable script", command=self.variable_script, height=3, width=20)
-        btn_tab = Tkinter.Button(redirect_window, text="Table script", command=self.table_script, height=3, width=20)
-        btn_compile = Tkinter.Button(redirect_window, text="Build report", command=self.build_xtabs, height=3, width=20)
-        btn_cancel = Tkinter.Button(redirect_window, text="Cancel", command=redirect_window.destroy, height=3, width=20)
-        btn_cancel.pack(padx=5, side=Tkinter.BOTTOM, expand=True)
-        btn_compile.pack(padx=5, side=Tkinter.BOTTOM, expand=True)
-        btn_tab.pack(padx=5, side=Tkinter.BOTTOM, expand=True)
-        btn_var.pack(padx=5, side=Tkinter.BOTTOM, expand=True)
+        tkinter.Label(redirect_window, text = message, font=self.header_font, fg=self.header_color).pack()
+        btn_var = tkinter.Button(redirect_window, text="Variable script", command=self.variable_script, height=3, width=20)
+        btn_tab = tkinter.Button(redirect_window, text="Table script", command=self.table_script, height=3, width=20)
+        btn_compile = tkinter.Button(redirect_window, text="Build report", command=self.build_xtabs, height=3, width=20)
+        btn_cancel = tkinter.Button(redirect_window, text="Cancel", command=redirect_window.destroy, height=3, width=20)
+        btn_cancel.pack(padx=5, side=tkinter.BOTTOM, expand=True)
+        btn_compile.pack(padx=5, side=tkinter.BOTTOM, expand=True)
+        btn_tab.pack(padx=5, side=tkinter.BOTTOM, expand=True)
+        btn_var.pack(padx=5, side=tkinter.BOTTOM, expand=True)
         redirect_window.deiconify()
 
     def variable_script(self):
@@ -88,7 +88,7 @@ class SPSSCrosstabsView(object):
 
     def banner_window(self, names, titles, bases):
 
-        self.edit_window = Tkinter.Toplevel(self.__window)
+        self.edit_window = tkinter.Toplevel(self.__window)
         self.edit_window.withdraw()
         width = 1500
         height = 500
@@ -96,45 +96,45 @@ class SPSSCrosstabsView(object):
         width, height, self.mov_x + self.window_width / 2 - width / 2, self.mov_y + self.window_height / 2 - height / 2))
 
         self.edit_window.title("Banner selection")
-        self.boxes_frame = Tkinter.Frame(self.edit_window)
-        self.boxes_frame.pack(side=Tkinter.LEFT, fill=Tkinter.BOTH)
-        horiz_scrollbar = Tkinter.Scrollbar(self.boxes_frame)
-        horiz_scrollbar.config(orient=Tkinter.HORIZONTAL)
-        horiz_scrollbar.pack(side=Tkinter.BOTTOM, fill=Tkinter.X)
-        vert_scrollbar = Tkinter.Scrollbar(self.boxes_frame)
-        vert_scrollbar.pack(side=Tkinter.RIGHT, fill=Tkinter.Y)
+        self.boxes_frame = tkinter.Frame(self.edit_window)
+        self.boxes_frame.pack(side=tkinter.LEFT, fill=tkinter.BOTH)
+        horiz_scrollbar = tkinter.Scrollbar(self.boxes_frame)
+        horiz_scrollbar.config(orient=tkinter.HORIZONTAL)
+        horiz_scrollbar.pack(side=tkinter.BOTTOM, fill=tkinter.X)
+        vert_scrollbar = tkinter.Scrollbar(self.boxes_frame)
+        vert_scrollbar.pack(side=tkinter.RIGHT, fill=tkinter.Y)
 
-        self.tables_box = Tkinter.Listbox(self.boxes_frame, selectmode="multiple", width=80, height=15,
+        self.tables_box = tkinter.Listbox(self.boxes_frame, selectmode="multiple", width=80, height=15,
                                           yscrollcommand=vert_scrollbar.set, xscrollcommand=horiz_scrollbar.set)
-        self.tables_box.pack(padx=15, pady=10, expand=True, side=Tkinter.LEFT, fill=Tkinter.BOTH)
-        self.banners_box = Tkinter.Listbox(self.edit_window)
-        self.banners_box.pack(padx=15, pady=10, expand=True, side=Tkinter.RIGHT, fill=Tkinter.BOTH)
+        self.tables_box.pack(padx=15, pady=10, expand=True, side=tkinter.LEFT, fill=tkinter.BOTH)
+        self.banners_box = tkinter.Listbox(self.edit_window)
+        self.banners_box.pack(padx=15, pady=10, expand=True, side=tkinter.RIGHT, fill=tkinter.BOTH)
 
         index = 0
         while index < len(names):
-            self.tables_box.insert(Tkinter.END, names[index] + ": " + titles[index])
+            self.tables_box.insert(tkinter.END, names[index] + ": " + titles[index])
             index += 1
 
         vert_scrollbar.config(command=self.tables_box.yview)
         horiz_scrollbar.config(command=self.tables_box.xview)
 
-        buttons_frame = Tkinter.Frame(self.edit_window)
-        buttons_frame.pack(side=Tkinter.RIGHT, fill=Tkinter.BOTH)
-        btn_up = Tkinter.Button(buttons_frame, text="Up", command=self.shift_up)
-        btn_down = Tkinter.Button(buttons_frame, text="Down", command=self.shift_down)
-        btn_insert = Tkinter.Button(buttons_frame, text="Insert", command=self.insert_banner)
-        btn_edit = Tkinter.Button(buttons_frame, text="Edit", command=self.parse_selection)
-        btn_create = Tkinter.Button(buttons_frame, text="Create", command=self.create_banner)
-        btn_remove = Tkinter.Button(buttons_frame, text="Remove", command=self.remove_banner)
-        btn_done = Tkinter.Button(buttons_frame, text="Done", command=self.finish_banner)
+        buttons_frame = tkinter.Frame(self.edit_window)
+        buttons_frame.pack(side=tkinter.RIGHT, fill=tkinter.BOTH)
+        btn_up = tkinter.Button(buttons_frame, text="Up", command=self.shift_up)
+        btn_down = tkinter.Button(buttons_frame, text="Down", command=self.shift_down)
+        btn_insert = tkinter.Button(buttons_frame, text="Insert", command=self.insert_banner)
+        btn_edit = tkinter.Button(buttons_frame, text="Edit", command=self.parse_selection)
+        btn_create = tkinter.Button(buttons_frame, text="Create", command=self.create_banner)
+        btn_remove = tkinter.Button(buttons_frame, text="Remove", command=self.remove_banner)
+        btn_done = tkinter.Button(buttons_frame, text="Done", command=self.finish_banner)
 
-        btn_done.pack(side=Tkinter.BOTTOM, pady=15)
-        btn_remove.pack(side=Tkinter.BOTTOM)
-        btn_create.pack(side=Tkinter.BOTTOM)
-        btn_edit.pack(side=Tkinter.BOTTOM)
-        btn_insert.pack(side=Tkinter.BOTTOM, pady=5)
-        btn_down.pack(side=Tkinter.BOTTOM)
-        btn_up.pack(side=Tkinter.BOTTOM)
+        btn_done.pack(side=tkinter.BOTTOM, pady=15)
+        btn_remove.pack(side=tkinter.BOTTOM)
+        btn_create.pack(side=tkinter.BOTTOM)
+        btn_edit.pack(side=tkinter.BOTTOM)
+        btn_insert.pack(side=tkinter.BOTTOM, pady=5)
+        btn_down.pack(side=tkinter.BOTTOM)
+        btn_up.pack(side=tkinter.BOTTOM)
 
         self.edit_window.deiconify()
 
@@ -184,7 +184,7 @@ class SPSSCrosstabsView(object):
             index += 1
 
         iteration = 0
-        self.tables_box.selection_clear(0, Tkinter.END)
+        self.tables_box.selection_clear(0, tkinter.END)
         for table_index in current_tables:
             is_highlighted = False
             current_table = self.tables_box.get(table_index)
@@ -244,7 +244,7 @@ class SPSSCrosstabsView(object):
         shifted_indexes.sort(reverse=True)
 
         iteration = 0
-        self.tables_box.selection_clear(0, Tkinter.END)
+        self.tables_box.selection_clear(0, tkinter.END)
         for table_index in current_tables:
             is_highlighted = False
             current_table = self.tables_box.get(table_index)
@@ -264,30 +264,30 @@ class SPSSCrosstabsView(object):
             question = table.split(": ")
             name = question[0]
             title = question[1]
-            self.banners_box.insert(Tkinter.END, name + ": " + title)
+            self.banners_box.insert(tkinter.END, name + ": " + title)
             self.tables_box.itemconfig(index, {'fg': '#C00201'})
             self.tables_box.selection_clear(index, index)
 
     def create_banner(self, initial_name='', intial_title=''):
-        create_window = Tkinter.Toplevel(self.edit_window)
+        create_window = tkinter.Toplevel(self.edit_window)
         create_window.title("Create banner")
-        lbl_name = Tkinter.Label(create_window, text="Banner name:")
-        lbl_title = Tkinter.Label(create_window, text="Banner title:")
-        entry_name = Tkinter.Entry(create_window)
+        lbl_name = tkinter.Label(create_window, text="Banner name:")
+        lbl_title = tkinter.Label(create_window, text="Banner title:")
+        entry_name = tkinter.Entry(create_window)
         entry_name.insert(0, initial_name)
-        entry_title = Tkinter.Entry(create_window)
+        entry_title = tkinter.Entry(create_window)
         entry_title.insert(0, intial_title)
         def create():
             name = entry_name.get()
             title = entry_title.get()
-            self.banners_box.insert(Tkinter.END, name + ": " + title)
+            self.banners_box.insert(tkinter.END, name + ": " + title)
             self.__embedded_fields.append(name)
             self.tables_box.insert(0, name + ": " + title)
             self.tables_box.itemconfig(0, {'fg': '#C00201'})
             create_window.destroy()
 
-        createButton = Tkinter.Button(create_window, text="Create", command=create)
-        cancelButton = Tkinter.Button(create_window, text="Cancel", command=create_window.destroy)
+        createButton = tkinter.Button(create_window, text="Create", command=create)
+        cancelButton = tkinter.Button(create_window, text="Cancel", command=create_window.destroy)
 
         lbl_name.grid(row=0, column=0)
         lbl_title.grid(row=0, column=1)
@@ -315,13 +315,13 @@ class SPSSCrosstabsView(object):
                 self.edit_banner(name, title, index)
 
     def edit_table(self, initial_names='', initial_title='', index=-1):
-        edit_window = Tkinter.Toplevel(self.edit_window)
+        edit_window = tkinter.Toplevel(self.edit_window)
         edit_window.title("Edit banner")
-        lbl_banner = Tkinter.Label(edit_window, text="Banner name:")
-        entry_banner = Tkinter.Entry(edit_window)
+        lbl_banner = tkinter.Label(edit_window, text="Banner name:")
+        entry_banner = tkinter.Entry(edit_window)
         entry_banner.insert(0, initial_names)
-        lbl_title = Tkinter.Label(edit_window, text="Title:")
-        entry_title = Tkinter.Entry(edit_window)
+        lbl_title = tkinter.Label(edit_window, text="Title:")
+        entry_title = tkinter.Entry(edit_window)
         entry_title.insert(0, initial_title)
 
         def edit():
@@ -331,8 +331,8 @@ class SPSSCrosstabsView(object):
             self.tables_box.insert(int(index), banner_name + ": " + title_name)
             edit_window.destroy()
 
-        btn_cancel = Tkinter.Button(edit_window, text="Cancel", command=edit_window.destroy)
-        btn_edit = Tkinter.Button(edit_window, text="Edit", command=edit)
+        btn_cancel = tkinter.Button(edit_window, text="Cancel", command=edit_window.destroy)
+        btn_edit = tkinter.Button(edit_window, text="Edit", command=edit)
         lbl_banner.grid(row = 0, column = 0)
         lbl_title.grid(row = 0, column = 1)
         entry_banner.grid(row = 1, column = 0)
@@ -342,13 +342,13 @@ class SPSSCrosstabsView(object):
         btn_cancel.grid(row = 2, column = 1)
 
     def edit_banner(self, initial_names='', initial_title='', index=-1):
-        edit_window = Tkinter.Toplevel(self.edit_window)
+        edit_window = tkinter.Toplevel(self.edit_window)
         edit_window.title("Edit banner")
-        lbl_banner = Tkinter.Label(edit_window, text="Banner name:")
-        entry_banner = Tkinter.Entry(edit_window)
+        lbl_banner = tkinter.Label(edit_window, text="Banner name:")
+        entry_banner = tkinter.Entry(edit_window)
         entry_banner.insert(0, initial_names)
-        lbl_title = Tkinter.Label(edit_window, text="Title:")
-        entry_title = Tkinter.Entry(edit_window)
+        lbl_title = tkinter.Label(edit_window, text="Title:")
+        entry_title = tkinter.Entry(edit_window)
         entry_title.insert(0, initial_title)
 
         def edit():
@@ -358,8 +358,8 @@ class SPSSCrosstabsView(object):
             self.banners_box.insert(int(index), banner_name + ": " + title_name)
             edit_window.destroy()
 
-        btn_cancel = Tkinter.Button(edit_window, text="Cancel", command=edit_window.destroy)
-        btn_edit = Tkinter.Button(edit_window, text="Edit", command=edit)
+        btn_cancel = tkinter.Button(edit_window, text="Cancel", command=edit_window.destroy)
+        btn_edit = tkinter.Button(edit_window, text="Edit", command=edit)
         lbl_banner.grid(row=0, column=0)
         lbl_title.grid(row=0, column=1)
         entry_banner.grid(row=1, column=0)
@@ -400,7 +400,7 @@ class SPSSCrosstabsView(object):
 
 
     def filter_variable_window(self):
-        self.create_window = Tkinter.Toplevel(self.__window)
+        self.create_window = tkinter.Toplevel(self.__window)
         self.create_window.withdraw()
         x = self.__window.winfo_x()
         y = self.__window.winfo_y()
@@ -408,22 +408,22 @@ class SPSSCrosstabsView(object):
         self.create_window.title("Trended report details")
 
         # filtering  variable
-        variable_frame = Tkinter.Frame(self.create_window)
-        variable_frame.pack(side = Tkinter.TOP, expand=True)
+        variable_frame = tkinter.Frame(self.create_window)
+        variable_frame.pack(side = tkinter.TOP, expand=True)
 
-        variable_frame = Tkinter.Label(variable_frame, text="Trended variable:")
-        variable_frame.pack (side = Tkinter.LEFT, expand=True)
-        self.variable_entry = Tkinter.Entry(variable_frame)
-        self.variable_entry.pack(side=Tkinter.RIGHT, expand=True)
+        variable_frame = tkinter.Label(variable_frame, text="Trended variable:")
+        variable_frame.pack (side = tkinter.LEFT, expand=True)
+        self.variable_entry = tkinter.Entry(variable_frame)
+        self.variable_entry.pack(side=tkinter.RIGHT, expand=True)
 
         # done and cancel buttons
-        button_frame = Tkinter.Frame(self.create_window)
-        button_frame.pack(side = Tkinter.TOP, expand=True)
+        button_frame = tkinter.Frame(self.create_window)
+        button_frame.pack(side = tkinter.TOP, expand=True)
 
-        btn_cancel = Tkinter.Button(self.create_window, text = "Cancel", command = self.create_window.destroy)
-        btn_cancel.pack(side = Tkinter.RIGHT, expand=True)
-        btn_done = Tkinter.Button(self.create_window, text = "Done", command = self.save_table_script)
-        btn_done.pack(side = Tkinter.RIGHT, expand=True)
+        btn_cancel = tkinter.Button(self.create_window, text = "Cancel", command = self.create_window.destroy)
+        btn_cancel.pack(side = tkinter.RIGHT, expand=True)
+        btn_done = tkinter.Button(self.create_window, text = "Done", command = self.save_table_script)
+        btn_done.pack(side = tkinter.RIGHT, expand=True)
         self.create_window.deiconify()
 
     def save_table_script(self):
@@ -431,10 +431,10 @@ class SPSSCrosstabsView(object):
         generator = crosstabs.Format_SPSS_Report.Generate_Table_Script.TableScriptGenerator()
         table_order = OrderedDict()
         banner_list = OrderedDict()
-        for item in list(self.tables_box.get(0, Tkinter.END)):
+        for item in list(self.tables_box.get(0, tkinter.END)):
             question = item.split(": ")
             table_order[question[0]] = question[1]
-        for item in list(self.banners_box.get(0, Tkinter.END)):
+        for item in list(self.banners_box.get(0, tkinter.END)):
             question = item.split(": ")
             banner_list[question[0]] = question[1]
         self.edit_window.destroy()

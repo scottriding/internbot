@@ -2,11 +2,11 @@ import base
 import crosstabs
 import topline
 import rnc_automation
-from tkinter import *
+import tkinter
 import os, subprocess, platform
 import csv
 from collections import OrderedDict
-from internbot.years_window import YearsWindow
+from gui_windows.years_window import YearsWindow
 import threading
 
 class ToplineView(object):
@@ -28,7 +28,7 @@ class ToplineView(object):
         Function sets up menu for entry of round number and open of topline file.
         :return: None
         """
-        self.redirect_window = Tkinter.Toplevel(self.__window)
+        self.redirect_window = tkinter.Toplevel(self.__window)
         self.redirect_window.withdraw()
         width = 200
         height = 300
@@ -36,28 +36,28 @@ class ToplineView(object):
         width, height, self.mov_x + self.window_width/2 - width/2, self.mov_y + self.window_height / 2 - height / 2))
         self.redirect_window.title("Y2 Topline Report Automation")
         message = "Please open a survey file."
-        Tkinter.Label(self.redirect_window, text=message, font=self.header_font, fg=self.header_color).pack(side=Tkinter.TOP,
+        tkinter.Label(self.redirect_window, text=message, font=self.header_font, fg=self.header_color).pack(side=tkinter.TOP,
                                                                                                   pady=10)
 
         # round details
-        round_frame = Tkinter.Frame(self.redirect_window, width=20)
-        round_frame.pack(side=Tkinter.TOP, padx=20)
+        round_frame = tkinter.Frame(self.redirect_window, width=20)
+        round_frame.pack(side=tkinter.TOP, padx=20)
 
-        round_label = Tkinter.Label(round_frame, text="Round number:", width=15)
-        round_label.pack(side=Tkinter.LEFT)
-        self.round_entry = Tkinter.Entry(round_frame)
-        self.round_entry.pack(side=Tkinter.RIGHT, expand=True)
+        round_label = tkinter.Label(round_frame, text="Round number:", width=15)
+        round_label.pack(side=tkinter.LEFT)
+        self.round_entry = tkinter.Entry(round_frame)
+        self.round_entry.pack(side=tkinter.RIGHT, expand=True)
 
-        btn_open = Tkinter.Button(self.redirect_window, text="Open", command=self.read_topline, height=3, width=20)
-        btn_cancel = Tkinter.Button(self.redirect_window, text="Cancel", command=self.redirect_window.destroy, height=3,
+        btn_open = tkinter.Button(self.redirect_window, text="Open", command=self.read_topline, height=3, width=20)
+        btn_cancel = tkinter.Button(self.redirect_window, text="Cancel", command=self.redirect_window.destroy, height=3,
                                     width=20)
-        btn_bot = Tkinter.Button(self.redirect_window, image=self.bot_render, borderwidth=0,
-                                 highlightthickness=0, relief=Tkinter.FLAT, bg="white", height=65, width=158,
+        btn_bot = tkinter.Button(self.redirect_window, image=self.bot_render, borderwidth=0,
+                                 highlightthickness=0, relief=tkinter.FLAT, bg="white", height=65, width=158,
                                  command=self.topline_help_window)
 
-        btn_bot.pack(side=Tkinter.TOP, padx=10, pady=5)
-        btn_open.pack(side=Tkinter.TOP, padx=10, pady=5)
-        btn_cancel.pack(side=Tkinter.TOP, padx=10, pady=5)
+        btn_bot.pack(side=tkinter.TOP, padx=10, pady=5)
+        btn_open.pack(side=tkinter.TOP, padx=10, pady=5)
+        btn_cancel.pack(side=tkinter.TOP, padx=10, pady=5)
 
         self.round_entry.focus_set()
         self.redirect_window.deiconify()
@@ -73,14 +73,14 @@ class ToplineView(object):
         Funtion sets up help window to give the user info about round numbers.
         :return: None
         """
-        help_window = Tkinter.Toplevel(self.__window)
+        help_window = tkinter.Toplevel(self.__window)
         help_window.withdraw()
         width = 400
         height = 550
         help_window.geometry("%dx%d+%d+%d" % (
         width, height, self.mov_x + self.window_width / 2 - width / 2, self.mov_y + self.window_height / 2 - height / 2))
         message = "\nTopline Help"
-        Tkinter.Label(help_window, text=message, font=self.header_font, fg=self.header_color).pack(side=Tkinter.TOP, padx=10)
+        tkinter.Label(help_window, text=message, font=self.header_font, fg=self.header_color).pack(side=tkinter.TOP, padx=10)
         info_message = "\nRound Number:\n\n" \
                        "Leave it blank  or enter 1 for \n" \
                        "non-trended reports.\n\n" \
@@ -99,9 +99,9 @@ class ToplineView(object):
                        "percent = percentage of respondents selected response,\n" \
                        "display logic = display logic for question if applicable"
 
-        Tkinter.Label(help_window, text=info_message, justify=Tkinter.LEFT).pack(side=Tkinter.TOP)
-        btn_ok = Tkinter.Button(help_window, text="Ok", command=help_window.destroy, height=3, width=20)
-        btn_ok.pack(padx=5, pady=10, side=Tkinter.TOP, expand=False)
+        tkinter.Label(help_window, text=info_message, justify=tkinter.LEFT).pack(side=tkinter.TOP)
+        btn_ok = tkinter.Button(help_window, text="Ok", command=help_window.destroy, height=3, width=20)
+        btn_ok.pack(padx=5, pady=10, side=tkinter.TOP, expand=False)
         help_window.deiconify()
 
         def enter_pressed(event):
@@ -131,7 +131,7 @@ class ToplineView(object):
         :return: None
         """
 
-        self.year_window = Tkinter.Toplevel(self.__window)
+        self.year_window = tkinter.Toplevel(self.__window)
         self.year_window.withdraw()
         width = 300
         height = 200 + rounds * 25
@@ -139,18 +139,18 @@ class ToplineView(object):
         width, height, self.mov_x + self.window_width / 2 - width / 2, self.mov_y + self.window_height / 2 - height / 2))
         self.year_window.title("Trended report years")
         message = "Please input the applicable years \nfor the trended topline report."
-        Tkinter.Label(self.year_window, text=message, font=self.header_font, fg=self.header_color).pack(expand=True)
+        tkinter.Label(self.year_window, text=message, font=self.header_font, fg=self.header_color).pack(expand=True)
 
-        year_frame = Tkinter.Frame(self.year_window)
-        year_frame.pack(side=Tkinter.TOP, expand=True)
+        year_frame = tkinter.Frame(self.year_window)
+        year_frame.pack(side=tkinter.TOP, expand=True)
         self.year_window_obj = YearsWindow(self.__window, self.year_window, rounds)
         self.year_window_obj.packing_years(year_frame)
-        btn_finish = Tkinter.Button(self.year_window, text="Done", command=self.build_topline_leadup, height=3,
+        btn_finish = tkinter.Button(self.year_window, text="Done", command=self.build_topline_leadup, height=3,
                                     width=17)
-        btn_cancel = Tkinter.Button(self.year_window, text="Cancel", command=self.year_window.destroy, height=3,
+        btn_cancel = tkinter.Button(self.year_window, text="Cancel", command=self.year_window.destroy, height=3,
                                     width=17)
-        btn_finish.pack(ipadx=5, side=Tkinter.LEFT, expand=False)
-        btn_cancel.pack(ipadx=5, side=Tkinter.RIGHT, expand=False)
+        btn_finish.pack(ipadx=5, side=tkinter.LEFT, expand=False)
+        btn_cancel.pack(ipadx=5, side=tkinter.RIGHT, expand=False)
         self.year_window.deiconify()
 
         def enter_pressed(event):

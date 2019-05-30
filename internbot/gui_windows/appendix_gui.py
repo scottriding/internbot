@@ -2,9 +2,7 @@ import base
 import crosstabs
 import topline
 import rnc_automation
-import Tkinter
-import tkMessageBox
-import tkFileDialog
+import tkinter
 import os, subprocess, platform
 import csv
 from collections import OrderedDict
@@ -31,7 +29,7 @@ class AppendixView(object):
         Function sets up Topline Appendix menu.
         :return: None
         """
-        self.redirect_window=Tkinter.Toplevel(self.__window)
+        self.redirect_window=tkinter.Toplevel(self.__window)
         self.redirect_window.withdraw()
         width=200
         height=300
@@ -39,16 +37,16 @@ class AppendixView(object):
         self.redirect_window.geometry("%dx%d+%d+%d" % (width,height,self.mov_x + self.window_width / 2 - width / 2, self.mov_y + self.window_height / 2 - height / 2))
         self.redirect_window.title("Y2 Topline Appendix Report Automation")
         message = "Please open a .csv file \nwith open ended responses."
-        Tkinter.Label(self.redirect_window, text=message, font=self.header_font, fg=self.header_color).pack(expand=True, pady=5)
-        btn_open = Tkinter.Button(self.redirect_window, text="Open", command=self.append_type, height=3, width=20)
-        btn_cancel = Tkinter.Button(self.redirect_window, text="Cancel", command=self.redirect_window.destroy, height=3,
+        tkinter.Label(self.redirect_window, text=message, font=self.header_font, fg=self.header_color).pack(expand=True, pady=5)
+        btn_open = tkinter.Button(self.redirect_window, text="Open", command=self.append_type, height=3, width=20)
+        btn_cancel = tkinter.Button(self.redirect_window, text="Cancel", command=self.redirect_window.destroy, height=3,
                                     width=20)
-        btn_bot = Tkinter.Button(self.redirect_window, image=self.bot_render, borderwidth=0,
-                                 highlightthickness=0, relief=Tkinter.FLAT, bg="white", height=65, width=158,
+        btn_bot = tkinter.Button(self.redirect_window, image=self.bot_render, borderwidth=0,
+                                 highlightthickness=0, relief=tkinter.FLAT, bg="white", height=65, width=158,
                                  command=self.appendix_help_window)
-        btn_bot.pack(side=Tkinter.TOP, padx=10, pady=5)
-        btn_cancel.pack(side=Tkinter.BOTTOM, padx=10, pady=5)
-        btn_open.pack(side=Tkinter.BOTTOM, padx=10, pady=5)
+        btn_bot.pack(side=tkinter.TOP, padx=10, pady=5)
+        btn_cancel.pack(side=tkinter.BOTTOM, padx=10, pady=5)
+        btn_open.pack(side=tkinter.BOTTOM, padx=10, pady=5)
 
         self.redirect_window.deiconify()
 
@@ -57,7 +55,7 @@ class AppendixView(object):
         Funtion sets up help window to give the user info about round numbers.
         :return: None
         """
-        help_window = Tkinter.Toplevel(self.__window)
+        help_window = tkinter.Toplevel(self.__window)
         help_window.withdraw()
         width = 250
         height = 400
@@ -65,7 +63,7 @@ class AppendixView(object):
             width, height, self.mov_x + self.window_width / 2 - width / 2,
             self.mov_y + self.window_height / 2 - height / 2))
         message = "\nAppendix Help"
-        Tkinter.Label(help_window, text=message, font=self.header_font, fg=self.header_color).pack(side=Tkinter.TOP,
+        tkinter.Label(help_window, text=message, font=self.header_font, fg=self.header_color).pack(side=tkinter.TOP,
                                                                                                    padx=10)
         info_message = "Open a .csv file containing open ends\n" \
                        "Column names should include:\n"\
@@ -76,9 +74,9 @@ class AppendixView(object):
                        "create a .docx or .xlsx appendix\n" \
                        "(Most clients need .docx)"
 
-        Tkinter.Label(help_window, text=info_message, justify=Tkinter.LEFT).pack(side=Tkinter.TOP)
-        btn_ok = Tkinter.Button(help_window, text="Ok", command=help_window.destroy, height=3, width=20)
-        btn_ok.pack(padx=5, pady=10, side=Tkinter.TOP, expand=False)
+        tkinter.Label(help_window, text=info_message, justify=tkinter.LEFT).pack(side=tkinter.TOP)
+        btn_ok = tkinter.Button(help_window, text="Ok", command=help_window.destroy, height=3, width=20)
+        btn_ok.pack(padx=5, pady=10, side=tkinter.TOP, expand=False)
         help_window.deiconify()
 
         def enter_pressed(event):
@@ -92,7 +90,7 @@ class AppendixView(object):
         Funtion asks the user if they would like to create a .docx or a .xlsx
         :return: None
         """
-        self.choose_window = Tkinter.Toplevel(self.__window)
+        self.choose_window = tkinter.Toplevel(self.__window)
         self.choose_window.withdraw()
         width = 250
         height = 250
@@ -100,18 +98,18 @@ class AppendixView(object):
             width, height, self.mov_x + self.window_width / 2 - width / 2,
             self.mov_y + self.window_height / 2 - height / 2))
         message = "Choose the format of\nyour appendix report"
-        Tkinter.Label(self.choose_window, text=message, font=self.header_font, fg=self.header_color).pack(expand=True)
-        btn_doc = Tkinter.Button(self.choose_window, text="Word Appendix", command=self.doc_appendix,
+        tkinter.Label(self.choose_window, text=message, font=self.header_font, fg=self.header_color).pack(expand=True)
+        btn_doc = tkinter.Button(self.choose_window, text="Word Appendix", command=self.doc_appendix,
                                      height=3, width=20)
 
-        btn_excel = Tkinter.Button(self.choose_window, text="Excel Appendix",
+        btn_excel = tkinter.Button(self.choose_window, text="Excel Appendix",
                                    command=self.excel_appendix, height=3, width=20)
-        btn_cancel = Tkinter.Button(self.choose_window, text="Cancel",
+        btn_cancel = tkinter.Button(self.choose_window, text="Cancel",
                                    command=self.choose_window.destroy, height=3, width=20)
 
-        btn_cancel.pack(ipadx=5, side=Tkinter.BOTTOM, expand=False)
-        btn_excel.pack(ipadx=5, side=Tkinter.BOTTOM, expand=False)
-        btn_doc.pack(ipadx=5, side=Tkinter.BOTTOM, expand=False)
+        btn_cancel.pack(ipadx=5, side=tkinter.BOTTOM, expand=False)
+        btn_excel.pack(ipadx=5, side=tkinter.BOTTOM, expand=False)
+        btn_doc.pack(ipadx=5, side=tkinter.BOTTOM, expand=False)
         self.choose_window.deiconify()
 
 

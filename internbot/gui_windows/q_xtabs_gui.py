@@ -2,7 +2,7 @@ import base
 import crosstabs
 import topline
 import rnc_automation
-from tkinter import *
+import tkinter
 import os, subprocess, platform
 import csv
 from collections import OrderedDict
@@ -28,7 +28,7 @@ class QCrosstabsView(object):
         Function sets up window for bases entry of Q crosstab reports
         :return:
         """
-        self.base_window = Tkinter.Toplevel(self.__window)
+        self.base_window = tkinter.Toplevel(self.__window)
         self.base_window.withdraw()
         width = 1100
         height = 420
@@ -37,31 +37,31 @@ class QCrosstabsView(object):
         self.base_window.title("Base assignment")
         self.loaded_qfile = False
 
-        self.boxes_frame = Tkinter.Frame(self.base_window)
-        self.boxes_frame.pack(padx=10, pady=10, side=Tkinter.LEFT, fill=Tkinter.BOTH)
-        tables_horiz_scrollbar = Tkinter.Scrollbar(self.boxes_frame)
-        tables_horiz_scrollbar.config(orient=Tkinter.HORIZONTAL)
-        tables_horiz_scrollbar.pack(side=Tkinter.BOTTOM, fill=Tkinter.X)
-        tables_vert_scrollbar = Tkinter.Scrollbar(self.boxes_frame)
-        tables_vert_scrollbar.pack(side=Tkinter.RIGHT, fill=Tkinter.Y)
+        self.boxes_frame = tkinter.Frame(self.base_window)
+        self.boxes_frame.pack(padx=10, pady=10, side=tkinter.LEFT, fill=tkinter.BOTH)
+        tables_horiz_scrollbar = tkinter.Scrollbar(self.boxes_frame)
+        tables_horiz_scrollbar.config(orient=tkinter.HORIZONTAL)
+        tables_horiz_scrollbar.pack(side=tkinter.BOTTOM, fill=tkinter.X)
+        tables_vert_scrollbar = tkinter.Scrollbar(self.boxes_frame)
+        tables_vert_scrollbar.pack(side=tkinter.RIGHT, fill=tkinter.Y)
 
-        self.tables_box = Tkinter.Listbox(self.boxes_frame, selectmode=Tkinter.SINGLE, width=55, height=10,
+        self.tables_box = tkinter.Listbox(self.boxes_frame, selectmode=tkinter.SINGLE, width=55, height=10,
                                           yscrollcommand=tables_vert_scrollbar.set,
                                           xscrollcommand=tables_horiz_scrollbar.set, exportselection=False)
-        self.tables_box.pack(expand=True, side=Tkinter.LEFT, fill=Tkinter.BOTH)
+        self.tables_box.pack(expand=True, side=tkinter.LEFT, fill=tkinter.BOTH)
 
-        self.bases_frame = Tkinter.Frame(self.base_window)
-        self.bases_frame.pack(padx=10, pady=10, side=Tkinter.RIGHT, fill=Tkinter.BOTH)
-        bases_horiz_scrollbar = Tkinter.Scrollbar(self.bases_frame)
-        bases_horiz_scrollbar.config(orient=Tkinter.HORIZONTAL)
-        bases_horiz_scrollbar.pack(side=Tkinter.BOTTOM, fill=Tkinter.X)
-        bases_vert_scrollbar = Tkinter.Scrollbar(self.bases_frame)
-        bases_vert_scrollbar.pack(side=Tkinter.RIGHT, fill=Tkinter.Y)
+        self.bases_frame = tkinter.Frame(self.base_window)
+        self.bases_frame.pack(padx=10, pady=10, side=tkinter.RIGHT, fill=tkinter.BOTH)
+        bases_horiz_scrollbar = tkinter.Scrollbar(self.bases_frame)
+        bases_horiz_scrollbar.config(orient=tkinter.HORIZONTAL)
+        bases_horiz_scrollbar.pack(side=tkinter.BOTTOM, fill=tkinter.X)
+        bases_vert_scrollbar = tkinter.Scrollbar(self.bases_frame)
+        bases_vert_scrollbar.pack(side=tkinter.RIGHT, fill=tkinter.Y)
 
-        self.bases_box = Tkinter.Listbox(self.bases_frame, selectmode=Tkinter.SINGLE, width=54, height=10,
+        self.bases_box = tkinter.Listbox(self.bases_frame, selectmode=tkinter.SINGLE, width=54, height=10,
                                          yscrollcommand=bases_vert_scrollbar.set,
                                          xscrollcommand=bases_horiz_scrollbar.set, exportselection=False)
-        self.bases_box.pack(expand=False, side=Tkinter.RIGHT, fill=Tkinter.BOTH)
+        self.bases_box.pack(expand=False, side=tkinter.RIGHT, fill=tkinter.BOTH)
 
         self.focus_index = 0
 
@@ -73,27 +73,27 @@ class QCrosstabsView(object):
         bases_vert_scrollbar.config(command=self.bases_box.yview)
         bases_horiz_scrollbar.config(command=self.bases_box.xview)
 
-        buttons_frame = Tkinter.Frame(self.base_window)
-        buttons_frame.pack(pady=10, side=Tkinter.RIGHT, fill=Tkinter.BOTH)
-        self.btn_edit = Tkinter.Button(buttons_frame, text="Edit", command=self.parse_bases, width=20, height=3)
-        self.btn_done = Tkinter.Button(buttons_frame, text="Done", command=self.finish_bases, width=20, height=3)
-        self.btn_open = Tkinter.Button(buttons_frame, text="Open", command=self.qtab_build, width=20, height=3)
-        self.btn_load = Tkinter.Button(buttons_frame, text="Load CSV", command=self.load_csv, width=20, height=3)
-        self.btn_cancel = Tkinter.Button(buttons_frame, text="Cancel", command=self.base_window.destroy, width=20,
+        buttons_frame = tkinter.Frame(self.base_window)
+        buttons_frame.pack(pady=10, side=tkinter.RIGHT, fill=tkinter.BOTH)
+        self.btn_edit = tkinter.Button(buttons_frame, text="Edit", command=self.parse_bases, width=20, height=3)
+        self.btn_done = tkinter.Button(buttons_frame, text="Done", command=self.finish_bases, width=20, height=3)
+        self.btn_open = tkinter.Button(buttons_frame, text="Open", command=self.qtab_build, width=20, height=3)
+        self.btn_load = tkinter.Button(buttons_frame, text="Load CSV", command=self.load_csv, width=20, height=3)
+        self.btn_cancel = tkinter.Button(buttons_frame, text="Cancel", command=self.base_window.destroy, width=20,
                                          height=3)
-        self.btn_bot = Tkinter.Button(buttons_frame, image=self.bot_render, borderwidth=0,
-                                      highlightthickness=0, relief=Tkinter.FLAT, bg="white", height=65, width=158,
+        self.btn_bot = tkinter.Button(buttons_frame, image=self.bot_render, borderwidth=0,
+                                      highlightthickness=0, relief=tkinter.FLAT, bg="white", height=65, width=158,
                                       command=self.bases_help_window)
-        self.btn_cancel.pack(pady=2, side=Tkinter.BOTTOM)
-        self.btn_done.pack(pady=2, side=Tkinter.BOTTOM)
-        self.btn_edit.pack(pady=2, side=Tkinter.BOTTOM)
-        self.btn_load.pack(pady=2, side=Tkinter.BOTTOM)
-        self.btn_open.pack(pady=2, side=Tkinter.BOTTOM)
-        self.btn_bot.pack(pady=2, side=Tkinter.BOTTOM)
+        self.btn_cancel.pack(pady=2, side=tkinter.BOTTOM)
+        self.btn_done.pack(pady=2, side=tkinter.BOTTOM)
+        self.btn_edit.pack(pady=2, side=tkinter.BOTTOM)
+        self.btn_load.pack(pady=2, side=tkinter.BOTTOM)
+        self.btn_open.pack(pady=2, side=tkinter.BOTTOM)
+        self.btn_bot.pack(pady=2, side=tkinter.BOTTOM)
 
-        self.btn_done.config(state=Tkinter.DISABLED)
-        self.btn_load.config(state=Tkinter.DISABLED)
-        self.btn_edit.config(state=Tkinter.DISABLED)
+        self.btn_done.config(state=tkinter.DISABLED)
+        self.btn_load.config(state=tkinter.DISABLED)
+        self.btn_edit.config(state=tkinter.DISABLED)
 
         def enter_pressed(event):
             self.parse_bases()
@@ -163,10 +163,10 @@ class QCrosstabsView(object):
                     prompts.append(value.prompt)
 
                 for prompt in prompts:
-                    self.tables_box.insert(Tkinter.END, prompt)
+                    self.tables_box.insert(tkinter.END, prompt)
                 base_sizes = ["[Enter base description] ~ [Enter base size]"] * len(prompts)
                 for size in base_sizes:
-                    self.bases_box.insert(Tkinter.END, size)
+                    self.bases_box.insert(tkinter.END, size)
 
                 self.focus_index = 0
 
@@ -175,9 +175,9 @@ class QCrosstabsView(object):
 
                 self.loaded_qfile = True
                 self.base_window.focus_force()
-                self.btn_done.config(state=Tkinter.NORMAL)
-                self.btn_load.config(state=Tkinter.NORMAL)
-                self.btn_edit.config(state=Tkinter.NORMAL)
+                self.btn_done.config(state=tkinter.NORMAL)
+                self.btn_load.config(state=tkinter.NORMAL)
+                self.btn_edit.config(state=tkinter.NORMAL)
         else:
             ask_lost_work = tkMessageBox.askyesno("Select Q Research report file",
                                                   "You will lose your work. \nDo you want to continue?")
@@ -191,7 +191,7 @@ class QCrosstabsView(object):
         A part of the Q Research crosstabs process.
         :return: None
         """
-        help_window = Tkinter.Toplevel(self.__window)
+        help_window = tkinter.Toplevel(self.__window)
         help_window.lift()
         help_window.withdraw()
         width = 300
@@ -199,7 +199,7 @@ class QCrosstabsView(object):
         help_window.geometry("%dx%d+%d+%d" % (
         width, height, self.mov_x + self.window_width / 2 - width / 2, self.mov_y + self.window_height / 2 - height / 2))
         message = "\nBase Input Help"
-        Tkinter.Label(help_window, text=message, font=self.header_font, fg=self.header_color).pack()
+        tkinter.Label(help_window, text=message, font=self.header_font, fg=self.header_color).pack()
         info_message = "Select Open to import a Q output file." \
                        "\nThis should be a .xlsx file." \
                        "\n\nYou can change the current selection with" \
@@ -209,9 +209,9 @@ class QCrosstabsView(object):
                        "\n\nWhen you're done, select Done and you" \
                        "\nwill be prompted to select the directory of" \
                        "\nyour finished report.\n"
-        Tkinter.Label(help_window, text=info_message, justify=Tkinter.LEFT).pack()
-        btn_ok = Tkinter.Button(help_window, text="Ok", command=help_window.destroy, height=3, width=20)
-        btn_ok.pack(padx=5, side=Tkinter.BOTTOM, expand=False)
+        tkinter.Label(help_window, text=info_message, justify=tkinter.LEFT).pack()
+        btn_ok = tkinter.Button(help_window, text="Ok", command=help_window.destroy, height=3, width=20)
+        btn_ok.pack(padx=5, side=tkinter.BOTTOM, expand=False)
         help_window.deiconify()
 
         def enter_pressed(event):
@@ -268,27 +268,27 @@ class QCrosstabsView(object):
         :param index:
         :return:
         """
-        self.edit_window = Tkinter.Toplevel(self.base_window)
+        self.edit_window = tkinter.Toplevel(self.base_window)
         width = 400
         height = 150
         self.edit_window.geometry("%dx%d+%d+%d" % (
         width, height, self.mov_x + self.window_width / 2 - width / 2, self.mov_y + self.window_height / 2 - height / 2))
         self.edit_window.title("Add base and n")
-        edit_frame = Tkinter.Frame(self.edit_window)
-        edit_frame.pack(side=Tkinter.TOP)
-        entry_frame = Tkinter.Frame(edit_frame)
-        entry_frame.pack(side=Tkinter.TOP)
-        base_frame = Tkinter.Frame(entry_frame)
-        base_frame.pack(side=Tkinter.LEFT, padx=5, pady=5)
-        lbl_base = Tkinter.Label(base_frame, text="Base description:")
-        entry_des = Tkinter.Entry(base_frame, width=30)
-        spinbox_frame = Tkinter.Frame(edit_frame)
-        spinbox_frame.pack(side=Tkinter.BOTTOM)
+        edit_frame = tkinter.Frame(self.edit_window)
+        edit_frame.pack(side=tkinter.TOP)
+        entry_frame = tkinter.Frame(edit_frame)
+        entry_frame.pack(side=tkinter.TOP)
+        base_frame = tkinter.Frame(entry_frame)
+        base_frame.pack(side=tkinter.LEFT, padx=5, pady=5)
+        lbl_base = tkinter.Label(base_frame, text="Base description:")
+        entry_des = tkinter.Entry(base_frame, width=30)
+        spinbox_frame = tkinter.Frame(edit_frame)
+        spinbox_frame.pack(side=tkinter.BOTTOM)
         entry_des.focus_set()
-        size_frame = Tkinter.Frame(entry_frame)
-        size_frame.pack(side=Tkinter.RIGHT, padx=5, pady=5)
-        lbl_title = Tkinter.Label(size_frame, text="Size (n):")
-        entry_size = Tkinter.Entry(size_frame, width=20)
+        size_frame = tkinter.Frame(entry_frame)
+        size_frame.pack(side=tkinter.RIGHT, padx=5, pady=5)
+        lbl_title = tkinter.Label(size_frame, text="Size (n):")
+        entry_size = tkinter.Entry(size_frame, width=20)
 
         current_base = self.bases_box.get(int(index)).split(" ~ ")
 
@@ -315,42 +315,42 @@ class QCrosstabsView(object):
             self.tables_box.select_set(self.focus_index)
             self.bases_box.select_set(self.focus_index)
 
-        btn_cancel = Tkinter.Button(self.edit_window, text="Cancel", command=self.edit_window.destroy, width=20,
+        btn_cancel = tkinter.Button(self.edit_window, text="Cancel", command=self.edit_window.destroy, width=20,
                                     height=3)
-        btn_edit = Tkinter.Button(self.edit_window, text="Edit", command=edit, width=20, height=3)
+        btn_edit = tkinter.Button(self.edit_window, text="Edit", command=edit, width=20, height=3)
 
-        string_var = Tkinter.StringVar(edit_frame)
+        string_var = tkinter.StringVar(edit_frame)
         string_var.set(self.bases_history[0])  # default value
 
-        optionbox_bases = Tkinter.OptionMenu(edit_frame, string_var, *self.bases_history)
+        optionbox_bases = tkinter.OptionMenu(edit_frame, string_var, *self.bases_history)
         self.optionmenu_seletion_index = 0
 
         def update_from_option(*args):
             if not (string_var.get() == "Select from history"):
                 base = string_var.get().split(" ~ ")
-                entry_des.delete(0, Tkinter.END)
-                entry_size.delete(0, Tkinter.END)
+                entry_des.delete(0, tkinter.END)
+                entry_size.delete(0, tkinter.END)
                 entry_des.insert(0, base[0])
                 entry_size.insert(0, base[1])
             else:
 
-                entry_size.delete(0, Tkinter.END)
-                entry_des.delete(0, Tkinter.END)
+                entry_size.delete(0, tkinter.END)
+                entry_des.delete(0, tkinter.END)
                 entry_des.insert(0, "[Enter base description]")
                 entry_size.insert(0, "[Enter base size]")
 
         string_var.trace('w', update_from_option)
         optionbox_bases.config(width=40)
-        optionbox_bases.pack(side=Tkinter.BOTTOM)
+        optionbox_bases.pack(side=tkinter.BOTTOM)
 
-        lbl_base.pack(side=Tkinter.TOP)
-        lbl_title.pack(side=Tkinter.TOP)
-        entry_des.pack(side=Tkinter.TOP)
-        entry_size.pack(side=Tkinter.TOP)
+        lbl_base.pack(side=tkinter.TOP)
+        lbl_title.pack(side=tkinter.TOP)
+        entry_des.pack(side=tkinter.TOP)
+        entry_size.pack(side=tkinter.TOP)
 
-        btn_edit.pack(side=Tkinter.LEFT, padx=20)
-        btn_cancel.pack(side=Tkinter.RIGHT, padx=20)
-        entry_des.selection_range(0, Tkinter.END)
+        btn_edit.pack(side=tkinter.LEFT, padx=20)
+        btn_cancel.pack(side=tkinter.RIGHT, padx=20)
+        entry_des.selection_range(0, tkinter.END)
 
         # Key Bindings
         def enter_pressed(event):
@@ -358,11 +358,11 @@ class QCrosstabsView(object):
 
         def right_pressed(event):
             entry_size.focus_set()
-            entry_size.selection_range(0, Tkinter.END)
+            entry_size.selection_range(0, tkinter.END)
 
         def left_pressed(event):
             entry_des.focus_set()
-            entry_des.selection_range(0, Tkinter.END)
+            entry_des.selection_range(0, tkinter.END)
 
         def down_pressed(event):
             optionbox_bases.focus_set()
@@ -377,17 +377,17 @@ class QCrosstabsView(object):
                 string_var.set(self.bases_history[self.optionmenu_seletion_index])
             elif self.optionmenu_seletion_index == 0:
                 entry_des.focus_set()
-                entry_des.selection_range(0, Tkinter.END)
+                entry_des.selection_range(0, tkinter.END)
                 self.optionmenu_seletion_index -= 1
                 string_var.set(self.bases_history[self.optionmenu_seletion_index])
-                entry_size.delete(0, Tkinter.END)
-                entry_des.delete(0, Tkinter.END)
+                entry_size.delete(0, tkinter.END)
+                entry_des.delete(0, tkinter.END)
                 entry_des.insert(0, "[Enter base description]")
                 entry_size.insert(0, "[Enter base size]")
 
             else:
                 entry_des.focus_set()
-                entry_des.selection_range(0, Tkinter.END)
+                entry_des.selection_range(0, tkinter.END)
 
         def escape_pressed(event):
             self.edit_window.destroy()
@@ -408,7 +408,7 @@ class QCrosstabsView(object):
         """
         if self.loaded_qfile:
             index = 1
-            for item in list(self.bases_box.get(0, Tkinter.END)):
+            for item in list(self.bases_box.get(0, tkinter.END)):
                 base = item.split(" ~ ")
                 current_table = self.tables.get(index)
                 current_table.description = base[0]

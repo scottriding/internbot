@@ -2,7 +2,7 @@ import base
 import crosstabs
 import topline
 import rnc_automation
-from tkinter import *
+import tkinter
 import os, subprocess, platform
 import csv
 from collections import OrderedDict
@@ -24,7 +24,7 @@ class RNCView(object):
         self.bot_render = bot_render
 
     def rnc_menu(self):
-        self.redirect_window = Tkinter.Toplevel(self.__window)
+        self.redirect_window = tkinter.Toplevel(self.__window)
         self.redirect_window.withdraw()
         width = 250
         height = 350
@@ -33,23 +33,23 @@ class RNCView(object):
 
         self.redirect_window.title("RNC Scores Topline Automation")
         message = "Please open a model scores file."
-        Tkinter.Label(self.redirect_window, text=message, font=self.header_font, fg=self.header_color).pack(expand=True)
-        btn_topline = Tkinter.Button(self.redirect_window, text="Scores Topline Report", command=self.scores_window,
+        tkinter.Label(self.redirect_window, text=message, font=self.header_font, fg=self.header_color).pack(expand=True)
+        btn_topline = tkinter.Button(self.redirect_window, text="Scores Topline Report", command=self.scores_window,
                                      height=3, width=20)
-        btn_trended = Tkinter.Button(self.redirect_window, text="Issue Trended Report",
+        btn_trended = tkinter.Button(self.redirect_window, text="Issue Trended Report",
                                      command=self.issue_trended_window, height=3, width=20)
-        btn_ind_trended = Tkinter.Button(self.redirect_window, text="Trended Score Reports",
+        btn_ind_trended = tkinter.Button(self.redirect_window, text="Trended Score Reports",
                                          command=self.trended_scores_window, height=3, width=20)
-        btn_cancel = Tkinter.Button(self.redirect_window, text="Cancel", command=self.redirect_window.destroy, height=3,
+        btn_cancel = tkinter.Button(self.redirect_window, text="Cancel", command=self.redirect_window.destroy, height=3,
                                     width=20)
-        btn_bot = Tkinter.Button(self.redirect_window, image=self.bot_render, borderwidth=0,
-                                 highlightthickness=0, relief=Tkinter.FLAT, bg="white", height=65, width=158,
+        btn_bot = tkinter.Button(self.redirect_window, image=self.bot_render, borderwidth=0,
+                                 highlightthickness=0, relief=tkinter.FLAT, bg="white", height=65, width=158,
                                  command=self.rnc_help_window)
-        btn_cancel.pack(ipadx=5, side=Tkinter.BOTTOM, expand=False)
-        btn_topline.pack(ipadx=5, side=Tkinter.BOTTOM, expand=False)
-        btn_trended.pack(ipadx=5, side=Tkinter.BOTTOM, expand=False)
-        btn_ind_trended.pack(ipadx=5, side=Tkinter.BOTTOM, expand=False)
-        btn_bot.pack(ipadx=5, side=Tkinter.BOTTOM, expand=False)
+        btn_cancel.pack(ipadx=5, side=tkinter.BOTTOM, expand=False)
+        btn_topline.pack(ipadx=5, side=tkinter.BOTTOM, expand=False)
+        btn_trended.pack(ipadx=5, side=tkinter.BOTTOM, expand=False)
+        btn_ind_trended.pack(ipadx=5, side=tkinter.BOTTOM, expand=False)
+        btn_bot.pack(ipadx=5, side=tkinter.BOTTOM, expand=False)
         self.redirect_window.deiconify()
 
     def rnc_help_window(self):
@@ -57,7 +57,7 @@ class RNCView(object):
         Function serves as an intro to internbot. Explains the help bot to the user.
         :return: None
         """
-        help_window = Tkinter.Toplevel(self.__window)
+        help_window = tkinter.Toplevel(self.__window)
         help_window.withdraw()
 
         width = 250
@@ -65,7 +65,7 @@ class RNCView(object):
         help_window.geometry("%dx%d+%d+%d" % (width, height, self.mov_x + self.window_width/2 - width/2, self.mov_y + self.window_height/2 - height/2))
 
         message = "\nRNC Report Help"
-        Tkinter.Label(help_window, text=message, font=self.header_font, fg=self.header_color).pack()
+        tkinter.Label(help_window, text=message, font=self.header_font, fg=self.header_color).pack()
         info_message = "Each button will prompt you to open\n" \
                        "a RNC model file.\n" \
                        "Trended Score Reports creates several reports \n" \
@@ -76,48 +76,48 @@ class RNCView(object):
                        "Scores Topline Report creates a general\n" \
                        "breakdown of models in a single excel file tab."
 
-        Tkinter.Label(help_window, text=info_message, font=('Trade Gothic LT Pro', 14,)).pack()
-        btn_ok = Tkinter.Button(help_window, text="Ok", command=help_window.destroy, height=3, width=20,
+        tkinter.Label(help_window, text=info_message, font=('Trade Gothic LT Pro', 14,)).pack()
+        btn_ok = tkinter.Button(help_window, text="Ok", command=help_window.destroy, height=3, width=20,
                                 highlightthickness=0)
-        btn_ok.pack(pady=5, side=Tkinter.BOTTOM, expand=False)
+        btn_ok.pack(pady=5, side=tkinter.BOTTOM, expand=False)
         help_window.deiconify()
 
     def scores_window(self):
         self.filename = tkFileDialog.askopenfilename(initialdir = self.fpath, title = "Select model file for scores report", filetypes = (("comma seperated files","*.csv"),("all files","*.*")))
         if self.filename is not "":
-            self.create_window = Tkinter.Toplevel(self.redirect_window)
+            self.create_window = tkinter.Toplevel(self.redirect_window)
             self.create_window.withdraw()
             width = 250
             height = 250
             self.create_window.geometry("%dx%d+%d+%d" % (width, height, self.mov_x + self.window_width / 2 - width / 2, self.mov_y + self.window_height / 2 - height / 2))
             self.create_window.title("Scores Topline Report Details")
             # location details
-            location_frame = Tkinter.Frame(self.create_window)
-            location_frame.pack(side = Tkinter.TOP, expand=True)
+            location_frame = tkinter.Frame(self.create_window)
+            location_frame.pack(side = tkinter.TOP, expand=True)
 
-            location_label = Tkinter.Label(location_frame, text="Reporting region:")
-            location_label.pack (side = Tkinter.LEFT, expand=True)
-            self.location_entry = Tkinter.Entry(location_frame)
-            self.location_entry.pack(side=Tkinter.RIGHT, expand=True)
+            location_label = tkinter.Label(location_frame, text="Reporting region:")
+            location_label.pack (side = tkinter.LEFT, expand=True)
+            self.location_entry = tkinter.Entry(location_frame)
+            self.location_entry.pack(side=tkinter.RIGHT, expand=True)
             self.location_entry.focus_set()
 
             # round details
-            round_frame = Tkinter.Frame(self.create_window)
-            round_frame.pack(side=Tkinter.TOP, expand=True)
+            round_frame = tkinter.Frame(self.create_window)
+            round_frame.pack(side=tkinter.TOP, expand=True)
 
-            round_label = Tkinter.Label(round_frame, text="Round number:")
-            round_label.pack(padx=5, side=Tkinter.LEFT, expand=True)
-            self.round_entry = Tkinter.Entry(round_frame)
-            self.round_entry.pack(padx=7, side=Tkinter.RIGHT, expand=True)
+            round_label = tkinter.Label(round_frame, text="Round number:")
+            round_label.pack(padx=5, side=tkinter.LEFT, expand=True)
+            self.round_entry = tkinter.Entry(round_frame)
+            self.round_entry.pack(padx=7, side=tkinter.RIGHT, expand=True)
 
             # done and cancel buttons
-            button_frame = Tkinter.Frame(self.create_window)
-            button_frame.pack(side=Tkinter.TOP, expand=True)
+            button_frame = tkinter.Frame(self.create_window)
+            button_frame.pack(side=tkinter.TOP, expand=True)
 
-            btn_cancel = Tkinter.Button(self.create_window, text="Cancel", command=self.create_window.destroy, height=3, width=20)
-            btn_cancel.pack(side=Tkinter.BOTTOM, expand=True)
-            btn_done = Tkinter.Button(self.create_window, text="Done", command=self.scores_topline, height=3, width=20)
-            btn_done.pack(side=Tkinter.BOTTOM, expand=True)
+            btn_cancel = tkinter.Button(self.create_window, text="Cancel", command=self.create_window.destroy, height=3, width=20)
+            btn_cancel.pack(side=tkinter.BOTTOM, expand=True)
+            btn_done = tkinter.Button(self.create_window, text="Done", command=self.scores_topline, height=3, width=20)
+            btn_done.pack(side=tkinter.BOTTOM, expand=True)
             self.create_window.deiconify()
 
             def enter_pressed(event):
@@ -153,16 +153,16 @@ class RNCView(object):
                 self.create_window.destroy
 
     def scores_topline_worker(self, report, savedirectory, report_location, round):
-        print "Running report..."
+        print("Running report...")
         report.generate_scores_topline(savedirectory, report_location, round)
         self.open_file_for_user(savedirectory)
-        print "Done!"
+        print("Done!")
 
 
     def issue_trended_window(self):
         self.filename = tkFileDialog.askopenfilename(initialdir = self.fpath, title = "Select model file for issuse trended report", filetypes = (("comma seperated files","*.csv"),("all files","*.*")))
         if self.filename is not "":
-            self.create_window = Tkinter.Toplevel(self.redirect_window)
+            self.create_window = tkinter.Toplevel(self.redirect_window)
             self.create_window.withdraw()
             width=250
             height=200
@@ -170,23 +170,23 @@ class RNCView(object):
             self.create_window.title("Issue Trended Report Details")
 
             # round details
-            round_frame = Tkinter.Frame(self.create_window)
-            round_frame.pack(side = Tkinter.TOP, expand=True)
+            round_frame = tkinter.Frame(self.create_window)
+            round_frame.pack(side = tkinter.TOP, expand=True)
 
-            round_label = Tkinter.Label(round_frame, text="Round number:")
-            round_label.pack(padx = 5, side = Tkinter.LEFT, expand=True)
-            self.round_entry = Tkinter.Entry(round_frame)
-            self.round_entry.pack(padx = 7, side=Tkinter.RIGHT, expand=True)
+            round_label = tkinter.Label(round_frame, text="Round number:")
+            round_label.pack(padx = 5, side = tkinter.LEFT, expand=True)
+            self.round_entry = tkinter.Entry(round_frame)
+            self.round_entry.pack(padx = 7, side=tkinter.RIGHT, expand=True)
             self.round_entry.focus_set()
 
             # done and cancel buttons
-            button_frame = Tkinter.Frame(self.create_window)
-            button_frame.pack(side = Tkinter.TOP, expand=True)
+            button_frame = tkinter.Frame(self.create_window)
+            button_frame.pack(side = tkinter.TOP, expand=True)
 
-            btn_cancel = Tkinter.Button(self.create_window, text = "Cancel", command = self.create_window.destroy,height=3, width=20)
-            btn_cancel.pack(side = Tkinter.BOTTOM, expand=True)
-            btn_done = Tkinter.Button(self.create_window, text = "Done", command = self.issue_trended,height=3, width=20)
-            btn_done.pack(side = Tkinter.BOTTOM, expand=True)
+            btn_cancel = tkinter.Button(self.create_window, text = "Cancel", command = self.create_window.destroy,height=3, width=20)
+            btn_cancel.pack(side = tkinter.BOTTOM, expand=True)
+            btn_done = tkinter.Button(self.create_window, text = "Done", command = self.issue_trended,height=3, width=20)
+            btn_done.pack(side = tkinter.BOTTOM, expand=True)
             self.create_window.deiconify()
 
             def enter_pressed(event):
@@ -210,10 +210,10 @@ class RNCView(object):
 
 
     def issue_trended_worker(self, report, savedirectory, round):
-        print "Running report..."
+        print("Running report...")
         report.generate_issue_trended(savedirectory, round)
         self.open_file_for_user(savedirectory)
-        print "Done!"
+        print("Done!")
 
 
     def trended_scores_window(self):
@@ -221,7 +221,7 @@ class RNCView(object):
         if okay is True:
             self.filename = tkFileDialog.askopenfilename(initialdir = self.fpath, title = "Select model file", filetypes = (("comma seperated files","*.csv"),("all files","*.*")))
             if self.filename is not "":
-                self.create_window = Tkinter.Toplevel(self.redirect_window)
+                self.create_window = tkinter.Toplevel(self.redirect_window)
                 self.create_window.withdraw()
                 width=250
                 height=200
@@ -229,23 +229,23 @@ class RNCView(object):
                 self.create_window.title("Trended Issue Reports Details")
 
                 # round details
-                round_frame = Tkinter.Frame(self.create_window)
-                round_frame.pack(side = Tkinter.TOP, expand=True)
+                round_frame = tkinter.Frame(self.create_window)
+                round_frame.pack(side = tkinter.TOP, expand=True)
 
-                round_label = Tkinter.Label(round_frame, text="Round number:")
-                round_label.pack(padx = 5, side = Tkinter.TOP, expand=True)
-                self.round_entry = Tkinter.Entry(round_frame)
-                self.round_entry.pack(padx = 7, side=Tkinter.BOTTOM, expand=True)
+                round_label = tkinter.Label(round_frame, text="Round number:")
+                round_label.pack(padx = 5, side = tkinter.TOP, expand=True)
+                self.round_entry = tkinter.Entry(round_frame)
+                self.round_entry.pack(padx = 7, side=tkinter.BOTTOM, expand=True)
                 self.round_entry.focus_set()
 
                 # done and cancel buttons
-                button_frame = Tkinter.Frame(self.create_window)
-                button_frame.pack(side = Tkinter.TOP, expand=True)
+                button_frame = tkinter.Frame(self.create_window)
+                button_frame.pack(side = tkinter.TOP, expand=True)
 
-                btn_cancel = Tkinter.Button(self.create_window, text = "Cancel", command = self.create_window.destroy, height=3, width=20)
-                btn_cancel.pack(side = Tkinter.BOTTOM, expand=True)
-                btn_done = Tkinter.Button(self.create_window, text = "Done", command = self.trended_scores, height=3, width=20)
-                btn_done.pack(side = Tkinter.BOTTOM, expand=True)
+                btn_cancel = tkinter.Button(self.create_window, text = "Cancel", command = self.create_window.destroy, height=3, width=20)
+                btn_cancel.pack(side = tkinter.BOTTOM, expand=True)
+                btn_done = tkinter.Button(self.create_window, text = "Done", command = self.trended_scores, height=3, width=20)
+                btn_done.pack(side = tkinter.BOTTOM, expand=True)
 
                 self.create_window.deiconify()
 
@@ -275,10 +275,10 @@ class RNCView(object):
                     self.create_window.destroy()
 
     def trended_scores_worker(self, report, savedirectory, round):
-        print "Running reports..."
+        print("Running reports...")
         report.generate_trended_scores(savedirectory, round)
         self.open_file_for_user(savedirectory)
-        print "Done Creating Reports!"
+        print("Done Creating Reports!")
 
 
     def open_file_for_user(self, file_path):

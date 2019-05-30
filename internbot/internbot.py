@@ -4,7 +4,7 @@ import topline
 import rnc_automation
 import gui_windows
 import templates_images
-from tkinter import *
+import tkinter
 import os, subprocess, platform
 import csv
 from collections import OrderedDict
@@ -25,51 +25,51 @@ class Internbot:
         :return: None
         """
 
-        self.rnc = RNCView(self.__window, mov_x, mov_y, window_width, window_height, header_font, header_color, bot_render)
-        self.topline = ToplineView(self.__window, mov_x, mov_y, window_width, window_height, header_font, header_color, bot_render)
-        self.spss = SPSSCrosstabsView(self.__window, mov_x, mov_y, window_width, window_height, header_font,
+        self.rnc = gui_windows.RNCView(self.__window, mov_x, mov_y, window_width, window_height, header_font, header_color, bot_render)
+        self.topline = gui_windows.ToplineView(self.__window, mov_x, mov_y, window_width, window_height, header_font, header_color, bot_render)
+        self.spss = gui_windows.SPSSCrosstabsView(self.__window, mov_x, mov_y, window_width, window_height, header_font,
                                       header_color)
-        self.q = QCrosstabsView(self.__window, mov_x, mov_y, window_width, window_height, header_font,
+        self.q = gui_windows.QCrosstabsView(self.__window, mov_x, mov_y, window_width, window_height, header_font,
                                 header_color, bot_render)
-        self.appendix = AppendixView(self.__window, mov_x, mov_y, window_width, window_height, header_font,
+        self.appendix = gui_windows.AppendixView(self.__window, mov_x, mov_y, window_width, window_height, header_font,
                                 header_color, bot_render)
 
         #Button definitions
-        button_frame =Tkinter.Frame(self.__window)
-        button_frame.pack(side=Tkinter.LEFT, fill=Tkinter.BOTH, )
-        btn_xtabs = Tkinter.Button(button_frame, text="Run crosstabs", padx=4, width=20, height=3, command=self.software_tabs_menu, relief=Tkinter.FLAT, highlightthickness=0)
-        btn_report = Tkinter.Button(button_frame, text="Run topline report", padx=4, width=20, height=3,command=self.topline.topline_menu, relief=Tkinter.FLAT, highlightthickness=0)
-        btn_appen = Tkinter.Button(button_frame, text="Run topline appendix", padx=4, width=20, height=3,command=self.appendix.append_menu, relief=Tkinter.FLAT, highlightthickness=0)
-        btn_rnc = Tkinter.Button(button_frame, text="Run RNC", padx=4, width=20, height=3,command=self.rnc.rnc_menu, relief=Tkinter.FLAT, highlightthickness=0)
-        btn_terminal = Tkinter.Button(button_frame, text="Terminal Window", padx=4, width=20, height=3, command=self.reopen_terminal_window, relief=Tkinter.FLAT, highlightthickness=0)
-        btn_quit = Tkinter.Button(button_frame, text="Quit", padx=4, width=20, height=3,command=self.__window.destroy, relief=Tkinter.GROOVE, highlightthickness=0)
-        btn_bot = Tkinter.Button(button_frame, image=bot_render, padx=4, pady=10, width=158, height=45, borderwidth=0, highlightthickness=0, relief=Tkinter.FLAT, command=self.main_help_window)
-        btn_bot.pack(padx=5, pady=3, side=Tkinter.TOP)
-        btn_xtabs.pack(padx=5, side=Tkinter.TOP, expand=True)
-        btn_report.pack(padx=5, side=Tkinter.TOP, expand=True)
-        btn_appen.pack(padx=5, side=Tkinter.TOP, expand=True)
-        btn_rnc.pack(padx=5, side=Tkinter.TOP, expand=True)
-        btn_terminal.pack(padx=5, side=Tkinter.TOP, expand=True)
-        btn_quit.pack(padx=5, side=Tkinter.TOP, expand=True)
+        button_frame =tkinter.Frame(self.__window)
+        button_frame.pack(side=tkinter.LEFT, fill=tkinter.BOTH, )
+        btn_xtabs = tkinter.Button(button_frame, text="Run crosstabs", padx=4, width=20, height=3, command=self.software_tabs_menu, relief=tkinter.FLAT, highlightthickness=0)
+        btn_report = tkinter.Button(button_frame, text="Run topline report", padx=4, width=20, height=3,command=self.topline.topline_menu, relief=tkinter.FLAT, highlightthickness=0)
+        btn_appen = tkinter.Button(button_frame, text="Run topline appendix", padx=4, width=20, height=3,command=self.appendix.append_menu, relief=tkinter.FLAT, highlightthickness=0)
+        btn_rnc = tkinter.Button(button_frame, text="Run RNC", padx=4, width=20, height=3,command=self.rnc.rnc_menu, relief=tkinter.FLAT, highlightthickness=0)
+        btn_terminal = tkinter.Button(button_frame, text="Terminal Window", padx=4, width=20, height=3, command=self.reopen_terminal_window, relief=tkinter.FLAT, highlightthickness=0)
+        btn_quit = tkinter.Button(button_frame, text="Quit", padx=4, width=20, height=3,command=self.__window.destroy, relief=tkinter.GROOVE, highlightthickness=0)
+        btn_bot = tkinter.Button(button_frame, image=bot_render, padx=4, pady=10, width=158, height=45, borderwidth=0, highlightthickness=0, relief=tkinter.FLAT, command=self.main_help_window)
+        btn_bot.pack(padx=5, pady=3, side=tkinter.TOP)
+        btn_xtabs.pack(padx=5, side=tkinter.TOP, expand=True)
+        btn_report.pack(padx=5, side=tkinter.TOP, expand=True)
+        btn_appen.pack(padx=5, side=tkinter.TOP, expand=True)
+        btn_rnc.pack(padx=5, side=tkinter.TOP, expand=True)
+        btn_terminal.pack(padx=5, side=tkinter.TOP, expand=True)
+        btn_quit.pack(padx=5, side=tkinter.TOP, expand=True)
 
         #Menubar Set Up
-        self.menubar = Tkinter.Menu(self.__window)
-        menu_xtabs = Tkinter.Menu(self.menubar, tearoff = 0)
+        self.menubar = tkinter.Menu(self.__window)
+        menu_xtabs = tkinter.Menu(self.menubar, tearoff = 0)
         menu_xtabs.add_command(label="Choose a Software", command=self.software_tabs_menu)
         self.menubar.add_cascade(label="Crosstabs", menu=menu_xtabs)
-        menu_report = Tkinter.Menu(self.menubar, tearoff=0)
+        menu_report = tkinter.Menu(self.menubar, tearoff=0)
         menu_report.add_command(label="Topline Menu", command=self.topline.topline_menu)
         self.menubar.add_cascade(label="Topline", menu=menu_report)
-        menu_appendix = Tkinter.Menu(self.menubar, tearoff=0)
+        menu_appendix = tkinter.Menu(self.menubar, tearoff=0)
         menu_appendix.add_command(label="Appendix Menu", command=self.appendix.append_menu)
         self.menubar.add_cascade(label="Appendix", menu=menu_appendix)
-        menu_terminal = Tkinter.Menu(self.menubar, tearoff=0)
+        menu_terminal = tkinter.Menu(self.menubar, tearoff=0)
         menu_terminal.add_command(label="Open Terminal", command=self.reopen_terminal_window)
         self.menubar.add_cascade(label="Terminal", menu=menu_terminal)
-        menu_rnc = Tkinter.Menu(self.menubar, tearoff=0)
+        menu_rnc = tkinter.Menu(self.menubar, tearoff=0)
         menu_rnc.add_command(label="RNC Menu", command=self.rnc.rnc_menu)
         self.menubar.add_cascade(label="RNC", menu=menu_rnc)
-        menu_quit = Tkinter.Menu(self.menubar, tearoff=0)
+        menu_quit = tkinter.Menu(self.menubar, tearoff=0)
         menu_quit.add_command(label="Good Bye", command=self.__window.destroy)
         self.menubar.add_cascade(label="Quit", menu=menu_quit)
         self.__window.config(menu=self.menubar)
@@ -82,7 +82,7 @@ class Internbot:
         Function serves as an intro to internbot. Explains the help bot to the user.
         :return: None
         """
-        help_window = Tkinter.Toplevel(self.__window)
+        help_window = tkinter.Toplevel(self.__window)
         help_window.withdraw()
 
         width = 250
@@ -90,15 +90,15 @@ class Internbot:
         help_window.geometry("%dx%d+%d+%d" % (width,height,mov_x + window_width / 2 - width / 2, mov_y + window_height / 2 - height / 2))
 
         message = "\nWelcome to Internbot"
-        Tkinter.Label(help_window, text=message, font=header_font, fg=header_color).pack()
+        tkinter.Label(help_window, text=message, font=header_font, fg=header_color).pack()
         info_message = "You can find help information throughout"\
                        "\nInternbot by clicking the bot icon" \
                        "\n\nShe will tell you a little bit about" \
                        "\n what you need to input for the" \
                        "\nreport you are trying to create\n"
-        Tkinter.Label(help_window, text=info_message, font=('Trade Gothic LT Pro', 14, )).pack()
+        tkinter.Label(help_window, text=info_message, font=('Trade Gothic LT Pro', 14, )).pack()
         term_message = "About the Terminal Window"
-        Tkinter.Label(help_window, text=term_message, font=header_font, fg=header_color).pack()
+        tkinter.Label(help_window, text=term_message, font=header_font, fg=header_color).pack()
         term_info_message = "The terminal window will show info about\n" \
                             "the reports as you are running them.\n" \
                             "If an error occurs: Take a screenshot of\n" \
@@ -109,9 +109,9 @@ class Internbot:
                             "you can reopen it with the Terminal Window\n" \
                             "button in the main window or Terminal>Open\n" \
                             " Terminal in the Menubar."
-        Tkinter.Label(help_window, text=term_info_message, font=('Trade Gothic LT Pro', 14,)).pack()
-        btn_ok = Tkinter.Button(help_window, text="Ok", command=help_window.destroy, height=3, width=20,  highlightthickness=0)
-        btn_ok.pack(pady= 5, side=Tkinter.BOTTOM, expand=False)
+        tkinter.Label(help_window, text=term_info_message, font=('Trade Gothic LT Pro', 14,)).pack()
+        btn_ok = tkinter.Button(help_window, text="Ok", command=help_window.destroy, height=3, width=20,  highlightthickness=0)
+        btn_ok.pack(pady= 5, side=tkinter.BOTTOM, expand=False)
         help_window.deiconify()
 
         def enter_pressed(event):
@@ -122,7 +122,7 @@ class Internbot:
 
     def terminal_window(self):
         self.term_window = True
-        self.term_window = Tkinter.Toplevel(self.__window)
+        self.term_window = tkinter.Toplevel(self.__window)
         self.term_window.withdraw()
         self.term_window['background'] = header_color
         width = 500
@@ -130,7 +130,7 @@ class Internbot:
         self.term_window.geometry("%dx%d+%d+%d" % (
             width, height, mov_x + window_width / 2 - width , mov_y + window_height / 2 - height/2))
 
-        term_text = Tkinter.Text(self.term_window, fg='white', height= 600, width=500, background=header_color, padx=5, pady=5)
+        term_text = tkinter.Text(self.term_window, fg='white', height= 600, width=500, background=header_color, padx=5, pady=5)
         term_text.pack()
 
         class PrintToT1(object):
@@ -139,9 +139,9 @@ class Internbot:
 
             def write(self, s):
                 self.stream.write(s)
-                term_text.insert(Tkinter.END, s)
+                term_text.insert(tkinter.END, s)
                 self.stream.flush()
-                term_text.see(Tkinter.END)
+                term_text.see(tkinter.END)
 
         sys.stdout = PrintToT1(sys.stdout)
         sys.stderr = PrintToT1(sys.stderr)
@@ -164,7 +164,7 @@ class Internbot:
         Function sets up the Software Type selection for crosstabs
         :return:
         """
-        sft_window = Tkinter.Toplevel(self.__window)
+        sft_window = tkinter.Toplevel(self.__window)
         sft_window.withdraw()
 
         width = 200
@@ -173,15 +173,15 @@ class Internbot:
             "%dx%d+%d+%d" % (width,height,mov_x + window_width / 2 - width / 2, mov_y + window_height / 2 - height / 2))
 
         message = "Please select crosstabs\nsoftware to use"
-        Tkinter.Label(sft_window, text = message, font=header_font, fg=header_color).pack()
-        btn_amaz = Tkinter.Button(sft_window, text="Amazon CX", command=self.amazon_xtabs, height=3, width=20)
-        btn_spss = Tkinter.Button(sft_window, text="SPSS", command=self.spss.spss_crosstabs_menu, height=3, width=20)
-        btn_q = Tkinter.Button(sft_window, text="Q Research", command=self.q.bases_window, height=3, width=20)
-        btn_cancel = Tkinter.Button(sft_window, text="Cancel", command=sft_window.destroy, height=3, width=20)
-        btn_cancel.pack(side=Tkinter.BOTTOM, expand=True)
-        btn_q.pack(side=Tkinter.BOTTOM, expand=True)
-        btn_spss.pack(side=Tkinter.BOTTOM, expand=True)
-        btn_amaz.pack(side=Tkinter.BOTTOM, expand=True)
+        tkinter.Label(sft_window, text = message, font=header_font, fg=header_color).pack()
+        btn_amaz = tkinter.Button(sft_window, text="Amazon CX", command=self.amazon_xtabs, height=3, width=20)
+        btn_spss = tkinter.Button(sft_window, text="SPSS", command=self.spss.spss_crosstabs_menu, height=3, width=20)
+        btn_q = tkinter.Button(sft_window, text="Q Research", command=self.q.bases_window, height=3, width=20)
+        btn_cancel = tkinter.Button(sft_window, text="Cancel", command=sft_window.destroy, height=3, width=20)
+        btn_cancel.pack(side=tkinter.BOTTOM, expand=True)
+        btn_q.pack(side=tkinter.BOTTOM, expand=True)
+        btn_spss.pack(side=tkinter.BOTTOM, expand=True)
+        btn_amaz.pack(side=tkinter.BOTTOM, expand=True)
         sft_window.deiconify()
 
     def amazon_xtabs(self):
@@ -212,7 +212,7 @@ class Internbot:
         except IOError:
             tkMessageBox.showerror("Error", "Error: Could not open file for you \n" + file_path)
 
-window = Tkinter.Tk()
+window = tkinter.Tk()
 window.withdraw()
 window.title("Internbot: 01011001 00000010") # Internbot: Y2
 if platform.system() == 'Windows':  # Windows
@@ -231,10 +231,10 @@ window['background'] = 'white'
 
 y2_logo = "templates_images/Y2Logo.gif"
 help_bot = "templates_images/Internbot.gif"
-bot_render = Tkinter.PhotoImage(file=help_bot)
-logo_render = Tkinter.PhotoImage(file= y2_logo)
-logo_label = Tkinter.Label(window, image=logo_render, borderwidth=0, highlightthickness=0, relief=Tkinter.FLAT, padx=50)
-logo_label.pack(side=Tkinter.RIGHT)
+bot_render = tkinter.PhotoImage(file=help_bot)
+logo_render = tkinter.PhotoImage(file= y2_logo)
+logo_label = tkinter.Label(window, image=logo_render, borderwidth=0, highlightthickness=0, relief=tkinter.FLAT, padx=50)
+logo_label.pack(side=tkinter.RIGHT)
 
 window.option_add("*Font", ('Trade Gothic LT Pro', 16, ))
 window.option_add("*Button.Foreground", "midnight blue")
