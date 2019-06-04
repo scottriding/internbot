@@ -161,7 +161,7 @@ class QCrosstabsView(object):
                 self.__parser = crosstabs.Format_Q_Report.QParser(report_file_name)
                 self.tables = self.__parser.format_report()
                 prompts = []
-                for key, value in self.tables.iteritems():
+                for key, value in self.tables.items():
                     prompts.append(value.prompt)
 
                 for prompt in prompts:
@@ -246,7 +246,7 @@ class QCrosstabsView(object):
         csv_reader = csv.DictReader(utf8_data, **kwargs)
         for row in csv_reader:
             if row['base description'] != "":
-                yield {unicode(key, 'iso-8859-1'): unicode(value, 'iso-8859-1') for key, value in row.iteritems()}
+                yield {unicode(key, 'iso-8859-1'): unicode(value, 'iso-8859-1') for key, value in row.items()}
 
     def load_csv(self):
         base_file_name = filedialog.askopenfilename(initialdir=self.fpath, title="Select base file",

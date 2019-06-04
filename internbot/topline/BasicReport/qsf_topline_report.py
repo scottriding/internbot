@@ -4,7 +4,7 @@ from docx.shared import Inches
 class QSFToplineReport(object):
 
     def __init__ (self, questions, path_to_template, years):
-        self.doc = Document(path_to_template)
+        self.doc = Document(path_to_template.name)
         self.line_break = self.doc.styles['LineBreak']
         self.questions = questions
         self.years = years
@@ -84,7 +84,7 @@ class QSFToplineReport(object):
                 response_cells = table.add_row().cells
                 response_cells[1].merge(response_cells[2])
                 response_cells[1].text = response.response
-                for year, response in response.frequencies.iteritems():
+                for year, response in response.frequencies.items():
                     response_cells[3].text = self.freqs_percent(response, first_row)
                 first_row = False
 
@@ -123,7 +123,7 @@ class QSFToplineReport(object):
                 cells[1].merge(cells[2])
                 cells[1].text = sub_question.prompt
                 response = next((response for response in sub_question.responses if response.code == '1'), None)
-                for year, frequency in response.frequencies.iteritems():
+                for year, frequency in response.frequencies.items():
                     cells[3].text = self.freqs_percent(frequency, first_row)
                 first_row = False
 
@@ -168,8 +168,8 @@ class QSFToplineReport(object):
                 cells[1].merge(cells[2])
                 cells[1].text = sub_question.prompt
                 for response in sub_question.responses:
-                    for year, frequency in response.frequencies.iteritems():
-                        cells[3].text = self.freqs_percent(frequency, first_row)
+                    for year, frequency in response.frequencies.items():
+                        cells[3].text = self.avgs_percent(frequency, first_row)
                 first_row = False
 
     def write_trended_allocate(self, sub_questions):
@@ -221,7 +221,7 @@ class QSFToplineReport(object):
                 index = 2
                 for response in sub_question.responses:
                     if response.has_frequency is True:
-                        for year, frequency in response.frequencies.iteritems():
+                        for year, frequency in response.frequencies.items():
                             question_cells[index].text = self.freqs_percent(frequency, first_row)
                     else:
                         if first_row is True:

@@ -260,6 +260,7 @@ class RNCView(object):
 
     def trended_scores(self):
         filename = self.filename
+        print(filename)
         #Field entered by user
         round = self.round_entry.get()
         if round is not "":
@@ -273,7 +274,6 @@ class RNCView(object):
                 if savedirectory is not "":
                     thread = threading.Thread(target=self.trended_scores_worker, args=(report, savedirectory, round))
                     thread.start()
-                    #report.generate_trended_scores(savedirectory, round)
                     self.create_window.destroy()
 
     def trended_scores_worker(self, report, savedirectory, round):

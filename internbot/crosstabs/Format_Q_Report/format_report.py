@@ -124,7 +124,7 @@ class QParser(object):
         sheet["D2"].alignment = self.__align_center
 
         current_row = 3
-        for key, value in tables.iteritems():
+        for key, value in tables.items():
             table_no_cell = "A%s" % str(current_row)
             question_title_cell = "B%s" % str(current_row)
             base_desc_cell = "C%s" % str(current_row)
@@ -398,7 +398,7 @@ class QParser(object):
             current_row += 1
 
     def add_bases(self, tables):
-        for key, value in tables.iteritems():
+        for key, value in tables.items():
             if int(value.name) < 10:
                 table_name = "Table 0%s" % value.name
             else:

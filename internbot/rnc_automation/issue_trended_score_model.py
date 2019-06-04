@@ -32,7 +32,7 @@ class IssueTrendedNetModel(object):
             return True
 
     def list_model_names(self):
-        return self.__models.keys()
+        return list(self.__models.keys())
 
     def get_model(self, model_name):
         return self.__models.get(model_name)
@@ -64,7 +64,7 @@ class IssueTrendedModel(object):
             return True
 
     def list_field_names(self):
-        return self.__fields.keys()
+        return list(self.__fields.keys())
 
     def get_field(self, field_name):
         return self.__fields.get(field_name)
@@ -97,7 +97,7 @@ class IssueTrendedField(object):
         self.__groupings[grouping_name] = new_grouping
 
     def list_grouping_names(self):
-        return self.__groupings.keys()
+        return list(self.__groupings.keys())
 
     def get_grouping(self, grouping_name):
         return self.__groupings.get(grouping_name)
@@ -109,7 +109,7 @@ class IssueTrendedField(object):
 class Grouping(object):
 
     def __init__(self, count, frequencies):
-        self.__count = long(count)
+        self.__count = int(count)
         self.__frequencies = frequencies
 
     def round_frequency(self, round_number):

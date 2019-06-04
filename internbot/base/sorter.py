@@ -1,12 +1,12 @@
 import re
-
+from functools import cmp_to_key
 class Sorter(object):
 
     def __init__(self, sort_order):
         self.sort_order = str(sort_order)
 
     def sort(self, list_to_sort):
-        return sorted(list_to_sort, cmp=self.compare)
+        return sorted(list_to_sort, key=cmp_to_key(self.compare))
 
 class BlockSorter(Sorter):
 

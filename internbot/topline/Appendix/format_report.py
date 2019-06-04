@@ -41,7 +41,7 @@ class SSAppendixBuilder(object):
 
         self.write_toc(toc_sheet, questions)
 
-        for question, value in questions.iteritems():
+        for question, value in questions.items():
             new_sheet = self.__workbook.create_sheet(question)
             self.write_question(value, new_sheet)
 
@@ -62,7 +62,7 @@ class SSAppendixBuilder(object):
         sheet["C2"].alignment = self.__align_center
 
         current_row = 3
-        for question, value in questions.iteritems():
+        for question, value in questions.items():
             question_name = "A%s" % str(current_row)
             question_title = "B%s" % str(current_row)
             base_size = "C%s" % str(current_row)
@@ -153,7 +153,7 @@ class DocAppendixBuilder(object):
 
     def write_appendix(self, questions):
         first_question = True
-        for question, value in questions.iteritems():
+        for question, value in questions.items():
             if first_question is False:
                 self.__doc.add_page_break()
             paragraph = self.__doc.add_paragraph()

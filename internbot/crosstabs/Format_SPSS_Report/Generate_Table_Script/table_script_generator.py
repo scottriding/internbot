@@ -15,7 +15,7 @@ class TableScriptGenerator(object):
                 
     def write_script(self, path_to_tables, path_to_output, banners, embedded_variables):
         result = ''
-        with open(path_to_tables, 'rb') as table_file:
+        with open(path_to_tables, 'r') as table_file:
             column_specs = banners
             result += self.add_column_recode(column_specs, embedded_variables)
             file = csv.DictReader(table_file, quotechar = '"')

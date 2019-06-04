@@ -123,7 +123,7 @@ class RenameTabs(object):
         question_prompt = 'E'
         base = 'F'
         iteration = 10
-        with open(path_to_tables, 'rb') as csvfile:
+        with open(path_to_tables, 'r') as csvfile:
             file = csv.DictReader(csvfile, quotechar = '"')
             for table_info in file:
                 toc_sheet[table_index + str(iteration)].value = table_info['TableIndex']

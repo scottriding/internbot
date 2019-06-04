@@ -14,7 +14,7 @@ class IssueTrendedReportGenerator(object):
         self.read_csv(path_to_csv)
 
     def read_csv(self, path_to_csv):
-        with open(path_to_csv, 'rb') as csvfile:
+        with open(path_to_csv, 'r') as csvfile:
             file = csv.DictReader(csvfile, quotechar = '"')
             for model_data in file:
                 self.__models.add_model(model_data)
@@ -30,7 +30,7 @@ class ScoresToplineReportGenerator(object):
         self.read_csv(path_to_csv)
 
     def read_csv(self, path_to_csv):
-        with open(path_to_csv, 'rb') as csvfile:
+        with open(path_to_csv, 'r') as csvfile:
             file = csv.DictReader(csvfile, quotechar = '"')
             for model_data in file:
                 self.__models.add_model(model_data)
@@ -46,7 +46,7 @@ class TrendedScoresReportGenerator(object):
         self.read_csv(path_to_csv)
 
     def read_csv(self, path_to_csv):
-        with open(path_to_csv, 'rb') as csvfile:
+        with open(path_to_csv, 'r') as csvfile:
             file = csv.DictReader(csvfile, quotechar = '"')
             for workbook_data in file:
                 self.__workbooks.add(workbook_data)
@@ -60,8 +60,7 @@ class TrendedModelGenerator(object):
     ## I do this because that's the file we get the most intimate with
     ## and start the project with
     def __init__(self, path_to_scores_csv):
-        with open(path_to_csv, 'rb') as csvfile:
+        with open(path_to_csv, 'r') as csvfile:
             file = csv.DictReader(csvfile, quotechar = '"')
             for model_data in file:
-                pass 
-        
+                pass

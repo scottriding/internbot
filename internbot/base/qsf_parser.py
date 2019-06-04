@@ -48,7 +48,7 @@ class QSFBlockFlowParser(object):
             self.layered_flow_structure(block)
         
     def layered_flow_structure(self, block):
-        for type, value in block.iteritems():
+        for type, value in block.items():
             if (type == 'Flow' and len(value) > 0) and \
                (type == 'Flow' and value[0].get('EmbeddedData') is None):
                 self.grab_blockid_layer_details(value)
@@ -81,7 +81,7 @@ class QSFBlocksParser(object):
                 self.__blocks.add(block)
     
     def layered_block_structure(self, payload):
-        for key, value in payload.iteritems():
+        for key, value in payload.items():
             if value['Type'] != 'Trash':
                 block = self.block_details(value)
                 self.__blocks.add(block)
@@ -158,17 +158,17 @@ class QSFQuestionsParser(object):
         question = Question()
         question.id = question_payload['QuestionID']
         question.name = question_payload['DataExportTag']
-        question.prompt = self.strip_tags( \
-                          question_payload['QuestionText'].encode('ascii', 'ignore'))
+        question.prompt = self.strip_tags(question_payload['QuestionText'])
         question.type = question_payload['QuestionType']
         if question_payload.get('Selector') is not None:
             question.subtype = question_payload['Selector']
         return question
 
+
     def strip_tags(self, html):
-        html_parser = MLStripper()
-        html_parser.feed(html)
-        return html_parser.get_data()
+        html_stripper = MLStripper()
+        html_stripper.feed(html)
+        return html_stripper.get_data()
 
 class QSFQuestionsMatrixParser(object):
 
@@ -242,7 +242,7 @@ class QSFQuestionsMatrixParser(object):
         self.carry_forward.assign_carry_forward_statements(matrix_question, question_payload)
         self.carry_forward.assign_carry_forward_answers(matrix_question, question_payload)
         responses = question_payload['Answers']
-        for code, response in responses.iteritems():
+        for code, response in responses.items():
             response_name = self.strip_tags( \
                             response['Display'].encode('ascii','ignore'))
             matrix_question.add_response(response_name, code)
@@ -252,7 +252,7 @@ class QSFQuestionsMatrixParser(object):
         self.carry_forward.assign_carry_forward_answers(matrix_question, question_payload)
         self.carry_forward.assign_carry_forward_statements(matrix_question, question_payload)
         prompts = question_payload['Choices']
-        for code, prompt in prompts.iteritems():
+        for code, prompt in prompts.items():
             question = self.question_details(code, prompt, question_payload, prompts)
             matrix_question.add_question(question)
             matrix_question.question_order = question_payload['ChoiceOrder']
@@ -266,7 +266,7 @@ class QSFQuestionsMatrixParser(object):
     def dynamic_statements_matrix(self, question_payload, matrix_question):
         responses = question_payload['Answers']
         self.carry_forward.assign_carry_forward_statements(matrix_question, question_payload)
-        for code, response in responses.iteritems():
+        for code, response in responses.items():
             response_name = self.strip_tags( \
                             response['Display'].encode('ascii','ignore'))
             matrix_question.add_response(response_name, code)
@@ -275,7 +275,7 @@ class QSFQuestionsMatrixParser(object):
     def dynamic_answers_matrix(self, question_payload, matrix_question):
         prompts = question_payload['Choices']
         self.carry_forward.assign_carry_forward_answers(matrix_question, question_payload)
-        for code, prompt in prompts.iteritems():
+        for code, prompt in prompts.items():
             question = self.question_details(code, prompt, question_payload, prompts)
             matrix_question.add_question(question)
             matrix_question.question_order = question_payload['ChoiceOrder']
@@ -294,7 +294,7 @@ class QSFQuestionsMatrixParser(object):
     def basic_matrix(self, question_payload, matrix_question):
         prompts = question_payload['Choices']
         responses = question_payload['Answers']
-        for code, prompt in prompts.iteritems():
+        for code, prompt in prompts.items():
             question = self.question_details(code, prompt, question_payload, responses)
             matrix_question.add_question(question)
             matrix_question.question_order = question_payload['ChoiceOrder']
@@ -316,7 +316,7 @@ class QSFQuestionsMatrixParser(object):
             question.name = '%s_%s' % (str(question_payload['DataExportTag']), code)
         question.prompt = self.strip_tags(prompt['Display'].encode('ascii', 'ignore'))
         question.response_order = question_payload['AnswerOrder']
-        for code, response in responses.iteritems():
+        for code, response in responses.items():
             try:
                 response_name = self.strip_tags(response['Display'] \
                                 .encode('ascii','ignore'))
@@ -337,9 +337,9 @@ class QSFQuestionsMatrixParser(object):
         return matrix_question
 
     def strip_tags(self, html):
-        html_parser = MLStripper()
-        html_parser.feed(html)
-        return html_parser.get_data()
+        html_stripper = MLStripper()
+        html_stripper.feed(html.decode("utf-8"))
+        return html_stripper.get_data()
 
 class QSFQuestionHotSpotParser(object):
 
@@ -364,7 +364,7 @@ class QSFQuestionHotSpotParser(object):
         return hotspot
 
     def question_details(self, hotspot, question_payload):
-        for code, question in question_payload['Choices'].iteritems():
+        for code, question in question_payload['Choices'].items():
             sub_question = Question()
             sub_question.id = '%s_%s' % (hotspot.id, code)
             sub_question.code = code
@@ -415,7 +415,7 @@ class QSFMultipleSelectParser(object):
         return multiselect
 
     def question_details(self, question_payload, multiple_select):
-        for code, question in question_payload['Choices'].iteritems():
+        for code, question in question_payload['Choices'].items():
             sub_question = Question()
             sub_question.id = '%s_%s' % (multiple_select.id, code)
             sub_question.code = code
@@ -465,7 +465,7 @@ class QSFConstantSumParser(object):
         return constantsum
 
     def question_details(self, question_payload, constant_sum):
-        for code, question in question_payload['Choices'].iteritems():
+        for code, question in question_payload['Choices'].items():
             sub_question = Question()
             sub_question.id = '%s_%s' % (constant_sum.id, code)
             sub_question.code = code
@@ -498,11 +498,11 @@ class QSFResponsesParser(object):
 
     def parse_NPS(self, question, question_payload):
         for iteration in question_payload['Choices']:
-            for response, code in iteration.iteritems():
+            for response, code in iteration.items():
                 question.add_response(code, code)
 
     def parse_basic(self, question, question_payload):
-        for code, response in question_payload['Choices'].iteritems():
+        for code, response in question_payload['Choices'].items():
                 question.add_response(response['Display'].encode('ascii','ignore'), code)
                  
 class QSFCarryForwardParser(object):
@@ -688,6 +688,8 @@ class QSFCarryForwardParser(object):
 class MLStripper(HTMLParser):
     def __init__(self):
         self.reset()
+        self.strict= False
+        self.convert_charrefs = True
         self.fed = []
     
     def handle_data(self, data):

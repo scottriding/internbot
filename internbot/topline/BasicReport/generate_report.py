@@ -23,7 +23,7 @@ class ReportGenerator(object):
         csv_reader = csv.DictReader(utf8_data, **kwargs)
         for row in csv_reader:
             if row['variable'] != "":
-                yield {unicode(key, 'iso-8859-1'):unicode(value, 'iso-8859-1') for key, value in row.iteritems()}
+                yield {key: value for key, value in row.items()}
 
     def create_questions(self, question_data, years):
         for question in question_data:
@@ -36,12 +36,13 @@ class ReportGenerator(object):
             question_display = row["display logic"]
             matching_question = self.find_question(question_name)
             if matching_question is not None:
-                matching_response = self.find_response(row["label"], matching_question)
+                matching_response = self.find_response(row["value"], matching_question)
                 if matching_response is not None:
                     self.add_frequency(matching_response, row, years)
                     self.add_n(matching_question, row)
                     if question_display != "":
                         self.add_display_logic(matching_question, question_display)
+
 
     def generate_topline(self, path_to_template, path_to_output, years):
         if self.__survey is not None:
@@ -70,10 +71,17 @@ class ReportGenerator(object):
             matching_question.add_NA()
             return matching_question.get_NA()
         responses = matching_question.responses
+        if matching_question.prompt[0] is "b" and (matching_question.prompt[len(matching_question.prompt) - 1] is "'" or matching_question.prompt[len(matching_question.prompt) - 1] is '"'):
+            matching_question.prompt = matching_question.prompt[2: len(matching_question.prompt) - 1]
+        for response in responses:
+            if response.response[0] is "b" and (response.response[len(response.response)-1] is "'" or response.response[len(response.response)-1] is '"'):
+                response.response = response.response[2: len(response.response)-1]
+
         matching_response = next((response for response in responses if response.code == response_to_find), None)
         if response_to_find == 'On':
             matching_response = next((response for response in responses if response.response == '1'), None)
         return matching_response
+
 
     def add_frequency(self, matching_response, frequency_data, years):
         self.__frequencies = OrderedDict()

@@ -12,7 +12,7 @@ class AppendixGenerator(object):
         csv_reader = csv.DictReader(utf8_data, **kwargs)
         for row in csv_reader:
             if row['variable'] != "":
-                yield {unicode(key, 'iso-8859-1'):unicode(value, 'iso-8859-1') for key, value in row.iteritems()}
+                yield {key:value for key, value in row.items()}
 
     def parse_file(self, path_to_appendix):
         print("Reading open-ends")

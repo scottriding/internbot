@@ -6,7 +6,7 @@ from docx.shared import Cm
 class CSVToplineReport(object):
 
     def __init__(self, questions, path_to_template, years):
-        self.doc = Document(path_to_template)
+        self.doc = Document(path_to_template.name)
         self.line_break = self.doc.styles['LineBreak']
         self.questions = questions
         self.years = years
@@ -56,7 +56,7 @@ class CSVToplineReport(object):
                 response_cells = table.add_row().cells
                 response_cells[1].merge(response_cells[2])
                 response_cells[1].text = response.name
-                for year, response in response.frequencies.iteritems():
+                for year, response in response.frequencies.items():
                     response_cells[3].text = self.freqs_percent(response, first_row)
                 if response_cells[3].text != "*":
                     first_row = False
