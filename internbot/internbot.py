@@ -1,15 +1,9 @@
-import base
 import crosstabs
-import topline
-import rnc_automation
 import gui_windows
-import templates_images
 import tkinter
 from tkinter import messagebox
 from tkinter import filedialog
 import os, subprocess, platform
-import csv
-from collections import OrderedDict
 import sys
 
 class Internbot:

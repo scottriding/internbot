@@ -478,6 +478,9 @@ class QSFConstantSumParser(object):
 
 class QSFResponsesParser(object):
 
+    def __init__(self):
+        self.__response_order = {}
+
     def parse(self, question, question_payload, question_element):
         if question.has_mixed_responses is True:
             self.parse_mixed_responses(question, question_payload, question_element)
@@ -487,23 +490,43 @@ class QSFResponsesParser(object):
                 self.parse_NPS(question, question_payload)
             else:
                 self.parse_basic(question, question_payload)
+        self.__response_order.clear()
 
     def parse_mixed_responses(self, question, question_payload, question_element):
         pass
                 
     def parse_response_order(self, question, question_payload):
         if question_payload.get('ChoiceOrder') and \
-           len(question_payload['ChoiceOrder']) > 0: 
+           len(question_payload['ChoiceOrder']) > 0:
             question.response_order = question_payload['ChoiceOrder']
+
+        if question_payload.get('RecodeValues') is not None:
+            response_codes = []
+            for old_code, new_code in question_payload['RecodeValues'].items():
+                response_codes.append(new_code)
+                question.response_order.remove(old_code)
+                self.__response_order[old_code] = new_code
+            question.response_order = response_codes
+
 
     def parse_NPS(self, question, question_payload):
         for iteration in question_payload['Choices']:
             for response, code in iteration.items():
                 question.add_response(code, code)
 
+        for old_code, new_code in self.__response_order.items():
+            matching_response = next((response for response in question.responses if response.code == old_code), None)
+            if matching_response is not None:
+                matching_response.code = new_code
+
     def parse_basic(self, question, question_payload):
         for code, response in question_payload['Choices'].items():
                 question.add_response(response['Display'].encode('ascii','ignore'), code)
+
+        for old_code, new_code in self.__response_order.items():
+            matching_response = next((response for response in question.responses if response.code == old_code), None)
+            if matching_response is not None:
+                matching_response.code = new_code
                  
 class QSFCarryForwardParser(object):
 
