@@ -145,7 +145,12 @@ class AppendixView(object):
         csvfilename = filedialog.askopenfilename(initialdir=self.fpath, title="Select open ends file",
                                                    filetypes=(("Comma separated files", "*csv"), ("all files", "*.*")))
         if csvfilename is not "":
-            generator.parse_file(csvfilename)
+            is_y2 = messagebox.askquestion('Appendix Style','Is this a Y2 style appendix?')
+            if is_y2 == 'yes':
+                is_qualtrics =False
+            else:
+                is_qualtrics=True
+            generator.parse_file(csvfilename, is_qualtrics)
             savedirectory = filedialog.asksaveasfilename(defaultextension='.xlsx', filetypes=[('excel files', '.xlsx')])
             if savedirectory is not "":
                 thread_worker = threading.Thread(target=self.excel_appendix_worker, args=(generator, savedirectory))

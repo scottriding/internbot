@@ -2,25 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="900fcb45-5500-469e-9c58-2908a9a4f128" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/base/qsf_parser.py" beforeDir="false" afterPath="$PROJECT_DIR$/base/qsf_parser.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/base/sorter.py" beforeDir="false" afterPath="$PROJECT_DIR$/base/sorter.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/crosstabs/Format_Amazon_Report/rename_xlsx_tabs.py" beforeDir="false" afterPath="$PROJECT_DIR$/crosstabs/Format_Amazon_Report/rename_xlsx_tabs.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/crosstabs/Format_Q_Report/format_report.py" beforeDir="false" afterPath="$PROJECT_DIR$/crosstabs/Format_Q_Report/format_report.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/crosstabs/Format_SPSS_Report/Generate_Prelim_SPSS_Script/define_tables.py" beforeDir="false" afterPath="$PROJECT_DIR$/crosstabs/Format_SPSS_Report/Generate_Prelim_SPSS_Script/define_tables.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/crosstabs/Format_SPSS_Report/Generate_Table_Script/table_files_parser.py" beforeDir="false" afterPath="$PROJECT_DIR$/crosstabs/Format_SPSS_Report/Generate_Table_Script/table_files_parser.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/crosstabs/Format_SPSS_Report/Generate_Table_Script/table_script_generator.py" beforeDir="false" afterPath="$PROJECT_DIR$/crosstabs/Format_SPSS_Report/Generate_Table_Script/table_script_generator.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gui_windows/q_xtabs_gui.py" beforeDir="false" afterPath="$PROJECT_DIR$/gui_windows/q_xtabs_gui.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gui_windows/rnc_gui.py" beforeDir="false" afterPath="$PROJECT_DIR$/gui_windows/rnc_gui.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/rnc_automation/generate_report.py" beforeDir="false" afterPath="$PROJECT_DIR$/rnc_automation/generate_report.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/rnc_automation/issue_trended_score_model.py" beforeDir="false" afterPath="$PROJECT_DIR$/rnc_automation/issue_trended_score_model.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/rnc_automation/scores_topline_model.py" beforeDir="false" afterPath="$PROJECT_DIR$/rnc_automation/scores_topline_model.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/rnc_automation/trended_score_model.py" beforeDir="false" afterPath="$PROJECT_DIR$/rnc_automation/trended_score_model.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/topline/Appendix/format_report.py" beforeDir="false" afterPath="$PROJECT_DIR$/topline/Appendix/format_report.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/gui_windows/appendix_gui.py" beforeDir="false" afterPath="$PROJECT_DIR$/gui_windows/appendix_gui.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/topline/Appendix/generate_appendix.py" beforeDir="false" afterPath="$PROJECT_DIR$/topline/Appendix/generate_appendix.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/topline/BasicReport/csv_topline_report.py" beforeDir="false" afterPath="$PROJECT_DIR$/topline/BasicReport/csv_topline_report.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/topline/BasicReport/generate_report.py" beforeDir="false" afterPath="$PROJECT_DIR$/topline/BasicReport/generate_report.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/topline/BasicReport/qsf_topline_report.py" beforeDir="false" afterPath="$PROJECT_DIR$/topline/BasicReport/qsf_topline_report.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -45,8 +28,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/base/qsf_parser.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="4927">
-              <caret line="657" column="51" selection-start-line="657" selection-start-column="51" selection-end-line="657" selection-end-column="51" />
+            <state relative-caret-position="688">
+              <caret line="355" column="69" lean-forward="true" selection-start-line="355" selection-start-column="69" selection-end-line="355" selection-end-column="69" />
               <folding>
                 <element signature="e#0#9#0" expanded="true" />
               </folding>
@@ -55,10 +38,34 @@
         </entry>
       </file>
       <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/gui_windows/appendix_gui.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="626">
+              <caret line="147" column="91" selection-start-line="147" selection-start-column="91" selection-end-line="147" selection-end-column="91" />
+              <folding>
+                <element signature="e#0#11#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/topline/Appendix/generate_appendix.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="285">
+              <caret line="19" column="14" lean-forward="true" selection-start-line="19" selection-start-column="14" selection-end-line="19" selection-end-column="14" />
+              <folding>
+                <element signature="e#0#10#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/topline/BasicReport/generate_report.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="240">
-              <caret line="16" column="12" selection-start-line="16" selection-start-column="12" selection-end-line="16" selection-end-column="12" />
+            <state relative-caret-position="270">
+              <caret line="18" column="45" lean-forward="true" selection-start-line="18" selection-start-column="45" selection-end-line="18" selection-end-column="45" />
               <folding>
                 <element signature="e#0#57#0" expanded="true" />
               </folding>
@@ -103,23 +110,6 @@
               </folding>
             </state>
           </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/topline/BasicReport/csv_topline_report.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="105">
-              <caret line="7" column="59" selection-start-line="7" selection-start-column="59" selection-end-line="7" selection-end-column="59" />
-              <folding>
-                <element signature="e#0#25#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/topline/BasicReport/csv_question.py">
-          <provider selected="true" editor-type-id="text-editor" />
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
@@ -190,7 +180,6 @@
         <option value="$PROJECT_DIR$/appendix_gui.py" />
         <option value="$PROJECT_DIR$/rnc_gui.py" />
         <option value="$PROJECT_DIR$/topline/BasicReport/csv_topline_report.py" />
-        <option value="$PROJECT_DIR$/topline/Appendix/generate_appendix.py" />
         <option value="$PROJECT_DIR$/topline/Appendix/format_report.py" />
         <option value="$PROJECT_DIR$/gui_windows/rnc_gui.py" />
         <option value="$PROJECT_DIR$/rnc_automation/generate_report.py" />
@@ -208,6 +197,8 @@
         <option value="$PROJECT_DIR$/gui_windows/topline_gui.py" />
         <option value="$PROJECT_DIR$/topline/BasicReport/qsf_topline_report.py" />
         <option value="$PROJECT_DIR$/topline/BasicReport/generate_report.py" />
+        <option value="$PROJECT_DIR$/topline/Appendix/generate_appendix.py" />
+        <option value="$PROJECT_DIR$/gui_windows/appendix_gui.py" />
       </list>
     </option>
   </component>
@@ -244,6 +235,12 @@
               <item name="internbot" type="b2602c69:ProjectViewProjectNode" />
               <item name="internbot" type="462c0819:PsiDirectoryNode" />
               <item name="topline" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="internbot" type="b2602c69:ProjectViewProjectNode" />
+              <item name="internbot" type="462c0819:PsiDirectoryNode" />
+              <item name="topline" type="462c0819:PsiDirectoryNode" />
+              <item name="Appendix" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="internbot" type="b2602c69:ProjectViewProjectNode" />
@@ -369,16 +366,6 @@
           <caret line="119" column="33" selection-start-line="119" selection-start-column="33" selection-end-line="119" selection-end-column="33" />
           <folding>
             <element signature="e#0#11#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/topline/Appendix/generate_appendix.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="570">
-          <caret line="38" lean-forward="true" selection-start-line="38" selection-end-line="38" />
-          <folding>
-            <element signature="e#0#10#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -575,16 +562,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/gui_windows/appendix_gui.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="746">
-          <caret line="116" lean-forward="true" selection-start-line="116" selection-end-line="116" />
-          <folding>
-            <element signature="e#0#11#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/topline/BasicReport/__init__.py">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
@@ -642,16 +619,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/base/qsf_parser.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="4927">
-          <caret line="657" column="51" selection-start-line="657" selection-start-column="51" selection-end-line="657" selection-end-column="51" />
-          <folding>
-            <element signature="e#0#9#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/base/question.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="859">
@@ -664,10 +631,40 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/topline/BasicReport/generate_report.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="240">
-          <caret line="16" column="12" selection-start-line="16" selection-start-column="12" selection-end-line="16" selection-end-column="12" />
+        <state relative-caret-position="270">
+          <caret line="18" column="45" lean-forward="true" selection-start-line="18" selection-start-column="45" selection-end-line="18" selection-end-column="45" />
           <folding>
             <element signature="e#0#57#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/base/qsf_parser.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="688">
+          <caret line="355" column="69" lean-forward="true" selection-start-line="355" selection-start-column="69" selection-end-line="355" selection-end-column="69" />
+          <folding>
+            <element signature="e#0#9#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/topline/Appendix/generate_appendix.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="285">
+          <caret line="19" column="14" lean-forward="true" selection-start-line="19" selection-start-column="14" selection-end-line="19" selection-end-column="14" />
+          <folding>
+            <element signature="e#0#10#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/gui_windows/appendix_gui.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="626">
+          <caret line="147" column="91" selection-start-line="147" selection-start-column="91" selection-end-line="147" selection-end-column="91" />
+          <folding>
+            <element signature="e#0#11#0" expanded="true" />
           </folding>
         </state>
       </provider>

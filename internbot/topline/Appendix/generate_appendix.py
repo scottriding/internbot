@@ -4,9 +4,9 @@ from topline.Appendix.format_report import SSAppendixBuilder, DocAppendixBuilder
 
 class AppendixGenerator(object):
 
-    def __init__(self, is_qualtrics=False):
+    def __init__(self):
         self.__questions = OrderedDict()
-        self.is_qualtrics = is_qualtrics
+        self.is_qualtrics = False
 
     def unicode_dict_reader(self, utf8_data, **kwargs):
         csv_reader = csv.DictReader(utf8_data, **kwargs)
@@ -14,7 +14,8 @@ class AppendixGenerator(object):
             if row['variable'] != "":
                 yield {key:value for key, value in row.items()}
 
-    def parse_file(self, path_to_appendix):
+    def parse_file(self, path_to_appendix, is_qualtrics):
+        self.is_qualtrics = is_qualtrics
         print("Reading open-ends")
         text_responses = self.unicode_dict_reader(open(path_to_appendix))
         for response in text_responses:
