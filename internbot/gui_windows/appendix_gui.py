@@ -137,7 +137,7 @@ class AppendixView(object):
         :param savedirectory: string indicating the filename for the file from the user
         :return: None
         """
-        generator.write_appendix(savedirectory, "templates_images/appendix_template.docx", False)
+        generator.write_appendix(savedirectory, "/Library/internbot/1.0.0/templates_images/appendix_template.docx", False)
         self.open_file_for_user(savedirectory)
 
     def excel_appendix(self):

@@ -179,7 +179,7 @@ class ToplineView(object):
         :return: None
         """
 
-        template_file = open("templates_images/topline_template.docx", "r")
+        template_file = open("/Library/internbot/1.0.0/templates_images/topline_template.docx", "r")
         report_generator = None
         if ".qsf" in self.filename:
             survey = base.QSFSurveyCompiler().compile(self.filename)
