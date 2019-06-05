@@ -5,7 +5,7 @@
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/base/qsf_parser.py" beforeDir="false" afterPath="$PROJECT_DIR$/base/qsf_parser.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/gui_windows/topline_gui.py" beforeDir="false" afterPath="$PROJECT_DIR$/gui_windows/topline_gui.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/internbot.py" beforeDir="false" afterPath="$PROJECT_DIR$/internbot.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/topline/BasicReport/qsf_topline_report.py" beforeDir="false" afterPath="$PROJECT_DIR$/topline/BasicReport/qsf_topline_report.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -27,8 +27,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/gui_windows/topline_gui.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="693">
-              <caret line="185" column="12" selection-start-line="185" selection-start-column="14" selection-end-line="190" selection-end-column="50" />
+            <state relative-caret-position="2985">
+              <caret line="199" column="64" selection-start-line="199" selection-start-column="64" selection-end-line="199" selection-end-column="64" />
               <folding>
                 <element signature="e#0#11#0" expanded="true" />
               </folding>
@@ -36,11 +36,11 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/topline/BasicReport/qsf_topline_report.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-341">
-              <caret line="86" column="67" selection-start-line="86" selection-start-column="67" selection-end-line="86" selection-end-column="67" />
+            <state relative-caret-position="59">
+              <caret line="258" column="66" selection-start-line="258" selection-start-column="66" selection-end-line="258" selection-end-column="66" />
               <folding>
                 <element signature="e#0#25#0" expanded="true" />
               </folding>
@@ -48,20 +48,14 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/base/qsf_parser.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="399">
-              <caret line="492" column="37" selection-start-line="492" selection-start-column="37" selection-end-line="492" selection-end-column="37" />
+            <state relative-caret-position="15">
+              <caret line="298" column="62" selection-start-line="298" selection-start-column="62" selection-end-line="298" selection-end-column="62" />
               <folding>
                 <element signature="e#0#9#0" expanded="true" />
-                <element signature="e#4820#6387#0" />
                 <element signature="e#6455#6861#0" />
-                <element signature="e#7052#15452#0" />
-                <element signature="e#15499#17073#0" />
-                <element signature="e#17119#19502#0" />
-                <element signature="e#19545#21870#0" />
-                <element signature="e#23280#33384#0" />
               </folding>
             </state>
           </provider>
@@ -70,8 +64,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/gui_windows/appendix_gui.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="209">
-              <caret line="119" lean-forward="true" selection-start-line="119" selection-end-line="119" />
+            <state relative-caret-position="643">
+              <caret line="119" selection-start-line="119" selection-end-line="119" />
               <folding>
                 <element signature="e#0#11#0" expanded="true" />
               </folding>
@@ -83,7 +77,7 @@
         <entry file="file://$PROJECT_DIR$/topline/Appendix/generate_appendix.py">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="285">
-              <caret line="19" column="14" lean-forward="true" selection-start-line="19" selection-start-column="14" selection-end-line="19" selection-end-column="14" />
+              <caret line="19" column="14" selection-start-line="19" selection-start-column="14" selection-end-line="19" selection-end-column="14" />
               <folding>
                 <element signature="e#0#10#0" expanded="true" />
               </folding>
@@ -94,7 +88,7 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/topline/BasicReport/generate_report.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="729">
+            <state relative-caret-position="1185">
               <caret line="79" column="8" selection-start-line="79" selection-start-column="8" selection-end-line="79" selection-end-column="113" />
               <folding>
                 <element signature="e#0#57#0" expanded="true" />
@@ -106,8 +100,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/base/question.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="765">
-              <caret line="334" column="64" lean-forward="true" selection-start-line="334" selection-start-column="64" selection-end-line="334" selection-end-column="64" />
+            <state relative-caret-position="615">
+              <caret line="233" column="32" selection-start-line="233" selection-start-column="32" selection-end-line="233" selection-end-column="32" />
               <folding>
                 <element signature="e#0#35#0" expanded="true" />
               </folding>
@@ -123,7 +117,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/base/response.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-540">
+            <state relative-caret-position="105">
+              <caret line="7" column="29" selection-start-line="7" selection-start-column="29" selection-end-line="7" selection-end-column="29" />
               <folding>
                 <element signature="e#0#31#0" expanded="true" />
               </folding>
@@ -142,16 +137,10 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>tables</find>
-      <find>btn_bot</find>
-      <find>topline_he</find>
-      <find>midnight</find>
-      <find>force</find>
       <find>[Enter base details]</find>
       <find>Enter</find>
       <find>focus_s</find>
       <find>report</find>
-      <find>print</find>
       <find>thread</find>
       <find>long</find>
       <find>round_weighted_freq</find>
@@ -166,6 +155,18 @@
       <find>iter</find>
       <find>self.response_parser</find>
       <find>Frew</find>
+      <find>int</find>
+      <find>avg</find>
+      <find>write_allocate</find>
+      <find>question_lo</find>
+      <find>AnswerOrder</find>
+      <find>question_details</find>
+      <find>AnswerO</find>
+      <find>write_rank</find>
+      <find>response_order</find>
+      <find>Responses</find>
+      <find>parse</find>
+      <find>print</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -200,21 +201,21 @@
         <option value="$PROJECT_DIR$/crosstabs/Format_SPSS_Report/Generate_Table_Script/table_script_generator.py" />
         <option value="$PROJECT_DIR$/crosstabs/Format_SPSS_Report/Generate_Prelim_SPSS_Script/define_tables.py" />
         <option value="$PROJECT_DIR$/crosstabs/Format_Amazon_Report/rename_xlsx_tabs.py" />
-        <option value="$PROJECT_DIR$/topline/BasicReport/qsf_topline_report.py" />
         <option value="$PROJECT_DIR$/topline/BasicReport/generate_report.py" />
         <option value="$PROJECT_DIR$/topline/Appendix/generate_appendix.py" />
         <option value="$PROJECT_DIR$/gui_windows/appendix_gui.py" />
         <option value="$PROJECT_DIR$/internbot.py" />
         <option value="$PROJECT_DIR$/gui_windows/topline_gui.py" />
         <option value="$PROJECT_DIR$/base/qsf_parser.py" />
+        <option value="$PROJECT_DIR$/topline/BasicReport/qsf_topline_report.py" />
       </list>
     </option>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="1606" />
-    <option name="y" value="154" />
-    <option name="width" value="1339" />
-    <option name="height" value="1331" />
+    <option name="x" value="251" />
+    <option name="y" value="23" />
+    <option name="width" value="1131" />
+    <option name="height" value="812" />
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectView">
@@ -269,6 +270,7 @@
   </component>
   <component name="PropertiesComponent">
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="settings.editor.selected.configurable" value="preferences.startup.tasks" />
   </component>
   <component name="RunDashboard">
     <option name="ruleStates">
@@ -281,6 +283,34 @@
         </RuleState>
       </list>
     </option>
+  </component>
+  <component name="RunManager">
+    <configuration name="internbot" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <module name="internbot" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/internbot.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Python.internbot" />
+      </list>
+    </recent_temporary>
   </component>
   <component name="SvnConfiguration">
     <configuration />
@@ -296,15 +326,15 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="1606" y="154" width="1339" height="1331" extended-state="0" />
+    <frame x="251" y="23" width="1131" height="812" extended-state="0" />
     <editor active="true" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.22821897" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.24150597" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
-      <window_info anchor="bottom" id="Find" order="1" weight="0.32954547" />
-      <window_info anchor="bottom" id="Run" order="2" />
+      <window_info anchor="bottom" id="Find" order="1" weight="0.32916668" />
+      <window_info anchor="bottom" id="Run" order="2" weight="0.32916668" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
@@ -320,12 +350,12 @@
       <window_info anchor="right" id="R Packages" order="4" />
     </layout>
     <layout-to-restore>
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.22821897" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.24150597" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
-      <window_info anchor="bottom" id="Find" order="1" weight="0.32954547" />
-      <window_info anchor="bottom" id="Run" order="2" />
+      <window_info anchor="bottom" id="Find" order="1" weight="0.32916668" />
+      <window_info anchor="bottom" id="Run" order="2" weight="0.32916668" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
@@ -340,6 +370,17 @@
       <window_info anchor="right" id="R Graphics" order="3" />
       <window_info anchor="right" id="R Packages" order="4" />
     </layout-to-restore>
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <default-breakpoints>
+        <breakpoint type="python-exception">
+          <properties notifyOnTerminate="true" exception="BaseException">
+            <option name="notifyOnTerminate" value="true" />
+          </properties>
+        </breakpoint>
+      </default-breakpoints>
+    </breakpoint-manager>
   </component>
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/crosstabs/Generate_Prelim_SPSS_Script/define_tables.py" />
@@ -585,38 +626,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/base/survey.py">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/base/response.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-540">
-          <folding>
-            <element signature="e#0#31#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/topline/Appendix/generate_appendix.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="285">
-          <caret line="19" column="14" lean-forward="true" selection-start-line="19" selection-start-column="14" selection-end-line="19" selection-end-column="14" />
-          <folding>
-            <element signature="e#0#10#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/gui_windows/appendix_gui.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="209">
-          <caret line="119" lean-forward="true" selection-start-line="119" selection-end-line="119" />
-          <folding>
-            <element signature="e#0#11#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/internbot.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="75">
@@ -624,19 +633,29 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/base/question.py">
+    <entry file="file://$PROJECT_DIR$/gui_windows/topline_gui.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="765">
-          <caret line="334" column="64" lean-forward="true" selection-start-line="334" selection-start-column="64" selection-end-line="334" selection-end-column="64" />
+        <state relative-caret-position="2985">
+          <caret line="199" column="64" selection-start-line="199" selection-start-column="64" selection-end-line="199" selection-end-column="64" />
           <folding>
-            <element signature="e#0#35#0" expanded="true" />
+            <element signature="e#0#11#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/topline/Appendix/generate_appendix.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="285">
+          <caret line="19" column="14" selection-start-line="19" selection-start-column="14" selection-end-line="19" selection-end-column="14" />
+          <folding>
+            <element signature="e#0#10#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/topline/BasicReport/generate_report.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="729">
+        <state relative-caret-position="1185">
           <caret line="79" column="8" selection-start-line="79" selection-start-column="8" selection-end-line="79" selection-end-column="113" />
           <folding>
             <element signature="e#0#57#0" expanded="true" />
@@ -644,39 +663,56 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/gui_windows/topline_gui.py">
+    <entry file="file://$PROJECT_DIR$/base/survey.py">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/base/response.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="693">
-          <caret line="185" column="12" selection-start-line="185" selection-start-column="14" selection-end-line="190" selection-end-column="50" />
+        <state relative-caret-position="105">
+          <caret line="7" column="29" selection-start-line="7" selection-start-column="29" selection-end-line="7" selection-end-column="29" />
+          <folding>
+            <element signature="e#0#31#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/gui_windows/appendix_gui.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="643">
+          <caret line="119" selection-start-line="119" selection-end-line="119" />
           <folding>
             <element signature="e#0#11#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/topline/BasicReport/qsf_topline_report.py">
+    <entry file="file://$PROJECT_DIR$/base/question.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-341">
-          <caret line="86" column="67" selection-start-line="86" selection-start-column="67" selection-end-line="86" selection-end-column="67" />
+        <state relative-caret-position="615">
+          <caret line="233" column="32" selection-start-line="233" selection-start-column="32" selection-end-line="233" selection-end-column="32" />
           <folding>
-            <element signature="e#0#25#0" expanded="true" />
+            <element signature="e#0#35#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/base/qsf_parser.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="399">
-          <caret line="492" column="37" selection-start-line="492" selection-start-column="37" selection-end-line="492" selection-end-column="37" />
+        <state relative-caret-position="15">
+          <caret line="298" column="62" selection-start-line="298" selection-start-column="62" selection-end-line="298" selection-end-column="62" />
           <folding>
             <element signature="e#0#9#0" expanded="true" />
-            <element signature="e#4820#6387#0" />
             <element signature="e#6455#6861#0" />
-            <element signature="e#7052#15452#0" />
-            <element signature="e#15499#17073#0" />
-            <element signature="e#17119#19502#0" />
-            <element signature="e#19545#21870#0" />
-            <element signature="e#23280#33384#0" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/topline/BasicReport/qsf_topline_report.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="59">
+          <caret line="258" column="66" selection-start-line="258" selection-start-column="66" selection-end-line="258" selection-end-column="66" />
+          <folding>
+            <element signature="e#0#25#0" expanded="true" />
           </folding>
         </state>
       </provider>

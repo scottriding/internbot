@@ -33,7 +33,10 @@ class QSFToplineReport(object):
         self.write_name(question.name, paragraph)
         self.write_prompt(question.prompt, paragraph)
         self.write_n(question.n, paragraph)
-        self.write_responses(question.responses)
+        if question.type == 'RO':
+            self.write_rank(question.responses)
+        else:
+            self.write_responses(question.responses)
         new = self.doc.add_paragraph("") # space between questions
         new.style = self.line_break
         self.doc.add_paragraph("") # space between questions
@@ -87,6 +90,44 @@ class QSFToplineReport(object):
                 for year, response in response.frequencies.items():
                     response_cells[3].text = self.freqs_percent(response, first_row)
                 first_row = False
+
+    def write_rank(self, responses):
+        if len(self.years) > 0:
+            self.write_trended_rank(responses)
+        else:
+            table = self.doc.add_table(rows=1, cols=5)
+            first_row = True
+            for response in responses:
+                response_cells = table.add_row().cells
+                response_cells[1].merge(response_cells[2])
+                response_cells[1].text = response.response
+                for year, average in response.frequencies.items():
+                    response_cells[3].text = self.avg_float(average, first_row)
+                first_row = False
+
+    def write_trended_rank(self, responses):
+        headers = self.max_years(responses)
+        table = self.doc.add_table(rows=1, cols=len(headers) + 4)
+        titles_row = table.add_row().cells
+        titles_row[1].merge(titles_row[2])
+        headers_index = 0
+        while headers_index < len(headers):
+            header_text = "Total %s" % headers[headers_index]
+            titles_row[headers_index + 4].text = header_text
+            headers_index += 1
+        first_row = True
+        for response in responses:
+            response_cells = table.add_row().cells
+            response_cells[1].merge(response_cells[3])
+            response_cells[1].text = response.response
+            freq_col = 4
+            for header in headers:
+                if response.frequencies.get(header) is not None:
+                    avg = response.frequencies.get(header)
+                    text = self.avg_float(avg, first_row)
+                    response_cells[freq_col].text = text
+                first_row = False
+                freq_col += 1
 
     def write_trended_responses(self, responses):
         headers = self.max_years(responses)
@@ -259,6 +300,16 @@ class QSFToplineReport(object):
                         if year not in years_used:
                             years_used.append(year)
         return years_used
+
+    def avg_float(self, average, is_first):
+        average = float(average)
+        if average >= 0 and average < 1:
+            result = '<1'
+        else:
+            result = average
+        if is_first is True:
+            result = str(result)
+        return str(result)
 
     def freqs_percent(self, freq, is_first):
         result = 0

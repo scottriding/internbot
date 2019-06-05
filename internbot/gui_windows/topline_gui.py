@@ -197,8 +197,7 @@ class ToplineView(object):
         elif ".csv" in self.filename:
             report_generator = topline.BasicReport.ReportGenerator(self.filename, years)
 
-        ask_output = messagebox.askokcancel("Output directory",
-                                              "Please select the directory for finished report.")
+        ask_output = messagebox.askokcancel("Output directory", "Please select the directory for finished report.")
         if ask_output is True:
             savedirectory = filedialog.asksaveasfilename(defaultextension='.docx', filetypes=[('word files', '.docx')])
             if savedirectory is not "":
