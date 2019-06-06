@@ -1,8 +1,8 @@
 
 *.pyc
-*.xml
 env
 
 temp_test.py
 internbot/topline/.DS_Store
+internbot/.idea
 .DS_Store
