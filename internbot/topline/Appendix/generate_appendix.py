@@ -16,7 +16,6 @@ class AppendixGenerator(object):
 
     def parse_file(self, path_to_appendix, is_qualtrics):
         self.is_qualtrics = is_qualtrics
-        print("Reading open-ends")
         text_responses = self.unicode_dict_reader(open(path_to_appendix))
         for response in text_responses:
             if self.__questions.get(response['variable']) is None:

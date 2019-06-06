@@ -5,6 +5,9 @@ from tkinter import messagebox
 from tkinter import filedialog
 import os, subprocess, platform
 import sys
+import time
+from shutil import copyfile
+
 
 class Internbot:
 
@@ -61,6 +64,7 @@ class Internbot:
         self.menubar.add_cascade(label="Appendix", menu=menu_appendix)
         menu_terminal = tkinter.Menu(self.menubar, tearoff=0)
         menu_terminal.add_command(label="Open Terminal", command=self.reopen_terminal_window)
+        menu_terminal.add_command(label="Export Error Log", command=self.export_error_log)
         self.menubar.add_cascade(label="Terminal", menu=menu_terminal)
         menu_rnc = tkinter.Menu(self.menubar, tearoff=0)
         menu_rnc.add_command(label="RNC Menu", command=self.rnc.rnc_menu)
@@ -69,6 +73,9 @@ class Internbot:
         menu_quit.add_command(label="Good Bye", command=self.__window.destroy)
         self.menubar.add_cascade(label="Quit", menu=menu_quit)
         self.__window.config(menu=self.menubar)
+
+        localtime = time.asctime( time.localtime(time.time()))
+        self.time_stamp = str("Session:  " + localtime +"   Internbot Version:  " + internbot_version)
 
         self.terminal_window()
 
@@ -82,7 +89,7 @@ class Internbot:
         help_window.withdraw()
 
         width = 250
-        height = 450
+        height = 500
         help_window.geometry("%dx%d+%d+%d" % (width,height,mov_x + window_width / 2 - width / 2, mov_y + window_height / 2 - height / 2))
 
         message = "\nWelcome to Internbot"
@@ -97,10 +104,12 @@ class Internbot:
         tkinter.Label(help_window, text=term_message, font=header_font, fg=header_color).pack()
         term_info_message = "The terminal window will show info about\n" \
                             "the reports as you are running them.\n" \
-                            "If an error occurs: Take a screenshot of\n" \
-                            "the terminal window then send a slack to the\n"\
-                            "R&D channel with The screenshot and a link\n" \
-                            "to the input file of the report you were\n" \
+                            "If an error occurs that you can't identify: \n" \
+                            "Select Terminal>Export Error Log \n" \
+                            "from the MenuBar. The file will appear  \n" \
+                            "on your desktop. Then send a slack to the\n"\
+                            "R&D channel with the error log and a link\n" \
+                            "to the input file(s) of the report you were\n" \
                             "running. If you ever close the terminal window,\n" \
                             "you can reopen it with the Terminal Window\n" \
                             "button in the main window or Terminal>Open\n" \
@@ -129,18 +138,25 @@ class Internbot:
         term_text = tkinter.Text(self.term_window, fg='white', height= 600, width=500, background=header_color, padx=5, pady=5)
         term_text.pack()
 
+        self.error_log_filename = "templates_images/Error_Log.txt"
+        self.error_log = open(self.error_log_filename, 'w')
+        self.error_log.write("Error Log: "+self.time_stamp+"\n")
+
+
         class PrintToT1(object):
-            def __init__(self, stream):
+            def __init__(self, stream, error_log):
                 self.stream = stream
+                self.error_log = error_log
 
             def write(self, s):
                 self.stream.write(s)
                 term_text.insert(tkinter.END, s)
+                self.error_log.write(s)
                 self.stream.flush()
                 term_text.see(tkinter.END)
 
-        sys.stdout = PrintToT1(sys.stdout)
-        sys.stderr = PrintToT1(sys.stderr)
+        sys.stdout = PrintToT1(sys.stdout, self.error_log)
+        sys.stderr = PrintToT1(sys.stderr, self.error_log)
 
         def update_terminal_flag():
             self.terminal_open = False
@@ -148,12 +164,23 @@ class Internbot:
 
 
         print("All information about reports and errors will appear in this window.\n")
+
         self.term_window.protocol('WM_DELETE_WINDOW', update_terminal_flag)
         self.term_window.deiconify()
 
     def reopen_terminal_window(self):
         self.terminal_open = True
         self.term_window.deiconify()
+
+    def export_error_log(self):
+
+        ask_export = messagebox.askokcancel("Export Error Log", "Warning: Internbot will close and you will need to restart it")
+        if ask_export:
+            self.error_log.close()
+            copyfile(os.path.join(os.path.expanduser("~/Documents/GitHub/internbot/internbot/"), self.error_log_filename),os.path.join(os.path.expanduser("~"), "Desktop/internbot_error_log.txt"))
+            self.open_file_for_user(os.path.join(os.path.expanduser("~"), "Desktop/internbot_error_log.txt"))
+            self.__window.destroy()
+
 
     def software_tabs_menu(self):
         """
@@ -221,8 +248,6 @@ mov_y = screen_height / 2 - 200
 window_height = 450
 window_width = 600
 window.geometry("%dx%d+%d+%d" % (window_width, window_height, mov_x, mov_y))
-
-
 window['background'] = 'white'
 
 y2_logo = "templates_images/Y2Logo.gif"
@@ -242,6 +267,8 @@ def close(event):
     sys.exit() # if you want to exit the entire thing
 
 window.bind('<Escape>', close)
+
+internbot_version = "1.0.0"
 
 window.deiconify()
 Internbot(window)
