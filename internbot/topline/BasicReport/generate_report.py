@@ -43,7 +43,6 @@ class ReportGenerator(object):
                     if question_display != "":
                         self.add_display_logic(matching_question, question_display)
 
-
     def generate_topline(self, path_to_template, path_to_output, years):
         if self.__survey is not None:
             report = QSFToplineReport(self.__survey.get_questions(), path_to_template, years)
@@ -54,6 +53,7 @@ class ReportGenerator(object):
     def find_question(self, question_to_find):
         matching_question = self.__survey.blocks.find_question_by_name(question_to_find)
         if matching_question is None:
+            print("\nCould not match question "+question_to_find+ " from CSV to a question in the QSF.\n             *This data will need to be input manually.*\n")
             return None
         elif matching_question.parent == "CompositeQuestion":
             matching_question = self.find_sub_question(matching_question, question_to_find)
@@ -71,15 +71,19 @@ class ReportGenerator(object):
             matching_question.add_NA()
             return matching_question.get_NA()
         responses = matching_question.responses
-        if matching_question.prompt[0] is "b" and (matching_question.prompt[len(matching_question.prompt) - 1] is "'" or matching_question.prompt[len(matching_question.prompt) - 1] is '"'):
-            matching_question.prompt = matching_question.prompt[2: len(matching_question.prompt) - 1]
-        for response in responses:
-            if response.response[0] is "b" and (response.response[len(response.response)-1] is "'" or response.response[len(response.response)-1] is '"'):
-                response.response = response.response[2: len(response.response)-1]
+
+        #if matching_question.prompt[0] is "b" and (matching_question.prompt[len(matching_question.prompt) - 1] is "'" or matching_question.prompt[len(matching_question.prompt) - 1] is '"'):
+        #   matching_question.prompt = matching_question.prompt[2: len(matching_question.prompt) - 1]
+        #for response in responses:
+            #if response.response[0] is "b" and (response.response[len(response.response)-1] is "'" or response.response[len(response.response)-1] is '"'):
+                #response.response = response.response[2: len(response.response)-1]
 
         matching_response = next((response for response in responses if response.code == response_to_find), None)
         if response_to_find == 'On':
             matching_response = next((response for response in responses if response.response == '1'), None)
+
+        if matching_response is None:
+            print("\nCould not match response " +response_to_find+ " from " + matching_question.name + " from CSV to a question in the QSF.\n             *This data will need to be input manually.*\n")
         return matching_response
 
 
