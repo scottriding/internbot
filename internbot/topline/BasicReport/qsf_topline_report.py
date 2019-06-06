@@ -1,5 +1,7 @@
 from docx import Document
 from docx.shared import Inches
+from docx.oxml import parse_xml
+from docx.oxml.ns import nsdecls
 
 class QSFToplineReport(object):
 
@@ -87,9 +89,40 @@ class QSFToplineReport(object):
                 response_cells = table.add_row().cells
                 response_cells[1].merge(response_cells[2])
                 response_cells[1].text = response.response
+                if not response.frequencies:
+                    shading_elm = parse_xml(r'<w:shd {} w:fill="FFF206"/>'.format(nsdecls('w')))
+                    response_cells[1]._tc.get_or_add_tcPr().append(shading_elm)
                 for year, response in response.frequencies.items():
-                    response_cells[3].text = self.freqs_percent(response, first_row)
+                    freq = self.freqs_percent(response, first_row)
+                    response_cells[3].text = freq
                 first_row = False
+
+    def write_trended_responses(self, responses):
+        headers = self.max_years(responses)
+        table = self.doc.add_table(rows=1, cols=len(headers) + 4)
+        titles_row = table.add_row().cells
+        titles_row[1].merge(titles_row[2])
+        headers_index = 0
+        while headers_index < len(headers):
+            header_text = "Total %s" % headers[headers_index]
+            titles_row[headers_index + 4].text = header_text
+            headers_index += 1
+        first_row = True
+        for response in responses:
+            response_cells = table.add_row().cells
+            response_cells[1].merge(response_cells[3])
+            response_cells[1].text = response.response
+            freq_col = 4
+            if not response.frequencies:
+                shading_elm = parse_xml(r'<w:shd {} w:fill="FFF206"/>'.format(nsdecls('w')))
+                response_cells[1]._tc.get_or_add_tcPr().append(shading_elm)
+            for header in headers:
+                if response.frequencies.get(header) is not None:
+                    freq = response.frequencies.get(header)
+                    text = self.freqs_percent(freq, first_row)
+                    response_cells[freq_col].text = text
+                first_row = False
+                freq_col += 1
 
     def write_rank(self, responses):
         if len(self.years) > 0:
@@ -129,29 +162,7 @@ class QSFToplineReport(object):
                 first_row = False
                 freq_col += 1
 
-    def write_trended_responses(self, responses):
-        headers = self.max_years(responses)
-        table = self.doc.add_table(rows=1, cols=len(headers)+4)
-        titles_row = table.add_row().cells  
-        titles_row[1].merge(titles_row[2])
-        headers_index = 0
-        while headers_index < len(headers):
-            header_text = "Total %s" % headers[headers_index]
-            titles_row[headers_index+4].text = header_text
-            headers_index += 1
-        first_row = True
-        for response in responses:
-            response_cells = table.add_row().cells
-            response_cells[1].merge(response_cells[3])
-            response_cells[1].text = response.response
-            freq_col = 4
-            for header in headers:
-                if response.frequencies.get(header) is not None:
-                    freq = response.frequencies.get(header)
-                    text = self.freqs_percent(freq, first_row)
-                    response_cells[freq_col].text = text
-                first_row = False
-                freq_col += 1
+
 
     def write_binary(self, sub_questions):
         if len(self.years) > 0:

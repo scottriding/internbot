@@ -150,9 +150,14 @@ class QSFQuestionsParser(object):
             self.__questions.append(constant_sum)
         elif question.type == 'Meta':
             pass
+        elif question.type == 'SBS':
+            print("\n"+question.name+": Side by side question type is not yet implemented.\n"
+                                     "             ***This question will need to be input manually.***\n"
+                                     "    ***You may see more error messages about this question below***\n")
         else:
             self.response_parser.parse(question, question_payload, question_element)
             self.__questions.append(question)
+
         
     def question_details(self, question_payload):
         question = Question()
@@ -419,9 +424,16 @@ class QSFMultipleSelectParser(object):
             sub_question.type = question_payload['QuestionType']
             sub_question.subtype = question_payload['Selector']
             sub_question.name = '%s_%s' % (multiple_select.name, code)
-            sub_question.prompt = question['Display'].encode('ascii', 'ignore')
+            sub_question.prompt = self.convert_prompt_from_byte_str(question['Display'].encode('ascii', 'ignore'))
             sub_question.add_response('1',1)
             multiple_select.add_question(sub_question)
+
+    def convert_prompt_from_byte_str(self, prompt):
+        prompt = str(prompt)
+        if prompt[0] is "b" and (prompt[len(prompt) - 1] is "'" or prompt[len(prompt) - 1] is '"'):
+            converted = prompt[2: len(prompt) - 1]
+            return converted
+        return prompt
 
 class QSFConstantSumParser(object):
 
@@ -522,15 +534,23 @@ class QSFResponsesParser(object):
             matching_response = next((response for response in question.responses if response.code == old_code), None)
             if matching_response is not None:
                 matching_response.code = new_code
+                matching_response.response = self.convert_response_from_byte_str(matching_response)
 
     def parse_basic(self, question, question_payload):
         for code, response in question_payload['Choices'].items():
-                question.add_response(str(response['Display']).encode('ascii','ignore'), code)
-
+            question.add_response(str(response['Display']).encode('ascii','ignore'), code)
         for old_code, new_code in self.__response_order.items():
             matching_response = next((response for response in question.responses if response.code == old_code), None)
             if matching_response is not None:
                 matching_response.code = new_code
+                matching_response.response = self.convert_response_from_byte_str(matching_response.response)
+
+
+    def convert_response_from_byte_str(self, response):
+        if response[0] is "b" and (response[len(response) - 1] is "'" or response[len(response) - 1] is '"'):
+            converted = response[2: len(response) - 1]
+            return converted
+        return response
                  
 class QSFCarryForwardParser(object):
 
