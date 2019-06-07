@@ -51,6 +51,7 @@ class SPSSCrosstabsView(object):
         Set up for creation of Tables to run and rename variables for SPSS crosstabs.
         :return: None
         """
+        print("Running variable script...")
         ask_qsf = messagebox.askokcancel("Select Qualtrics File", "Please select the Qualtrics survey .qsf file.")
         if ask_qsf is True: # user selected ok
             qsffilename = filedialog.askopenfilename(initialdir = self.fpath, title = "Select Qualtrics survey file",filetypes = (("Qualtrics file","*.qsf"),("all files","*.*")))
@@ -76,6 +77,7 @@ class SPSSCrosstabsView(object):
         Set up for Banner selection from a Tables to run file.
         :return:
         """
+        print("Running table script...")
         ask_tables = messagebox.askokcancel("Select Tables to Run.csv File", "Please select the tables to run .csv file.")
         if ask_tables is True:
             self.tablesfilename = filedialog.askopenfilename(initialdir = self.fpath, title = "Select tables file",filetypes = (("comma seperated files","*.csv"),("all files","*.*")))
@@ -89,7 +91,7 @@ class SPSSCrosstabsView(object):
 
 
     def banner_window(self, names, titles, bases):
-
+        print("Inputting banners...")
         self.edit_window = tkinter.Toplevel(self.__window)
         self.edit_window.withdraw()
         width = 1500
@@ -457,6 +459,7 @@ class SPSSCrosstabsView(object):
 
 
     def build_xtabs(self):
+        print("Building report...")
         ask_directory = messagebox.askokcancel("Select Tables Folder", "Please select the folder containing SPSS generated .xlsx table files.")
         if ask_directory is True:
             tablesdirectory = filedialog.askdirectory()

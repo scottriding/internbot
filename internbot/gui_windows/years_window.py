@@ -16,27 +16,34 @@ class YearsWindow(object):
         self.year_window = root
         self.entry_list = []
 
-
-
     def packing_years(self, year_frame):
         if self.round >= 10:
             self.pack_ten_years(year_frame)
+            print("Trended Topline Report will have 10 years")
         elif self.round == 9:
             self.pack_nine_years(year_frame)
+            print("Trended Topline Report will have 9 years")
         elif self.round == 8:
             self.pack_eight_years(year_frame)
+            print("Trended Topline Report will have 8 years")
         elif self.round == 7:
             self.pack_seven_years(year_frame)
+            print("Trended Topline Report will have 7 years")
         elif self.round == 6:
             self.pack_six_years(year_frame)
+            print("Trended Topline Report will have 6 years")
         elif self.round == 5:
             self.pack_five_years(year_frame)
+            print("Trended Topline Report will have 5 years")
         elif self.round == 4:
             self.pack_four_years(year_frame)
+            print("Trended Topline Report will have 4 years")
         elif self.round == 3:
             self.pack_three_years(year_frame)
+            print("Trended Topline Report will have 3 years")
         elif self.round == 2:
             self.pack_two_years(year_frame)
+            print("Trended Topline Report will have 2 years")
 
         self.focus_index = 0
 

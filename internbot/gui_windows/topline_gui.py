@@ -54,9 +54,8 @@ class ToplineView(object):
         btn_csv = tkinter.Button(self.redirect_window, text="CSV Only", command=self.read_csv_topline, height=3, width=20)
         btn_cancel = tkinter.Button(self.redirect_window, text="Cancel", command=self.redirect_window.destroy, height=3,
                                     width=20)
-        btn_bot = tkinter.Button(self.redirect_window, image=self.bot_render, borderwidth=0,
-                                 highlightthickness=0, relief=tkinter.FLAT, bg="white", height=65, width=158,
-                                 command=self.topline_help_window)
+        btn_bot =tkinter.Button(self.redirect_window, image=self.bot_render, borderwidth=0, highlightthickness=0,
+                                relief=tkinter.FLAT, bg="white", height=65, width=158, command=self.topline_help_window)
 
         btn_bot.pack(side=tkinter.TOP, padx=10)
         btn_qsf.pack(side=tkinter.TOP, padx=10)
@@ -119,12 +118,13 @@ class ToplineView(object):
         Funtion reads in a topline file
         :return: None
         """
-
+        print("Reading in QSF Topline")
         self.filename = filedialog.askopenfilename(initialdir=self.fpath, title="Select survey file", filetypes=(("Qualtrics files", "*.qsf"), ("comma seperated files", "*.csv"), ("all files", "*.*")))
         if self.filename is not "":
             round_int = self.round_entry.get()
             if round_int != "" and round_int != 1:
-                self.year_window_setup(int(round_int))
+                thread = threading.Thread(target=self.year_window_setup(int(round_int)))
+                thread.start()
             else:
                 self.build_topline_report()
 
@@ -133,17 +133,18 @@ class ToplineView(object):
         Funtion reads in a topline file
         :return: None
         """
-
+        print("Reading in CSV Topline")
         self.filename = filedialog.askopenfilename(initialdir=self.fpath, title="Select survey file", filetypes=(("Qualtrics files", "*.qsf"), ("comma seperated files", "*.csv"), ("all files", "*.*")))
         if self.filename is not "":
             round_int = self.round_entry.get()
             if round_int != "" and round_int != 1:
-                self.year_window_setup(int(round_int))
+                thread = threading.Thread(target=self.year_window_setup(int(round_int)))
+                thread.start()
             else:
                 self.build_topline_report()
 
 
-    def year_window_setup(self, rounds, topline_type):
+    def year_window_setup(self, rounds):
         """
         Funtion sets up the window for entry of trend labels for trended Toplines
         :return: None
@@ -179,6 +180,7 @@ class ToplineView(object):
 
 
 
+
     def build_topline_leadup(self):
         """
         Function serves as a segue between the year_window_setup and the YearsWindow object
@@ -186,7 +188,7 @@ class ToplineView(object):
         :return: None
         """
         years = self.year_window_obj.read_years()
-        self.build_topline_report(topline_type, years)
+        self.build_topline_report(years)
 
     def build_topline_report(self, years=[]):
         """

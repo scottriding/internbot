@@ -44,9 +44,8 @@ class RNCView(object):
                                          command=self.trended_scores_window, height=3, width=20)
         btn_cancel = tkinter.Button(self.redirect_window, text="Cancel", command=self.redirect_window.destroy, height=3,
                                     width=20)
-        btn_bot = tkinter.Button(self.redirect_window, image=self.bot_render, borderwidth=0,
-                                 highlightthickness=0, relief=tkinter.FLAT, bg="white", height=65, width=158,
-                                 command=self.rnc_help_window)
+        btn_bot = tkinter.Button(self.redirect_window, image=self.bot_render, borderwidth=0, highlightthickness=0,
+                                 relief=tkinter.FLAT, bg="white", height=65, width=158, command=self.rnc_help_window)
         btn_cancel.pack(ipadx=5, side=tkinter.BOTTOM, expand=False)
         btn_topline.pack(ipadx=5, side=tkinter.BOTTOM, expand=False)
         btn_trended.pack(ipadx=5, side=tkinter.BOTTOM, expand=False)

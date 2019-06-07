@@ -14,6 +14,10 @@ class Internbot:
     def __init__ (self, root):
         self.__window = root
         self.main_buttons()
+        self.menu_bar_setup()
+        localtime = time.asctime(time.localtime(time.time()))
+        self.session_time_stamp = str("Session:  " + localtime + "   Internbot Version:  " + internbot_version)
+        self.terminal_window()
         self.fpath = os.path.join(os.path.expanduser("~"), "Desktop")
         self.__embedded_fields = []
         self.terminal_open = False
@@ -26,12 +30,9 @@ class Internbot:
 
         self.rnc = gui_windows.RNCView(self.__window, mov_x, mov_y, window_width, window_height, header_font, header_color, bot_render)
         self.topline = gui_windows.ToplineView(self.__window, mov_x, mov_y, window_width, window_height, header_font, header_color, bot_render)
-        self.spss = gui_windows.SPSSCrosstabsView(self.__window, mov_x, mov_y, window_width, window_height, header_font,
-                                      header_color)
-        self.q = gui_windows.QCrosstabsView(self.__window, mov_x, mov_y, window_width, window_height, header_font,
-                                header_color, bot_render)
-        self.appendix = gui_windows.AppendixView(self.__window, mov_x, mov_y, window_width, window_height, header_font,
-                                header_color, bot_render)
+        self.spss = gui_windows.SPSSCrosstabsView(self.__window, mov_x, mov_y, window_width, window_height, header_font, header_color)
+        self.q = gui_windows.QCrosstabsView(self.__window, mov_x, mov_y, window_width, window_height, header_font, header_color, bot_render)
+        self.appendix = gui_windows.AppendixView(self.__window, mov_x, mov_y, window_width, window_height, header_font, header_color, bot_render)
 
         #Button definitions
         button_frame =tkinter.Frame(self.__window)
@@ -51,16 +52,24 @@ class Internbot:
         btn_terminal.pack(padx=5, side=tkinter.TOP, expand=True)
         btn_quit.pack(padx=5, side=tkinter.TOP, expand=True)
 
+    def menu_bar_setup(self):
         #Menubar Set Up
         self.menubar = tkinter.Menu(self.__window)
         menu_xtabs = tkinter.Menu(self.menubar, tearoff = 0)
-        menu_xtabs.add_command(label="Choose a Software", command=self.software_tabs_menu)
+        menu_xtabs.add_command(label="Crosstabs Menu", command=self.software_tabs_menu)
+        menu_xtabs.add_command(label="SPSS", command=self.spss.spss_crosstabs_menu)
+        menu_xtabs.add_command(label="Q Research", command=self.q.bases_window)
+        menu_xtabs.add_command(label="Amazon Legacy", command=self.amazon_xtabs)
         self.menubar.add_cascade(label="Crosstabs", menu=menu_xtabs)
         menu_report = tkinter.Menu(self.menubar, tearoff=0)
         menu_report.add_command(label="Topline Menu", command=self.topline.topline_menu)
+        menu_report.add_command(label="QSF and CSV", command=self.topline.read_qsf_topline)
+        menu_report.add_command(label="CSV Only", command=self.topline.read_csv_topline)
         self.menubar.add_cascade(label="Topline", menu=menu_report)
         menu_appendix = tkinter.Menu(self.menubar, tearoff=0)
         menu_appendix.add_command(label="Appendix Menu", command=self.appendix.append_menu)
+        menu_appendix.add_command(label="Word Appendix", command=self.appendix.doc_appendix)
+        menu_appendix.add_command(label="Excel Appendix", command=self.appendix.excel_appendix_type)
         self.menubar.add_cascade(label="Appendix", menu=menu_appendix)
         menu_terminal = tkinter.Menu(self.menubar, tearoff=0)
         menu_terminal.add_command(label="Open Terminal", command=self.reopen_terminal_window)
@@ -68,17 +77,14 @@ class Internbot:
         self.menubar.add_cascade(label="Terminal", menu=menu_terminal)
         menu_rnc = tkinter.Menu(self.menubar, tearoff=0)
         menu_rnc.add_command(label="RNC Menu", command=self.rnc.rnc_menu)
+        menu_rnc.add_command(label="Scores", command=self.rnc.scores_window)
+        menu_rnc.add_command(label="Issue Trended", command=self.rnc.issue_trended_window)
+        menu_rnc.add_command(label="Trended Scores", command=self.rnc.trended_scores_window)
         self.menubar.add_cascade(label="RNC", menu=menu_rnc)
         menu_quit = tkinter.Menu(self.menubar, tearoff=0)
-        menu_quit.add_command(label="Good Bye", command=self.__window.destroy)
+        menu_quit.add_command(label="Close Internbot", command=self.__window.destroy)
         self.menubar.add_cascade(label="Quit", menu=menu_quit)
         self.__window.config(menu=self.menubar)
-
-        localtime = time.asctime( time.localtime(time.time()))
-        self.time_stamp = str("Session:  " + localtime +"   Internbot Version:  " + internbot_version)
-
-        self.terminal_window()
-
 
     def main_help_window(self):
         """
@@ -140,7 +146,7 @@ class Internbot:
 
         self.error_log_filename = "templates_images/Error_Log.txt"
         self.error_log = open(self.error_log_filename, 'w')
-        self.error_log.write("Error Log: "+self.time_stamp+"\n")
+        self.error_log.write("Error Log: " + self.session_time_stamp + "\n")
 
 
         class PrintToT1(object):
@@ -191,20 +197,18 @@ class Internbot:
         sft_window.withdraw()
 
         width = 200
-        height = 300
+        height = 250
         sft_window.geometry(
             "%dx%d+%d+%d" % (width,height,mov_x + window_width / 2 - width / 2, mov_y + window_height / 2 - height / 2))
 
         message = "Please select crosstabs\nsoftware to use"
         tkinter.Label(sft_window, text = message, font=header_font, fg=header_color).pack()
-        btn_amaz = tkinter.Button(sft_window, text="Amazon CX", command=self.amazon_xtabs, height=3, width=20)
         btn_spss = tkinter.Button(sft_window, text="SPSS", command=self.spss.spss_crosstabs_menu, height=3, width=20)
         btn_q = tkinter.Button(sft_window, text="Q Research", command=self.q.bases_window, height=3, width=20)
         btn_cancel = tkinter.Button(sft_window, text="Cancel", command=sft_window.destroy, height=3, width=20)
         btn_cancel.pack(side=tkinter.BOTTOM, expand=True)
         btn_q.pack(side=tkinter.BOTTOM, expand=True)
         btn_spss.pack(side=tkinter.BOTTOM, expand=True)
-        btn_amaz.pack(side=tkinter.BOTTOM, expand=True)
         sft_window.deiconify()
 
     def amazon_xtabs(self):
@@ -214,14 +218,15 @@ class Internbot:
         ask_xlsx = messagebox.askokcancel("Select XLSX Report File", "Please select combined tables .xlsx file")
         if ask_xlsx is True:
             tablefile = filedialog.askopenfilename(initialdir = self.fpath, title = "Select report file",filetypes = (("excel files","*.xlsx"),("all files","*.*")))
-            ask_output = messagebox.askokcancel("Select output directory", "Please select folder for final report.")
-            if ask_output is True:
-                savedirectory = filedialog.askdirectory()
-                renamer = crosstabs.Format_Amazon_Report.RenameTabs()
-                renamed_wb = renamer.rename(tablefile, "templates_images/Amazon TOC.csv", savedirectory)
-                highlighter = crosstabs.Format_Amazon_Report.Highlighter(renamed_wb)
-                highlighter.highlight(savedirectory)
-                messagebox.showinfo("Finished", "The highlighted report is saved in your chosen directory.")
+            if tablefile is not "":
+                ask_output = messagebox.askokcancel("Select output directory", "Please select folder for final report.")
+                if ask_output is True:
+                    savedirectory = filedialog.askdirectory()
+                    renamer = crosstabs.Format_Amazon_Report.RenameTabs()
+                    renamed_wb = renamer.rename(tablefile, "templates_images/Amazon TOC.csv", savedirectory)
+                    highlighter = crosstabs.Format_Amazon_Report.Highlighter(renamed_wb)
+                    highlighter.highlight(savedirectory)
+                    messagebox.showinfo("Finished", "The highlighted report is saved in your chosen directory.")
 
     def open_file_for_user(self, file_path):
         try:
