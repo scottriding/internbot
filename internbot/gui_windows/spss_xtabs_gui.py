@@ -8,6 +8,7 @@ from tkinter import filedialog
 import os, subprocess, platform
 import csv
 from collections import OrderedDict
+import threading
 
 
 
@@ -34,6 +35,7 @@ class SPSSCrosstabsView(object):
         width = 200
         height = 300
         redirect_window.geometry("%dx%d+%d+%d" % (width,height,self.mov_x + self.window_width / 2 - width / 2, self.mov_y + self.window_height / 2 - height / 2))
+        redirect_window.title("SPSS Menu")
         message = "Please select the\nfiles to produce."
         tkinter.Label(redirect_window, text = message, font=self.header_font, fg=self.header_color).pack()
         btn_var = tkinter.Button(redirect_window, text="Variable script", command=self.variable_script, height=3, width=20)
@@ -473,15 +475,24 @@ class SPSSCrosstabsView(object):
                     if open_files is True:
                         self.open_file_for_user(outputdirectory + "/Crosstab Report.xlsx")
 
+    def open_sound(self):
+
+        def play_sound():
+            audio_file = os.path.expanduser("~/Documents/GitHub/internbot/internbot/templates_images/open.mp3")
+            return_code = subprocess.call(["afplay", audio_file])
+
+        thread_worker = threading.Thread(target=play_sound)
+        thread_worker.start()
 
     def open_file_for_user(self, file_path):
         try:
             if os.path.exists(file_path):
                 if platform.system() == 'Darwin':  # macOS
                     subprocess.call(('open', file_path))
+                    self.open_sound()
                 elif platform.system() == 'Windows':  # Windows
                     os.startfile(file_path)
             else:
-                messagebox.showerror("Error", "Error: Could not open file for you \n"+file_path)
+                messagebox.showerror("Error", "Error: Could not open file for you \n" + file_path)
         except IOError:
             messagebox.showerror("Error", "Error: Could not open file for you \n" + file_path)

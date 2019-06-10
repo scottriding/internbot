@@ -5,8 +5,7 @@ block_cipher = None
 
 a = Analysis(['internbot.py'],
              pathex=['/Users/tristanbowler/Documents/GitHub/internbot/internbot'],
-              binaries=[('/System/Library/Frameworks/Tk.framework/Tk', 'tk'),
-		       ('/System/Library/Frameworks/Tcl.framework/Tcl', 'tcl')],
+             binaries=[('/System/Library/Frameworks/Tk.framework/Tk', 'tk'), ('/System/Library/Frameworks/Tcl.framework/Tcl', 'tcl')],
              datas=[('templates_images/', 'templates_images' )],
              hiddenimports=[],
              hookspath=[],
@@ -40,4 +39,4 @@ app = BUNDLE(coll,
              name='internbot.app',
              icon='templates_images/y2.icns',
              bundle_identifier=None,
-             version=0.0)
+             version=1.0.0)
