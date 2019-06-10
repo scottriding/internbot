@@ -37,7 +37,7 @@ class AppendixView(object):
         height=350
 
         self.redirect_window.geometry("%dx%d+%d+%d" % (width,height,self.mov_x + self.window_width / 2 - width / 2, self.mov_y + self.window_height / 2 - height / 2))
-        self.redirect_window.title("Y2 Topline Appendix Report Automation")
+        self.redirect_window.title("Appendix Menu")
         message = "Please open a .csv file \nwith open ended responses."
         tkinter.Label(self.redirect_window, text=message, font=self.header_font, fg=self.header_color).pack(side=tkinter.TOP,expand=False, pady=10)
         btn_doc = tkinter.Button(self.redirect_window, text="Word Appendix", command=self.doc_appendix,
@@ -66,15 +66,21 @@ class AppendixView(object):
         help_window = tkinter.Toplevel(self.__window)
         help_window.withdraw()
         width = 250
-        height = 400
+        height = 300
         help_window.geometry("%dx%d+%d+%d" % (
             width, height, self.mov_x + self.window_width / 2 - width / 2,
             self.mov_y + self.window_height / 2 - height / 2))
+        help_window.title("Appendix Help")
         message = "\nAppendix Help"
         tkinter.Label(help_window, text=message, font=self.header_font, fg=self.header_color).pack(side=tkinter.TOP,
                                                                                                    padx=10)
-        info_message = "Choose the appendix type \n" \
-                       "(Most clients need a .docx)"
+        info_message = "Select the file type that\n" \
+                       "you wish to produce\n" \
+                       "(Most clients need a .docx)\n" \
+                       "The you will be prompted to\n" \
+                       "select the open ends file.\n" \
+                       "The columns in the open ends\n" \
+                       "should be variable, prompt, and label"
 
         tkinter.Label(help_window, text=info_message, justify=tkinter.LEFT).pack(side=tkinter.TOP)
         btn_ok = tkinter.Button(help_window, text="Ok", command=help_window.destroy, height=3, width=20)
@@ -120,9 +126,7 @@ class AppendixView(object):
         self.choose_window.withdraw()
         width = 250
         height = 250
-        self.choose_window.geometry("%dx%d+%d+%d" % (
-            width, height, self.mov_x + self.window_width / 2 - width / 2,
-            self.mov_y + self.window_height / 2 - height / 2))
+        self.choose_window.geometry("%dx%d+%d+%d" % (width, height, self.mov_x + self.window_width / 2 - width / 2, self.mov_y + self.window_height / 2 - height / 2))
         message = "Choose the format of\nyour appendix report"
         tkinter.Label(self.choose_window, text=message, font=self.header_font, fg=self.header_color).pack(expand=False)
         btn_qualtrics = tkinter.Button(self.choose_window, text="Qualtrics Formatting", command=self.qualtrics_excel_appendix, height=3, width=20)
@@ -172,16 +176,24 @@ class AppendixView(object):
         generator.write_appendix(savedirectory, '', True)
         self.open_file_for_user(savedirectory)
 
+    def open_sound(self):
 
+        def play_sound():
+            audio_file = os.path.expanduser("~/Documents/GitHub/internbot/internbot/templates_images/open.mp3")
+            return_code = subprocess.call(["afplay", audio_file])
+
+        thread_worker = threading.Thread(target=play_sound)
+        thread_worker.start()
 
     def open_file_for_user(self, file_path):
         try:
             if os.path.exists(file_path):
                 if platform.system() == 'Darwin':  # macOS
                     subprocess.call(('open', file_path))
+                    self.open_sound()
                 elif platform.system() == 'Windows':  # Windows
                     os.startfile(file_path)
             else:
-                messagebox.showerror("Error", "Error: Could not open file for you \n"+file_path)
+                messagebox.showerror("Error", "Error: Could not open file for you \n" + file_path)
         except IOError:
             messagebox.showerror("Error", "Error: Could not open file for you \n" + file_path)

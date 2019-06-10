@@ -33,7 +33,7 @@ class RNCView(object):
         self.redirect_window.geometry("%dx%d+%d+%d" % (
             width, height, self.mov_x + self.window_width / 2 - width / 2, self.mov_y + self.window_height / 2 - height / 2))
 
-        self.redirect_window.title("RNC Scores Topline Automation")
+        self.redirect_window.title("RNC Menu")
         message = "Please open a model scores file."
         tkinter.Label(self.redirect_window, text=message, font=self.header_font, fg=self.header_color).pack(expand=True)
         btn_topline = tkinter.Button(self.redirect_window, text="Scores Topline Report", command=self.scores_window,
@@ -65,7 +65,7 @@ class RNCView(object):
         height = 300
         help_window.geometry("%dx%d+%d+%d" % (width, height, self.mov_x + self.window_width/2 - width/2, self.mov_y + self.window_height/2 - height/2))
 
-        message = "\nRNC Report Help"
+        message = "\nRNC Help"
         tkinter.Label(help_window, text=message, font=self.header_font, fg=self.header_color).pack()
         info_message = "Each button will prompt you to open\n" \
                        "a RNC model file.\n" \
@@ -73,11 +73,11 @@ class RNCView(object):
                        "based on model file that will be placed" \
                        "\nin a specified directory folder.\n" \
                        "Issue Trended Report creates a single,\n" \
-                       "large excel file by tabbed by model.\n" \
+                       "large excel file tabbed by model.\n" \
                        "Scores Topline Report creates a general\n" \
                        "breakdown of models in a single excel file tab."
 
-        tkinter.Label(help_window, text=info_message, font=('Trade Gothic LT Pro', 14,)).pack()
+        tkinter.Label(help_window, text=info_message, font=('Trade Gothic LT Pro', 14,), justify=tkinter.LEFT).pack()
         btn_ok = tkinter.Button(help_window, text="Ok", command=help_window.destroy, height=3, width=20,
                                 highlightthickness=0)
         btn_ok.pack(pady=5, side=tkinter.BOTTOM, expand=False)
@@ -281,15 +281,24 @@ class RNCView(object):
         self.open_file_for_user(savedirectory)
         print("Done Creating Reports!")
 
+    def open_sound(self):
+
+        def play_sound():
+            audio_file = os.path.expanduser("~/Documents/GitHub/internbot/internbot/templates_images/open.mp3")
+            return_code = subprocess.call(["afplay", audio_file])
+
+        thread_worker = threading.Thread(target=play_sound)
+        thread_worker.start()
 
     def open_file_for_user(self, file_path):
         try:
             if os.path.exists(file_path):
                 if platform.system() == 'Darwin':  # macOS
                     subprocess.call(('open', file_path))
+                    self.open_sound()
                 elif platform.system() == 'Windows':  # Windows
                     os.startfile(file_path)
             else:
-                messagebox.showerror("Error", "Error: Could not open file for you \n"+file_path)
+                messagebox.showerror("Error", "Error: Could not open file for you \n" + file_path)
         except IOError:
             messagebox.showerror("Error", "Error: Could not open file for you \n" + file_path)

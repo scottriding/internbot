@@ -36,7 +36,7 @@ class ToplineView(object):
         height = 350
         self.redirect_window.geometry("%dx%d+%d+%d" % (
         width, height, self.mov_x + self.window_width/2 - width/2, self.mov_y + self.window_height / 2 - height / 2))
-        self.redirect_window.title("Y2 Topline Report Automation")
+        self.redirect_window.title("Topline Menu")
         message = "Please open a survey file."
         tkinter.Label(self.redirect_window, text=message, font=self.header_font, fg=self.header_color).pack(side=tkinter.TOP,
                                                                                                   pady=10)
@@ -80,6 +80,7 @@ class ToplineView(object):
         help_window.withdraw()
         width = 400
         height = 550
+        help_window.title("Topline Help")
         help_window.geometry("%dx%d+%d+%d" % (
         width, height, self.mov_x + self.window_width / 2 - width / 2, self.mov_y + self.window_height / 2 - height / 2))
         message = "\nTopline Help"
@@ -87,8 +88,9 @@ class ToplineView(object):
         info_message = "\nRound Number Info:\n" \
                        "Leave it blank for non-trended reports.\n" \
                        "For trended reports, enter the number of years in the report\n" \
-                       "When done, select open and you will be prompted to open the\n" \
-                       "Topline file(s) and select a save name and directory.\n\n" \
+                       "When done, select the type of Topline you want to run and\n" \
+                       "you will be prompted to open the Topline file(s) and\n" \
+                       "select a save name and directory.\n\n" \
                        "File Type Info:\n" \
                        "If you are running with a .qsf, select that file first\n" \
                        "then select the .csv file with the frequencies. If you are\n" \
@@ -100,7 +102,8 @@ class ToplineView(object):
                        "label = wording of response choice,\n" \
                        "n = population of respondents that selected response,\n" \
                        "percent = percentage of respondents selected response,\n" \
-                       "display logic = display logic for question if applicable"
+                       "(Trended Example: percent 2018, percent 2019)\n"\
+                       "display logic = display logic for question if applicable\n"
 
         tkinter.Label(help_window, text=info_message, justify=tkinter.LEFT).pack(side=tkinter.TOP)
         btn_ok = tkinter.Button(help_window, text="Ok", command=help_window.destroy, height=3, width=20)
@@ -156,7 +159,7 @@ class ToplineView(object):
         height = 200 + rounds * 25
         self.year_window.geometry("%dx%d+%d+%d" % (
         width, height, self.mov_x + self.window_width / 2 - width / 2, self.mov_y + self.window_height / 2 - height / 2))
-        self.year_window.title("Trended report years")
+        self.year_window.title("Trended Years Entry")
         message = "Please input the applicable years \nfor the trended topline report."
         tkinter.Label(self.year_window, text=message, font=self.header_font, fg=self.header_color).pack(expand=True)
 
@@ -197,7 +200,7 @@ class ToplineView(object):
         :return: None
         """
 
-        template_file = open("/Library/internbot/1.0.0/templates_images/topline_template.docx", "r")
+        template_file = open("templates_images/topline_template.docx", "r")
         report_generator = None
         if ".qsf" in self.filename:
             survey = base.QSFSurveyCompiler().compile(self.filename)
@@ -231,15 +234,24 @@ class ToplineView(object):
         self.open_file_for_user(savedirectory)
         self.redirect_window.destroy()
 
+    def open_sound(self):
+
+        def play_sound():
+            audio_file = os.path.expanduser("~/Documents/GitHub/internbot/internbot/templates_images/open.mp3")
+            return_code = subprocess.call(["afplay", audio_file])
+
+        thread_worker = threading.Thread(target=play_sound)
+        thread_worker.start()
 
     def open_file_for_user(self, file_path):
         try:
             if os.path.exists(file_path):
                 if platform.system() == 'Darwin':  # macOS
                     subprocess.call(('open', file_path))
+                    self.open_sound()
                 elif platform.system() == 'Windows':  # Windows
                     os.startfile(file_path)
             else:
-                messagebox.showerror("Error", "Error: Could not open file for you \n"+file_path)
+                messagebox.showerror("Error", "Error: Could not open file for you \n" + file_path)
         except IOError:
             messagebox.showerror("Error", "Error: Could not open file for you \n" + file_path)

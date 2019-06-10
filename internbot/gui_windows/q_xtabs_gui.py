@@ -36,7 +36,7 @@ class QCrosstabsView(object):
         height = 420
         self.base_window.geometry("%dx%d+%d+%d" % (
         width, height, self.mov_x + self.window_width / 2 - width / 2, self.mov_y + self.window_height / 2 - height / 2))
-        self.base_window.title("Base assignment")
+        self.base_window.title("Q Research Crosstabs Base Entry")
         self.loaded_qfile = False
 
         self.boxes_frame = tkinter.Frame(self.base_window)
@@ -200,7 +200,7 @@ class QCrosstabsView(object):
         height = 400
         help_window.geometry("%dx%d+%d+%d" % (
         width, height, self.mov_x + self.window_width / 2 - width / 2, self.mov_y + self.window_height / 2 - height / 2))
-        message = "\nBase Input Help"
+        message = "\nBases Help"
         tkinter.Label(help_window, text=message, font=self.header_font, fg=self.header_color).pack()
         info_message = "Select Open to import a Q output file." \
                        "\nThis should be a .xlsx file." \
@@ -476,16 +476,25 @@ class QCrosstabsView(object):
         print("Done!")
         self.open_file_for_user(savedirectory)
 
+    def open_sound(self):
+
+        def play_sound():
+            audio_file = os.path.expanduser("~/Documents/GitHub/internbot/internbot/templates_images/open.mp3")
+            return_code = subprocess.call(["afplay", audio_file])
+
+        thread_worker = threading.Thread(target=play_sound)
+        thread_worker.start()
 
     def open_file_for_user(self, file_path):
         try:
             if os.path.exists(file_path):
                 if platform.system() == 'Darwin':  # macOS
                     subprocess.call(('open', file_path))
+                    self.open_sound()
                 elif platform.system() == 'Windows':  # Windows
                     os.startfile(file_path)
             else:
-                messagebox.showerror("Error", "Error: Could not open file for you \n"+file_path)
+                messagebox.showerror("Error", "Error: Could not open file for you \n" + file_path)
         except IOError:
             messagebox.showerror("Error", "Error: Could not open file for you \n" + file_path)
 

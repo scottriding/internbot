@@ -7,6 +7,8 @@ import os, subprocess, platform
 import sys
 import time
 from shutil import copyfile
+import subprocess
+import threading
 
 
 class Internbot:
@@ -20,14 +22,13 @@ class Internbot:
         self.terminal_window()
         self.fpath = os.path.join(os.path.expanduser("~"), "Desktop")
         self.__embedded_fields = []
-        self.terminal_open = False
+        self.open_sound()
 
     def main_buttons(self):
         """
         Function establishes all the components of the main window
         :return: None
         """
-
         self.rnc = gui_windows.RNCView(self.__window, mov_x, mov_y, window_width, window_height, header_font, header_color, bot_render)
         self.topline = gui_windows.ToplineView(self.__window, mov_x, mov_y, window_width, window_height, header_font, header_color, bot_render)
         self.spss = gui_windows.SPSSCrosstabsView(self.__window, mov_x, mov_y, window_width, window_height, header_font, header_color)
@@ -37,12 +38,12 @@ class Internbot:
         #Button definitions
         button_frame =tkinter.Frame(self.__window)
         button_frame.pack(side=tkinter.LEFT, fill=tkinter.BOTH, )
-        btn_xtabs = tkinter.Button(button_frame, text="Run crosstabs", padx=4, width=20, height=3, command=self.software_tabs_menu, relief=tkinter.FLAT, highlightthickness=0)
-        btn_report = tkinter.Button(button_frame, text="Run topline report", padx=4, width=20, height=3,command=self.topline.topline_menu, relief=tkinter.FLAT, highlightthickness=0)
-        btn_appen = tkinter.Button(button_frame, text="Run topline appendix", padx=4, width=20, height=3,command=self.appendix.append_menu, relief=tkinter.FLAT, highlightthickness=0)
-        btn_rnc = tkinter.Button(button_frame, text="Run RNC", padx=4, width=20, height=3,command=self.rnc.rnc_menu, relief=tkinter.FLAT, highlightthickness=0)
+        btn_xtabs = tkinter.Button(button_frame, text="Crosstab Reports", padx=4, width=20, height=3, command=self.software_tabs_menu, relief=tkinter.FLAT, highlightthickness=0)
+        btn_report = tkinter.Button(button_frame, text="Topline Reports", padx=4, width=20, height=3,command=self.topline.topline_menu, relief=tkinter.FLAT, highlightthickness=0)
+        btn_appen = tkinter.Button(button_frame, text="Topline Appendices", padx=4, width=20, height=3,command=self.appendix.append_menu, relief=tkinter.FLAT, highlightthickness=0)
+        btn_rnc = tkinter.Button(button_frame, text="RNC Reports", padx=4, width=20, height=3,command=self.rnc.rnc_menu, relief=tkinter.FLAT, highlightthickness=0)
         btn_terminal = tkinter.Button(button_frame, text="Terminal Window", padx=4, width=20, height=3, command=self.reopen_terminal_window, relief=tkinter.FLAT, highlightthickness=0)
-        btn_quit = tkinter.Button(button_frame, text="Quit", padx=4, width=20, height=3,command=self.__window.destroy, relief=tkinter.GROOVE, highlightthickness=0)
+        btn_quit = tkinter.Button(button_frame, text="Quit", padx=4, width=20, height=3,command=self.quit, relief=tkinter.GROOVE, highlightthickness=0)
         btn_bot = tkinter.Button(button_frame, image=bot_render, padx=4, pady=10, width=158, height=45, borderwidth=0, highlightthickness=0, relief=tkinter.FLAT, command=self.main_help_window)
         btn_bot.pack(padx=5, pady=3, side=tkinter.TOP)
         btn_xtabs.pack(padx=5, side=tkinter.TOP, expand=True)
@@ -57,9 +58,9 @@ class Internbot:
         self.menubar = tkinter.Menu(self.__window)
         menu_xtabs = tkinter.Menu(self.menubar, tearoff = 0)
         menu_xtabs.add_command(label="Crosstabs Menu", command=self.software_tabs_menu)
-        menu_xtabs.add_command(label="SPSS", command=self.spss.spss_crosstabs_menu)
-        menu_xtabs.add_command(label="Q Research", command=self.q.bases_window)
-        menu_xtabs.add_command(label="Amazon Legacy", command=self.amazon_xtabs)
+        #menu_xtabs.add_command(label="SPSS", command=self.spss.spss_crosstabs_menu)
+        #menu_xtabs.add_command(label="Q Research", command=self.q.bases_window)
+        #menu_xtabs.add_command(label="Amazon Legacy", command=self.amazon_xtabs)
         self.menubar.add_cascade(label="Crosstabs", menu=menu_xtabs)
         menu_report = tkinter.Menu(self.menubar, tearoff=0)
         menu_report.add_command(label="Topline Menu", command=self.topline.topline_menu)
@@ -82,7 +83,7 @@ class Internbot:
         menu_rnc.add_command(label="Trended Scores", command=self.rnc.trended_scores_window)
         self.menubar.add_cascade(label="RNC", menu=menu_rnc)
         menu_quit = tkinter.Menu(self.menubar, tearoff=0)
-        menu_quit.add_command(label="Close Internbot", command=self.__window.destroy)
+        menu_quit.add_command(label="Close Internbot", command=self.quit)
         self.menubar.add_cascade(label="Quit", menu=menu_quit)
         self.__window.config(menu=self.menubar)
 
@@ -97,7 +98,7 @@ class Internbot:
         width = 250
         height = 500
         help_window.geometry("%dx%d+%d+%d" % (width,height,mov_x + window_width / 2 - width / 2, mov_y + window_height / 2 - height / 2))
-
+        help_window.title("Internbot Help")
         message = "\nWelcome to Internbot"
         tkinter.Label(help_window, text=message, font=header_font, fg=header_color).pack()
         info_message = "You can find help information throughout"\
@@ -135,6 +136,7 @@ class Internbot:
         self.term_window = True
         self.term_window = tkinter.Toplevel(self.__window)
         self.term_window.withdraw()
+        self.term_window.title("Terminal Window")
         self.term_window['background'] = header_color
         width = 500
         height = 600
@@ -168,7 +170,6 @@ class Internbot:
             self.terminal_open = False
             self.term_window.withdraw()
 
-
         print("All information about reports and errors will appear in this window.\n")
 
         self.term_window.protocol('WM_DELETE_WINDOW', update_terminal_flag)
@@ -187,7 +188,6 @@ class Internbot:
             self.open_file_for_user(os.path.join(os.path.expanduser("~"), "Desktop/internbot_error_log.txt"))
             self.__window.destroy()
 
-
     def software_tabs_menu(self):
         """
         Function sets up the Software Type selection for crosstabs
@@ -198,10 +198,10 @@ class Internbot:
 
         width = 200
         height = 250
-        sft_window.geometry(
-            "%dx%d+%d+%d" % (width,height,mov_x + window_width / 2 - width / 2, mov_y + window_height / 2 - height / 2))
+        sft_window.geometry("%dx%d+%d+%d" % (width,height,mov_x + window_width / 2 - width / 2, mov_y + window_height / 2 - height / 2))
 
-        message = "Please select crosstabs\nsoftware to use"
+        #message = "Please select crosstabs\nsoftware to use:\n"
+        message = "Crosstabs will be enabled \nin the next version"
         tkinter.Label(sft_window, text = message, font=header_font, fg=header_color).pack()
         btn_spss = tkinter.Button(sft_window, text="SPSS", command=self.spss.spss_crosstabs_menu, height=3, width=20)
         btn_q = tkinter.Button(sft_window, text="Q Research", command=self.q.bases_window, height=3, width=20)
@@ -209,6 +209,10 @@ class Internbot:
         btn_cancel.pack(side=tkinter.BOTTOM, expand=True)
         btn_q.pack(side=tkinter.BOTTOM, expand=True)
         btn_spss.pack(side=tkinter.BOTTOM, expand=True)
+
+        btn_q.config(state=tkinter.DISABLED)
+        btn_spss.config(state=tkinter.DISABLED)
+
         sft_window.deiconify()
 
     def amazon_xtabs(self):
@@ -228,11 +232,21 @@ class Internbot:
                     highlighter.highlight(savedirectory)
                     messagebox.showinfo("Finished", "The highlighted report is saved in your chosen directory.")
 
+    def open_sound(self):
+
+        def play_sound():
+            audio_file = os.path.expanduser("~/Documents/GitHub/internbot/internbot/templates_images/open.mp3")
+            return_code = subprocess.call(["afplay", audio_file])
+
+        thread_worker = threading.Thread(target=play_sound)
+        thread_worker.start()
+
     def open_file_for_user(self, file_path):
         try:
             if os.path.exists(file_path):
                 if platform.system() == 'Darwin':  # macOS
                     subprocess.call(('open', file_path))
+                    self.open_sound()
                 elif platform.system() == 'Windows':  # Windows
                     os.startfile(file_path)
             else:
@@ -240,9 +254,14 @@ class Internbot:
         except IOError:
             messagebox.showerror("Error", "Error: Could not open file for you \n" + file_path)
 
+    def quit(self):
+        audio_file = os.path.expanduser("~/Documents/GitHub/internbot/internbot/templates_images/close.mp3")
+        return_code = subprocess.call(["afplay", audio_file])
+        self.__window.destroy()
+
 window = tkinter.Tk()
 window.withdraw()
-window.title("Internbot: 01011001 00000010") # Internbot: Y2
+window.title("Internbot (Version: 1.0.0)") # Internbot: Y2
 if platform.system() == 'Windows':  # Windows
     window.iconbitmap('/Library/internbot/1.0.0/templates_images/y2.ico')
 screen_width = window.winfo_screenwidth()
@@ -255,8 +274,8 @@ window_width = 600
 window.geometry("%dx%d+%d+%d" % (window_width, window_height, mov_x, mov_y))
 window['background'] = 'white'
 
-y2_logo = "/Library/internbot/1.0.0/templates_images/Y2Logo.gif"
-help_bot = "/Library/internbot/1.0.0/templates_images/Internbot.gif"
+y2_logo = "templates_images/Y2Logo.gif"
+help_bot = "templates_images/Internbot.gif"
 bot_render = tkinter.PhotoImage(file=help_bot)
 logo_render = tkinter.PhotoImage(file= y2_logo)
 logo_label = tkinter.Label(window, image=logo_render, borderwidth=0, highlightthickness=0, relief=tkinter.FLAT, padx=50)
