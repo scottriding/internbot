@@ -146,7 +146,7 @@ class Internbot:
         term_text = tkinter.Text(self.term_window, fg='white', height= 600, width=500, background=header_color, padx=5, pady=5)
         term_text.pack()
 
-        self.error_log_filename = "templates_images/Error_Log.txt"
+        self.error_log_filename = "/Library/internbot/1.0.0/templates_images/Error_Log.txt"
         self.error_log = open(self.error_log_filename, 'w')
         self.error_log.write("Error Log: " + self.session_time_stamp + "\n")
 
@@ -227,7 +227,7 @@ class Internbot:
                 if ask_output is True:
                     savedirectory = filedialog.askdirectory()
                     renamer = crosstabs.Format_Amazon_Report.RenameTabs()
-                    renamed_wb = renamer.rename(tablefile, "templates_images/Amazon TOC.csv", savedirectory)
+                    renamed_wb = renamer.rename(tablefile, "/Library/internbot/1.0.0/templates_images/Amazon TOC.csv", savedirectory)
                     highlighter = crosstabs.Format_Amazon_Report.Highlighter(renamed_wb)
                     highlighter.highlight(savedirectory)
                     messagebox.showinfo("Finished", "The highlighted report is saved in your chosen directory.")
@@ -235,7 +235,7 @@ class Internbot:
     def open_sound(self):
 
         def play_sound():
-            audio_file = os.path.expanduser("~/Documents/GitHub/internbot/internbot/templates_images/open.mp3")
+            audio_file = os.path.expanduser("/Library/internbot/1.0.0/templates_images/open.mp3")
             return_code = subprocess.call(["afplay", audio_file])
 
         thread_worker = threading.Thread(target=play_sound)
@@ -255,7 +255,7 @@ class Internbot:
             messagebox.showerror("Error", "Error: Could not open file for you \n" + file_path)
 
     def quit(self):
-        audio_file = os.path.expanduser("~/Documents/GitHub/internbot/internbot/templates_images/close.mp3")
+        audio_file = os.path.expanduser("/Library/internbot/1.0.0/templates_images/close.mp3")
         return_code = subprocess.call(["afplay", audio_file])
         self.__window.destroy()
 
@@ -274,8 +274,8 @@ window_width = 600
 window.geometry("%dx%d+%d+%d" % (window_width, window_height, mov_x, mov_y))
 window['background'] = 'white'
 
-y2_logo = "templates_images/Y2Logo.gif"
-help_bot = "templates_images/Internbot.gif"
+y2_logo = "/Library/internbot/1.0.0/templates_images/Y2Logo.gif"
+help_bot = "/Library/internbot/1.0.0/templates_images/Internbot.gif"
 bot_render = tkinter.PhotoImage(file=help_bot)
 logo_render = tkinter.PhotoImage(file= y2_logo)
 logo_label = tkinter.Label(window, image=logo_render, borderwidth=0, highlightthickness=0, relief=tkinter.FLAT, padx=50)

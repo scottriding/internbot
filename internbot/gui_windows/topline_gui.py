@@ -200,7 +200,7 @@ class ToplineView(object):
         :return: None
         """
 
-        template_file = open("templates_images/topline_template.docx", "r")
+        template_file = open("/Library/internbot/1.0.0/templates_images/topline_template.docx", "r")
         report_generator = None
         if ".qsf" in self.filename:
             survey = base.QSFSurveyCompiler().compile(self.filename)
@@ -237,7 +237,7 @@ class ToplineView(object):
     def open_sound(self):
 
         def play_sound():
-            audio_file = os.path.expanduser("~/Documents/GitHub/internbot/internbot/templates_images/open.mp3")
+            audio_file = "/Library/internbot/1.0.0/templates_images/open.mp3"
             return_code = subprocess.call(["afplay", audio_file])
 
         thread_worker = threading.Thread(target=play_sound)

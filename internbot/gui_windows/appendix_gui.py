@@ -114,7 +114,7 @@ class AppendixView(object):
         :param savedirectory: string indicating the filename for the file from the user
         :return: None
         """
-        generator.write_appendix(savedirectory, "templates_images/appendix_template.docx", False)
+        generator.write_appendix(savedirectory, "/Library/internbot/1.0.0/templates_images/appendix_template.docx", False)
         self.open_file_for_user(savedirectory)
 
     def excel_appendix_type(self):
@@ -179,7 +179,7 @@ class AppendixView(object):
     def open_sound(self):
 
         def play_sound():
-            audio_file = os.path.expanduser("~/Documents/GitHub/internbot/internbot/templates_images/open.mp3")
+            audio_file = "/Library/internbot/1.0.0/templates_images/open.mp3"
             return_code = subprocess.call(["afplay", audio_file])
 
         thread_worker = threading.Thread(target=play_sound)

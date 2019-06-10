@@ -284,7 +284,7 @@ class RNCView(object):
     def open_sound(self):
 
         def play_sound():
-            audio_file = os.path.expanduser("~/Documents/GitHub/internbot/internbot/templates_images/open.mp3")
+            audio_file = os.path.expanduser("/Library/internbot/1.0.0/templates_images/open.mp3")
             return_code = subprocess.call(["afplay", audio_file])
 
         thread_worker = threading.Thread(target=play_sound)

@@ -113,7 +113,7 @@ class RenameTabs(object):
 
         toc_sheet.column_dimensions['C'].hidden= True
 
-        logo = Image("templates_images/Old_QLogo.png")
+        logo = Image("/Library/internbot/1.0.0/templates_images/Old_QLogo.png")
         toc_sheet.add_image(logo, "B2")
 
     def write_table_of_contents(self, path_to_tables, toc_sheet):
