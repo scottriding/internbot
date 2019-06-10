@@ -244,7 +244,7 @@ window = tkinter.Tk()
 window.withdraw()
 window.title("Internbot: 01011001 00000010") # Internbot: Y2
 if platform.system() == 'Windows':  # Windows
-    window.iconbitmap('templates_images/y2.ico')
+    window.iconbitmap('/Library/internbot/1.0.0/templates_images/y2.ico')
 screen_width = window.winfo_screenwidth()
 
 screen_height = window.winfo_screenheight()
@@ -255,8 +255,8 @@ window_width = 600
 window.geometry("%dx%d+%d+%d" % (window_width, window_height, mov_x, mov_y))
 window['background'] = 'white'
 
-y2_logo = "templates_images/Y2Logo.gif"
-help_bot = "templates_images/Internbot.gif"
+y2_logo = "/Library/internbot/1.0.0/templates_images/Y2Logo.gif"
+help_bot = "/Library/internbot/1.0.0/templates_images/Internbot.gif"
 bot_render = tkinter.PhotoImage(file=help_bot)
 logo_render = tkinter.PhotoImage(file= y2_logo)
 logo_label = tkinter.Label(window, image=logo_render, borderwidth=0, highlightthickness=0, relief=tkinter.FLAT, padx=50)

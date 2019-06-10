@@ -148,6 +148,7 @@ class AppendixView(object):
                 thread_worker.start()
             self.redirect_window.destroy()
 
+
     def qualtrics_excel_appendix(self):
         generator = topline.Appendix.AppendixGenerator()
         csvfilename = filedialog.askopenfilename(initialdir=self.fpath, title="Select open ends file",
