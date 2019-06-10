@@ -79,8 +79,8 @@ class QCrosstabsView(object):
         buttons_frame.pack(pady=10, side=tkinter.RIGHT, fill=tkinter.BOTH)
         self.btn_edit = tkinter.Button(buttons_frame, text="Edit", command=self.parse_bases, width=20, height=3)
         self.btn_done = tkinter.Button(buttons_frame, text="Done", command=self.finish_bases, width=20, height=3)
-        self.btn_open = tkinter.Button(buttons_frame, text="Open", command=self.qtab_build, width=20, height=3)
-        self.btn_load = tkinter.Button(buttons_frame, text="Load CSV", command=self.load_csv, width=20, height=3)
+        self.btn_open = tkinter.Button(buttons_frame, text="Open", command=self.qtab_open, width=20, height=3)
+        self.btn_csv = tkinter.Button(buttons_frame, text="CSV Options", command=self.csv_options_menu, width=20, height=3)
         self.btn_cancel = tkinter.Button(buttons_frame, text="Cancel", command=self.base_window.destroy, width=20,
                                          height=3)
         self.btn_bot = tkinter.Button(buttons_frame, image=self.bot_render, borderwidth=0,
@@ -89,12 +89,12 @@ class QCrosstabsView(object):
         self.btn_cancel.pack(pady=2, side=tkinter.BOTTOM)
         self.btn_done.pack(pady=2, side=tkinter.BOTTOM)
         self.btn_edit.pack(pady=2, side=tkinter.BOTTOM)
-        self.btn_load.pack(pady=2, side=tkinter.BOTTOM)
+        self.btn_csv.pack(pady=2, side=tkinter.BOTTOM)
         self.btn_open.pack(pady=2, side=tkinter.BOTTOM)
         self.btn_bot.pack(pady=2, side=tkinter.BOTTOM)
 
         self.btn_done.config(state=tkinter.DISABLED)
-        self.btn_load.config(state=tkinter.DISABLED)
+        self.btn_csv.config(state=tkinter.DISABLED)
         self.btn_edit.config(state=tkinter.DISABLED)
 
         def enter_pressed(event):
@@ -148,12 +148,12 @@ class QCrosstabsView(object):
 
         self.base_window.deiconify()
 
-    def qtab_build(self):
+    def qtab_open(self):
         """
         Funtion opens a Q Research .xlsx file and loads the table information into base_window for display to user
         :return: None
         """
-
+        print("Opening Q Research file...")
         if not self.loaded_qfile:
             report_file_name = filedialog.askopenfilename(initialdir=self.fpath, title="Select report file",
                                                             filetypes=(("excel files", "*.xlsx"), ("all files", "*.*")))
@@ -178,14 +178,14 @@ class QCrosstabsView(object):
                 self.loaded_qfile = True
                 self.base_window.focus_force()
                 self.btn_done.config(state=tkinter.NORMAL)
-                self.btn_load.config(state=tkinter.NORMAL)
+                self.btn_csv.config(state=tkinter.NORMAL)
                 self.btn_edit.config(state=tkinter.NORMAL)
         else:
             ask_lost_work = messagebox.askyesno("Select Q Research report file",
                                                   "You will lose your work. \nDo you want to continue?")
             if ask_lost_work:
                 self.loaded_qfile = False
-                self.qtab_build()
+                self.qtab_open()
 
     def bases_help_window(self):
         """
@@ -245,8 +245,32 @@ class QCrosstabsView(object):
     def unicode_dict_reader(self, utf8_data, **kwargs):
         csv_reader = csv.DictReader(utf8_data, **kwargs)
         for row in csv_reader:
-            if row['base description'] != "":
-                yield {unicode(key, 'iso-8859-1'): unicode(value, 'iso-8859-1') for key, value in row.items()}
+            if row['Base Description'] != "":
+                yield {key: value for key, value in row.items()}
+
+    def csv_options_menu(self):
+        """
+        Funtion asks the user if they would like to create a .docx or a .xlsx
+        :return: None
+        """
+        self.choose_window = tkinter.Toplevel(self.__window)
+        self.choose_window.withdraw()
+        width = 250
+        height = 250
+        self.choose_window.geometry("%dx%d+%d+%d" % (
+            width, height, self.mov_x + self.window_width / 2 - width / 2,
+            self.mov_y + self.window_height / 2 - height / 2))
+        message = "Export/Load CSV file with\nyour bases and n's"
+        tkinter.Label(self.choose_window, text=message, font=self.header_font, fg=self.header_color).pack(expand=False)
+        btn_export = tkinter.Button(self.choose_window, text="Export CSV", command=self.export_csv, height=3, width=20)
+
+        btn_load = tkinter.Button(self.choose_window, text="Load CSV", command=self.load_csv, height=3, width=20)
+        btn_cancel = tkinter.Button(self.choose_window, text="Cancel", command=self.choose_window.destroy, height=3, width=20)
+
+        btn_cancel.pack(ipadx=5, side=tkinter.BOTTOM, expand=False)
+        btn_load.pack(ipadx=5, side=tkinter.BOTTOM, expand=False)
+        btn_export.pack(ipadx=5, side=tkinter.BOTTOM, expand=False)
+        self.choose_window.deiconify()
 
     def load_csv(self):
         base_file_name = filedialog.askopenfilename(initialdir=self.fpath, title="Select base file",
@@ -257,11 +281,30 @@ class QCrosstabsView(object):
             index = 0
             for base_detail in base_details:
                 if index < len(self.tables):
-                    base = base_detail["base description"]
-                    n = base_detail["base size"]
+                    base = base_detail["Base Description"]
+                    n = base_detail["Base Size (n)"]
                     self.bases_box.delete(int(index))
                     self.bases_box.insert(int(index), base + " ~ " + n)
                     index += 1
+        self.choose_window.destroy()
+
+    def export_csv(self):
+        savedirectory = filedialog.asksaveasfilename(defaultextension='.csv', filetypes=[('comma separated values', '.csv')])
+        if savedirectory is not "":
+            with open(savedirectory, 'w') as csvfile:
+                csvwriter = csv.writer(csvfile, delimiter=',', quotechar="'")
+                csvwriter.writerow(
+                    ['Table Name'] +
+                    ['Prompt'] +
+                    ['Base Description'] +
+                    ['Base Size (n)']
+                )
+                for key, value in self.tables.items():
+                    csvwriter.writerow([
+                        str("Table "+str(key)),
+                        value.prompt.translate(str.maketrans(' ',' ', ',')),
+                    ])
+            self.open_file_for_user(savedirectory)
 
     def edit_base_window(self, index):
         """

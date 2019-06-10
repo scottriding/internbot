@@ -33,7 +33,7 @@ class ToplineView(object):
         self.redirect_window = tkinter.Toplevel(self.__window)
         self.redirect_window.withdraw()
         width = 200
-        height = 300
+        height = 350
         self.redirect_window.geometry("%dx%d+%d+%d" % (
         width, height, self.mov_x + self.window_width/2 - width/2, self.mov_y + self.window_height / 2 - height / 2))
         self.redirect_window.title("Y2 Topline Report Automation")
@@ -50,16 +50,17 @@ class ToplineView(object):
         self.round_entry = tkinter.Entry(round_frame)
         self.round_entry.pack(side=tkinter.RIGHT, expand=True)
 
-        btn_open = tkinter.Button(self.redirect_window, text="Open", command=self.read_topline, height=3, width=20)
+        btn_qsf = tkinter.Button(self.redirect_window, text="QSF and CSV", command=self.read_qsf_topline, height=3, width=20)
+        btn_csv = tkinter.Button(self.redirect_window, text="CSV Only", command=self.read_csv_topline, height=3, width=20)
         btn_cancel = tkinter.Button(self.redirect_window, text="Cancel", command=self.redirect_window.destroy, height=3,
                                     width=20)
-        btn_bot = tkinter.Button(self.redirect_window, image=self.bot_render, borderwidth=0,
-                                 highlightthickness=0, relief=tkinter.FLAT, bg="white", height=65, width=158,
-                                 command=self.topline_help_window)
+        btn_bot =tkinter.Button(self.redirect_window, image=self.bot_render, borderwidth=0, highlightthickness=0,
+                                relief=tkinter.FLAT, bg="white", height=65, width=158, command=self.topline_help_window)
 
-        btn_bot.pack(side=tkinter.TOP, padx=10, pady=5)
-        btn_open.pack(side=tkinter.TOP, padx=10, pady=5)
-        btn_cancel.pack(side=tkinter.TOP, padx=10, pady=5)
+        btn_bot.pack(side=tkinter.TOP, padx=10)
+        btn_qsf.pack(side=tkinter.TOP, padx=10)
+        btn_csv.pack(side=tkinter.TOP, padx=10)
+        btn_cancel.pack(side=tkinter.TOP, padx=10)
 
         self.round_entry.focus_set()
         self.redirect_window.deiconify()
@@ -83,15 +84,15 @@ class ToplineView(object):
         width, height, self.mov_x + self.window_width / 2 - width / 2, self.mov_y + self.window_height / 2 - height / 2))
         message = "\nTopline Help"
         tkinter.Label(help_window, text=message, font=self.header_font, fg=self.header_color).pack(side=tkinter.TOP, padx=10)
-        info_message = "\nRound Number:\n\n" \
-                       "Leave it blank  or enter 1 for \n" \
-                       "non-trended reports.\n\n" \
-                       "For trended reports, enter a number\n" \
-                       "corresponding number of years.\n" \
-                       "When done, select open and you\n" \
-                       "will be prompted to open the \n" \
-                       "Topline file and select a save\n" \
-                       "directory.\n\n" \
+        info_message = "\nRound Number Info:\n" \
+                       "Leave it blank for non-trended reports.\n" \
+                       "For trended reports, enter the number of years in the report\n" \
+                       "When done, select open and you will be prompted to open the\n" \
+                       "Topline file(s) and select a save name and directory.\n\n" \
+                       "File Type Info:\n" \
+                       "If you are running with a .qsf, select that file first\n" \
+                       "then select the .csv file with the frequencies. If you are\n" \
+                       "runnning with just a .csv, select that file and that's it.\n\n" \
                        "Column names should include:\n" \
                        "variable = name of question,\n" \
                        "prompt (csv only) = question asked,\n" \
@@ -112,17 +113,33 @@ class ToplineView(object):
         help_window.bind("<Return>", enter_pressed)
         help_window.bind("<KP_Enter>", enter_pressed)
 
-    def read_topline(self):
+    def read_qsf_topline(self):
         """
         Funtion reads in a topline file
         :return: None
         """
-
+        print("Reading in QSF Topline")
         self.filename = filedialog.askopenfilename(initialdir=self.fpath, title="Select survey file", filetypes=(("Qualtrics files", "*.qsf"), ("comma seperated files", "*.csv"), ("all files", "*.*")))
         if self.filename is not "":
             round_int = self.round_entry.get()
             if round_int != "" and round_int != 1:
-                self.year_window_setup(int(round_int))
+                thread = threading.Thread(target=self.year_window_setup(int(round_int)))
+                thread.start()
+            else:
+                self.build_topline_report()
+
+    def read_csv_topline(self):
+        """
+        Funtion reads in a topline file
+        :return: None
+        """
+        print("Reading in CSV Topline")
+        self.filename = filedialog.askopenfilename(initialdir=self.fpath, title="Select survey file", filetypes=(("Qualtrics files", "*.qsf"), ("comma seperated files", "*.csv"), ("all files", "*.*")))
+        if self.filename is not "":
+            round_int = self.round_entry.get()
+            if round_int != "" and round_int != 1:
+                thread = threading.Thread(target=self.year_window_setup(int(round_int)))
+                thread.start()
             else:
                 self.build_topline_report()
 
@@ -160,6 +177,7 @@ class ToplineView(object):
 
         self.year_window.bind("<Return>", enter_pressed)
         self.year_window.bind("<KP_Enter>", enter_pressed)
+
 
 
 
@@ -207,7 +225,7 @@ class ToplineView(object):
 
 
     def build_topline_worker(self, report_generator, template_file, savedirectory, years):
-        print("Running report...")
+        print("Running Topline Report...")
         report_generator.generate_topline(template_file, savedirectory, years)
         print("Done!")
         self.open_file_for_user(savedirectory)

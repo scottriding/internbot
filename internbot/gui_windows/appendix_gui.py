@@ -9,8 +9,8 @@ import os, subprocess, platform
 import csv
 from collections import OrderedDict
 import threading
-import sys
-import time
+
+
 
 class AppendixView(object):
 
@@ -34,21 +34,27 @@ class AppendixView(object):
         self.redirect_window=tkinter.Toplevel(self.__window)
         self.redirect_window.withdraw()
         width=200
-        height=300
+        height=350
 
         self.redirect_window.geometry("%dx%d+%d+%d" % (width,height,self.mov_x + self.window_width / 2 - width / 2, self.mov_y + self.window_height / 2 - height / 2))
         self.redirect_window.title("Y2 Topline Appendix Report Automation")
         message = "Please open a .csv file \nwith open ended responses."
-        tkinter.Label(self.redirect_window, text=message, font=self.header_font, fg=self.header_color).pack(expand=True, pady=5)
-        btn_open = tkinter.Button(self.redirect_window, text="Open", command=self.append_type, height=3, width=20)
-        btn_cancel = tkinter.Button(self.redirect_window, text="Cancel", command=self.redirect_window.destroy, height=3,
-                                    width=20)
+        tkinter.Label(self.redirect_window, text=message, font=self.header_font, fg=self.header_color).pack(side=tkinter.TOP,expand=False, pady=10)
+        btn_doc = tkinter.Button(self.redirect_window, text="Word Appendix", command=self.doc_appendix,
+                                 height=3, width=20)
+
+        btn_excel = tkinter.Button(self.redirect_window, text="Excel Appendix", command=self.excel_appendix_type, height=3, width=20)
+        btn_cancel = tkinter.Button(self.redirect_window, text="Cancel", command=self.redirect_window.destroy, height=3, width=20)
+
+
         btn_bot = tkinter.Button(self.redirect_window, image=self.bot_render, borderwidth=0,
                                  highlightthickness=0, relief=tkinter.FLAT, bg="white", height=65, width=158,
                                  command=self.appendix_help_window)
-        btn_bot.pack(side=tkinter.TOP, padx=10, pady=5)
-        btn_cancel.pack(side=tkinter.BOTTOM, padx=10, pady=5)
-        btn_open.pack(side=tkinter.BOTTOM, padx=10, pady=5)
+
+        btn_bot.pack(padx=5, side=tkinter.TOP, expand=False)
+        btn_doc.pack(padx=5, side=tkinter.TOP, expand=False)
+        btn_excel.pack(padx=5, side=tkinter.TOP, expand=False)
+        btn_cancel.pack(padx=5, side=tkinter.TOP, expand=False)
 
         self.redirect_window.deiconify()
 
@@ -67,14 +73,8 @@ class AppendixView(object):
         message = "\nAppendix Help"
         tkinter.Label(help_window, text=message, font=self.header_font, fg=self.header_color).pack(side=tkinter.TOP,
                                                                                                    padx=10)
-        info_message = "Open a .csv file containing open ends\n" \
-                       "Column names should include:\n"\
-                       "variable = question name\n" \
-                       "prompt = question asked\n" \
-                       "label = response from user\n" \
-                       "\nThen choose if you would like to\n" \
-                       "create a .docx or .xlsx appendix\n" \
-                       "(Most clients need .docx)"
+        info_message = "Choose the appendix type \n" \
+                       "(Most clients need a .docx)"
 
         tkinter.Label(help_window, text=info_message, justify=tkinter.LEFT).pack(side=tkinter.TOP)
         btn_ok = tkinter.Button(help_window, text="Ok", command=help_window.destroy, height=3, width=20)
@@ -87,7 +87,31 @@ class AppendixView(object):
         help_window.bind("<Return>", enter_pressed)
         help_window.bind("<KP_Enter>", enter_pressed)
 
-    def append_type(self):
+
+    def doc_appendix(self):
+        generator = topline.Appendix.AppendixGenerator()
+        csvfilename = filedialog.askopenfilename(initialdir=self.fpath, title="Select open ends file",
+                                                   filetypes=(("Comma separated files", "*csv"), ("all files", "*.*")))
+        if csvfilename is not "":
+            generator.parse_file(csvfilename, False)
+            savedirectory = filedialog.asksaveasfilename(defaultextension='.docx', filetypes=[('word files', '.docx')])
+            if savedirectory is not "":
+                print("Running .docx appendix. This may take some time...")
+                thread_worker = threading.Thread(target=self.doc_appendix_worker, args=(generator, savedirectory))
+                thread_worker.start()
+            self.redirect_window.destroy()
+
+    def doc_appendix_worker(self, generator, savedirectory):
+        """
+        Funtion is called as worker thread to generate the report and open the finished file for the user.
+        :param generator: topline.Appendix.AppendixGenerator
+        :param savedirectory: string indicating the filename for the file from the user
+        :return: None
+        """
+        generator.write_appendix(savedirectory, "templates_images/appendix_template.docx", False)
+        self.open_file_for_user(savedirectory)
+
+    def excel_appendix_type(self):
         """
         Funtion asks the user if they would like to create a .docx or a .xlsx
         :return: None
@@ -100,62 +124,42 @@ class AppendixView(object):
             width, height, self.mov_x + self.window_width / 2 - width / 2,
             self.mov_y + self.window_height / 2 - height / 2))
         message = "Choose the format of\nyour appendix report"
-        tkinter.Label(self.choose_window, text=message, font=self.header_font, fg=self.header_color).pack(expand=True)
-        btn_doc = tkinter.Button(self.choose_window, text="Word Appendix", command=self.doc_appendix,
-                                     height=3, width=20)
+        tkinter.Label(self.choose_window, text=message, font=self.header_font, fg=self.header_color).pack(expand=False)
+        btn_qualtrics = tkinter.Button(self.choose_window, text="Qualtrics Formatting", command=self.qualtrics_excel_appendix, height=3, width=20)
 
-        btn_excel = tkinter.Button(self.choose_window, text="Excel Appendix",
-                                   command=self.excel_appendix, height=3, width=20)
-        btn_cancel = tkinter.Button(self.choose_window, text="Cancel",
-                                   command=self.choose_window.destroy, height=3, width=20)
+        btn_y2 = tkinter.Button(self.choose_window, text="Y2 Formatting", command=self.y2_excel_appendix, height=3, width=20)
+        btn_cancel = tkinter.Button(self.choose_window, text="Cancel", command=self.choose_window.destroy, height=3, width=20)
 
         btn_cancel.pack(ipadx=5, side=tkinter.BOTTOM, expand=False)
-        btn_excel.pack(ipadx=5, side=tkinter.BOTTOM, expand=False)
-        btn_doc.pack(ipadx=5, side=tkinter.BOTTOM, expand=False)
+        btn_qualtrics.pack(ipadx=5, side=tkinter.BOTTOM, expand=False)
+        btn_y2.pack(ipadx=5, side=tkinter.BOTTOM, expand=False)
         self.choose_window.deiconify()
 
-
-
-
-
-    def doc_appendix(self):
+    def y2_excel_appendix(self):
         generator = topline.Appendix.AppendixGenerator()
         csvfilename = filedialog.askopenfilename(initialdir=self.fpath, title="Select open ends file",
                                                    filetypes=(("Comma separated files", "*csv"), ("all files", "*.*")))
         if csvfilename is not "":
-            generator.parse_file(csvfilename)
-            savedirectory = filedialog.asksaveasfilename(defaultextension='.docx', filetypes=[('word files', '.docx')])
+            generator.parse_file(csvfilename, False)
+            savedirectory = filedialog.asksaveasfilename(defaultextension='.xlsx', filetypes=[('excel files', '.xlsx')])
             if savedirectory is not "":
-                thread_worker = threading.Thread(target=self.doc_appendix_worker, args=(generator, savedirectory))
+                print("Running .xlsx appendix. This may take some time...")
+                thread_worker = threading.Thread(target=self.excel_appendix_worker, args=(generator, savedirectory))
                 thread_worker.start()
             self.redirect_window.destroy()
 
-    def doc_appendix_worker(self, generator, savedirectory):
-        """
-        Funtion is called as worker thread to generate the report and open the finished file for the user.
-        :param generator: topline.Appendix.AppendixGenerator
-        :param savedirectory: string indicating the filename for the file from the user
-        :return: None
-        """
-        generator.write_appendix(savedirectory, "/Library/internbot/1.0.0/templates_images/appendix_template.docx", False)
-        self.open_file_for_user(savedirectory)
 
-    def excel_appendix(self):
+    def qualtrics_excel_appendix(self):
         generator = topline.Appendix.AppendixGenerator()
         csvfilename = filedialog.askopenfilename(initialdir=self.fpath, title="Select open ends file",
-                                                   filetypes=(("Comma separated files", "*csv"), ("all files", "*.*")))
+                                                 filetypes=(("Comma separated files", "*csv"), ("all files", "*.*")))
         if csvfilename is not "":
-            is_y2 = messagebox.askquestion('Appendix Style','Is this a Y2 style appendix?')
-            if is_y2 == 'yes':
-                is_qualtrics =False
-            else:
-                is_qualtrics=True
-            generator.parse_file(csvfilename, is_qualtrics)
+            generator.parse_file(csvfilename, True)
             savedirectory = filedialog.asksaveasfilename(defaultextension='.xlsx', filetypes=[('excel files', '.xlsx')])
             if savedirectory is not "":
+                print("Running .xlsx appendix. This may take some time...")
                 thread_worker = threading.Thread(target=self.excel_appendix_worker, args=(generator, savedirectory))
                 thread_worker.start()
-
             self.redirect_window.destroy()
 
     def excel_appendix_worker(self, generator, savedirectory):
