@@ -6,7 +6,7 @@ import csv
 
 class RenameTabs(object):
 
-    def __init__(self):
+    def __init__(self, resources_filepath):
         self.__sheet_names = []
         self.__white_highlight = PatternFill("solid", fgColor="FFFFFF")
         self.__yellow_highlight = PatternFill("solid", fgColor="FFFF00")
@@ -20,6 +20,7 @@ class RenameTabs(object):
         self.__thick_sides = Border(right=Side(style='thick'), left=Side(style='thick'))
         self.__thick_top = Border(top=Side(style='thick'))
         self.__thick_all = Border(top=Side(style='thick'), bottom=Side(style='thick'), right=Side(style='thick'), left=Side(style='thick'))
+        self.resources_filepath = resources_filepath
 
         # calculate the excel alphabet from A to ZZZ
         alphabet = []
@@ -113,7 +114,7 @@ class RenameTabs(object):
 
         toc_sheet.column_dimensions['C'].hidden= True
 
-        logo = Image("templates_images/Old_QLogo.png")
+        logo = Image("/Library/internbot/1.0.0/internbot/templates_images/Old_QLogo.png")
         toc_sheet.add_image(logo, "B2")
 
     def write_table_of_contents(self, path_to_tables, toc_sheet):

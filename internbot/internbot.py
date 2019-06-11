@@ -24,16 +24,18 @@ class Internbot:
         self.__embedded_fields = []
         self.open_sound()
 
+
+
     def main_buttons(self):
         """
         Function establishes all the components of the main window
         :return: None
         """
-        self.rnc = gui_windows.RNCView(self.__window, mov_x, mov_y, window_width, window_height, header_font, header_color, bot_render)
-        self.topline = gui_windows.ToplineView(self.__window, mov_x, mov_y, window_width, window_height, header_font, header_color, bot_render)
-        self.spss = gui_windows.SPSSCrosstabsView(self.__window, mov_x, mov_y, window_width, window_height, header_font, header_color)
-        self.q = gui_windows.QCrosstabsView(self.__window, mov_x, mov_y, window_width, window_height, header_font, header_color, bot_render)
-        self.appendix = gui_windows.AppendixView(self.__window, mov_x, mov_y, window_width, window_height, header_font, header_color, bot_render)
+        self.rnc = gui_windows.RNCView(self.__window, mov_x, mov_y, window_width, window_height, header_font, header_color, bot_render, resources_filepath)
+        self.topline = gui_windows.ToplineView(self.__window, mov_x, mov_y, window_width, window_height, header_font, header_color, bot_render, resources_filepath)
+        self.spss = gui_windows.SPSSCrosstabsView(self.__window, mov_x, mov_y, window_width, window_height, header_font, header_color, resources_filepath)
+        self.q = gui_windows.QCrosstabsView(self.__window, mov_x, mov_y, window_width, window_height, header_font, header_color, bot_render, resources_filepath)
+        self.appendix = gui_windows.AppendixView(self.__window, mov_x, mov_y, window_width, window_height, header_font, header_color, bot_render, resources_filepath)
 
         #Button definitions
         button_frame =tkinter.Frame(self.__window)
@@ -146,7 +148,7 @@ class Internbot:
         term_text = tkinter.Text(self.term_window, fg='white', height= 600, width=500, background=header_color, padx=5, pady=5)
         term_text.pack()
 
-        self.error_log_filename = "templates_images/Error_Log.txt"
+        self.error_log_filename = os.path.expanduser("~/Documents/internbot_error_log.txt")
         self.error_log = open(self.error_log_filename, 'w')
         self.error_log.write("Error Log: " + self.session_time_stamp + "\n")
 
@@ -184,9 +186,9 @@ class Internbot:
         ask_export = messagebox.askokcancel("Export Error Log", "Warning: Internbot will close and you will need to restart it")
         if ask_export:
             self.error_log.close()
-            copyfile(os.path.join(os.path.expanduser("~/Documents/GitHub/internbot/internbot/"), self.error_log_filename),os.path.join(os.path.expanduser("~"), "Desktop/internbot_error_log.txt"))
-            self.open_file_for_user(os.path.join(os.path.expanduser("~"), "Desktop/internbot_error_log.txt"))
-            self.__window.destroy()
+            copyfile(self.error_log_filename, os.path.expanduser("~/Desktop/internbot_error_log.txt"))
+            self.open_file_for_user(os.path.expanduser("~/Desktop/internbot_error_log.txt"))
+            self.quit()
 
     def software_tabs_menu(self):
         """
@@ -226,8 +228,8 @@ class Internbot:
                 ask_output = messagebox.askokcancel("Select output directory", "Please select folder for final report.")
                 if ask_output is True:
                     savedirectory = filedialog.askdirectory()
-                    renamer = crosstabs.Format_Amazon_Report.RenameTabs()
-                    renamed_wb = renamer.rename(tablefile, "templates_images/Amazon TOC.csv", savedirectory)
+                    renamer = crosstabs.Format_Amazon_Report.RenameTabs(resources_filepath)
+                    renamed_wb = renamer.rename(tablefile, os.path.join(resources_filepath, "Amazon TOC.csv"), savedirectory)
                     highlighter = crosstabs.Format_Amazon_Report.Highlighter(renamed_wb)
                     highlighter.highlight(savedirectory)
                     messagebox.showinfo("Finished", "The highlighted report is saved in your chosen directory.")
@@ -235,7 +237,7 @@ class Internbot:
     def open_sound(self):
 
         def play_sound():
-            audio_file = os.path.expanduser("~/Documents/GitHub/internbot/internbot/templates_images/open.mp3")
+            audio_file = os.path.join(resources_filepath, "open.mp3")
             return_code = subprocess.call(["afplay", audio_file])
 
         thread_worker = threading.Thread(target=play_sound)
@@ -255,15 +257,19 @@ class Internbot:
             messagebox.showerror("Error", "Error: Could not open file for you \n" + file_path)
 
     def quit(self):
-        audio_file = os.path.expanduser("~/Documents/GitHub/internbot/internbot/templates_images/close.mp3")
+        audio_file = os.path.join(resources_filepath, "close.mp3")
         return_code = subprocess.call(["afplay", audio_file])
+        os.remove(os.path.expanduser("~/Documents/internbot_error_log.txt"))
         self.__window.destroy()
 
 window = tkinter.Tk()
 window.withdraw()
 window.title("Internbot (Version: 1.0.0)") # Internbot: Y2
+
+resources_filepath = "/Library/internbot/1.0.0/internbot/templates_images/"
+
 if platform.system() == 'Windows':  # Windows
-    window.iconbitmap('/Library/internbot/1.0.0/templates_images/y2.ico')
+    window.iconbitmap(os.path.join(resources_filepath, 'y2.ico'))
 screen_width = window.winfo_screenwidth()
 
 screen_height = window.winfo_screenheight()
@@ -274,8 +280,8 @@ window_width = 600
 window.geometry("%dx%d+%d+%d" % (window_width, window_height, mov_x, mov_y))
 window['background'] = 'white'
 
-y2_logo = "templates_images/Y2Logo.gif"
-help_bot = "templates_images/Internbot.gif"
+y2_logo = os.path.join(resources_filepath, "Y2Logo.gif")
+help_bot = os.path.join(resources_filepath, "Internbot.gif")
 bot_render = tkinter.PhotoImage(file=help_bot)
 logo_render = tkinter.PhotoImage(file= y2_logo)
 logo_label = tkinter.Label(window, image=logo_render, borderwidth=0, highlightthickness=0, relief=tkinter.FLAT, padx=50)
@@ -286,11 +292,17 @@ window.option_add("*Button.Foreground", "midnight blue")
 
 header_font = ('Trade Gothic LT Pro', 18, 'bold')
 header_color = '#112C4E'
-def close(event):
-    window.withdraw() # if you want to bring it back
-    sys.exit() # if you want to exit the entire thing
 
-window.bind('<Escape>', close)
+
+def quit():
+    audio_file = os.path.join(resources_filepath, "close.mp3")
+    return_code = subprocess.call(["afplay", audio_file])
+    os.remove(os.path.expanduser("~/Documents/internbot_error_log.txt"))
+    window.withdraw()  # if you want to bring it back
+    sys.exit()  # if you want to exit the entire thing
+
+window.bind('<Escape>', quit)
+window.protocol("WM_DELETE_WINDOW", quit)
 
 internbot_version = "1.0.0"
 

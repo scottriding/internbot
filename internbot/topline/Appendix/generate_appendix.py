@@ -4,9 +4,10 @@ from topline.Appendix.format_report import SSAppendixBuilder, DocAppendixBuilder
 
 class AppendixGenerator(object):
 
-    def __init__(self):
+    def __init__(self, resources_filepath):
         self.__questions = OrderedDict()
         self.is_qualtrics = False
+        self.resources_filepath = resources_filepath
 
     def unicode_dict_reader(self, utf8_data, **kwargs):
         csv_reader = csv.DictReader(utf8_data, **kwargs)
@@ -28,7 +29,7 @@ class AppendixGenerator(object):
 
     def write_appendix(self, path_to_output, path_to_template = '', is_spreadsheet=False):
         if is_spreadsheet is True:
-            builder = SSAppendixBuilder(self.is_qualtrics)
+            builder = SSAppendixBuilder(self.is_qualtrics, self.resources_filepath)
             builder.write_appendix(self.__questions)
             builder.save(path_to_output)
         else:

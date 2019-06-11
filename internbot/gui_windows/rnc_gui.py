@@ -13,7 +13,7 @@ import sys
 
 class RNCView(object):
 
-    def __init__(self, main_window, mov_x, mov_y, window_width, window_height, header_font, header_color, bot_render):
+    def __init__(self, main_window, mov_x, mov_y, window_width, window_height, header_font, header_color, bot_render, resources_filepath):
         self.__window = main_window
         self.mov_x = mov_x
         self.mov_y = mov_y
@@ -24,6 +24,7 @@ class RNCView(object):
         self.fpath = os.path.join(os.path.expanduser("~"), "Desktop")
         self.__embedded_fields = []
         self.bot_render = bot_render
+        self.resources_filepath = resources_filepath
 
     def rnc_menu(self):
         self.redirect_window = tkinter.Toplevel(self.__window)
@@ -284,7 +285,7 @@ class RNCView(object):
     def open_sound(self):
 
         def play_sound():
-            audio_file = os.path.expanduser("~/Documents/GitHub/internbot/internbot/templates_images/open.mp3")
+            audio_file = os.path.join(self.resources_filepath, "open.mp3")
             return_code = subprocess.call(["afplay", audio_file])
 
         thread_worker = threading.Thread(target=play_sound)

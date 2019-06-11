@@ -39,4 +39,4 @@ app = BUNDLE(coll,
              name='internbot.app',
              icon='templates_images/y2.icns',
              bundle_identifier=None,
-             version=1.0.0)
+             version=1.0)
