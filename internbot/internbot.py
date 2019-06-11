@@ -266,7 +266,7 @@ window = tkinter.Tk()
 window.withdraw()
 window.title("Internbot (Version: 1.0.0)") # Internbot: Y2
 
-resources_filepath = "/Library/internbot/1.0.0/internbot/templates_images/"
+resources_filepath = os.path.expanduser("~/Documents/GitHub/internbot/internbot/templates_images/")
 
 if platform.system() == 'Windows':  # Windows
     window.iconbitmap(os.path.join(resources_filepath, 'y2.ico'))
