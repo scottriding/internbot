@@ -2,11 +2,13 @@ from openpyxl import load_workbook, Workbook
 from openpyxl.styles.borders import Border, Side
 from openpyxl.styles import PatternFill, Font, Alignment
 from openpyxl.drawing.image import Image
+import os
 
 class CrosstabReportWriter(object):
 
-    def __init__ (self, tables):
+    def __init__ (self, tables, resources_filepath):
         self.__tables = tables
+        self.resources_filepath = resources_filepath
         self.__workbook = Workbook()
 
         self.highlight_style = PatternFill("solid", fgColor="2DCCD3")
@@ -129,7 +131,7 @@ class CrosstabReportWriter(object):
         sheet["C1"].fill = self.__report_header
         sheet["D1"].fill = self.__report_header
 
-        image = Image("/Library/internbot/1.0.0/templates_images/QLogo.png")
+        image = Image(os.path.join(self.resources_filepath, "QLogo.png"))
         sheet.add_image(image, "D1")
 
         sheet["A2"].font = self.__font_bold
@@ -197,7 +199,7 @@ class CrosstabReportWriter(object):
             index += 1
 
         current_cell = "%s%s" % (self.extend_alphabet[index - 3], current_row)
-        logo = Image("/Library/internbot/1.0.0/templates_images/QLogo.png")
+        logo = Image(os.path.join(self.resources_filepath, "QLogo.png"))
         sheet.add_image(logo, current_cell)
 
         next_row_cell = "%s%s" % (self.extend_alphabet[index - 3], current_row + 1)

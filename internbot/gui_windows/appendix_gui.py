@@ -14,7 +14,7 @@ import threading
 
 class AppendixView(object):
 
-    def __init__(self, main_window, mov_x, mov_y, window_width, window_height, header_font, header_color, bot_render):
+    def __init__(self, main_window, mov_x, mov_y, window_width, window_height, header_font, header_color, bot_render, resources_filepath):
         self.__window = main_window
         self.mov_x = mov_x
         self.mov_y = mov_y
@@ -25,32 +25,27 @@ class AppendixView(object):
         self.fpath = os.path.join(os.path.expanduser("~"), "Desktop")
         self.__embedded_fields = []
         self.bot_render = bot_render
+        self.resources_filepath = resources_filepath
 
     def append_menu(self):
         """
         Function sets up Topline Appendix menu.
         :return: None
         """
-        self.redirect_window=tkinter.Toplevel(self.__window)
+        self.redirect_window = tkinter.Toplevel(self.__window)
         self.redirect_window.withdraw()
-        width=200
-        height=350
+        width = 200
+        height = 350
 
         self.redirect_window.geometry("%dx%d+%d+%d" % (width,height,self.mov_x + self.window_width / 2 - width / 2, self.mov_y + self.window_height / 2 - height / 2))
         self.redirect_window.title("Appendix Menu")
         message = "Please open a .csv file \nwith open ended responses."
         tkinter.Label(self.redirect_window, text=message, font=self.header_font, fg=self.header_color).pack(side=tkinter.TOP,expand=False, pady=10)
-        btn_doc = tkinter.Button(self.redirect_window, text="Word Appendix", command=self.doc_appendix,
-                                 height=3, width=20)
 
+        btn_doc = tkinter.Button(self.redirect_window, text="Word Appendix", command=self.doc_appendix, height=3, width=20)
         btn_excel = tkinter.Button(self.redirect_window, text="Excel Appendix", command=self.excel_appendix_type, height=3, width=20)
         btn_cancel = tkinter.Button(self.redirect_window, text="Cancel", command=self.redirect_window.destroy, height=3, width=20)
-
-
-        btn_bot = tkinter.Button(self.redirect_window, image=self.bot_render, borderwidth=0,
-                                 highlightthickness=0, relief=tkinter.FLAT, bg="white", height=65, width=158,
-                                 command=self.appendix_help_window)
-
+        btn_bot = tkinter.Button(self.redirect_window, image=self.bot_render, borderwidth=0, highlightthickness=0, relief=tkinter.FLAT, bg="white", height=65, width=158, command=self.appendix_help_window)
         btn_bot.pack(padx=5, side=tkinter.TOP, expand=False)
         btn_doc.pack(padx=5, side=tkinter.TOP, expand=False)
         btn_excel.pack(padx=5, side=tkinter.TOP, expand=False)
@@ -95,7 +90,7 @@ class AppendixView(object):
 
 
     def doc_appendix(self):
-        generator = topline.Appendix.AppendixGenerator()
+        generator = topline.Appendix.AppendixGenerator(self.resources_filepath)
         csvfilename = filedialog.askopenfilename(initialdir=self.fpath, title="Select open ends file",
                                                    filetypes=(("Comma separated files", "*csv"), ("all files", "*.*")))
         if csvfilename is not "":
@@ -114,7 +109,7 @@ class AppendixView(object):
         :param savedirectory: string indicating the filename for the file from the user
         :return: None
         """
-        generator.write_appendix(savedirectory, "/Library/internbot/1.0.0/templates_images/appendix_template.docx", False)
+        generator.write_appendix(savedirectory, os.path.join(self.resources_filepath, "appendix_template.docx"), False)
         self.open_file_for_user(savedirectory)
 
     def excel_appendix_type(self):
@@ -140,7 +135,7 @@ class AppendixView(object):
         self.choose_window.deiconify()
 
     def y2_excel_appendix(self):
-        generator = topline.Appendix.AppendixGenerator()
+        generator = topline.Appendix.AppendixGenerator(self.resources_filepath)
         csvfilename = filedialog.askopenfilename(initialdir=self.fpath, title="Select open ends file",
                                                    filetypes=(("Comma separated files", "*csv"), ("all files", "*.*")))
         if csvfilename is not "":
@@ -154,7 +149,7 @@ class AppendixView(object):
 
 
     def qualtrics_excel_appendix(self):
-        generator = topline.Appendix.AppendixGenerator()
+        generator = topline.Appendix.AppendixGenerator(self.resources_filepath)
         csvfilename = filedialog.askopenfilename(initialdir=self.fpath, title="Select open ends file",
                                                  filetypes=(("Comma separated files", "*csv"), ("all files", "*.*")))
         if csvfilename is not "":
@@ -179,7 +174,7 @@ class AppendixView(object):
     def open_sound(self):
 
         def play_sound():
-            audio_file = "/Library/internbot/1.0.0/templates_images/open.mp3"
+            audio_file = os.path.join(self.resources_filepath, "open.mp3")
             return_code = subprocess.call(["afplay", audio_file])
 
         thread_worker = threading.Thread(target=play_sound)

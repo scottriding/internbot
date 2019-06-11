@@ -13,7 +13,7 @@ import threading
 
 class ToplineView(object):
 
-    def __init__(self, main_window, mov_x, mov_y, window_width, window_height, header_font, header_color, bot_render):
+    def __init__(self, main_window, mov_x, mov_y, window_width, window_height, header_font, header_color, bot_render, resources_filepath):
         self.__window = main_window
         self.mov_x = mov_x
         self.mov_y = mov_y
@@ -24,6 +24,7 @@ class ToplineView(object):
         self.bot_render=bot_render
         self.fpath = os.path.join(os.path.expanduser("~"), "Desktop")
         self.__embedded_fields = []
+        self.resources_filepath = resources_filepath
 
     def topline_menu(self):
         """
@@ -200,7 +201,7 @@ class ToplineView(object):
         :return: None
         """
 
-        template_file = open("/Library/internbot/1.0.0/templates_images/topline_template.docx", "r")
+        template_file = open(os.path.join(self.resources_filepath, "topline_template.docx"), "r")
         report_generator = None
         if ".qsf" in self.filename:
             survey = base.QSFSurveyCompiler().compile(self.filename)
@@ -237,7 +238,7 @@ class ToplineView(object):
     def open_sound(self):
 
         def play_sound():
-            audio_file = "/Library/internbot/1.0.0/templates_images/open.mp3"
+            audio_file = "/Library/internbot/1.0.0/internbot/templates_images/open.mp3"
             return_code = subprocess.call(["afplay", audio_file])
 
         thread_worker = threading.Thread(target=play_sound)

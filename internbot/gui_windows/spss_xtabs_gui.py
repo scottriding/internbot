@@ -14,7 +14,7 @@ import threading
 
 class SPSSCrosstabsView(object):
 
-    def __init__(self, main_window, mov_x, mov_y, window_width, window_height, header_font, header_color):
+    def __init__(self, main_window, mov_x, mov_y, window_width, window_height, header_font, header_color, resources_filepath):
         self.__window = main_window
         self.mov_x = mov_x
         self.mov_y = mov_y
@@ -24,6 +24,7 @@ class SPSSCrosstabsView(object):
         self.header_color = header_color
         self.fpath = os.path.join(os.path.expanduser("~"), "Desktop")
         self.__embedded_fields = []
+        self.resources_filepath = resources_filepath
 
     def spss_crosstabs_menu(self):
         """
@@ -470,7 +471,7 @@ class SPSSCrosstabsView(object):
             if ask_output is True:
                 outputdirectory = filedialog.askdirectory()
                 if outputdirectory is not "":
-                    builder.write_report(outputdirectory)
+                    builder.write_report(outputdirectory, self.resources_filepath)
                     open_files = messagebox.askyesno("Info", "Done!\nWould you like to open your finished files?")
                     if open_files is True:
                         self.open_file_for_user(outputdirectory + "/Crosstab Report.xlsx")
@@ -478,7 +479,7 @@ class SPSSCrosstabsView(object):
     def open_sound(self):
 
         def play_sound():
-            audio_file = "/Library/internbot/1.0.0/templates_images/open.mp3"
+            audio_file = "/Library/internbot/1.0.0/internbot/templates_images/open.mp3"
             return_code = subprocess.call(["afplay", audio_file])
 
         thread_worker = threading.Thread(target=play_sound)

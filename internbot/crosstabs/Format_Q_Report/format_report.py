@@ -3,13 +3,15 @@ from openpyxl.styles.borders import Border, Side
 from openpyxl.styles import PatternFill, Font, Alignment
 from openpyxl.drawing.image import Image
 from collections import OrderedDict
+import os
 
 class QParser(object):
 
-    def __init__(self, path_to_workbook, is_qualtrics=True):
+    def __init__(self, path_to_workbook, resources_filepath, is_qualtrics=True):
         print("Loading workbook")
         self.__workbook = load_workbook(path_to_workbook)
         self.__is_qualtrics = is_qualtrics
+        self.resources_filepath = resources_filepath
         self.__tables = OrderedDict()
 
         # fill colors
@@ -102,9 +104,9 @@ class QParser(object):
         sheet["D1"].fill = self.__header_fill
 
         if self.__is_qualtrics:
-            logo = Image("/Library/internbot/1.0.0/templates_images/QLogo.png")
+            logo = Image(os.path.join(self.resources_filepath, "QLogo.png"))
         else:
-            logo = Image("/Library/internbot/1.0.0/templates_images/y2_xtabs.png")
+            logo = Image(os.path.join(self.resources_filepath, "y2_xtabs.png"))
         sheet.add_image(logo, "D1")
 
         sheet["A2"].font = self.__font_bold
@@ -274,9 +276,9 @@ class QParser(object):
         # add logos
         current_cell = "%s%s" % (self.__extend_alphabet[current_col - 3], str(current_row))
         if self.__is_qualtrics:
-            logo = Image("/Library/internbot/1.0.0/templates_images/QLogo.png")
+            logo = Image(os.path.join(self.resources_filepath, "QLogo.png"))
         else:
-            logo = Image("/Library/internbot/1.0.0/templates_images/y2_xtabs.png")
+            logo = Image(os.path.join(self.resources_filepath, "y2_xtabs.png"))
         sheet.add_image(logo, current_cell)
 
         # figure out where the base description of table will be added

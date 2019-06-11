@@ -5,12 +5,14 @@ from openpyxl.drawing.image import Image
 from docx import Document
 from docx.shared import Inches
 from collections import OrderedDict
+import os
 
 class SSAppendixBuilder(object):
 
-    def __init__(self, is_qualtrics):
+    def __init__(self, is_qualtrics, resources_filepath):
         self.__workbook = Workbook()
         self.__is_qualtrics = is_qualtrics
+        self.resources_filepath = resources_filepath
 
         if is_qualtrics:
             # fill colors
@@ -98,9 +100,9 @@ class SSAppendixBuilder(object):
         sheet["C1"].fill = self.__header_fill
 
         if self.__is_qualtrics:
-            logo = Image("/Library/internbot/1.0.0/templates_images/QLogo.png")
+            logo = Image(os.path.join(self.resources_filepath, "QLogo.png"))
         else:
-            logo = Image("/Library/internbot/1.0.0/templates_images/y2_xtabs.png")
+            logo = Image(os.path.join(self.resources_filepath, "y2_xtabs.png"))
         sheet.add_image(logo, "C1")
 
     def write_question(self, question, sheet):

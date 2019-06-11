@@ -12,7 +12,7 @@ import threading
 
 class QCrosstabsView(object):
 
-    def __init__(self, main_window, mov_x, mov_y, window_width, window_height, header_font, header_color, bot_render):
+    def __init__(self, main_window, mov_x, mov_y, window_width, window_height, header_font, header_color, bot_render, resources_filepath):
         self.__window = main_window
         self.mov_x = mov_x
         self.mov_y = mov_y
@@ -24,6 +24,7 @@ class QCrosstabsView(object):
         self.fpath = os.path.join(os.path.expanduser("~"), "Desktop")
         self.__embedded_fields = []
         self.bases_history = ["Select from history"]
+        self.resources_filepath = resources_filepath
 
     def bases_window(self):
         """
@@ -158,7 +159,7 @@ class QCrosstabsView(object):
             report_file_name = filedialog.askopenfilename(initialdir=self.fpath, title="Select report file",
                                                             filetypes=(("excel files", "*.xlsx"), ("all files", "*.*")))
             if report_file_name is not "":
-                self.__parser = crosstabs.Format_Q_Report.QParser(report_file_name)
+                self.__parser = crosstabs.Format_Q_Report.QParser(report_file_name, self.resources_filepath)
                 self.tables = self.__parser.format_report()
                 prompts = []
                 for key, value in self.tables.items():
@@ -479,7 +480,7 @@ class QCrosstabsView(object):
     def open_sound(self):
 
         def play_sound():
-            audio_file = "/Library/internbot/1.0.0/templates_images/open.mp3"
+            audio_file = "/Library/internbot/1.0.0/internbot/templates_images/open.mp3"
             return_code = subprocess.call(["afplay", audio_file])
 
         thread_worker = threading.Thread(target=play_sound)
