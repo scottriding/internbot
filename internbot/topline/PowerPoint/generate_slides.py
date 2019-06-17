@@ -1,11 +1,9 @@
-from topline.BasicReport.csv_question import CSVQuestions
-from topline.BasicReport.csv_topline_report import CSVToplineReport
-from topline.BasicReport.qsf_topline_report import QSFToplineReport
+from topline.PowerPoint.qsf_topline_slides import QSFToplineSlides
 import csv
 import re
 from collections import OrderedDict
 
-class ReportGenerator(object):
+class SlidesGenerator(object):
 
     def __init__(self, path_to_freqs, years = [], survey = None):
         question_data = self.unicode_dict_reader(open(path_to_freqs))
@@ -16,18 +14,13 @@ class ReportGenerator(object):
             self.__questions = survey.get_questions()
             self.assign_frequencies(question_data, years)
         else:
-            self.__questions = CSVQuestions()
-            self.create_questions(question_data, years)
+            pass
         
     def unicode_dict_reader(self, utf8_data, **kwargs):
         csv_reader = csv.DictReader(utf8_data, **kwargs)
         for row in csv_reader:
             if row['variable'] != "":
                 yield {key: value for key, value in row.items()}
-
-    def create_questions(self, question_data, years):
-        for question in question_data:
-            self.__questions.add(question, years)
 
     def assign_frequencies(self, question_data, years):
         for row in question_data:
@@ -45,9 +38,9 @@ class ReportGenerator(object):
 
     def generate_topline(self, path_to_template, path_to_output, years):
         if self.__survey is not None:
-            report = QSFToplineReport(self.__survey.get_questions(), path_to_template, years)
+            report = QSFToplineSlides(self.__survey, path_to_template, path_to_output, years)
         else:
-            report = CSVToplineReport(self.__questions, path_to_template, years)
+            pass
         report.save(str(path_to_output))
 
     def find_question(self, question_to_find):
@@ -71,7 +64,6 @@ class ReportGenerator(object):
             matching_question.add_NA()
             return matching_question.get_NA()
         responses = matching_question.responses
-
         matching_response = next((response for response in responses if response.code == response_to_find), None)
         if response_to_find == 'On':
             matching_response = next((response for response in responses if response.response == '1'), None)
@@ -80,17 +72,16 @@ class ReportGenerator(object):
             print("\nCould not match response " +response_to_find+ " from " + matching_question.name + " from CSV to a question in the QSF.\n             *This data will need to be input manually.*\n")
         return matching_response
 
-
     def add_frequency(self, matching_response, frequency_data, years):
         self.__frequencies = OrderedDict()
         if len(years) > 0:
             for year in years:
                 round_col = "percent %s" % year
                 if frequency_data[round_col] != "":
-                    self.__frequencies[year] = frequency_data[round_col]
+                    self.__frequencies[year] = float(frequency_data[round_col])
         else:
             round_col = "percent"
-            self.__frequencies[0] = frequency_data[round_col]
+            self.__frequencies[0] = float(frequency_data[round_col])
         matching_response.frequencies = self.__frequencies
 
     def add_n(self, matching_question, question_data):

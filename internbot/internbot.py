@@ -36,6 +36,7 @@ class Internbot:
         self.spss = gui_windows.SPSSCrosstabsView(self.__window, mov_x, mov_y, window_width, window_height, header_font, header_color, resources_filepath)
         self.q = gui_windows.QCrosstabsView(self.__window, mov_x, mov_y, window_width, window_height, header_font, header_color, bot_render, resources_filepath)
         self.appendix = gui_windows.AppendixView(self.__window, mov_x, mov_y, window_width, window_height, header_font, header_color, bot_render, resources_filepath)
+        self.pptx = gui_windows.PowerPointView(self.__window, mov_x, mov_y, window_width, window_height, header_font, header_color, bot_render, resources_filepath)
 
         #Button definitions
         button_frame =tkinter.Frame(self.__window)
@@ -46,11 +47,13 @@ class Internbot:
         btn_rnc = tkinter.Button(button_frame, text="RNC Reports", padx=4, width=20, height=3,command=self.rnc.rnc_menu, relief=tkinter.FLAT, highlightthickness=0)
         btn_terminal = tkinter.Button(button_frame, text="Terminal Window", padx=4, width=20, height=3, command=self.reopen_terminal_window, relief=tkinter.FLAT, highlightthickness=0)
         btn_quit = tkinter.Button(button_frame, text="Quit", padx=4, width=20, height=3,command=self.quit, relief=tkinter.GROOVE, highlightthickness=0)
+        btn_pptx = tkinter.Button(button_frame, text="Topline PowerPoint", padx=4, width=20, height=3, command=self.pptx.pptx_menu, relief=tkinter.FLAT, highlightthickness=0)
         btn_bot = tkinter.Button(button_frame, image=bot_render, padx=4, pady=10, width=158, height=45, borderwidth=0, highlightthickness=0, relief=tkinter.FLAT, command=self.main_help_window)
         btn_bot.pack(padx=5, pady=3, side=tkinter.TOP)
         btn_xtabs.pack(padx=5, side=tkinter.TOP, expand=True)
         btn_report.pack(padx=5, side=tkinter.TOP, expand=True)
         btn_appen.pack(padx=5, side=tkinter.TOP, expand=True)
+        btn_pptx.pack(padx=5, side=tkinter.TOP, expand=True)
         btn_rnc.pack(padx=5, side=tkinter.TOP, expand=True)
         btn_terminal.pack(padx=5, side=tkinter.TOP, expand=True)
         btn_quit.pack(padx=5, side=tkinter.TOP, expand=True)

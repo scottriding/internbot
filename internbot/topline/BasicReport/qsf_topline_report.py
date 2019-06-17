@@ -269,7 +269,7 @@ class QSFToplineReport(object):
                         response_cells = table.add_column(width = Inches(1)).cells
                         response_cells[1].text = response.response
                 question_cells = table.add_row().cells
-                question_cells[1].text = sub_question.prompt
+                question_cells[1].text = "%s (n=%s)" % (sub_question.prompt, sub_question.n)
                 index = 2
                 for response in sub_question.responses:
                     if response.has_frequency is True:
