@@ -205,12 +205,6 @@ class ToplineView(object):
         report_generator = None
         if ".qsf" in self.filename:
             survey = base.QSFSurveyCompiler().compile(self.filename)
-            # for block in survey.blocks:
-            #     for question in block.questions:
-            #         if question.name == "QTEST":
-            #             print(question.response_order)
-            #             for response in question.responses:
-            #                 print(response.code)
             ask_freqs = messagebox.askokcancel("Frequency file", "Please select .csv file with survey result frequencies.")
             if ask_freqs is True:
                 frequency_file = filedialog.askopenfilename(initialdir=self.fpath, title="Select frequency file", filetypes=(("Comma separated files", "*.csv"), ("all files", "*.*")))

@@ -143,7 +143,7 @@ class Internbot:
         width = 500
         height = 600
         self.term_window.geometry("%dx%d+%d+%d" % (
-            width, height, mov_x + window_width / 2 - width , mov_y + window_height / 2 - height/2))
+            width, height, mov_x + window_width / 2 - 2*width , mov_y + window_height / 2 - height/2))
 
         term_text = tkinter.Text(self.term_window, fg='white', height= 600, width=500, background=header_color, padx=5, pady=5)
         term_text.pack()
@@ -202,20 +202,16 @@ class Internbot:
         height = 250
         sft_window.geometry("%dx%d+%d+%d" % (width,height,mov_x + window_width / 2 - width / 2, mov_y + window_height / 2 - height / 2))
 
-        #message = "Please select crosstabs\nsoftware to use:\n"
-        message = "Crosstabs will be enabled \nin the next version"
+        message = "Please select crosstabs\nsoftware to use:\n"
         tkinter.Label(sft_window, text = message, font=header_font, fg=header_color).pack()
         btn_spss = tkinter.Button(sft_window, text="SPSS", command=self.spss.spss_crosstabs_menu, height=3, width=20)
-        btn_q = tkinter.Button(sft_window, text="Q Research", command=self.q.bases_window, height=3, width=20)
+        btn_q = tkinter.Button(sft_window, text="Q Research", command=self.q.qresearch_xtabs, height=3, width=20)
         btn_cancel = tkinter.Button(sft_window, text="Cancel", command=sft_window.destroy, height=3, width=20)
         btn_cancel.pack(side=tkinter.BOTTOM, expand=True)
         btn_q.pack(side=tkinter.BOTTOM, expand=True)
         btn_spss.pack(side=tkinter.BOTTOM, expand=True)
 
-        btn_q.config(state=tkinter.DISABLED)
-        btn_spss.config(state=tkinter.DISABLED)
-
-        sft_window.deiconify()
+        sft_window.deiconify()  
 
     def amazon_xtabs(self):
         """

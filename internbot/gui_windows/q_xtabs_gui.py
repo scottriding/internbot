@@ -26,6 +26,55 @@ class QCrosstabsView(object):
         self.bases_history = ["Select from history"]
         self.resources_filepath = resources_filepath
 
+    def qresearch_xtabs(self):
+        """
+        Funtion asks the user formatting style of QResearch Crosstab Report
+        :return: None
+        """
+        self.choose_window = tkinter.Toplevel(self.__window)
+        self.choose_window.withdraw()
+        width = 250
+        height = 250
+        self.choose_window.geometry("%dx%d+%d+%d" % (width, height, self.mov_x + self.window_width / 2 - width / 2, self.mov_y + self.window_height / 2 - height / 2))
+        message = "Choose the format of\nyour appendix report"
+        tkinter.Label(self.choose_window, text=message, font=self.header_font, fg=self.header_color).pack(expand=False)
+        btn_qualtrics = tkinter.Button(self.choose_window, text="Qualtrics Formatting", command=self.qual_qtabs, height=3, width=20)
+
+        btn_y2 = tkinter.Button(self.choose_window, text="Y2 Formatting", command=self.y2_qtabs, height=3, width=20)
+        btn_cancel = tkinter.Button(self.choose_window, text="Cancel", command=self.choose_window.destroy, height=3, width=20)
+
+        btn_cancel.pack(ipadx=5, side=tkinter.BOTTOM, expand=False)
+        btn_qualtrics.pack(ipadx=5, side=tkinter.BOTTOM, expand=False)
+        btn_y2.pack(ipadx=5, side=tkinter.BOTTOM, expand=False)
+        self.choose_window.deiconify()
+
+    def y2_qtabs(self):
+        ask_xlsx = messagebox.askokcancel("Select XLSX Report File", "Please select the Q Research generated crosstab report (Y2 standard TOC included)")
+        if ask_xlsx is True:
+            crosstab_file = filedialog.askopenfilename(initialdir = self.fpath, title = "Select Q Research XTabs", filetypes = (("excel files", "*.xlsx"),("all files", "*.*")))
+            formatter = crosstabs.Format_Q_Report.QFormatter(crosstab_file, self.resources_filepath, False)
+            thread = threading.Thread(target=self.run_qtabs, args=(True, formatter))
+            thread.start()          
+
+    def qual_qtabs(self):
+        ask_xlsx = messagebox.askokcancel("Select XLSX Report File", "Please select the Q Research generated crosstab report (Y2 standard TOC included)")
+        if ask_xlsx is True:
+            crosstab_file = filedialog.askopenfilename(initialdir = self.fpath, title = "Select Q Research XTabs", filetypes = (("excel files", "*.xlsx"),("all files", "*.*")))
+            formatter = crosstabs.Format_Q_Report.QFormatter(crosstab_file, self.resources_filepath)
+            thread = threading.Thread(target=self.run_qtabs, args=(True, formatter))
+            thread.start() 
+            
+
+    def run_qtabs(self, necessary, formatter):
+        formatter.format_report()
+        ask_output = messagebox.askokcancel("Select output directory", "Please select file path for final report.")
+        if ask_output is True:
+            savedirectory = filedialog.asksaveasfilename(defaultextension='.xlsx', filetypes=[('Microsoft Excel files', '.xlsx')])
+            if savedirectory is not "":
+                formatter.save(savedirectory)
+                self.open_file_for_user(savedirectory)
+                self.choose_window.destroy()
+
     def bases_window(self):
         """
         Function sets up window for bases entry of Q crosstab reports
