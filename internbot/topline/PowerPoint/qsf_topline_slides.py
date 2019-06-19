@@ -38,15 +38,13 @@ class QSFToplineSlides(object):
         slide = self.presentation.slides.add_slide(self.presentation.slide_layouts.get_by_name('AutomatedChart'))
         shapes = slide.shapes
         self.write_question_details(slide, question)
-        if question.type == 'RO':
-            pass
+
+        if len(question.responses) < 3:
+            self.pie_chart_simple_question(question, slide)
+            self.bar_chart_vertical_simple_question(question, slide)
         else:
-            if len(question.responses) < 3:
-                self.pie_chart_simple_question(question, slide)
-                self.bar_chart_vertical_simple_question(question, slide)
-            else:
-                self.bar_chart_vertical_simple_question(question, slide)
-                self.bar_chart_horizontal_simple_question(question, slide)
+            self.bar_chart_vertical_simple_question(question, slide)
+            self.bar_chart_horizontal_simple_question(question, slide)
 
     def chart_composite_question(self, question):
         if question.type == 'CompositeMatrix':
@@ -96,10 +94,8 @@ class QSFToplineSlides(object):
 
         for sub_question in sub_questions:
             for response in sub_question.responses:
-                print("Response: " + response.response+str(len(response.frequencies.items())))
-                categories.append(response.response)
+                categories.append(response.response+" (n="+str(sub_question.n)+")")
                 for year, frequency in response.frequencies.items():
-                    print(response.response+" "+str(frequency))
                     frequencies.append(frequency)
 
         chart_data = CategoryChartData()
@@ -122,7 +118,6 @@ class QSFToplineSlides(object):
         value_axis.tick_labels.font.size = Pt(12)
         chart.plots[0].has_data_labels = True
         data_labels = chart.plots[0].data_labels
-        #data_labels.number_format = '0%'
         data_labels.position = XL_LABEL_POSITION.OUTSIDE_END
         data_labels.font.size = Pt(12)
         plot = chart.plots[0]
@@ -138,10 +133,8 @@ class QSFToplineSlides(object):
 
         for sub_question in sub_questions:
             for response in sub_question.responses:
-                print("Response: " + response.response+str(len(response.frequencies.items())))
-                categories.append(response.response)
+                categories.append(response.response+" (n="+str(sub_question.n)+")")
                 for year, frequency in response.frequencies.items():
-                    print(response.response+" "+str(frequency))
                     frequencies.append(frequency)
 
         chart_data = CategoryChartData()
@@ -173,7 +166,6 @@ class QSFToplineSlides(object):
         fill.solid()
         fill.fore_color.theme_color = MSO_THEME_COLOR.ACCENT_1
 
-
     def bar_chart_vertical_simple_question(self, question, slide):
         categories = []
         frequencies = []
@@ -201,7 +193,8 @@ class QSFToplineSlides(object):
         value_axis.tick_labels.font.size = Pt(12)
         chart.plots[0].has_data_labels = True
         data_labels = chart.plots[0].data_labels
-        data_labels.number_format = '0%'
+        if question.stat == 'percent':
+            data_labels.number_format = '0%'
         data_labels.position = XL_LABEL_POSITION.OUTSIDE_END
         data_labels.font.size = Pt(12)
         plot = chart.plots[0]
@@ -237,7 +230,8 @@ class QSFToplineSlides(object):
         value_axis.tick_labels.font.size = Pt(12)
         chart.plots[0].has_data_labels = True
         data_labels = chart.plots[0].data_labels
-        data_labels.number_format = '0%'
+        if question.stat == 'percent':
+            data_labels.number_format = '0%'
         data_labels.position = XL_LABEL_POSITION.OUTSIDE_END
         data_labels.font.size = Pt(12)
         plot = chart.plots[0]
@@ -282,7 +276,8 @@ class QSFToplineSlides(object):
         chart.legend.include_in_layout = False
         chart.plots[0].has_data_labels = True
         data_labels = chart.plots[0].data_labels
-        data_labels.number_format = '0%'
+        if question.stat == 'percent':
+            data_labels.number_format = '0%'
         data_labels.font.size = Pt(12)
 
     def pie_chart_simple_question(self, question, slide):
@@ -307,7 +302,8 @@ class QSFToplineSlides(object):
         chart.legend.include_in_layout = False
         chart.plots[0].has_data_labels = True
         data_labels = chart.plots[0].data_labels
-        data_labels.number_format = '0%'
+        if question.stat == 'percent':
+            data_labels.number_format = '0%'
         data_labels.font.size = Pt(12)
 
     def bar_chart_vertical_matrix_question_by_categories(self, question, slide):
@@ -319,9 +315,10 @@ class QSFToplineSlides(object):
 
         for sub_question in sub_questions:
             categories.append(str(sub_question.prompt) + " (n=" + str(sub_question.n) + ")")
-            for response in sub_question.responses:
-                if is_first:
+            if is_first:
+                for response in sub_question.responses:
                     series_names.append(response.response)
+                question.stat = sub_question.stat
             is_first = False
 
         for name in series_names:
@@ -360,7 +357,8 @@ class QSFToplineSlides(object):
         value_axis.tick_labels.font.size = Pt(12)
         chart.plots[0].has_data_labels = True
         data_labels = chart.plots[0].data_labels
-        data_labels.number_format = '0%'
+        if question.stat == 'percent':
+            data_labels.number_format = '0%'
         data_labels.position = XL_LABEL_POSITION.OUTSIDE_END
         data_labels.font.size = Pt(12)
         chart.has_legend = True
@@ -377,9 +375,10 @@ class QSFToplineSlides(object):
 
         for sub_question in sub_questions:
             series_names.append(str(sub_question.prompt) + " (n=" + str(sub_question.n) + ")")
-            for response in sub_question.responses:
-                if is_first:
+            if is_first:
+                for response in sub_question.responses:
                     categories.append(response.response)
+                question.stat = sub_question.stat
             is_first = False
 
         for name in series_names:
@@ -417,7 +416,8 @@ class QSFToplineSlides(object):
         value_axis.tick_labels.font.size = Pt(12)
         chart.plots[0].has_data_labels = True
         data_labels = chart.plots[0].data_labels
-        data_labels.number_format = '0%'
+        if question.stat == 'percent':
+            data_labels.number_format = '0%'
         data_labels.position = XL_LABEL_POSITION.OUTSIDE_END
         data_labels.font.size = Pt(12)
         chart.has_legend = True
@@ -434,9 +434,10 @@ class QSFToplineSlides(object):
 
         for sub_question in sub_questions:
             categories.append(str(sub_question.prompt) + " (n=" + str(sub_question.n) + ")")
-            for response in sub_question.responses:
-                if is_first:
+            if is_first:
+                for response in sub_question.responses:
                     series_names.append(response.response)
+                question.stat = sub_question.stat
             is_first = False
 
         for name in series_names:
@@ -475,14 +476,14 @@ class QSFToplineSlides(object):
         value_axis.tick_labels.font.size = Pt(12)
         chart.plots[0].has_data_labels = True
         data_labels = chart.plots[0].data_labels
-        data_labels.number_format = '0%'
+        if question.stat == 'percent':
+            data_labels.number_format = '0%'
         data_labels.position = XL_LABEL_POSITION.OUTSIDE_END
         data_labels.font.size = Pt(12)
         chart.has_legend = True
         chart.legend.position = XL_LEGEND_POSITION.BOTTOM
         chart.legend.font.size = Pt(12)
         chart.legend.include_in_layout = False
-
 
     def bar_chart_horizontal_matrix_question_by_scale_points(self, question, slide):
         sub_questions = question.questions
@@ -493,9 +494,10 @@ class QSFToplineSlides(object):
 
         for sub_question in sub_questions:
             series_names.append(str(sub_question.prompt) + " (n=" + str(sub_question.n) + ")")
-            for response in sub_question.responses:
-                if is_first:
+            if is_first:
+                for response in sub_question.responses:
                     categories.append(response.response)
+                question.stat = sub_question.stat
             is_first = False
 
         for name in series_names:
@@ -533,14 +535,14 @@ class QSFToplineSlides(object):
         value_axis.tick_labels.font.size = Pt(12)
         chart.plots[0].has_data_labels = True
         data_labels = chart.plots[0].data_labels
-        data_labels.number_format = '0%'
+        if question.stat == 'percent':
+            data_labels.number_format = '0%'
         data_labels.position = XL_LABEL_POSITION.OUTSIDE_END
         data_labels.font.size = Pt(12)
         chart.has_legend = True
         chart.legend.position = XL_LEGEND_POSITION.BOTTOM
         chart.legend.font.size = Pt(12)
         chart.legend.include_in_layout = False
-
 
     def stacked_bar_horizontal_matrix_question(self, question, slide):
         sub_questions = question.questions
@@ -551,9 +553,10 @@ class QSFToplineSlides(object):
 
         for sub_question in sub_questions:
             categories.append(str(sub_question.prompt) + " (n=" + str(sub_question.n) + ")")
-            for response in sub_question.responses:
-                if is_first:
+            if is_first:
+                for response in sub_question.responses:
                     series_names.append(response.response)
+                question.stat = sub_question.stat
             is_first = False
 
         for name in series_names:
@@ -597,7 +600,8 @@ class QSFToplineSlides(object):
         chart.legend.include_in_layout = False
         chart.plots[0].has_data_labels = True
         data_labels = chart.plots[0].data_labels
-        data_labels.number_format = '0%'
+        if question.stat == 'percent':
+            data_labels.number_format = '0%'
         data_labels.font.size = Pt(12)
 
 

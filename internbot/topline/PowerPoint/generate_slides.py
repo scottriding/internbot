@@ -18,6 +18,7 @@ class SlidesGenerator(object):
         
     def unicode_dict_reader(self, utf8_data, **kwargs):
         csv_reader = csv.DictReader(utf8_data, **kwargs)
+        self.headers = csv_reader.fieldnames
         for row in csv_reader:
             if row['variable'] != "":
                 yield {key: value for key, value in row.items()}
@@ -26,7 +27,11 @@ class SlidesGenerator(object):
         for row in question_data:
             question_name = row["variable"]
             response_label = row["label"]
-            question_display = row["display logic"]
+            question_stat = row["stat"]
+            if 'display logic' in self.headers:
+                question_display = row["display logic"]
+            else:
+                question_display = ""
             matching_question = self.find_question(question_name)
             if matching_question is not None:
                 matching_response = self.find_response(row["value"], matching_question)
@@ -35,6 +40,7 @@ class SlidesGenerator(object):
                     self.add_n(matching_question, row)
                     if question_display != "":
                         self.add_display_logic(matching_question, question_display)
+                    self.add_stat(matching_question, question_stat)
 
     def generate_topline(self, path_to_template, path_to_output, years):
         if self.__survey is not None:
@@ -76,11 +82,11 @@ class SlidesGenerator(object):
         self.__frequencies = OrderedDict()
         if len(years) > 0:
             for year in years:
-                round_col = "percent %s" % year
+                round_col = "result %s" % year
                 if frequency_data[round_col] != "":
                     self.__frequencies[year] = float(frequency_data[round_col])
         else:
-            round_col = "percent"
+            round_col = "result"
             self.__frequencies[0] = float(frequency_data[round_col])
         matching_response.frequencies = self.__frequencies
 
@@ -90,3 +96,6 @@ class SlidesGenerator(object):
 
     def add_display_logic(self, matching_question, question_display):
         matching_question.display_logic = question_display
+
+    def add_stat(selfself, matching_question, stat):
+        matching_question.stat = stat

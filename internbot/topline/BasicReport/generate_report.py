@@ -10,6 +10,7 @@ class ReportGenerator(object):
     def __init__(self, path_to_freqs, years = [], survey = None):
         question_data = self.unicode_dict_reader(open(path_to_freqs))
         self.__frequencies = []
+        self.headers = []
         self.__survey = survey
         if survey is not None:
             self.__survey = survey
@@ -21,19 +22,24 @@ class ReportGenerator(object):
         
     def unicode_dict_reader(self, utf8_data, **kwargs):
         csv_reader = csv.DictReader(utf8_data, **kwargs)
+        self.headers = csv_reader.fieldnames
         for row in csv_reader:
             if row['variable'] != "":
                 yield {key: value for key, value in row.items()}
 
     def create_questions(self, question_data, years):
         for question in question_data:
-            self.__questions.add(question, years)
+            self.__questions.add(question, self.headers, years)
 
     def assign_frequencies(self, question_data, years):
         for row in question_data:
             question_name = row["variable"]
             response_label = row["label"]
-            question_display = row["display logic"]
+            question_stat = row["stat"]
+            if 'display logic' in self.headers:
+                question_display = row["display logic"]
+            else:
+                question_display = ""
             matching_question = self.find_question(question_name)
             if matching_question is not None:
                 matching_response = self.find_response(row["value"], matching_question)
@@ -80,16 +86,15 @@ class ReportGenerator(object):
             print("\nCould not match response " +response_to_find+ " from " + matching_question.name + " from CSV to a question in the QSF.\n             *This data will need to be input manually.*\n")
         return matching_response
 
-
     def add_frequency(self, matching_response, frequency_data, years):
         self.__frequencies = OrderedDict()
         if len(years) > 0:
             for year in years:
-                round_col = "percent %s" % year
+                round_col = "result %s" % year
                 if frequency_data[round_col] != "":
                     self.__frequencies[year] = frequency_data[round_col]
         else:
-            round_col = "percent"
+            round_col = "result"
             self.__frequencies[0] = frequency_data[round_col]
         matching_response.frequencies = self.__frequencies
 
