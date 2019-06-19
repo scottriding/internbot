@@ -40,6 +40,7 @@ class ReportGenerator(object):
                 question_display = row["display logic"]
             else:
                 question_display = ""
+
             matching_question = self.find_question(question_name)
             if matching_question is not None:
                 matching_response = self.find_response(row["value"], matching_question)
@@ -48,6 +49,7 @@ class ReportGenerator(object):
                     self.add_n(matching_question, row)
                     if question_display != "":
                         self.add_display_logic(matching_question, question_display)
+                    self.add_stat(matching_question, question_stat)
 
     def generate_topline(self, path_to_template, path_to_output, years):
         if self.__survey is not None:
@@ -59,7 +61,9 @@ class ReportGenerator(object):
     def find_question(self, question_to_find):
         matching_question = self.__survey.blocks.find_question_by_name(question_to_find)
         if matching_question is None:
-            print("\nCould not match question "+question_to_find+ " from CSV to a question in the QSF.\n             *This data will need to be input manually.*\n")
+            print("\nCould not match question "+question_to_find+
+                  " from CSV to a question in the QSF.\n        "
+                  "     *This data will need to be input manually.*\n")
             return None
         elif matching_question.parent == "CompositeQuestion":
             matching_question = self.find_sub_question(matching_question, question_to_find)
@@ -83,7 +87,9 @@ class ReportGenerator(object):
             matching_response = next((response for response in responses if response.response == '1'), None)
 
         if matching_response is None:
-            print("\nCould not match response " +response_to_find+ " from " + matching_question.name + " from CSV to a question in the QSF.\n             *This data will need to be input manually.*\n")
+            print("\nCould not match response " +response_to_find+ " from " +
+                  matching_question.name + " from CSV to a question in the QSF.\n"
+                                           "             *This data will need to be input manually.*\n")
         return matching_response
 
     def add_frequency(self, matching_response, frequency_data, years):
@@ -104,3 +110,6 @@ class ReportGenerator(object):
 
     def add_display_logic(self, matching_question, question_display):
         matching_question.display_logic = question_display
+
+    def add_stat(self, matching_question, stat):
+        matching_question.stat = stat
