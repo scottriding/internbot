@@ -149,7 +149,7 @@ class QSFToplineSlides(object):
         series = plot.series[0]
         fill = series.format.fill
         fill.solid()
-        fill.fore_color.theme_color = MSO_THEME_COLOR.ACCENT_2
+        fill.fore_color.theme_color = MSO_THEME_COLOR.ACCENT_3
 
     def column_clustered_basic_trended(self, question, slide):
         headers = self.max_years(question.responses)

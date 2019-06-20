@@ -43,18 +43,18 @@ class ToplineView(object):
         message = "Is this topline trended\n or a single year of data?"
         tkinter.Label(self.redirect_window, text=message, font=self.header_font, fg=self.header_color).pack(side=tkinter.TOP, pady=10)
         btn_trend = tkinter.Button(self.redirect_window, text="Trended", command=self.round_menu, height=3, width=20)
-        btn_single = tkinter.Button(self.redirect_window, text="Single year", command=self.single_year_menu, height=3, width=20)
+        btn_basic = tkinter.Button(self.redirect_window, text="Basic", command=self.basic_menu, height=3, width=20)
         btn_cancel = tkinter.Button(self.redirect_window, text="Cancel", command=self.redirect_window.destroy, height=3, width=20)
         btn_bot = tkinter.Button(self.redirect_window, image=self.bot_render, borderwidth=0, highlightthickness=0, relief=tkinter.FLAT, bg="white", height=65, width=158, command=self.topline_help_window)
 
         btn_bot.pack(side=tkinter.TOP, padx=10)
         btn_trend.pack(side=tkinter.TOP, padx=10)
-        btn_single.pack(side=tkinter.TOP, padx=10)
+        btn_basic.pack(side=tkinter.TOP, padx=10)
         btn_cancel.pack(side=tkinter.TOP, padx=10)
 
         self.redirect_window.deiconify()
 
-    def single_year_menu(self):
+    def basic_menu(self):
         """
         Function sets up menu for entry of round number and open of topline file.
         :return: None
@@ -71,8 +71,7 @@ class ToplineView(object):
 
         btn_qsf = tkinter.Button(self.single_window, text="QSF and CSV", command=self.read_qsf_topline, height=3, width=20)
         btn_csv = tkinter.Button(self.single_window, text="CSV Only", command=self.read_csv_topline, height=3, width=20)
-        btn_cancel = tkinter.Button(self.single_window, text="Cancel", command=self.single_window.destroy, height=3,
-                                    width=20)
+        btn_cancel = tkinter.Button(self.single_window, text="Cancel", command=self.single_window.destroy, height=3, width=20)
         btn_bot = tkinter.Button(self.single_window, image=self.bot_render, borderwidth=0, highlightthickness=0, relief=tkinter.FLAT, bg="white", height=65, width=158, command=self.topline_help_window)
 
         btn_bot.pack(side=tkinter.TOP, padx=10)
@@ -81,6 +80,7 @@ class ToplineView(object):
         btn_cancel.pack(side=tkinter.TOP, padx=10)
 
         self.single_window.deiconify()
+        self.round_int = 1
 
     def round_menu(self):
         self.round_window = tkinter.Toplevel(self.__window)
@@ -127,6 +127,7 @@ class ToplineView(object):
         Function sets up menu for entry of round number and open of topline file.
         :return: None
         """
+        self.round_window.withdraw()
         self.round_int = self.round_entry.get()
         if self.round_int != "" and self.round_int != 1:
             thread = threading.Thread(target=self.year_window_setup(int(self.round_int)))
@@ -206,24 +207,30 @@ class ToplineView(object):
         Funtion reads in a topline file
         :return: None
         """
-        print("Reading in QSF Topline")
+        print("Reading in QSF Topline with "+str(self.round_int)+" round(s)")
         self.filename = filedialog.askopenfilename(initialdir=self.fpath, title="Select survey file", filetypes=(("Qualtrics files", "*.qsf"), ("all files", "*.*")))
         if self.filename is not "":
-            if self.round_int != 1:
+            #print("Round:" + str(self.round_int))
+            if self.round_int != 1 and self.round_int is not "":
+                self.trended_window.withdraw()
                 self.build_topline_leadup()
             else:
+                self.single_window.withdraw()
                 self.build_topline_report()
     def read_csv_topline(self):
         """
         Funtion reads in a topline file
         :return: None
         """
-        print("Reading in CSV Topline")
+        print("Reading in CSV Topline with "+str(self.round_int)+" round(s)")
         self.filename = filedialog.askopenfilename(initialdir=self.fpath, title="Select survey file", filetypes=(("comma seperated files", "*.csv"), ("all files", "*.*")))
         if self.filename is not "":
-            if self.round_int is not 1:
+            #print("Round:" +str(self.round_int))
+            if self.round_int != 1 and self.round_int is not "":
+                self.trended_window.withdraw()
                 self.build_topline_leadup()
             else:
+                self.single_window.withdraw()
                 self.build_topline_report()
 
 

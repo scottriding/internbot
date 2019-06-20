@@ -27,6 +27,7 @@ class PowerPointView(object):
         self.__embedded_fields = []
         self.bot_render = bot_render
         self.resources_filepath = resources_filepath
+        self.round_int = 1
 
     def pptx_menu(self):
         """
@@ -41,30 +42,71 @@ class PowerPointView(object):
         width, height, self.mov_x + self.window_width/2 - width/2, self.mov_y + self.window_height / 2 - height / 2))
         self.redirect_window.title("Topline Menu")
         message = "Please open a survey file."
-        tkinter.Label(self.redirect_window, text=message, font=self.header_font, fg=self.header_color).pack(side=tkinter.TOP,
-                                                                                                  pady=10)
+        tkinter.Label(self.redirect_window, text=message, font=self.header_font, fg=self.header_color).pack(side=tkinter.TOP, pady=10)
+
+        btn_trended = tkinter.Button(self.redirect_window, text="Trended", command=self.round_menu, height=3, width=20)
+        btn_basic = tkinter.Button(self.redirect_window, text="Basic", command=self.read_qsf_topline, height=3, width=20)
+        btn_cancel = tkinter.Button(self.redirect_window, text="Cancel", command=self.redirect_window.destroy, height=3, width=20)
+        btn_bot = tkinter.Button(self.redirect_window, image=self.bot_render, borderwidth=0, highlightthickness=0, relief=tkinter.FLAT, bg="white", height=65, width=158, command=self.pptx_help_window)
+
+        btn_bot.pack(side=tkinter.TOP, padx=10)
+        btn_trended.pack(side=tkinter.TOP, padx=10)
+        btn_basic.pack(side=tkinter.TOP, padx=10)
+        btn_cancel.pack(side=tkinter.TOP, padx=10)
+        self.redirect_window.deiconify()
+
+    def round_menu(self):
+        self.round_window = tkinter.Toplevel(self.__window)
+        self.round_window.withdraw()
+
+        width = 200
+        height = 150
+        self.round_window.geometry("%dx%d+%d+%d" % (
+            width, height, self.mov_x + self.window_width / 2 - width / 2,
+            self.mov_y + self.window_height / 2 - height / 2))
+        self.round_window.title("Topline Menu")
+        message = "Enter the number of \nyears you have data for"
+        tkinter.Label(self.round_window, text=message, font=self.header_font, fg=self.header_color).pack(
+            side=tkinter.TOP, pady=10)
 
         # round details
-        round_frame = tkinter.Frame(self.redirect_window, width=20)
+        round_frame = tkinter.Frame(self.round_window, width=20)
         round_frame.pack(side=tkinter.TOP, padx=20)
 
         round_label = tkinter.Label(round_frame, text="Round number:", width=15)
         round_label.pack(side=tkinter.LEFT)
         self.round_entry = tkinter.Entry(round_frame)
-        self.round_entry.pack(side=tkinter.RIGHT, expand=True)
+        self.round_entry.pack(side=tkinter.LEFT, expand=True)
 
-        btn_qsf = tkinter.Button(self.redirect_window, text="Run Charts", command=self.read_qsf_topline, height=3, width=20)
-        btn_cancel = tkinter.Button(self.redirect_window, text="Cancel", command=self.redirect_window.destroy, height=3,
-                                    width=20)
-        btn_bot = tkinter.Button(self.redirect_window, image=self.bot_render, borderwidth=0, highlightthickness=0,
-                                relief=tkinter.FLAT, bg="white", height=65, width=158, command=self.pptx_help_window)
+        btn_frame = tkinter.Frame(self.round_window, width=20)
+        btn_frame.pack(side=tkinter.BOTTOM, padx=20)
 
-        btn_bot.pack(side=tkinter.TOP, padx=10)
-        btn_qsf.pack(side=tkinter.TOP, padx=10)
-        btn_cancel.pack(side=tkinter.TOP, padx=10)
+        btn_done = tkinter.Button(btn_frame, text="Done", command=self.trended_leadup, height=2, width=9)
+        btn_cancel = tkinter.Button(btn_frame, text="Cancel", command=self.round_window.destroy, height=2, width=9)
+
+        btn_done.pack(side=tkinter.LEFT)
+        btn_cancel.pack(side=tkinter.LEFT)
+
+        def enter_pressed(event):
+            self.trended_leadup()
+
+
+        self.round_window.bind("<Return>", enter_pressed)
+        self.round_window.bind("<KP_Enter>", enter_pressed)
 
         self.round_entry.focus_set()
-        self.redirect_window.deiconify()
+        self.round_window.deiconify()
+
+
+
+    def trended_leadup(self):
+        self.round_window.withdraw()
+        self.round_int = self.round_entry.get()
+        if self.round_int != "" and self.round_int != 1:
+            thread = threading.Thread(target=self.year_window_setup(int(self.round_int)))
+            thread.start()
+
+
 
     def pptx_help_window(self):
         """
@@ -103,10 +145,8 @@ class PowerPointView(object):
         print("Reading in QSF Topline")
         self.filename = filedialog.askopenfilename(initialdir=self.fpath, title="Select survey file", filetypes=(("Qualtrics files", "*.qsf"), ("comma seperated files", "*.csv"), ("all files", "*.*")))
         if self.filename is not "":
-            round_int = self.round_entry.get()
-            if round_int != "" and round_int != 1:
-                thread = threading.Thread(target=self.year_window_setup(int(round_int)))
-                thread.start()
+            if self.round_int != "" and self.round_int != 1:
+                self.build_topline_leadup()
             else:
                 self.build_topline_report()
 
@@ -130,14 +170,15 @@ class PowerPointView(object):
         year_frame.pack(side=tkinter.TOP, expand=True)
         self.year_window_obj = YearsWindow(self.__window, self.year_window, rounds)
         self.year_window_obj.packing_years(year_frame)
-        btn_finish = tkinter.Button(self.year_window, text="Done", command=self.build_topline_leadup, height=3, width=17)
+        btn_finish = tkinter.Button(self.year_window, text="Done", command=self.read_qsf_topline, height=3, width=17)
         btn_cancel = tkinter.Button(self.year_window, text="Cancel", command=self.year_window.destroy, height=3, width=17)
         btn_finish.pack(ipadx=5, side=tkinter.LEFT, expand=False)
         btn_cancel.pack(ipadx=5, side=tkinter.RIGHT, expand=False)
         self.year_window.deiconify()
 
         def enter_pressed(event):
-            self.build_topline_leadup()
+            self.read_qsf_topline()
+
 
         self.year_window.bind("<Return>", enter_pressed)
         self.year_window.bind("<KP_Enter>", enter_pressed)
@@ -187,6 +228,7 @@ class PowerPointView(object):
         print("Done!")
         self.open_file_for_user(savedirectory)
         self.redirect_window.destroy()
+        self.round_int =1
 
     def open_sound(self):
 
