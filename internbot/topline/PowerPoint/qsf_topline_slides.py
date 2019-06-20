@@ -39,37 +39,44 @@ class QSFToplineSlides(object):
         shapes = slide.shapes
         self.write_question_details(slide, question)
 
-        if len(question.responses) < 3:
-            self.pie_chart_simple_question(question, slide)
-            self.bar_chart_vertical_simple_question(question, slide)
+        if len(self.years) > 0:
+            self.column_clustered_basic_trended(question, slide)
+            self.bar_clustered_basic_trended(question, slide)
         else:
-            self.bar_chart_vertical_simple_question(question, slide)
-            self.bar_chart_horizontal_simple_question(question, slide)
+            if len(question.responses) < 3:
+                self.pie_simple(question, slide)
+                self.column_clustered_basic(question, slide)
+            else:
+                self.column_clustered_basic(question, slide)
+                self.bar_clustered_basic(question, slide)
 
     def chart_composite_question(self, question):
-        if question.type == 'CompositeMatrix':
-            slide_1 = self.presentation.slides.add_slide(self.presentation.slide_layouts.get_by_name('AutomatedChart'))
-            self.write_composite_question_details(slide_1, question, 1, 3)
-            self.bar_chart_vertical_matrix_question_by_categories(question, slide_1)
-            self.bar_chart_vertical_matrix_question_by_scale_points(question, slide_1)
-
-            slide_2 = self.presentation.slides.add_slide(self.presentation.slide_layouts.get_by_name('AutomatedChart'))
-            self.write_composite_question_details(slide_2, question, 2, 3)
-            self.bar_chart_horizontal_matrix_question_by_categories(question, slide_2)
-            self.bar_chart_horizontal_matrix_question_by_scale_points(question, slide_2)
-
-            slide_3 = self.presentation.slides.add_slide(self.presentation.slide_layouts.get_by_name('AutomatedChart'))
-            self.write_composite_question_details(slide_3, question, 3, 3)
-            self.stacked_bar_horizontal_matrix_question(question, slide_3)
-
-        elif question.type == 'CompositeConstantSum':
-            slide_1 = self.presentation.slides.add_slide(self.presentation.slide_layouts.get_by_name('AutomatedChart'))
-            self.write_composite_question_details(slide_1, question, 1, 1)
-            self.bar_chart_vertical_allocation_question(question, slide_1)
-            self.bar_chart_horizontal_allocation_question(question, slide_1)
-        else:
-            # self.write_binary(question.questions)
+        if len(self.years) > 0:
             pass
+        else:
+            if question.type == 'CompositeMatrix':
+                slide_1 = self.presentation.slides.add_slide(self.presentation.slide_layouts.get_by_name('AutomatedChart'))
+                self.write_composite_question_details(slide_1, question, 1, 3)
+                self.column_clustered_matrix_by_categories(question, slide_1)
+                self.column_clustered_matrix_by_scale_points(question, slide_1)
+
+                slide_2 = self.presentation.slides.add_slide(self.presentation.slide_layouts.get_by_name('AutomatedChart'))
+                self.write_composite_question_details(slide_2, question, 2, 3)
+                self.bar_clustered_matrix_by_categories(question, slide_2)
+                self.bar_clustered_matrix_by_scale_points(question, slide_2)
+
+                slide_3 = self.presentation.slides.add_slide(self.presentation.slide_layouts.get_by_name('AutomatedChart'))
+                self.write_composite_question_details(slide_3, question, 3, 3)
+                self.stacked_bar_matrix(question, slide_3)
+
+            elif question.type == 'CompositeConstantSum':
+                slide_1 = self.presentation.slides.add_slide(self.presentation.slide_layouts.get_by_name('AutomatedChart'))
+                self.write_composite_question_details(slide_1, question, 1, 1)
+                self.column_clustered_allocation(question, slide_1)
+                self.bar_clustered_allocation(question, slide_1)
+            else:
+                # self.write_binary(question.questions)
+                pass
 
     def write_question_details(self, slide, question):
         header = slide.shapes[0]
@@ -87,86 +94,27 @@ class QSFToplineSlides(object):
         count_box = slide.shapes[2]
         count_box.text = "Slide "+str(slide_number)+" of "+str(slide_total)
 
-    def bar_chart_vertical_allocation_question(self, question, slide):
-        sub_questions = question.questions
-        categories = []
-        frequencies = []
+    def max_years(self, responses):
+        years_used = []
+        for response in responses:
+            for year in self.years:
+                if response.frequencies.get(year) is not None:
+                    if year not in years_used:
+                        years_used.append(year)
+        return years_used
 
-        for sub_question in sub_questions:
-            for response in sub_question.responses:
-                categories.append(response.response+" (n="+str(sub_question.n)+")")
-                for year, frequency in response.frequencies.items():
-                    frequencies.append(frequency)
+    def max_years_subquestions(self, sub_questions):
+        years_used = []
+        for question in sub_questions:
+            for response in question.responses:
+                for year in self.years:
+                    if response.frequencies.get(year) is not None:
+                        if year not in years_used:
+                            years_used.append(year)
+        return years_used
 
-        chart_data = CategoryChartData()
-        chart_data.categories = categories
-        chart_data.add_series('Series 1', iter(frequencies))
-        left, top, width, height = Inches(0), Inches(2), Inches(6.5), Inches(5)
 
-        chart = slide.shapes.add_chart(XL_CHART_TYPE.COLUMN_CLUSTERED, left, top, width, height, chart_data).chart
-        chart.chart_title.has_text_frame = True
-        chart.chart_title.text_frame.text = "Q: " + str(question.prompt)
-        chart.chart_title.text_frame.paragraphs[0].font.size = Pt(12)
-        chart.has_legend = False
-        category_axis = chart.category_axis
-        category_axis.has_minor_gridlines = False
-        category_axis.has_major_gridlines = False
-        category_axis.tick_labels.font.size = Pt(12)
-        value_axis = chart.value_axis
-        value_axis.has_minor_gridlines = False
-        value_axis.has_major_gridlines = False
-        value_axis.tick_labels.font.size = Pt(12)
-        chart.plots[0].has_data_labels = True
-        data_labels = chart.plots[0].data_labels
-        data_labels.position = XL_LABEL_POSITION.OUTSIDE_END
-        data_labels.font.size = Pt(12)
-        plot = chart.plots[0]
-        series = plot.series[0]
-        fill = series.format.fill
-        fill.solid()
-        fill.fore_color.theme_color = MSO_THEME_COLOR.ACCENT_1
-
-    def bar_chart_horizontal_allocation_question(self, question, slide):
-        sub_questions = question.questions
-        categories = []
-        frequencies = []
-
-        for sub_question in sub_questions:
-            for response in sub_question.responses:
-                categories.append(response.response+" (n="+str(sub_question.n)+")")
-                for year, frequency in response.frequencies.items():
-                    frequencies.append(frequency)
-
-        chart_data = CategoryChartData()
-        chart_data.categories = categories
-        chart_data.add_series('Series 1', iter(frequencies))
-        left, top, width, height = Inches(6.75), Inches(2), Inches(6.5), Inches(5)
-
-        chart = slide.shapes.add_chart(XL_CHART_TYPE.BAR_CLUSTERED, left, top, width, height, chart_data).chart
-        chart.chart_title.has_text_frame = True
-        chart.chart_title.text_frame.text = "Q: " + str(question.prompt)
-        chart.chart_title.text_frame.paragraphs[0].font.size = Pt(12)
-        chart.has_legend = False
-        category_axis = chart.category_axis
-        category_axis.has_minor_gridlines = False
-        category_axis.has_major_gridlines = False
-        category_axis.tick_labels.font.size = Pt(12)
-        value_axis = chart.value_axis
-        value_axis.has_minor_gridlines = False
-        value_axis.has_major_gridlines = False
-        value_axis.tick_labels.font.size = Pt(12)
-        chart.plots[0].has_data_labels = True
-        data_labels = chart.plots[0].data_labels
-        #data_labels.number_format = '0%'
-        data_labels.position = XL_LABEL_POSITION.OUTSIDE_END
-        data_labels.font.size = Pt(12)
-        plot = chart.plots[0]
-        series = plot.series[0]
-        fill = series.format.fill
-        fill.solid()
-        fill.fore_color.theme_color = MSO_THEME_COLOR.ACCENT_1
-
-    def bar_chart_vertical_simple_question(self, question, slide):
+    def column_clustered_basic(self, question, slide):
         categories = []
         frequencies = []
         for response in question.responses:
@@ -203,7 +151,54 @@ class QSFToplineSlides(object):
         fill.solid()
         fill.fore_color.theme_color = MSO_THEME_COLOR.ACCENT_2
 
-    def bar_chart_horizontal_simple_question(self, question, slide):
+    def column_clustered_basic_trended(self, question, slide):
+        headers = self.max_years(question.responses)
+        series_lists = []
+        categories = []
+        for header in headers:
+            frequencies = []
+            series_lists.append(frequencies)
+        for response in question.responses:
+            categories.append(str(response.response))
+            header_idx = 0
+            for header in headers:
+                frequencies = series_lists[header_idx]
+                if response.frequencies.get(header) is not None:
+                    freq = response.frequencies.get(header)
+                    frequencies.append(freq)
+                header_idx += 1
+        chart_data = CategoryChartData()
+        chart_data.categories = categories
+        for idx in range(0, len(headers)):
+            chart_data.add_series(str(headers[idx]), iter(series_lists[idx]))
+
+        left, top, width, height = Inches(0), Inches(2), Inches(6.5), Inches(5)
+
+        chart = slide.shapes.add_chart(XL_CHART_TYPE.COLUMN_CLUSTERED, left, top, width, height, chart_data).chart
+        chart.chart_title.has_text_frame = True
+        chart.chart_title.text_frame.text = "Q: " + str(question.prompt)
+        chart.chart_title.text_frame.paragraphs[0].font.size = Pt(12)
+        chart.has_legend = False
+        category_axis = chart.category_axis
+        category_axis.has_minor_gridlines = False
+        category_axis.has_major_gridlines = False
+        category_axis.tick_labels.font.size = Pt(12)
+        value_axis = chart.value_axis
+        value_axis.has_minor_gridlines = False
+        value_axis.has_major_gridlines = False
+        value_axis.tick_labels.font.size = Pt(12)
+        chart.plots[0].has_data_labels = True
+        data_labels = chart.plots[0].data_labels
+        if question.stat == 'percent':
+            data_labels.number_format = '0%'
+        data_labels.position = XL_LABEL_POSITION.OUTSIDE_END
+        data_labels.font.size = Pt(12)
+        chart.has_legend = True
+        chart.legend.position = XL_LEGEND_POSITION.BOTTOM
+        chart.legend.font.size = Pt(12)
+        chart.legend.include_in_layout = False
+
+    def bar_clustered_basic(self, question, slide):
         categories = []
         frequencies = []
         for response in question.responses:
@@ -240,7 +235,53 @@ class QSFToplineSlides(object):
         fill.solid()
         fill.fore_color.theme_color = MSO_THEME_COLOR.ACCENT_2
 
-    def stacked_bar_horizontal_simple_question(self, question, slide):
+    def bar_clustered_basic_trended(self, question, slide):
+        headers = self.max_years(question.responses)
+        series_lists = []
+        categories = []
+        for header in headers:
+            frequencies = []
+            series_lists.append(frequencies)
+        for response in question.responses:
+            categories.append(str(response.response))
+            header_idx = 0
+            for header in headers:
+                frequencies = series_lists[header_idx]
+                if response.frequencies.get(header) is not None:
+                    freq = response.frequencies.get(header)
+                    frequencies.append(freq)
+                header_idx += 1
+        chart_data = CategoryChartData()
+        chart_data.categories = categories
+        for idx in range(0, len(headers)):
+            chart_data.add_series(str(headers[idx]), iter(series_lists[idx]))
+        left, top, width, height = Inches(6.75), Inches(2), Inches(6.5), Inches(5)
+
+        chart = slide.shapes.add_chart(XL_CHART_TYPE.BAR_CLUSTERED, left, top, width, height, chart_data).chart
+        chart.chart_title.has_text_frame = True
+        chart.chart_title.text_frame.text = "Q: " + str(question.prompt)
+        chart.chart_title.text_frame.paragraphs[0].font.size = Pt(12)
+        chart.has_legend = False
+        category_axis = chart.category_axis
+        category_axis.has_minor_gridlines = False
+        category_axis.has_major_gridlines = False
+        category_axis.tick_labels.font.size = Pt(12)
+        value_axis = chart.value_axis
+        value_axis.has_minor_gridlines = False
+        value_axis.has_major_gridlines = False
+        value_axis.tick_labels.font.size = Pt(12)
+        chart.plots[0].has_data_labels = True
+        data_labels = chart.plots[0].data_labels
+        if question.stat == 'percent':
+            data_labels.number_format = '0%'
+        data_labels.position = XL_LABEL_POSITION.OUTSIDE_END
+        data_labels.font.size = Pt(12)
+        chart.has_legend = True
+        chart.legend.position = XL_LEGEND_POSITION.BOTTOM
+        chart.legend.font.size = Pt(12)
+        chart.legend.include_in_layout = False
+
+    def stacked_bar_simple(self, question, slide):
         series_names = []
         frequencies = []
         for response in question.responses:
@@ -280,7 +321,7 @@ class QSFToplineSlides(object):
             data_labels.number_format = '0%'
         data_labels.font.size = Pt(12)
 
-    def pie_chart_simple_question(self, question, slide):
+    def pie_simple(self, question, slide):
         categories = []
         frequencies = []
         for response in question.responses:
@@ -306,7 +347,7 @@ class QSFToplineSlides(object):
             data_labels.number_format = '0%'
         data_labels.font.size = Pt(12)
 
-    def bar_chart_vertical_matrix_question_by_categories(self, question, slide):
+    def column_clustered_matrix_by_categories(self, question, slide):
         sub_questions = question.questions
         series_names = []  # scale points
         series_lists = []  # frequencies for each scale point
@@ -366,7 +407,7 @@ class QSFToplineSlides(object):
         chart.legend.font.size = Pt(12)
         chart.legend.include_in_layout = False
 
-    def bar_chart_vertical_matrix_question_by_scale_points(self, question, slide):
+    def column_clustered_matrix_by_scale_points(self, question, slide):
         sub_questions = question.questions
         series_names = []  # responses
         series_lists = []  # frequencies for each scale point
@@ -425,7 +466,7 @@ class QSFToplineSlides(object):
         chart.legend.font.size = Pt(12)
         chart.legend.include_in_layout = False
 
-    def bar_chart_horizontal_matrix_question_by_categories(self, question, slide):
+    def bar_clustered_matrix_by_categories(self, question, slide):
         sub_questions = question.questions
         series_names = []  # scale points
         series_lists = []  # frequencies for each scale point
@@ -485,7 +526,7 @@ class QSFToplineSlides(object):
         chart.legend.font.size = Pt(12)
         chart.legend.include_in_layout = False
 
-    def bar_chart_horizontal_matrix_question_by_scale_points(self, question, slide):
+    def bar_clustered_matrix_by_scale_points(self, question, slide):
         sub_questions = question.questions
         series_names = []  # responses
         series_lists = []  # frequencies for each scale point
@@ -544,7 +585,7 @@ class QSFToplineSlides(object):
         chart.legend.font.size = Pt(12)
         chart.legend.include_in_layout = False
 
-    def stacked_bar_horizontal_matrix_question(self, question, slide):
+    def stacked_bar_matrix(self, question, slide):
         sub_questions = question.questions
         series_names = []  # scale points
         series_lists = []  # frequencies for each scale point
@@ -604,4 +645,82 @@ class QSFToplineSlides(object):
             data_labels.number_format = '0%'
         data_labels.font.size = Pt(12)
 
+    def column_clustered_allocation(self, question, slide):
+        sub_questions = question.questions
+        categories = []
+        frequencies = []
+
+        for sub_question in sub_questions:
+            for response in sub_question.responses:
+                categories.append(response.response + " (n=" + str(sub_question.n) + ")")
+                for year, frequency in response.frequencies.items():
+                    frequencies.append(frequency)
+
+        chart_data = CategoryChartData()
+        chart_data.categories = categories
+        chart_data.add_series('Series 1', iter(frequencies))
+        left, top, width, height = Inches(0), Inches(2), Inches(6.5), Inches(5)
+
+        chart = slide.shapes.add_chart(XL_CHART_TYPE.COLUMN_CLUSTERED, left, top, width, height, chart_data).chart
+        chart.chart_title.has_text_frame = True
+        chart.chart_title.text_frame.text = "Q: " + str(question.prompt)
+        chart.chart_title.text_frame.paragraphs[0].font.size = Pt(12)
+        chart.has_legend = False
+        category_axis = chart.category_axis
+        category_axis.has_minor_gridlines = False
+        category_axis.has_major_gridlines = False
+        category_axis.tick_labels.font.size = Pt(12)
+        value_axis = chart.value_axis
+        value_axis.has_minor_gridlines = False
+        value_axis.has_major_gridlines = False
+        value_axis.tick_labels.font.size = Pt(12)
+        chart.plots[0].has_data_labels = True
+        data_labels = chart.plots[0].data_labels
+        data_labels.position = XL_LABEL_POSITION.OUTSIDE_END
+        data_labels.font.size = Pt(12)
+        plot = chart.plots[0]
+        series = plot.series[0]
+        fill = series.format.fill
+        fill.solid()
+        fill.fore_color.theme_color = MSO_THEME_COLOR.ACCENT_1
+
+    def bar_clustered_allocation(self, question, slide):
+        sub_questions = question.questions
+        categories = []
+        frequencies = []
+
+        for sub_question in sub_questions:
+            for response in sub_question.responses:
+                categories.append(response.response + " (n=" + str(sub_question.n) + ")")
+                for year, frequency in response.frequencies.items():
+                    frequencies.append(frequency)
+
+        chart_data = CategoryChartData()
+        chart_data.categories = categories
+        chart_data.add_series('Series 1', iter(frequencies))
+        left, top, width, height = Inches(6.75), Inches(2), Inches(6.5), Inches(5)
+
+        chart = slide.shapes.add_chart(XL_CHART_TYPE.BAR_CLUSTERED, left, top, width, height, chart_data).chart
+        chart.chart_title.has_text_frame = True
+        chart.chart_title.text_frame.text = "Q: " + str(question.prompt)
+        chart.chart_title.text_frame.paragraphs[0].font.size = Pt(12)
+        chart.has_legend = False
+        category_axis = chart.category_axis
+        category_axis.has_minor_gridlines = False
+        category_axis.has_major_gridlines = False
+        category_axis.tick_labels.font.size = Pt(12)
+        value_axis = chart.value_axis
+        value_axis.has_minor_gridlines = False
+        value_axis.has_major_gridlines = False
+        value_axis.tick_labels.font.size = Pt(12)
+        chart.plots[0].has_data_labels = True
+        data_labels = chart.plots[0].data_labels
+        # data_labels.number_format = '0%'
+        data_labels.position = XL_LABEL_POSITION.OUTSIDE_END
+        data_labels.font.size = Pt(12)
+        plot = chart.plots[0]
+        series = plot.series[0]
+        fill = series.format.fill
+        fill.solid()
+        fill.fore_color.theme_color = MSO_THEME_COLOR.ACCENT_1
 

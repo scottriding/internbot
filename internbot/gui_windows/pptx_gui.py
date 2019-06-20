@@ -45,13 +45,13 @@ class PowerPointView(object):
                                                                                                   pady=10)
 
         # round details
-        #round_frame = tkinter.Frame(self.redirect_window, width=20)
-        #round_frame.pack(side=tkinter.TOP, padx=20)
+        round_frame = tkinter.Frame(self.redirect_window, width=20)
+        round_frame.pack(side=tkinter.TOP, padx=20)
 
-        #round_label = tkinter.Label(round_frame, text="Round number:", width=15)
-        #round_label.pack(side=tkinter.LEFT)
-        #self.round_entry = tkinter.Entry(round_frame)
-        #self.round_entry.pack(side=tkinter.RIGHT, expand=True)
+        round_label = tkinter.Label(round_frame, text="Round number:", width=15)
+        round_label.pack(side=tkinter.LEFT)
+        self.round_entry = tkinter.Entry(round_frame)
+        self.round_entry.pack(side=tkinter.RIGHT, expand=True)
 
         btn_qsf = tkinter.Button(self.redirect_window, text="Run Charts", command=self.read_qsf_topline, height=3, width=20)
         btn_cancel = tkinter.Button(self.redirect_window, text="Cancel", command=self.redirect_window.destroy, height=3,
@@ -63,7 +63,7 @@ class PowerPointView(object):
         btn_qsf.pack(side=tkinter.TOP, padx=10)
         btn_cancel.pack(side=tkinter.TOP, padx=10)
 
-        #self.round_entry.focus_set()
+        self.round_entry.focus_set()
         self.redirect_window.deiconify()
 
     def pptx_help_window(self):
@@ -103,7 +103,7 @@ class PowerPointView(object):
         print("Reading in QSF Topline")
         self.filename = filedialog.askopenfilename(initialdir=self.fpath, title="Select survey file", filetypes=(("Qualtrics files", "*.qsf"), ("comma seperated files", "*.csv"), ("all files", "*.*")))
         if self.filename is not "":
-            round_int = 1
+            round_int = self.round_entry.get()
             if round_int != "" and round_int != 1:
                 thread = threading.Thread(target=self.year_window_setup(int(round_int)))
                 thread.start()
