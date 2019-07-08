@@ -394,4 +394,3 @@ class Question(object):
         result += "%s: %s\n" % (self.name, self.prompt)
         result += str(self.__responses)
         return result
-        

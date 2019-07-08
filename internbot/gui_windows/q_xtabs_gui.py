@@ -361,8 +361,7 @@ class QCrosstabsView(object):
             self.tables_box.select_set(self.focus_index)
             self.bases_box.select_set(self.focus_index)
 
-        btn_cancel = tkinter.Button(self.edit_window, text="Cancel", command=self.edit_window.destroy, width=20,
-                                    height=3)
+        btn_cancel = tkinter.Button(self.edit_window, text="Cancel", command=self.edit_window.destroy, width=20, height=3)
         btn_edit = tkinter.Button(self.edit_window, text="Edit", command=edit, width=20, height=3)
 
         string_var = tkinter.StringVar(edit_frame)

@@ -14,6 +14,29 @@ class QSFToplineSlides(object):
         self.years = years
         self.path_to_output = path_to_output
         self.slide_layouts = self.presentation.slide_layouts
+        self.diverge_color_array = [RGBColor(150, 215, 5),
+                                    RGBColor(190, 230, 100),
+                                    RGBColor(210, 240, 150),
+                                    RGBColor(230, 245, 190),
+                                    RGBColor(235, 235, 240),
+                                    RGBColor(215, 220, 235),
+                                    RGBColor(190, 205, 230),
+                                    RGBColor(170, 185, 245),
+                                    RGBColor(135, 145, 190),
+                                    RGBColor(0, 35, 100)]
+
+        self.mono_color_array = [RGBColor(150, 215, 5),
+                                 RGBColor(160, 125, 50),
+                                 RGBColor(190, 230, 100),
+                                 RGBColor(210, 240, 150),
+                                 RGBColor(230, 245, 190),
+                                 RGBColor(235, 235, 240),
+                                 RGBColor(215, 215, 220),
+                                 RGBColor(190, 190, 195),
+                                 RGBColor(165, 165, 170),
+                                 RGBColor(130, 130, 140)]
+
+        self.colors_to_use = []
 
     def save(self, path_to_output):
         self.chart_questions()
@@ -56,18 +79,27 @@ class QSFToplineSlides(object):
         else:
             if question.type == 'CompositeMatrix':
                 slide_1 = self.presentation.slides.add_slide(self.presentation.slide_layouts.get_by_name('AutomatedChart'))
-                self.write_composite_question_details(slide_1, question, 1, 3)
+                self.write_composite_question_details(slide_1, question, 1, 4)
                 self.column_clustered_matrix_by_categories(question, slide_1)
                 self.column_clustered_matrix_by_scale_points(question, slide_1)
 
                 slide_2 = self.presentation.slides.add_slide(self.presentation.slide_layouts.get_by_name('AutomatedChart'))
-                self.write_composite_question_details(slide_2, question, 2, 3)
+                self.write_composite_question_details(slide_2, question, 2, 4)
                 self.bar_clustered_matrix_by_categories(question, slide_2)
                 self.bar_clustered_matrix_by_scale_points(question, slide_2)
 
                 slide_3 = self.presentation.slides.add_slide(self.presentation.slide_layouts.get_by_name('AutomatedChart'))
-                self.write_composite_question_details(slide_3, question, 3, 3)
-                self.stacked_bar_matrix(question, slide_3)
+                self.write_composite_question_details(slide_3, question, 3, 4)
+                self.stacked_bar_matrix(question, slide_3, True, True, 'top')
+                self.stacked_bar_matrix(question, slide_3, False, True, 'bottom')
+
+                slide_4 = self.presentation.slides.add_slide(self.presentation.slide_layouts.get_by_name('AutomatedChart'))
+                self.write_composite_question_details(slide_4, question, 4, 4)
+                self.stacked_bar_matrix(question, slide_4, True, False, 'top')
+                self.stacked_bar_matrix(question, slide_4, False, False, 'bottom')
+
+
+
 
             elif question.type == 'CompositeConstantSum':
                 slide_1 = self.presentation.slides.add_slide(self.presentation.slide_layouts.get_by_name('AutomatedChart'))
@@ -585,7 +617,7 @@ class QSFToplineSlides(object):
         chart.legend.font.size = Pt(12)
         chart.legend.include_in_layout = False
 
-    def stacked_bar_matrix(self, question, slide):
+    def stacked_bar_matrix(self, question, slide, forward, diverge, side):
         sub_questions = question.questions
         series_names = []  # scale points
         series_lists = []  # frequencies for each scale point
@@ -620,7 +652,10 @@ class QSFToplineSlides(object):
         for idx in range(0, len(series_names)):
             chart_data.add_series(series_names[idx], iter(series_lists[idx]))
 
-        left, top, width, height = Inches(1.5), Inches(2), Inches(10), Inches(5)
+        if side == 'top':
+            left, top, width, height = Inches(1.5), Inches(1), Inches(10), Inches(3)
+        if side == 'bottom':
+            left, top, width, height = Inches(1.5), Inches(4), Inches(10), Inches(3)
 
         chart = slide.shapes.add_chart(XL_CHART_TYPE.BAR_STACKED, left, top, width, height, chart_data).chart
         chart.chart_title.has_text_frame = True
@@ -644,6 +679,23 @@ class QSFToplineSlides(object):
         if question.stat == 'percent':
             data_labels.number_format = '0%'
         data_labels.font.size = Pt(12)
+        plot = chart.plots[0]
+
+        length = len(plot.series)
+        self.determine_color_indicies(length, forward, diverge)
+        color_index = 0
+        for series in plot.series:
+            fill = series.format.fill
+            fill.solid()
+            fill.fore_color.rgb = self.colors_to_use[color_index]
+            if fill.fore_color.rgb == RGBColor(0, 35, 100) or fill.fore_color.rgb == RGBColor(130, 130, 140):
+                # make text white
+                series.data_labels.font.color.rgb = RGBColor(255, 255, 255)
+                series.data_labels.font.size =  Pt(12)
+                series.data_labels.number_format = '0%'
+                series.data_labels.show_value = True
+            color_index += 1
+
 
     def column_clustered_allocation(self, question, slide):
         sub_questions = question.questions
@@ -723,4 +775,278 @@ class QSFToplineSlides(object):
         fill = series.format.fill
         fill.solid()
         fill.fore_color.theme_color = MSO_THEME_COLOR.ACCENT_1
+
+    def determine_color_indicies(self, length, forward, diverge):
+        self.colors_to_use = []
+        if forward and diverge:
+            if length == 1:
+                self.colors_to_use.append(self.diverge_color_array[0])
+            elif length == 2:
+                self.colors_to_use.append(self.diverge_color_array[0])
+                self.colors_to_use.append(self.diverge_color_array[9])
+            elif length == 3:
+                self.colors_to_use.append(self.diverge_color_array[0])
+                self.colors_to_use.append(self.diverge_color_array[4])
+                self.colors_to_use.append(self.diverge_color_array[9])
+            elif length == 4:
+                self.colors_to_use.append(self.diverge_color_array[0])
+                self.colors_to_use.append(self.diverge_color_array[3])
+                self.colors_to_use.append(self.diverge_color_array[4])
+                self.colors_to_use.append(self.diverge_color_array[9])
+            elif length == 5:
+                self.colors_to_use.append(self.diverge_color_array[0])
+                self.colors_to_use.append(self.diverge_color_array[3])
+                self.colors_to_use.append(self.diverge_color_array[4])
+                self.colors_to_use.append(self.diverge_color_array[5])
+                self.colors_to_use.append(self.diverge_color_array[9])
+            elif length == 6:
+                self.colors_to_use.append(self.diverge_color_array[0])
+                self.colors_to_use.append(self.diverge_color_array[1])
+                self.colors_to_use.append(self.diverge_color_array[3])
+                self.colors_to_use.append(self.diverge_color_array[4])
+                self.colors_to_use.append(self.diverge_color_array[5])
+                self.colors_to_use.append(self.diverge_color_array[9])
+            elif length == 7:
+                self.colors_to_use.append(self.diverge_color_array[0])
+                self.colors_to_use.append(self.diverge_color_array[1])
+                self.colors_to_use.append(self.diverge_color_array[3])
+                self.colors_to_use.append(self.diverge_color_array[4])
+                self.colors_to_use.append(self.diverge_color_array[5])
+                self.colors_to_use.append(self.diverge_color_array[8])
+                self.colors_to_use.append(self.diverge_color_array[9])
+            elif length == 8:
+                self.colors_to_use.append(self.diverge_color_array[0])
+                self.colors_to_use.append(self.diverge_color_array[1])
+                self.colors_to_use.append(self.diverge_color_array[3])
+                self.colors_to_use.append(self.diverge_color_array[4])
+                self.colors_to_use.append(self.diverge_color_array[5])
+                self.colors_to_use.append(self.diverge_color_array[7])
+                self.colors_to_use.append(self.diverge_color_array[8])
+                self.colors_to_use.append(self.diverge_color_array[9])
+            elif length == 9:
+                self.colors_to_use.append(self.diverge_color_array[0])
+                self.colors_to_use.append(self.diverge_color_array[1])
+                self.colors_to_use.append(self.diverge_color_array[2])
+                self.colors_to_use.append(self.diverge_color_array[3])
+                self.colors_to_use.append(self.diverge_color_array[4])
+                self.colors_to_use.append(self.diverge_color_array[5])
+                self.colors_to_use.append(self.diverge_color_array[7])
+                self.colors_to_use.append(self.diverge_color_array[8])
+                self.colors_to_use.append(self.diverge_color_array[9])
+            elif length ==10:
+                self.colors_to_use.append(self.diverge_color_array[0])
+                self.colors_to_use.append(self.diverge_color_array[1])
+                self.colors_to_use.append(self.diverge_color_array[2])
+                self.colors_to_use.append(self.diverge_color_array[3])
+                self.colors_to_use.append(self.diverge_color_array[4])
+                self.colors_to_use.append(self.diverge_color_array[5])
+                self.colors_to_use.append(self.diverge_color_array[6])
+                self.colors_to_use.append(self.diverge_color_array[7])
+                self.colors_to_use.append(self.diverge_color_array[8])
+                self.colors_to_use.append(self.diverge_color_array[9])
+
+        if not forward and diverge:
+            if length == 1:
+                self.colors_to_use.append(self.diverge_color_array[0])
+            elif length == 2:
+                self.colors_to_use.append(self.diverge_color_array[9])
+                self.colors_to_use.append(self.diverge_color_array[0])
+            elif length == 3:
+                self.colors_to_use.append(self.diverge_color_array[9])
+                self.colors_to_use.append(self.diverge_color_array[4])
+                self.colors_to_use.append(self.diverge_color_array[0])
+            elif length == 4:
+                self.colors_to_use.append(self.diverge_color_array[9])
+                self.colors_to_use.append(self.diverge_color_array[4])
+                self.colors_to_use.append(self.diverge_color_array[3])
+                self.colors_to_use.append(self.diverge_color_array[0])
+            elif length == 5:
+                self.colors_to_use.append(self.diverge_color_array[9])
+                self.colors_to_use.append(self.diverge_color_array[5])
+                self.colors_to_use.append(self.diverge_color_array[4])
+                self.colors_to_use.append(self.diverge_color_array[3])
+                self.colors_to_use.append(self.diverge_color_array[0])
+            elif length == 6:
+                self.colors_to_use.append(self.diverge_color_array[9])
+                self.colors_to_use.append(self.diverge_color_array[5])
+                self.colors_to_use.append(self.diverge_color_array[4])
+                self.colors_to_use.append(self.diverge_color_array[3])
+                self.colors_to_use.append(self.diverge_color_array[1])
+                self.colors_to_use.append(self.diverge_color_array[0])
+            elif length == 7:
+                self.colors_to_use.append(self.diverge_color_array[9])
+                self.colors_to_use.append(self.diverge_color_array[8])
+                self.colors_to_use.append(self.diverge_color_array[5])
+                self.colors_to_use.append(self.diverge_color_array[4])
+                self.colors_to_use.append(self.diverge_color_array[3])
+                self.colors_to_use.append(self.diverge_color_array[1])
+                self.colors_to_use.append(self.diverge_color_array[0])
+            elif length == 8:
+                self.colors_to_use.append(self.diverge_color_array[9])
+                self.colors_to_use.append(self.diverge_color_array[8])
+                self.colors_to_use.append(self.diverge_color_array[7])
+                self.colors_to_use.append(self.diverge_color_array[5])
+                self.colors_to_use.append(self.diverge_color_array[4])
+                self.colors_to_use.append(self.diverge_color_array[3])
+                self.colors_to_use.append(self.diverge_color_array[1])
+                self.colors_to_use.append(self.diverge_color_array[0])
+            elif length == 9:
+                self.colors_to_use.append(self.diverge_color_array[9])
+                self.colors_to_use.append(self.diverge_color_array[8])
+                self.colors_to_use.append(self.diverge_color_array[7])
+                self.colors_to_use.append(self.diverge_color_array[5])
+                self.colors_to_use.append(self.diverge_color_array[4])
+                self.colors_to_use.append(self.diverge_color_array[3])
+                self.colors_to_use.append(self.diverge_color_array[2])
+                self.colors_to_use.append(self.diverge_color_array[1])
+                self.colors_to_use.append(self.diverge_color_array[0])
+            elif length == 10:
+                self.colors_to_use.append(self.diverge_color_array[9])
+                self.colors_to_use.append(self.diverge_color_array[8])
+                self.colors_to_use.append(self.diverge_color_array[7])
+                self.colors_to_use.append(self.diverge_color_array[6])
+                self.colors_to_use.append(self.diverge_color_array[5])
+                self.colors_to_use.append(self.diverge_color_array[4])
+                self.colors_to_use.append(self.diverge_color_array[3])
+                self.colors_to_use.append(self.diverge_color_array[2])
+                self.colors_to_use.append(self.diverge_color_array[1])
+                self.colors_to_use.append(self.diverge_color_array[0])
+        if forward and not diverge:
+            if length == 1:
+                self.colors_to_use.append(self.mono_color_array[0])
+            elif length == 2:
+                self.colors_to_use.append(self.mono_color_array[0])
+                self.colors_to_use.append(self.mono_color_array[4])
+            elif length == 3:
+                self.colors_to_use.append(self.mono_color_array[0])
+                self.colors_to_use.append(self.mono_color_array[2])
+                self.colors_to_use.append(self.mono_color_array[4])
+            elif length == 4:
+                self.colors_to_use.append(self.mono_color_array[0])
+                self.colors_to_use.append(self.mono_color_array[2])
+                self.colors_to_use.append(self.mono_color_array[4])
+                self.colors_to_use.append(self.mono_color_array[5])
+            elif length == 5:
+                self.colors_to_use.append(self.mono_color_array[0])
+                self.colors_to_use.append(self.mono_color_array[2])
+                self.colors_to_use.append(self.mono_color_array[3])
+                self.colors_to_use.append(self.mono_color_array[4])
+                self.colors_to_use.append(self.mono_color_array[5])
+            elif length == 6:
+                self.colors_to_use.append(self.mono_color_array[0])
+                self.colors_to_use.append(self.mono_color_array[1])
+                self.colors_to_use.append(self.mono_color_array[2])
+                self.colors_to_use.append(self.mono_color_array[3])
+                self.colors_to_use.append(self.mono_color_array[4])
+                self.colors_to_use.append(self.mono_color_array[5])
+            elif length == 7:
+                self.colors_to_use.append(self.mono_color_array[0])
+                self.colors_to_use.append(self.mono_color_array[1])
+                self.colors_to_use.append(self.mono_color_array[2])
+                self.colors_to_use.append(self.mono_color_array[3])
+                self.colors_to_use.append(self.mono_color_array[4])
+                self.colors_to_use.append(self.mono_color_array[5])
+                self.colors_to_use.append(self.mono_color_array[6])
+            elif length == 8:
+                self.colors_to_use.append(self.mono_color_array[0])
+                self.colors_to_use.append(self.mono_color_array[1])
+                self.colors_to_use.append(self.mono_color_array[2])
+                self.colors_to_use.append(self.mono_color_array[3])
+                self.colors_to_use.append(self.mono_color_array[4])
+                self.colors_to_use.append(self.mono_color_array[5])
+                self.colors_to_use.append(self.mono_color_array[6])
+                self.colors_to_use.append(self.mono_color_array[7])
+            elif length == 9:
+                self.colors_to_use.append(self.mono_color_array[0])
+                self.colors_to_use.append(self.mono_color_array[1])
+                self.colors_to_use.append(self.mono_color_array[2])
+                self.colors_to_use.append(self.mono_color_array[3])
+                self.colors_to_use.append(self.mono_color_array[4])
+                self.colors_to_use.append(self.mono_color_array[5])
+                self.colors_to_use.append(self.mono_color_array[6])
+                self.colors_to_use.append(self.mono_color_array[7])
+                self.colors_to_use.append(self.mono_color_array[8])
+            elif length == 10:
+                self.colors_to_use.append(self.mono_color_array[0])
+                self.colors_to_use.append(self.mono_color_array[1])
+                self.colors_to_use.append(self.mono_color_array[2])
+                self.colors_to_use.append(self.mono_color_array[3])
+                self.colors_to_use.append(self.mono_color_array[4])
+                self.colors_to_use.append(self.mono_color_array[5])
+                self.colors_to_use.append(self.mono_color_array[6])
+                self.colors_to_use.append(self.mono_color_array[7])
+                self.colors_to_use.append(self.mono_color_array[8])
+                self.colors_to_use.append(self.mono_color_array[9])
+
+        if not forward and not diverge:
+            if length == 1:
+                self.colors_to_use.append(self.mono_color_array[0])
+            elif length == 2:
+                self.colors_to_use.append(self.mono_color_array[4])
+                self.colors_to_use.append(self.mono_color_array[0])
+            elif length == 3:
+                self.colors_to_use.append(self.mono_color_array[4])
+                self.colors_to_use.append(self.mono_color_array[2])
+                self.colors_to_use.append(self.mono_color_array[0])
+            elif length == 4:
+                self.colors_to_use.append(self.mono_color_array[5])
+                self.colors_to_use.append(self.mono_color_array[4])
+                self.colors_to_use.append(self.mono_color_array[2])
+                self.colors_to_use.append(self.mono_color_array[0])
+            elif length == 5:
+                self.colors_to_use.append(self.mono_color_array[5])
+                self.colors_to_use.append(self.mono_color_array[4])
+                self.colors_to_use.append(self.mono_color_array[3])
+                self.colors_to_use.append(self.mono_color_array[2])
+                self.colors_to_use.append(self.mono_color_array[0])
+            elif length == 6:
+                self.colors_to_use.append(self.mono_color_array[5])
+                self.colors_to_use.append(self.mono_color_array[4])
+                self.colors_to_use.append(self.mono_color_array[3])
+                self.colors_to_use.append(self.mono_color_array[2])
+                self.colors_to_use.append(self.mono_color_array[1])
+                self.colors_to_use.append(self.mono_color_array[0])
+            elif length == 7:
+                self.colors_to_use.append(self.mono_color_array[6])
+                self.colors_to_use.append(self.mono_color_array[5])
+                self.colors_to_use.append(self.mono_color_array[4])
+                self.colors_to_use.append(self.mono_color_array[3])
+                self.colors_to_use.append(self.mono_color_array[2])
+                self.colors_to_use.append(self.mono_color_array[1])
+                self.colors_to_use.append(self.mono_color_array[0])
+            elif length == 8:
+                self.colors_to_use.append(self.mono_color_array[7])
+                self.colors_to_use.append(self.mono_color_array[6])
+                self.colors_to_use.append(self.mono_color_array[5])
+                self.colors_to_use.append(self.mono_color_array[4])
+                self.colors_to_use.append(self.mono_color_array[3])
+                self.colors_to_use.append(self.mono_color_array[2])
+                self.colors_to_use.append(self.mono_color_array[1])
+                self.colors_to_use.append(self.mono_color_array[0])
+            elif length == 9:
+                self.colors_to_use.append(self.mono_color_array[8])
+                self.colors_to_use.append(self.mono_color_array[7])
+                self.colors_to_use.append(self.mono_color_array[6])
+                self.colors_to_use.append(self.mono_color_array[5])
+                self.colors_to_use.append(self.mono_color_array[4])
+                self.colors_to_use.append(self.mono_color_array[3])
+                self.colors_to_use.append(self.mono_color_array[2])
+                self.colors_to_use.append(self.mono_color_array[1])
+                self.colors_to_use.append(self.mono_color_array[0])
+            elif length == 10:
+                self.colors_to_use.append(self.mono_color_array[9])
+                self.colors_to_use.append(self.mono_color_array[8])
+                self.colors_to_use.append(self.mono_color_array[7])
+                self.colors_to_use.append(self.mono_color_array[6])
+                self.colors_to_use.append(self.mono_color_array[5])
+                self.colors_to_use.append(self.mono_color_array[4])
+                self.colors_to_use.append(self.mono_color_array[3])
+                self.colors_to_use.append(self.mono_color_array[2])
+                self.colors_to_use.append(self.mono_color_array[1])
+                self.colors_to_use.append(self.mono_color_array[0])
+
+
+
+
+
 
