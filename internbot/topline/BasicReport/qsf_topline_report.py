@@ -38,7 +38,7 @@ class QSFToplineReport(object):
         if question.type == 'RO':
             self.write_rank(question.responses)
         else:
-            self.write_responses(question.responses)
+            self.write_responses(question.responses, question.stat)
         new = self.doc.add_paragraph("") # space between questions
         new.style = self.line_break
         self.doc.add_paragraph("") # space between questions
@@ -61,6 +61,7 @@ class QSFToplineReport(object):
         paragraph = self.doc.add_paragraph() # each question starts a new paragraph
         self.write_name(question.name, paragraph)
         self.write_prompt(question.prompt, paragraph)
+        self.write_n(question.n, paragraph)
         paragraph.add_run(' (OPEN-ENDED RESPONSES VERBATIM IN APPENDIX)')
         new = self.doc.add_paragraph("") # space between questions
         new.style = self.line_break
@@ -79,9 +80,9 @@ class QSFToplineReport(object):
         if n != 0:
             paragraph.add_run(" (n = " + str(n) + ")")
 
-    def write_responses(self, responses):
+    def write_responses(self, responses, stat):
         if len(self.years) > 0:
-            self.write_trended_responses(responses)
+            self.write_trended_responses(responses, stat)
         else:
             table = self.doc.add_table(rows=1, cols=5)
             first_row = True
@@ -93,11 +94,14 @@ class QSFToplineReport(object):
                     shading_elm = parse_xml(r'<w:shd {} w:fill="FFF206"/>'.format(nsdecls('w')))
                     response_cells[1]._tc.get_or_add_tcPr().append(shading_elm)
                 for year, response in response.frequencies.items():
-                    freq = self.freqs_percent(response, first_row)
+                    if stat == 'percent':
+                        freq = self.freqs_percent(response, first_row)
+                    else:
+                        freq = str(response)
                     response_cells[3].text = freq
                 first_row = False
 
-    def write_trended_responses(self, responses):
+    def write_trended_responses(self, responses, stat):
         headers = self.max_years(responses)
         table = self.doc.add_table(rows=1, cols=len(headers) + 4)
         titles_row = table.add_row().cells
@@ -119,7 +123,10 @@ class QSFToplineReport(object):
             for header in headers:
                 if response.frequencies.get(header) is not None:
                     freq = response.frequencies.get(header)
-                    text = self.freqs_percent(freq, first_row)
+                    if stat == 'percent':
+                        text = self.freqs_percent(freq, first_row)
+                    else:
+                        text = str(freq)
                     response_cells[freq_col].text = text
                 first_row = False
                 freq_col += 1
@@ -162,8 +169,6 @@ class QSFToplineReport(object):
                 first_row = False
                 freq_col += 1
 
-
-
     def write_binary(self, sub_questions):
         if len(self.years) > 0:
             self.write_trended_binary(sub_questions)
@@ -173,7 +178,7 @@ class QSFToplineReport(object):
             for sub_question in sub_questions:
                 cells = table.add_row().cells
                 cells[1].merge(cells[2])
-                cells[1].text = sub_question.prompt
+                cells[1].text = "%s (n=%s)" % (sub_question.prompt, sub_question.n)
                 response = next((response for response in sub_question.responses if response.code == '1'), None)
                 for year, frequency in response.frequencies.items():
                     cells[3].text = self.freqs_percent(frequency, first_row)
@@ -194,7 +199,7 @@ class QSFToplineReport(object):
             response = next((response for response in sub_question.responses if response.code == '1'), None)
             region_cells = table.add_row().cells
             region_cells[1].merge(region_cells[3])
-            region_cells[1].text = sub_question.prompt
+            region_cells[1].text = "%s (n=%s)" % (sub_question.prompt, sub_question.n)
             freq_col = 4
             for header in headers:
                 if response.frequencies.get(header) is not None:
@@ -218,7 +223,7 @@ class QSFToplineReport(object):
             for sub_question in sub_questions:
                 cells = table.add_row().cells
                 cells[1].merge(cells[2])
-                cells[1].text = sub_question.prompt
+                cells[1].text = "%s (n=%s)" % (sub_question.prompt, sub_question.n)
                 for response in sub_question.responses:
                     for year, frequency in response.frequencies.items():
                         cells[3].text = self.avgs_percent(frequency, first_row)
@@ -239,7 +244,7 @@ class QSFToplineReport(object):
             for response in sub_question.responses:
                 region_cells = table.add_row().cells
                 region_cells[1].merge(region_cells[3])
-                region_cells[1].text = sub_question.prompt
+                region_cells[1].text = "%s (n=%s)" % (sub_question.prompt, sub_question.n)
                 freq_col = 4
                 for header in headers:
                     if response.frequencies.get(header) is not None:
@@ -269,7 +274,7 @@ class QSFToplineReport(object):
                         response_cells = table.add_column(width = Inches(1)).cells
                         response_cells[1].text = response.response
                 question_cells = table.add_row().cells
-                question_cells[1].text = sub_question.prompt
+                question_cells[1].text = "%s (n=%s)" % (sub_question.prompt, sub_question.n)
                 index = 2
                 for response in sub_question.responses:
                     if response.has_frequency is True:
@@ -290,7 +295,7 @@ class QSFToplineReport(object):
             self.write_name(sub_question.name, paragraph)
             self.write_prompt(sub_question.prompt, paragraph)
             self.write_n(sub_question.n, paragraph)
-            self.write_responses(sub_question.responses)
+            self.write_responses(sub_question.responses, sub_question.stat)
             self.doc.add_paragraph("") # space between questions
 
     def max_years(self, responses):

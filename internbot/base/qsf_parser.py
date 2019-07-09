@@ -538,12 +538,13 @@ class QSFResponsesParser(object):
 
     def parse_basic(self, question, question_payload):
         for code, response in question_payload['Choices'].items():
-            question.add_response(str(response['Display']).encode('ascii','ignore'), code)
+            question.add_response(self.convert_response_from_byte_str(str(response['Display'])), code)
         for old_code, new_code in self.__response_order.items():
             matching_response = next((response for response in question.responses if response.code == old_code), None)
             if matching_response is not None:
                 matching_response.code = new_code
                 matching_response.response = self.convert_response_from_byte_str(matching_response.response)
+
 
 
     def convert_response_from_byte_str(self, response):

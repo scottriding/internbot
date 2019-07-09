@@ -240,6 +240,7 @@ class Question(object):
         self.__has_carry_forward_answers = False
         self.__n = 0
         self.__display_logic = None
+        self.__stat = None
 
     @property
     def has_carry_forward_statements(self):
@@ -362,6 +363,14 @@ class Question(object):
     def display_logic(self, logic):
         self.__display_logic = str(logic)
 
+    @property
+    def stat(self):
+        return self.__stat
+
+    @stat.setter
+    def stat(self, stat):
+        self.__stat = str(stat)
+
     def add_response(self, response, code=None):
         self.__responses.add(response, code)
         self.__responses.sort(self.__response_order)
@@ -385,4 +394,3 @@ class Question(object):
         result += "%s: %s\n" % (self.name, self.prompt)
         result += str(self.__responses)
         return result
-        

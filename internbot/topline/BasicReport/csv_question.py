@@ -8,24 +8,33 @@ class CSVQuestions(object):
         for question_data in questions_data:
             self.add(question_data)
 
-    def add(self, question_data, years):
-        display_logic = question_data['display logic']
-        question_name = question_data['variable']
+    def add(self, question_data, headers, years):
+        question_name = question_data["variable"]
+
+        if 'display logic' in headers:
+            display_logic = question_data["display logic"]
+        else:
+            display_logic = ""
         question_prompt = question_data['prompt']
         question_response = question_data['label']
         question_pop = question_data['n']
+        question_stat = question_data['stat']
         if self.already_exists(question_name):
             question = self.get(question_name)
             if question_response != "":
                 question.add_response(question_response, question_data, question_pop, years)
             if display_logic != "":
                 question.add_display(display_logic)
+            if question_stat != "":
+                question.add_stat(question_stat)
         else:
             question = CSVQuestion(question_name, question_prompt)
             if question_response != "":
                 question.add_response(question_response, question_data, question_pop, years)
             if display_logic != "":
                 question.add_display(display_logic)
+            if question_stat != "":
+                question.add_stat(question_stat)
             self.__questions[question.name] = question
 
     def get(self, question_name):
@@ -60,6 +69,7 @@ class CSVQuestion(object):
         self.__n = 0
         self.__responses = []
         self.__display_logic = ""
+        self.__stat = ""
 
     @property
     def name(self):
@@ -81,12 +91,19 @@ class CSVQuestion(object):
     def display_logic(self):
         return self.__display_logic
 
+    @property
+    def stat (self):
+        return self.__stat
+
     def add_response(self, response_name, response_data, response_pop, years):
         self.__n += int(response_pop)
         self.__responses.append(CSVResponse(response_name, response_data, years))
 
     def add_display(self, logic):
         self.__display_logic = logic
+
+    def add_stat(self, stat):
+        self.__stat = stat
 
 
 class CSVResponse(object):
@@ -96,11 +113,11 @@ class CSVResponse(object):
         self.__frequencies = OrderedDict() 
         if len(years) > 0:
             for year in years:
-                round_col = "percent %s" % year
+                round_col = "result %s" % year
                 if frequency_data[round_col] != "":
                     self.__frequencies[year] = frequency_data[round_col]
         else:
-            round_col = "percent"
+            round_col = "result"
             self.__frequencies[0] = frequency_data[round_col] 
 
     @property
