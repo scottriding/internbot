@@ -28,7 +28,7 @@ class CSVToplineReport(object):
         self.write_prompt(question.prompt, paragraph)
         self.write_n(question.n, paragraph)
         if len(question.responses) > 0:
-            self.write_responses(question.responses)
+            self.write_responses(question.responses, question.stat)
         new = self.doc.add_paragraph("") # space between questions
         new.style = self.line_break
         self.doc.add_paragraph("") # space between questions
@@ -46,9 +46,9 @@ class CSVToplineReport(object):
     def write_n(self, n, paragraph):
         paragraph.add_run(" (n = " + str(n) + ")")
     
-    def write_responses(self, responses):
+    def write_responses(self, responses, stat):
         if len(self.years) > 0:
-            self.write_trended_responses(responses)
+            self.write_trended_responses(responses, stat)
         else:
             table = self.doc.add_table(rows = 1, cols = 5)
             first_row = True
@@ -57,11 +57,14 @@ class CSVToplineReport(object):
                 response_cells[1].merge(response_cells[2])
                 response_cells[1].text = response.name
                 for year, response in response.frequencies.items():
-                    response_cells[3].text = self.freqs_percent(response, first_row)
+                    if stat == 'percent':
+                        response_cells[3].text = self.freqs_percent(response, first_row)
+                    else:
+                        response_cells[3].text = str(response)
                 if response_cells[3].text != "*":
                     first_row = False
 
-    def write_trended_responses(self, responses):
+    def write_trended_responses(self, responses, stat):
         headers =  self.max_years(responses)
         table = self.doc.add_table(rows=1, cols=len(headers)+4)
         titles_row = table.add_row().cells  
@@ -80,7 +83,10 @@ class CSVToplineReport(object):
             for header in headers:
                 if response.frequencies.get(header) is not None:
                     freq = response.frequencies.get(header)
-                    text = self.freqs_percent(freq, first_row)
+                    if stat == 'percent':
+                        text = self.freqs_percent(freq, first_row)
+                    else:
+                        text = str(freq)
                     response_cells[freq_col].text = text
                 first_row = False
                 freq_col += 1

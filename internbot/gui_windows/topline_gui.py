@@ -25,6 +25,8 @@ class ToplineView(object):
         self.fpath = os.path.join(os.path.expanduser("~"), "Desktop")
         self.__embedded_fields = []
         self.resources_filepath = resources_filepath
+        self.round_int = 1
+
 
     def topline_menu(self):
         """
@@ -38,39 +40,122 @@ class ToplineView(object):
         self.redirect_window.geometry("%dx%d+%d+%d" % (
         width, height, self.mov_x + self.window_width/2 - width/2, self.mov_y + self.window_height / 2 - height / 2))
         self.redirect_window.title("Topline Menu")
-        message = "Please open a survey file."
-        tkinter.Label(self.redirect_window, text=message, font=self.header_font, fg=self.header_color).pack(side=tkinter.TOP,
-                                                                                                  pady=10)
+        message = "Is this topline trended\n or a single year of data?"
+        tkinter.Label(self.redirect_window, text=message, font=self.header_font, fg=self.header_color).pack(side=tkinter.TOP, pady=10)
+        btn_trend = tkinter.Button(self.redirect_window, text="Trended", command=self.round_menu, height=3, width=20)
+        btn_basic = tkinter.Button(self.redirect_window, text="Basic", command=self.basic_menu, height=3, width=20)
+        btn_cancel = tkinter.Button(self.redirect_window, text="Cancel", command=self.redirect_window.destroy, height=3, width=20)
+        btn_bot = tkinter.Button(self.redirect_window, image=self.bot_render, borderwidth=0, highlightthickness=0, relief=tkinter.FLAT, bg="white", height=65, width=158, command=self.topline_help_window)
 
-        # round details
-        round_frame = tkinter.Frame(self.redirect_window, width=20)
-        round_frame.pack(side=tkinter.TOP, padx=20)
+        btn_bot.pack(side=tkinter.TOP, padx=10)
+        btn_trend.pack(side=tkinter.TOP, padx=10)
+        btn_basic.pack(side=tkinter.TOP, padx=10)
+        btn_cancel.pack(side=tkinter.TOP, padx=10)
 
-        round_label = tkinter.Label(round_frame, text="Round number:", width=15)
-        round_label.pack(side=tkinter.LEFT)
-        self.round_entry = tkinter.Entry(round_frame)
-        self.round_entry.pack(side=tkinter.RIGHT, expand=True)
+        self.redirect_window.deiconify()
 
-        btn_qsf = tkinter.Button(self.redirect_window, text="QSF and CSV", command=self.read_qsf_topline, height=3, width=20)
-        btn_csv = tkinter.Button(self.redirect_window, text="CSV Only", command=self.read_csv_topline, height=3, width=20)
-        btn_cancel = tkinter.Button(self.redirect_window, text="Cancel", command=self.redirect_window.destroy, height=3,
-                                    width=20)
-        btn_bot =tkinter.Button(self.redirect_window, image=self.bot_render, borderwidth=0, highlightthickness=0,
-                                relief=tkinter.FLAT, bg="white", height=65, width=158, command=self.topline_help_window)
+    def basic_menu(self):
+        """
+        Function sets up menu for entry of round number and open of topline file.
+        :return: None
+        """
+        self.single_window = tkinter.Toplevel(self.__window)
+        self.single_window.withdraw()
+        width = 200
+        height = 350
+        self.single_window.geometry("%dx%d+%d+%d" % (
+        width, height, self.mov_x + self.window_width/2 - width/2, self.mov_y + self.window_height / 2 - height / 2))
+        self.single_window.title("Topline Menu")
+        message = "Please select the files you \nwill use to run this topline"
+        tkinter.Label(self.single_window, text=message, font=self.header_font, fg=self.header_color).pack(side=tkinter.TOP, pady=10)
+
+        btn_qsf = tkinter.Button(self.single_window, text="QSF and CSV", command=self.read_qsf_topline, height=3, width=20)
+        btn_csv = tkinter.Button(self.single_window, text="CSV Only", command=self.read_csv_topline, height=3, width=20)
+        btn_cancel = tkinter.Button(self.single_window, text="Cancel", command=self.single_window.destroy, height=3, width=20)
+        btn_bot = tkinter.Button(self.single_window, image=self.bot_render, borderwidth=0, highlightthickness=0, relief=tkinter.FLAT, bg="white", height=65, width=158, command=self.topline_help_window)
 
         btn_bot.pack(side=tkinter.TOP, padx=10)
         btn_qsf.pack(side=tkinter.TOP, padx=10)
         btn_csv.pack(side=tkinter.TOP, padx=10)
         btn_cancel.pack(side=tkinter.TOP, padx=10)
 
+        self.single_window.deiconify()
+        self.round_int = 1
+
+    def round_menu(self):
+        self.round_window = tkinter.Toplevel(self.__window)
+        self.round_window.withdraw()
+        width = 200
+        height = 150
+        self.round_window.geometry("%dx%d+%d+%d" % (
+            width, height, self.mov_x + self.window_width / 2 - width / 2,
+            self.mov_y + self.window_height / 2 - height / 2))
+        self.round_window.title("Topline Menu")
+        message = "Enter the number of \nyears you have data for"
+        tkinter.Label(self.round_window, text=message, font=self.header_font, fg=self.header_color).pack(side=tkinter.TOP,pady=10)
+
+        # round details
+        round_frame = tkinter.Frame(self.round_window, width=20)
+        round_frame.pack(side=tkinter.TOP, padx=20)
+
+        round_label = tkinter.Label(round_frame, text="Round number:", width=15)
+        round_label.pack(side=tkinter.LEFT)
+        self.round_entry = tkinter.Entry(round_frame)
+        self.round_entry.pack(side=tkinter.LEFT, expand=True)
+
+        btn_frame = tkinter.Frame(self.round_window, width=20)
+        btn_frame.pack(side=tkinter.BOTTOM, padx=20)
+
+        btn_done = tkinter.Button(btn_frame, text="Done", command=self.trended_menu, height=2, width=9)
+        btn_cancel = tkinter.Button(btn_frame, text="Cancel", command=self.round_window.destroy, height=2, width=9)
+
+        btn_done.pack(side=tkinter.LEFT)
+        btn_cancel.pack(side=tkinter.LEFT)
+
         self.round_entry.focus_set()
-        self.redirect_window.deiconify()
+        self.round_window.deiconify()
 
         def enter_pressed(event):
-            self.read_topline()
+            self.trended_menu()
+            self.round_window.destroy()
 
-        self.redirect_window.bind("<Return>", enter_pressed)
-        self.redirect_window.bind("<KP_Enter>", enter_pressed)
+        self.round_window.bind("<Return>", enter_pressed)
+        self.round_window.bind("<KP_Enter>", enter_pressed)
+
+    def trended_menu(self):
+        """
+        Function sets up menu for entry of round number and open of topline file.
+        :return: None
+        """
+        self.round_window.withdraw()
+        self.round_int = self.round_entry.get()
+        if self.round_int != "" and self.round_int != 1:
+            thread = threading.Thread(target=self.year_window_setup(int(self.round_int)))
+            thread.start()
+
+
+        self.trended_window = tkinter.Toplevel(self.__window)
+        self.trended_window.withdraw()
+        width = 200
+        height = 350
+        self.trended_window.geometry("%dx%d+%d+%d" % (
+        width, height, self.mov_x + self.window_width/2 - width/2, self.mov_y + self.window_height / 2 - height / 2))
+        self.trended_window.title("Topline Menu")
+        message = "Please select the files you \nwill use to run this topline"
+        tkinter.Label(self.trended_window, text=message, font=self.header_font, fg=self.header_color).pack(side=tkinter.TOP,
+                                                                                                  pady=10)
+
+        btn_qsf = tkinter.Button(self.trended_window, text="QSF and CSV", command=self.read_qsf_topline, height=3, width=20)
+        btn_csv = tkinter.Button(self.trended_window, text="CSV Only", command=self.read_csv_topline, height=3, width=20)
+        btn_cancel = tkinter.Button(self.trended_window, text="Cancel", command=self.trended_window.destroy, height=3, width=20)
+        btn_bot = tkinter.Button(self.trended_window, image=self.bot_render, borderwidth=0, highlightthickness=0, relief=tkinter.FLAT, bg="white", height=65, width=158, command=self.topline_help_window)
+
+        btn_bot.pack(side=tkinter.TOP, padx=10)
+        btn_qsf.pack(side=tkinter.TOP, padx=10)
+        btn_csv.pack(side=tkinter.TOP, padx=10)
+        btn_cancel.pack(side=tkinter.TOP, padx=10)
+
+        self.trended_window.deiconify()
 
     def topline_help_window(self):
         """
@@ -122,29 +207,30 @@ class ToplineView(object):
         Funtion reads in a topline file
         :return: None
         """
-        print("Reading in QSF Topline")
-        self.filename = filedialog.askopenfilename(initialdir=self.fpath, title="Select survey file", filetypes=(("Qualtrics files", "*.qsf"), ("comma seperated files", "*.csv"), ("all files", "*.*")))
+        print("Reading in QSF Topline with "+str(self.round_int)+" round(s)")
+        self.filename = filedialog.askopenfilename(initialdir=self.fpath, title="Select survey file", filetypes=(("Qualtrics files", "*.qsf"), ("all files", "*.*")))
         if self.filename is not "":
-            round_int = self.round_entry.get()
-            if round_int != "" and round_int != 1:
-                thread = threading.Thread(target=self.year_window_setup(int(round_int)))
-                thread.start()
+            #print("Round:" + str(self.round_int))
+            if self.round_int != 1 and self.round_int is not "":
+                self.trended_window.withdraw()
+                self.build_topline_leadup()
             else:
+                self.single_window.withdraw()
                 self.build_topline_report()
-
     def read_csv_topline(self):
         """
         Funtion reads in a topline file
         :return: None
         """
-        print("Reading in CSV Topline")
-        self.filename = filedialog.askopenfilename(initialdir=self.fpath, title="Select survey file", filetypes=(("Qualtrics files", "*.qsf"), ("comma seperated files", "*.csv"), ("all files", "*.*")))
+        print("Reading in CSV Topline with "+str(self.round_int)+" round(s)")
+        self.filename = filedialog.askopenfilename(initialdir=self.fpath, title="Select survey file", filetypes=(("comma seperated files", "*.csv"), ("all files", "*.*")))
         if self.filename is not "":
-            round_int = self.round_entry.get()
-            if round_int != "" and round_int != 1:
-                thread = threading.Thread(target=self.year_window_setup(int(round_int)))
-                thread.start()
+            #print("Round:" +str(self.round_int))
+            if self.round_int != 1 and self.round_int is not "":
+                self.trended_window.withdraw()
+                self.build_topline_leadup()
             else:
+                self.single_window.withdraw()
                 self.build_topline_report()
 
 
@@ -168,7 +254,7 @@ class ToplineView(object):
         year_frame.pack(side=tkinter.TOP, expand=True)
         self.year_window_obj = YearsWindow(self.__window, self.year_window, rounds)
         self.year_window_obj.packing_years(year_frame)
-        btn_finish = tkinter.Button(self.year_window, text="Done", command=self.build_topline_leadup, height=3,
+        btn_finish = tkinter.Button(self.year_window, text="Done", command=self.year_window.withdraw, height=3,
                                     width=17)
         btn_cancel = tkinter.Button(self.year_window, text="Cancel", command=self.year_window.destroy, height=3,
                                     width=17)
@@ -177,13 +263,10 @@ class ToplineView(object):
         self.year_window.deiconify()
 
         def enter_pressed(event):
-            self.build_topline_leadup()
+            self.year_window.withdraw()
 
         self.year_window.bind("<Return>", enter_pressed)
         self.year_window.bind("<KP_Enter>", enter_pressed)
-
-
-
 
     def build_topline_leadup(self):
         """

@@ -4,3 +4,4 @@ from gui_windows.rnc_gui import RNCView
 from gui_windows.spss_xtabs_gui import SPSSCrosstabsView
 from gui_windows.topline_gui import ToplineView
 from gui_windows.years_window import YearsWindow
+from gui_windows.pptx_gui import PowerPointView
