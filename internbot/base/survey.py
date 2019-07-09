@@ -1,4 +1,4 @@
-from block import Blocks
+from base.block import Blocks
 
 class Survey(object):
 

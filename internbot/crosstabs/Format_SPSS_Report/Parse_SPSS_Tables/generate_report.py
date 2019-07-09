@@ -1,8 +1,8 @@
 import os
 import fnmatch
 import csv
-from spss_parser import SPSSParser
-from crosstab_report import CrosstabReportWriter
+from crosstabs.Format_SPSS_Report.Parse_SPSS_Tables.spss_parser import SPSSParser
+from crosstabs.Format_SPSS_Report.Parse_SPSS_Tables.crosstab_report import CrosstabReportWriter
 
 class CrosstabGenerator(object):
 
@@ -26,7 +26,7 @@ class CrosstabGenerator(object):
 
         self.__crosstab_details = parser.get_tables()
 
-    def write_report(self, path_to_output):
-        report = CrosstabReportWriter(self.__crosstab_details)
+    def write_report(self, path_to_output, resources_filepath):
+        report = CrosstabReportWriter(self.__crosstab_details, resources_filepath)
         report.write_report()
         report.save(path_to_output + "/Crosstab Report.xlsx")

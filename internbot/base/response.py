@@ -1,5 +1,5 @@
 from operator import attrgetter
-from sorter import ResponseSorter
+from base.sorter import ResponseSorter
 from collections import OrderedDict
 
 class Responses(object):

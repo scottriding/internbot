@@ -1,1 +1,1 @@
-from format_report import QParser
+from crosstabs.Format_Q_Report.format_report import QFormatter

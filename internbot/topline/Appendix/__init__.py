@@ -1,1 +1,1 @@
-from generate_appendix import AppendixGenerator
+from topline.Appendix.generate_appendix import AppendixGenerator

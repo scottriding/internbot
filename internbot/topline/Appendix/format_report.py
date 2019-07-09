@@ -5,12 +5,14 @@ from openpyxl.drawing.image import Image
 from docx import Document
 from docx.shared import Inches
 from collections import OrderedDict
+import os
 
 class SSAppendixBuilder(object):
 
-    def __init__(self, is_qualtrics):
+    def __init__(self, is_qualtrics, resources_filepath):
         self.__workbook = Workbook()
         self.__is_qualtrics = is_qualtrics
+        self.resources_filepath = resources_filepath
 
         if is_qualtrics:
             # fill colors
@@ -41,12 +43,12 @@ class SSAppendixBuilder(object):
 
         self.write_toc(toc_sheet, questions)
 
-        for question, value in questions.iteritems():
+        for question, value in questions.items():
             new_sheet = self.__workbook.create_sheet(question)
             self.write_question(value, new_sheet)
 
     def write_toc(self, sheet, questions):
-        print "Writing TOC"
+        print("Writing TOC")
         self.write_header(sheet)
 
         sheet["A2"].value = "Question Name"
@@ -62,7 +64,7 @@ class SSAppendixBuilder(object):
         sheet["C2"].alignment = self.__align_center
 
         current_row = 3
-        for question, value in questions.iteritems():
+        for question, value in questions.items():
             question_name = "A%s" % str(current_row)
             question_title = "B%s" % str(current_row)
             base_size = "C%s" % str(current_row)
@@ -98,13 +100,14 @@ class SSAppendixBuilder(object):
         sheet["C1"].fill = self.__header_fill
 
         if self.__is_qualtrics:
-            logo = Image("templates_images/QLogo.png")
+            logo = Image(os.path.join(self.resources_filepath, "QLogo.png"))
         else:
-            logo = Image("templates_images/y2_xtabs.png")
+            logo = Image(os.path.join(self.resources_filepath, "y2_xtabs.png"))
         sheet.add_image(logo, "C1")
 
     def write_question(self, question, sheet):
-        print "Writing: %s" % question.name 
+        to_print = "Writing: %s" % question.name
+        print(to_print)
         self.write_header(sheet)
         sheet.row_dimensions[2].height = 36
 
@@ -152,7 +155,7 @@ class DocAppendixBuilder(object):
 
     def write_appendix(self, questions):
         first_question = True
-        for question, value in questions.iteritems():
+        for question, value in questions.items():
             if first_question is False:
                 self.__doc.add_page_break()
             paragraph = self.__doc.add_paragraph()
@@ -161,7 +164,8 @@ class DocAppendixBuilder(object):
             first_question = False
 
     def write_question(self, question, paragraph):
-        print "Writing: %s" % question.name
+        to_print = "Writing: %s" % question.name
+        print(to_print)
         paragraph.add_run(question.name + ".")
         paragraph_format = paragraph.paragraph_format
         paragraph_format.keep_together = True

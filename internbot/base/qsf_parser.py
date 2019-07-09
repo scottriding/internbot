@@ -1,11 +1,11 @@
 import re
-from survey import Survey
-from block import Blocks, Block
-from scoring import Scorings
-from question import Questions, Question 
-from question import CompositeQuestion, CompositeMatrix, CompositeMultipleSelect
-from question import CompositeHotSpot, CompositeConstantSum
-from HTMLParser import HTMLParser
+from base.survey import Survey
+from base.block import Blocks, Block
+from base.scoring import Scorings
+from base.question import Questions, Question 
+from base.question import CompositeQuestion, CompositeMatrix, CompositeMultipleSelect
+from base.question import CompositeHotSpot, CompositeConstantSum
+from html.parser import HTMLParser
 
 class QSFSurveyParser(object):
 
@@ -48,7 +48,7 @@ class QSFBlockFlowParser(object):
             self.layered_flow_structure(block)
         
     def layered_flow_structure(self, block):
-        for type, value in block.iteritems():
+        for type, value in block.items():
             if (type == 'Flow' and len(value) > 0) and \
                (type == 'Flow' and value[0].get('EmbeddedData') is None):
                 self.grab_blockid_layer_details(value)
@@ -81,7 +81,7 @@ class QSFBlocksParser(object):
                 self.__blocks.add(block)
     
     def layered_block_structure(self, payload):
-        for key, value in payload.iteritems():
+        for key, value in payload.items():
             if value['Type'] != 'Trash':
                 block = self.block_details(value)
                 self.__blocks.add(block)
@@ -150,25 +150,30 @@ class QSFQuestionsParser(object):
             self.__questions.append(constant_sum)
         elif question.type == 'Meta':
             pass
+        elif question.type == 'SBS':
+            print("\n"+question.name+": Side by side question type is not yet implemented.\n"
+                                     "             ***This question will need to be input manually.***\n"
+                                     "    ***You may see more error messages about this question below***\n")
         else:
             self.response_parser.parse(question, question_payload, question_element)
             self.__questions.append(question)
+
         
     def question_details(self, question_payload):
         question = Question()
         question.id = question_payload['QuestionID']
         question.name = question_payload['DataExportTag']
-        question.prompt = self.strip_tags( \
-                          question_payload['QuestionText'].encode('ascii', 'ignore'))
+        question.prompt = self.strip_tags(question_payload['QuestionText'])
         question.type = question_payload['QuestionType']
         if question_payload.get('Selector') is not None:
             question.subtype = question_payload['Selector']
         return question
 
+
     def strip_tags(self, html):
-        html_parser = MLStripper()
-        html_parser.feed(html)
-        return html_parser.get_data()
+        html_stripper = MLStripper()
+        html_stripper.feed(html)
+        return html_stripper.get_data()
 
 class QSFQuestionsMatrixParser(object):
 
@@ -203,7 +208,7 @@ class QSFQuestionsMatrixParser(object):
             matrix_question = self.both_mixed_matrix(question_payload, matrix_question)
         # both statements and answers are ONLY carry_forward
         elif dynamic_statements and dynamic_answers == True:
-            matrix_question = self.both_dynamic_matrix(question_load, matrix_question)
+            matrix_question = self.both_dynamic_matrix(question_payload, matrix_question)
         # JUST carry_forward statements and a mix in the answers
         elif dynamic_statements and mixed_answers == True:
             matrix_question = self.dynamic_statements_mixed_answers_matrix(question_payload, matrix_question)
@@ -242,9 +247,8 @@ class QSFQuestionsMatrixParser(object):
         self.carry_forward.assign_carry_forward_statements(matrix_question, question_payload)
         self.carry_forward.assign_carry_forward_answers(matrix_question, question_payload)
         responses = question_payload['Answers']
-        for code, response in responses.iteritems():
-            response_name = self.strip_tags( \
-                            response['Display'].encode('ascii','ignore'))
+        for code, response in responses.items():
+            response_name = self.strip_tags(response['Display'].encode('ascii','ignore'))
             matrix_question.add_response(response_name, code)
         return matrix_question
 
@@ -252,7 +256,7 @@ class QSFQuestionsMatrixParser(object):
         self.carry_forward.assign_carry_forward_answers(matrix_question, question_payload)
         self.carry_forward.assign_carry_forward_statements(matrix_question, question_payload)
         prompts = question_payload['Choices']
-        for code, prompt in prompts.iteritems():
+        for code, prompt in prompts.items():
             question = self.question_details(code, prompt, question_payload, prompts)
             matrix_question.add_question(question)
             matrix_question.question_order = question_payload['ChoiceOrder']
@@ -266,16 +270,15 @@ class QSFQuestionsMatrixParser(object):
     def dynamic_statements_matrix(self, question_payload, matrix_question):
         responses = question_payload['Answers']
         self.carry_forward.assign_carry_forward_statements(matrix_question, question_payload)
-        for code, response in responses.iteritems():
-            response_name = self.strip_tags( \
-                            response['Display'].encode('ascii','ignore'))
+        for code, response in responses.items():
+            response_name = self.strip_tags(response['Display'].encode('ascii','ignore'))
             matrix_question.add_response(response_name, code)
         return matrix_question
 
     def dynamic_answers_matrix(self, question_payload, matrix_question):
         prompts = question_payload['Choices']
         self.carry_forward.assign_carry_forward_answers(matrix_question, question_payload)
-        for code, prompt in prompts.iteritems():
+        for code, prompt in prompts.items():
             question = self.question_details(code, prompt, question_payload, prompts)
             matrix_question.add_question(question)
             matrix_question.question_order = question_payload['ChoiceOrder']
@@ -294,7 +297,7 @@ class QSFQuestionsMatrixParser(object):
     def basic_matrix(self, question_payload, matrix_question):
         prompts = question_payload['Choices']
         responses = question_payload['Answers']
-        for code, prompt in prompts.iteritems():
+        for code, prompt in prompts.items():
             question = self.question_details(code, prompt, question_payload, responses)
             matrix_question.add_question(question)
             matrix_question.question_order = question_payload['ChoiceOrder']
@@ -316,10 +319,10 @@ class QSFQuestionsMatrixParser(object):
             question.name = '%s_%s' % (str(question_payload['DataExportTag']), code)
         question.prompt = self.strip_tags(prompt['Display'].encode('ascii', 'ignore'))
         question.response_order = question_payload['AnswerOrder']
-        for code, response in responses.iteritems():
+
+        for code, response in responses.items():
             try:
-                response_name = self.strip_tags(response['Display'] \
-                                .encode('ascii','ignore'))
+                response_name = self.strip_tags(response['Display'].encode('ascii','ignore'))
                 question.add_response(response_name, code)
             except:
                 pass
@@ -328,8 +331,7 @@ class QSFQuestionsMatrixParser(object):
     def matrix_details(self, matrix_question, question_payload):
         matrix_question.id = question_payload['QuestionID']
         matrix_question.name = question_payload['DataExportTag']
-        matrix_question.prompt = self.strip_tags( \
-                                 question_payload['QuestionText'].encode('ascii', 'ignore'))
+        matrix_question.prompt = self.strip_tags(question_payload['QuestionText'].encode('ascii', 'ignore'))
         if question_payload.get('SubSelector') is None:
             pass
         else:
@@ -337,9 +339,9 @@ class QSFQuestionsMatrixParser(object):
         return matrix_question
 
     def strip_tags(self, html):
-        html_parser = MLStripper()
-        html_parser.feed(html)
-        return html_parser.get_data()
+        html_stripper = MLStripper()
+        html_stripper.feed(html.decode("utf-8"))
+        return html_stripper.get_data()
 
 class QSFQuestionHotSpotParser(object):
 
@@ -364,7 +366,7 @@ class QSFQuestionHotSpotParser(object):
         return hotspot
 
     def question_details(self, hotspot, question_payload):
-        for code, question in question_payload['Choices'].iteritems():
+        for code, question in question_payload['Choices'].items():
             sub_question = Question()
             sub_question.id = '%s_%s' % (hotspot.id, code)
             sub_question.code = code
@@ -415,16 +417,23 @@ class QSFMultipleSelectParser(object):
         return multiselect
 
     def question_details(self, question_payload, multiple_select):
-        for code, question in question_payload['Choices'].iteritems():
+        for code, question in question_payload['Choices'].items():
             sub_question = Question()
             sub_question.id = '%s_%s' % (multiple_select.id, code)
             sub_question.code = code
             sub_question.type = question_payload['QuestionType']
             sub_question.subtype = question_payload['Selector']
             sub_question.name = '%s_%s' % (multiple_select.name, code)
-            sub_question.prompt = question['Display'].encode('ascii', 'ignore')
+            sub_question.prompt = self.convert_prompt_from_byte_str(question['Display'].encode('ascii', 'ignore'))
             sub_question.add_response('1',1)
             multiple_select.add_question(sub_question)
+
+    def convert_prompt_from_byte_str(self, prompt):
+        prompt = str(prompt)
+        if prompt[0] is "b" and (prompt[len(prompt) - 1] is "'" or prompt[len(prompt) - 1] is '"'):
+            converted = prompt[2: len(prompt) - 1]
+            return converted
+        return prompt
 
 class QSFConstantSumParser(object):
 
@@ -465,7 +474,7 @@ class QSFConstantSumParser(object):
         return constantsum
 
     def question_details(self, question_payload, constant_sum):
-        for code, question in question_payload['Choices'].iteritems():
+        for code, question in question_payload['Choices'].items():
             sub_question = Question()
             sub_question.id = '%s_%s' % (constant_sum.id, code)
             sub_question.code = code
@@ -478,32 +487,70 @@ class QSFConstantSumParser(object):
 
 class QSFResponsesParser(object):
 
+    def __init__(self):
+        self.__response_order = {}
+
     def parse(self, question, question_payload, question_element):
         if question.has_mixed_responses is True:
             self.parse_mixed_responses(question, question_payload, question_element)
         elif question_payload.get('Choices') and len(question_payload['Choices']) > 0:
-            self.parse_response_order(question, question_payload)
             if question.subtype == 'NPS':
                 self.parse_NPS(question, question_payload)
             else:
+                self.parse_response_order(question, question_payload)
                 self.parse_basic(question, question_payload)
+        self.__response_order.clear()
 
     def parse_mixed_responses(self, question, question_payload, question_element):
         pass
                 
     def parse_response_order(self, question, question_payload):
         if question_payload.get('ChoiceOrder') and \
-           len(question_payload['ChoiceOrder']) > 0: 
+           len(question_payload['ChoiceOrder']) > 0:
             question.response_order = question_payload['ChoiceOrder']
 
+        if question_payload.get('RecodeValues') is not None:
+            response_codes = []
+            for old_code, new_code in question_payload['RecodeValues'].items():
+                response_codes.append(new_code)
+                if question.response_order.__contains__(old_code):
+                    question.response_order.remove(old_code)
+                self.__response_order[old_code] = new_code
+            question.response_order = response_codes
+
+
     def parse_NPS(self, question, question_payload):
+        if question_payload.get('ChoiceOrder') and len(question_payload['ChoiceOrder']) > 0:
+            if question_payload.get('RecodeValues') is not None:
+                question.response_order = question_payload['RecodeValues']
+            else:
+                question.response_order = question_payload['ChoiceOrder']
+
         for iteration in question_payload['Choices']:
-            for response, code in iteration.iteritems():
+            for response, code in iteration.items():
                 question.add_response(code, code)
 
+        for old_code, new_code in self.__response_order.items():
+            matching_response = next((response for response in question.responses if response.code == old_code), None)
+            if matching_response is not None:
+                matching_response.code = new_code
+                matching_response.response = self.convert_response_from_byte_str(matching_response)
+
     def parse_basic(self, question, question_payload):
-        for code, response in question_payload['Choices'].iteritems():
-                question.add_response(response['Display'].encode('ascii','ignore'), code)
+        for code, response in question_payload['Choices'].items():
+            question.add_response(str(response['Display']).encode('ascii','ignore'), code)
+        for old_code, new_code in self.__response_order.items():
+            matching_response = next((response for response in question.responses if response.code == old_code), None)
+            if matching_response is not None:
+                matching_response.code = new_code
+                matching_response.response = self.convert_response_from_byte_str(matching_response.response)
+
+
+    def convert_response_from_byte_str(self, response):
+        if response[0] is "b" and (response[len(response) - 1] is "'" or response[len(response) - 1] is '"'):
+            converted = response[2: len(response) - 1]
+            return converted
+        return response
                  
 class QSFCarryForwardParser(object):
 
@@ -688,6 +735,8 @@ class QSFCarryForwardParser(object):
 class MLStripper(HTMLParser):
     def __init__(self):
         self.reset()
+        self.strict= False
+        self.convert_charrefs = True
         self.fed = []
     
     def handle_data(self, data):

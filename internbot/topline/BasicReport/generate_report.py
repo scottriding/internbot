@@ -1,6 +1,6 @@
-from csv_question import CSVQuestions
-from csv_topline_report import CSVToplineReport
-from qsf_topline_report import QSFToplineReport
+from topline.BasicReport.csv_question import CSVQuestions
+from topline.BasicReport.csv_topline_report import CSVToplineReport
+from topline.BasicReport.qsf_topline_report import QSFToplineReport
 import csv
 import re
 from collections import OrderedDict
@@ -23,7 +23,7 @@ class ReportGenerator(object):
         csv_reader = csv.DictReader(utf8_data, **kwargs)
         for row in csv_reader:
             if row['variable'] != "":
-                yield {unicode(key, 'iso-8859-1'):unicode(value, 'iso-8859-1') for key, value in row.iteritems()}
+                yield {key: value for key, value in row.items()}
 
     def create_questions(self, question_data, years):
         for question in question_data:
@@ -36,7 +36,7 @@ class ReportGenerator(object):
             question_display = row["display logic"]
             matching_question = self.find_question(question_name)
             if matching_question is not None:
-                matching_response = self.find_response(row["label"], matching_question)
+                matching_response = self.find_response(row["value"], matching_question)
                 if matching_response is not None:
                     self.add_frequency(matching_response, row, years)
                     self.add_n(matching_question, row)
@@ -53,6 +53,7 @@ class ReportGenerator(object):
     def find_question(self, question_to_find):
         matching_question = self.__survey.blocks.find_question_by_name(question_to_find)
         if matching_question is None:
+            print("\nCould not match question "+question_to_find+ " from CSV to a question in the QSF.\n             *This data will need to be input manually.*\n")
             return None
         elif matching_question.parent == "CompositeQuestion":
             matching_question = self.find_sub_question(matching_question, question_to_find)
@@ -70,10 +71,21 @@ class ReportGenerator(object):
             matching_question.add_NA()
             return matching_question.get_NA()
         responses = matching_question.responses
+
+        #if matching_question.prompt[0] is "b" and (matching_question.prompt[len(matching_question.prompt) - 1] is "'" or matching_question.prompt[len(matching_question.prompt) - 1] is '"'):
+        #   matching_question.prompt = matching_question.prompt[2: len(matching_question.prompt) - 1]
+        #for response in responses:
+            #if response.response[0] is "b" and (response.response[len(response.response)-1] is "'" or response.response[len(response.response)-1] is '"'):
+                #response.response = response.response[2: len(response.response)-1]
+
         matching_response = next((response for response in responses if response.code == response_to_find), None)
         if response_to_find == 'On':
             matching_response = next((response for response in responses if response.response == '1'), None)
+
+        if matching_response is None:
+            print("\nCould not match response " +response_to_find+ " from " + matching_question.name + " from CSV to a question in the QSF.\n             *This data will need to be input manually.*\n")
         return matching_response
+
 
     def add_frequency(self, matching_response, frequency_data, years):
         self.__frequencies = OrderedDict()

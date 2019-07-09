@@ -2,11 +2,13 @@ from openpyxl import load_workbook, Workbook
 from openpyxl.styles.borders import Border, Side
 from openpyxl.styles import PatternFill, Font, Alignment
 from openpyxl.drawing.image import Image
+import os
 
 class CrosstabReportWriter(object):
 
-    def __init__ (self, tables):
+    def __init__ (self, tables, resources_filepath):
         self.__tables = tables
+        self.resources_filepath = resources_filepath
         self.__workbook = Workbook()
 
         self.highlight_style = PatternFill("solid", fgColor="2DCCD3")
@@ -72,10 +74,10 @@ class CrosstabReportWriter(object):
             new_sheet = self.__workbook.create_sheet(table_name)
             self.write_table(new_sheet, table)
             iteration += 1
-        print "Finished!"
+        print("Finished!")
 
     def write_toc(self, sheet):
-        print "Writing table of contents"
+        print("Writing table of contents")
         self.write_toc_titles(sheet)
         current_row = 3
         iteration = 1
@@ -129,7 +131,7 @@ class CrosstabReportWriter(object):
         sheet["C1"].fill = self.__report_header
         sheet["D1"].fill = self.__report_header
 
-        image = Image("templates_images/QLogo.png")
+        image = Image(os.path.join(self.resources_filepath, "QLogo.png"))
         sheet.add_image(image, "D1")
 
         sheet["A2"].font = self.__font_bold
@@ -149,7 +151,8 @@ class CrosstabReportWriter(object):
         sheet["D2"].alignment = self.__center_align
 
     def write_table(self, sheet, table):
-        print "Writing: %s" % sheet.title
+        to_print = "Writing: %s" % sheet.title
+        print(to_print)
         self.write_table_titles(sheet, table)
         current_row = self.write_banners(sheet, table)
         self.write_reponse_details(sheet, table, current_row)
@@ -196,7 +199,7 @@ class CrosstabReportWriter(object):
             index += 1
 
         current_cell = "%s%s" % (self.extend_alphabet[index - 3], current_row)
-        logo = Image("templates_images/QLogo.png")
+        logo = Image(os.path.join(self.resources_filepath, "QLogo.png"))
         sheet.add_image(logo, current_cell)
 
         next_row_cell = "%s%s" % (self.extend_alphabet[index - 3], current_row + 1)

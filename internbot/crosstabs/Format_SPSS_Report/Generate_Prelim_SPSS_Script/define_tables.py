@@ -6,7 +6,7 @@ class TableDefiner(object):
         self.count = 1
         output = str(path_to_output) + '/Tables to run.csv'
         questions = survey.get_questions()
-        with open(output, 'wb') as csvfile:
+        with open(output, 'w') as csvfile:
             csvwriter = csv.writer(csvfile, delimiter=',',
                                    quotechar="'")
             self.write_header(csvwriter)
@@ -93,5 +93,12 @@ class TableDefiner(object):
         self.count += 1
 
     def clean_prompt(self, prompt):
-        result = prompt.translate(None,",'\n\t\r")
+        #Necessary python3 weirdness. str.maketrans makes a translation table for translate
+        #The first two arguments: the econd replaces the first. Just used spaces, because they have to have the
+        #same length and can't be None
+        #The third argument is always replaced by None. So here we are removing whitespace and commas from prompt
+        result = prompt.translate(str.maketrans(' ',' ','\n'))
+        result = result.translate(str.maketrans(' ',' ', ','))
+        result = result.translate(str.maketrans(' ',' ', '\t'))
+        result = result.translate(str.maketrans(' ',' ', '\r'))
         return result

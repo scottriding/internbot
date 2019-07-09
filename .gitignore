@@ -5,4 +5,6 @@ env
 temp_test.py
 internbot/topline/.DS_Store
 internbot/.idea
+internbot/dist
+internbot/build
 .DS_Store

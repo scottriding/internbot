@@ -1,21 +1,22 @@
 import csv
 from collections import OrderedDict
-from format_report import SSAppendixBuilder, DocAppendixBuilder, OpenEndQuestion
+from topline.Appendix.format_report import SSAppendixBuilder, DocAppendixBuilder, OpenEndQuestion
 
 class AppendixGenerator(object):
 
-    def __init__(self, is_qualtrics=False):
+    def __init__(self, resources_filepath):
         self.__questions = OrderedDict()
-        self.is_qualtrics = is_qualtrics
+        self.is_qualtrics = False
+        self.resources_filepath = resources_filepath
 
     def unicode_dict_reader(self, utf8_data, **kwargs):
         csv_reader = csv.DictReader(utf8_data, **kwargs)
         for row in csv_reader:
             if row['variable'] != "":
-                yield {unicode(key, 'iso-8859-1'):unicode(value, 'iso-8859-1') for key, value in row.iteritems()}
+                yield {key:value for key, value in row.items()}
 
-    def parse_file(self, path_to_appendix):
-        print "Reading open-ends"
+    def parse_file(self, path_to_appendix, is_qualtrics):
+        self.is_qualtrics = is_qualtrics
         text_responses = self.unicode_dict_reader(open(path_to_appendix))
         for response in text_responses:
             if self.__questions.get(response['variable']) is None:
@@ -28,12 +29,12 @@ class AppendixGenerator(object):
 
     def write_appendix(self, path_to_output, path_to_template = '', is_spreadsheet=False):
         if is_spreadsheet is True:
-            builder = SSAppendixBuilder(self.is_qualtrics)
+            builder = SSAppendixBuilder(self.is_qualtrics, self.resources_filepath)
             builder.write_appendix(self.__questions)
             builder.save(path_to_output)
         else:
             builder = DocAppendixBuilder(path_to_template)
             builder.write_appendix(self.__questions)
             builder.save(path_to_output)
-        print "Finished!"
+        print("Finished!")
 

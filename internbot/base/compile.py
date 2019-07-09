@@ -1,4 +1,4 @@
-from qsf_parser import QSFSurveyParser, QSFBlockFlowParser, QSFBlocksParser, QSFQuestionsParser, QSFScoringParser
+from base.qsf_parser import QSFSurveyParser, QSFBlockFlowParser, QSFBlocksParser, QSFQuestionsParser, QSFScoringParser
 import json
 
 class QSFSurveyCompiler(object):

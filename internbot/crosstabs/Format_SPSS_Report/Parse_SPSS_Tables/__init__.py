@@ -1,1 +1,1 @@
-from generate_report import CrosstabGenerator
+from crosstabs.Format_SPSS_Report.Parse_SPSS_Tables.generate_report import CrosstabGenerator

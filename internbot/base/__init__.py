@@ -1,2 +1,2 @@
-from survey import Survey
-from compile import QSFSurveyCompiler
+from base.survey import Survey
+from base.compile import QSFSurveyCompiler

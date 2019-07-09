@@ -1,19 +1,29 @@
 from openpyxl import load_workbook, Workbook
+from openpyxl.drawing.image import Image
 from openpyxl.styles.borders import Border, Side
 from openpyxl.styles import PatternFill, Font, Alignment
-from openpyxl.drawing.image import Image
+from openpyxl.utils import range_boundaries
 from collections import OrderedDict
+import os
 
-class QParser(object):
+class QFormatter(object):
 
-    def __init__(self, path_to_workbook, is_qualtrics=True):
-        print "Loading workbook"
-        self.__workbook = load_workbook(path_to_workbook)
-        self.__is_qualtrics = is_qualtrics
+    def __init__(self, path_to_workbook, resources_filepath, is_qualtrics=True):
+        print("Loading workbook")
+        self.__workbook = load_workbook(path_to_workbook, read_only=False)
+        self.resources_filepath = resources_filepath 
         self.__tables = OrderedDict()
+        self.__is_qualtrics = is_qualtrics
+        self.__stop_report = False
 
-        # fill colors
-        if is_qualtrics:
+        self.set_highlight_colors()
+        self.set_fonts()
+        self.set_alignments()
+        self.set_borders()
+        self.calculate_excel_col_names()
+
+    def set_highlight_colors(self):
+        if self.__is_qualtrics:
             self.__header_fill = PatternFill("solid", fgColor = "1E262E")
             self.__hi_significant_fill = PatternFill("solid", fgColor = "2DCCD3")
             self.__lo_significant_fill = PatternFill("solid", fgColor = "2DCCD3")
@@ -21,33 +31,36 @@ class QParser(object):
             self.__header_fill = PatternFill("solid", fgColor = "0F243E")
             self.__hi_significant_fill = PatternFill("solid", fgColor = "2083E7")
             self.__lo_significant_fill = PatternFill("solid", fgColor = "2083E7")
+
         self.__table_fill = PatternFill("solid", fgColor = "E7E6E6")
         self.__white_fill = PatternFill("solid", fgColor = "FFFFFF")
 
-        # font styles
+    def set_fonts(self):
         self.__font_reg = Font(name = 'Arial', size = 8)
         self.__font_small = Font(name = 'Arial', size = 7)
         self.__font_bold = Font(name = 'Arial', size = 8, bold = True)
         self.__font_back_hyperlink = Font(name = 'Arial', size = 8, color = "A2AAAD")
         self.__font_toc_table = Font(name = 'Arial', size = 8, underline = 'single')
 
-        # alignments
+    def set_alignments(self):
         self.__align_banners = Alignment(horizontal = "center", vertical = "bottom", wrapText = True)
         self.__align_names = Alignment(horizontal = "left", vertical = "center", wrapText = True)
         self.__align_center = Alignment(horizontal = "center", vertical = "center", wrapText = True)
         self.__align_left = Alignment(horizontal = "left", vertical = "center", wrapText = True)
+        self.__align_top = Alignment(horizontal = "left", vertical = "top", wrapText = True)
 
-        # borders
+    def set_borders(self):
         self.__thin_bottom = Border(bottom = Side(style = 'thin'))
         self.__thick_top = Border(top = Side(style = 'thick'))
         self.__thin_top = Border(top = Side(style = 'thin'))
         self.__thick_left = Border(left = Side(style = 'thick'))
 
+    def calculate_excel_col_names(self):
         # calculate the excel alphabet from A to ZZZ
         alphabet = []
         for letter in range(65, 91):
             alphabet.append(chr(letter))
-
+    
         self.__extend_alphabet = []
         self.__extend_alphabet.extend(alphabet)
         full_alphabet = []
@@ -66,178 +79,336 @@ class QParser(object):
             for letter in full_alphabet:
                 triple_letters = "%s%s" % (double_alphabet[index], letter)
                 self.__extend_alphabet.append(triple_letters)
-            index += 1    
+            index += 1
 
     def format_report(self):
-        sheet_no = 1
+        table_index = 0
         for sheet in self.__workbook.worksheets:
-            if sheet.title != 'TOC':
-                self.format_sheet(sheet, sheet_no)
-                sheet_no += 1
+            if sheet.title == 'TOC':
+                print("Parsing TOC")
+                self.parse_toc(sheet)
+            else:
+                if self.__stop_report:
+                    return
+                else:
+                    items = list(self.__tables.items())
+                    title = items[table_index][0]
+                    sheet.title = title
+                    to_print = "Formatting: %s" % sheet.title
+                    print(to_print)
+                    self.format_sheet(sheet)
+                    table_index += 1    
+        print("Done!")
 
-        try:
-            toc_sheet = self.__workbook.get_sheet_by_name("TOC")
-            self.__workbook.remove_sheet(toc_sheet)
-        except KeyError:
-            pass
+    def parse_toc(self, toc_sheet):
+        table_no_col = "A"
+        table_title_col = "B"
+        base_desc_col = "C"
+        base_size_col = "D"
 
-        print "Done!"
-        return self.__tables
+        table_count = len(self.__workbook.worksheets) - 1
 
-    def create_toc(self, tables):
-        sheet = self.__workbook.create_sheet("TOC", 0)
-        if not self.__is_qualtrics:
-            sheet.row_dimensions[1].height = 52
-        else:
-            sheet.row_dimensions[1].height = 35
-        
-        sheet.column_dimensions["A"].width = 9
-        sheet.column_dimensions["B"].width = 100
-        sheet.column_dimensions["C"].width = 33
-        sheet.column_dimensions["D"].width = 29.5
+        current_row = 1
 
-        sheet["A1"].fill = self.__header_fill
-        sheet["B1"].fill = self.__header_fill
-        sheet["C1"].fill = self.__header_fill
-        sheet["D1"].fill = self.__header_fill
+        table_no_cell = "%s%s" % (table_no_col, str(current_row))
+        table_title_cell = "%s%s" % (table_title_col, str(current_row))
+        base_desc_cell = "%s%s" % (base_desc_col, str(current_row))
+        base_size_cell = "%s%s" % (base_size_col, str(current_row))
+
+        toc_sheet.column_dimensions[table_no_col].width = 9
+        toc_sheet.column_dimensions[table_title_col].width = 100
+        toc_sheet.column_dimensions[base_desc_col].width = 33
+        toc_sheet.column_dimensions[base_size_col].width = 29.5
+
+        if toc_sheet["A1"].value is not None:
+            toc_sheet.insert_rows(1)
 
         if self.__is_qualtrics:
-            logo = Image("templates_images/QLogo.png")
+            toc_sheet.row_dimensions[1].height = 35
         else:
-            logo = Image("templates_images/y2_xtabs.png")
-        sheet.add_image(logo, "D1")
+            toc_sheet.row_dimensions[1].height = 52
+        
+        toc_sheet[table_no_cell].fill = self.__header_fill
+        toc_sheet[table_title_cell].fill = self.__header_fill
+        toc_sheet[base_desc_cell].fill = self.__header_fill
+        toc_sheet[base_size_cell].fill = self.__header_fill
 
-        sheet["A2"].font = self.__font_bold
-        sheet["A2"].value = "Table #"
-        sheet["A2"].alignment = self.__align_center
+        if self.__is_qualtrics:
+            logo = Image(os.path.join(self.resources_filepath, "QLogo.png"))
+        else:
+            logo = Image(os.path.join(self.resources_filepath, "y2_xtabs.png"))
+        toc_sheet.add_image(logo, base_size_cell)
+        
+        current_row += 1
+        table_no_cell = "%s%s" % (table_no_col, str(current_row))
+        while toc_sheet[table_no_cell].value is not None:
+            table_title_cell = "%s%s" % (table_title_col, str(current_row))
+            base_desc_cell = "%s%s" % (base_desc_col, str(current_row))
+            base_size_cell = "%s%s" % (base_size_col, str(current_row))
 
-        sheet["B2"].font = self.__font_bold
-        sheet["B2"].value = "Question Title"
-        sheet["B2"].alignment = self.__align_center
+            if current_row == 1:
+                toc_sheet[table_no_cell].fill = self.__header_fill
+                toc_sheet[table_title_cell].fill = self.__header_fill
+                toc_sheet[base_desc_cell].fill = self.__header_fill
+                toc_sheet[base_size_cell].fill = self.__header_fill
 
-        sheet["C2"].font = self.__font_bold
-        sheet["C2"].value = "Base Description"
-        sheet["C2"].alignment = self.__align_center
+                if self.__is_qualtrics:
+                    logo = Image(os.path.join(self.resources_filepath, "QLogo.png"))
+                else:
+                    logo = Image(os.path.join(self.resources_filepath, "y2_xtabs.png"))
+                toc_sheet.add_image(logo, base_size_cell)
 
-        sheet["D2"].font = self.__font_bold
-        sheet["D2"].value = "Base Size (N count)"
-        sheet["D2"].alignment = self.__align_center
+            elif current_row == 2:
+                toc_sheet[table_no_cell].font = self.__font_bold
+                toc_sheet[table_no_cell].value = "Table #"
+                toc_sheet[table_no_cell].alignment = self.__align_center
 
-        current_row = 3
-        for key, value in tables.iteritems():
-            table_no_cell = "A%s" % str(current_row)
-            question_title_cell = "B%s" % str(current_row)
-            base_desc_cell = "C%s" % str(current_row)
-            base_size_cell = "D%s" % str(current_row)
+                toc_sheet[table_title_cell].font = self.__font_bold
+                toc_sheet[table_title_cell].value = "Question Title"
+                toc_sheet[table_title_cell].alignment = self.__align_center
 
-            sheet[table_no_cell].font = self.__font_toc_table
-            if int(value.name) < 10:
-                table_name = "Table 0%s" % value.name
+                toc_sheet[base_desc_cell].font = self.__font_bold
+                toc_sheet[base_desc_cell].value = "Base Description"
+                toc_sheet[base_desc_cell].alignment = self.__align_center
+
+                toc_sheet[base_size_cell].font = self.__font_bold
+                toc_sheet[base_size_cell].value = "Base Size (N count)"
+                toc_sheet[base_size_cell].alignment = self.__align_center
+
             else:
-                table_name = "Table %s" % value.name
-            sheet[table_no_cell].value = "=HYPERLINK(\"#'%s'!A1\",\"%s\")" % (table_name, table_name)
-            sheet[table_no_cell].alignment = self.__align_center
-            sheet[table_no_cell].border = self.__thin_bottom
+                table = TOCTable(toc_sheet[table_no_cell].value)
 
-            sheet[question_title_cell].value = value.prompt
-            sheet[question_title_cell].font = self.__font_reg
-            sheet[question_title_cell].alignment = self.__align_left
-            sheet[question_title_cell].border = self.__thin_bottom
+                toc_sheet[table_no_cell].font = self.__font_toc_table
+                table_name = toc_sheet[table_no_cell].value
+                toc_sheet[table_no_cell].value = "=HYPERLINK(\"#'%s'!A1\",\"%s\")" % (table_name, table_name)
+                toc_sheet[table_no_cell].alignment = self.__align_center
+                toc_sheet[table_no_cell].border = self.__thin_bottom
 
-            sheet[base_desc_cell].value = value.description
-            sheet[base_desc_cell].font = self.__font_reg
-            sheet[base_desc_cell].alignment = self.__align_left
-            sheet[base_desc_cell].border = self.__thin_bottom
+                table.prompt = toc_sheet[table_title_cell].value
+                toc_sheet[table_title_cell].font = self.__font_reg
+                toc_sheet[table_title_cell].alignment = self.__align_left
+                toc_sheet[table_title_cell].border = self.__thin_bottom
 
-            sheet[base_size_cell].value = value.size
-            sheet[base_size_cell].font = self.__font_reg
-            sheet[base_size_cell].alignment = self.__align_left
-            sheet[base_size_cell].border = self.__thin_bottom
+                table.description = toc_sheet[base_desc_cell].value
+                toc_sheet[base_desc_cell].font = self.__font_reg
+                toc_sheet[base_desc_cell].alignment = self.__align_left
+                toc_sheet[base_desc_cell].border = self.__thin_bottom
 
+                table.size = toc_sheet[base_size_cell].value
+                toc_sheet[base_size_cell].font = self.__font_reg
+                toc_sheet[base_size_cell].alignment = self.__align_left
+                toc_sheet[base_size_cell].border = self.__thin_bottom
+
+                self.__tables[table.name] = table
+            
             current_row += 1
+            table_no_cell = "%s%s" % (table_no_col, str(current_row))
 
-    def format_sheet(self, sheet, sheet_no):
-        self.__col_names = []
-        if sheet_no < 10:
-            sheet_title = "Table 0%s" % str(sheet_no)
-        else:
-            sheet_title = "Table %s" % str(sheet_no)
-        sheet.title = sheet_title
+        if len(self.__tables) != table_count:
+            print("Listed tables in TOC does not match number of tabs in .xlsx file")
+            self.__stop_report = True
 
-        print "Formatting: %s" % sheet_title
-
-        table = TOCTable(sheet_no)
+    def format_sheet(self, sheet):
+        self.adjust_dimensions(sheet)
         start_table_row = self.parse_col_names(sheet)
+        self.unmerge_response_cols(sheet)
+        if self.__has_stats:
+            start_table_row = self.insert_names_row(sheet, start_table_row)
+        else:
+            self.create_col_names(sheet, start_table_row)
+        if self.__is_numeric:
+            self.insert_numeric_col(sheet, start_table_row)
         self.format_hyperlink(sheet)
-        table = self.format_titles(sheet, table)
+        table = self.__tables.get(sheet.title)
+        self.format_table_titles(sheet, table, start_table_row)
         self.format_banners(sheet, start_table_row)
         self.format_responses(sheet, start_table_row)
         self.format_table_contents(sheet, start_table_row)
         self.format_stats_def(sheet)
         self.add_table_borders(sheet)
-        self.__tables[sheet_no] = table
-
-        # merge top left table corner
-        sheet.merge_cells(start_row=3, start_column=1, end_row=start_table_row-1, end_column=1)
-        if not self.__is_qualtrics:
+        
+    def adjust_dimensions(self, sheet):
+        if self.__is_qualtrics:
+            sheet.row_dimensions[1].height = 35
+        else:
             sheet.row_dimensions[1].height = 52
 
-        # there's a bug with insert cols (and probably insert rows) where the code doesn't preserve merged cells
-        # we need to un merge cells in span if there are any
-        #sheet.unmerge_cells('C3:E3') 
-        #sheet.unmerge_cells('F3:L3')
-        #sheet.insert_cols(1)
-        #sheet.move_range("A1:L19", cols=1)
-        #sheet.insert_cols(1)
+        sheet.row_dimensions[2].height = 36
+        sheet.row_dimensions[3].height = 37
+        sheet.column_dimensions["A"].width = 50
+        sheet.column_dimensions["B"].width = 25
 
     def parse_col_names(self, sheet):
-        sheet.column_dimensions["A"].width = 25.5
-        column_names_row = 1
+        # calculate column names or determine end of table if applicable
+        self.__col_names = []
+        col_cell_row = None
+        end_table_row = None
 
-        # split up merged cells in column A to prevent corruption in excel file
         for cell in sheet["A"]:
-            if "MergedCell" in str(type(cell)):
-                range = "%s%s:%s" % (self.__extend_alphabet[cell.column-1], str(cell.row-1), cell.coordinate)
-                sheet.unmerge_cells(range)
-
             if cell.value == "Column Names":
+                col_cell_row = cell.row
                 break
-            else:
-                column_names_row += 1
 
-        # find row of column names: grab the column names
-        for cell in sheet[column_names_row]:
-            if cell.value is None:
+            if cell.value is not None:
+                if "Total sample" in cell.value:
+                    self.end_table_row = cell.row
+                    break
+
+                if "Filter:" in cell.value:
+                    self.end_table_row = cell.row
+                    break
+
+        # pull column names
+        if col_cell_row is not None:
+            self.__has_stats = True
+            for cell in sheet[col_cell_row]:
+                if cell.value is not None and cell.value != "Column Names":
+                    self.__col_names.append(cell.value)
+
+            sheet.delete_rows(col_cell_row, 1)
+            self.end_table_row = col_cell_row
+        else:
+            self.__has_stats = False
+            self.end_table_row -= 1
+
+        # determined where banners start
+        col_index = 0
+        banner_row = 4
+        for column_name in self.__extend_alphabet:
+            current_cell = "%s%s" % (column_name, str(banner_row))
+            if sheet[current_cell].value is not None:
+                banner_col = column_name
                 break
-            elif cell.value != "Column Names":
-                self.__col_names.append(cell.value)
-        sheet.delete_rows(column_names_row, 1)
+            col_index += 1
 
-        # the row after column names describes the stats of the table
-        self.__stats_desc = column_names_row + 1
+        self.banner_col_index = col_index
 
-        # figure out where the crosstab calculations start
-        # insert a row before that for column names
+        # determine where table details start
         start_table_row = 1
-        for cell in sheet["B"]:
+        for cell in sheet[banner_col]:
             if cell.number_format != "General":
                 break
             else:
                 start_table_row += 1
-        sheet.insert_rows(start_table_row - 1)
 
-        # populate newly inserted row
-        sheet.row_dimensions[start_table_row-1].height = 16
-        col_index = 1
-        for name in self.__col_names:
-            col_letter = self.__extend_alphabet[col_index]
+        self.__is_numeric = False
+        # determine if table is numeric scale
+        check_row = 1
+        for cell in sheet[self.__extend_alphabet[self.banner_col_index+1]]:
+            if cell.number_format == "0.0":
+                self.__is_numeric = True
+                break
+
+        if self.__is_numeric:
+            self.numeric_details = []
+            table_details = sheet["A3"].value.split()
+            for detail in table_details:
+                if detail != "Comparisons" and detail != "Column":
+                    if detail == "n":
+                        self.numeric_details.append("Population (n)")
+                    else:
+                        self.numeric_details.append(detail)
+                
+
+            if self.__has_stats:
+                self.numeric_details.append("Column Comparisons")
+
+        self.end_table_row += 1
+
+        return start_table_row
+
+    def unmerge_response_cols(self, sheet):
+        merged_ranges =[]  
+        for group in sheet.merged_cells.ranges:
+            merged_ranges.append(group)
+
+        if self.__is_numeric:
+            for range in merged_ranges:
+                str_range = str(range)
+                sheet.unmerge_cells(str_range)
+        else:
+            col_index = 0
+            while col_index < self.banner_col_index:
+                col_letter = self.__extend_alphabet[col_index]
+                to_delete = []
+                for range in merged_ranges:
+                    str_range = str(range)
+                    if col_letter in str_range:
+                        to_delete.append(range)
+                        sheet.unmerge_cells(str_range)
+                for used_range in to_delete:
+                    merged_ranges.remove(used_range)
+                col_index += 1
+
+    def insert_names_row(self, sheet, start_table_row):
+        banner_row = start_table_row - 2
+        top_banner_cell = "%s%s" % (self.__extend_alphabet[self.banner_col_index], str(banner_row))
+        if sheet[top_banner_cell].value is None:
+            sheet[top_banner_cell].value = "Total"
+
+        sheet.insert_rows(start_table_row - 1)
+        sheet.row_dimensions[start_table_row - 1].height = 16
+
+        current_col = self.banner_col_index
+        for letter in self.__col_names:
+            col_letter = self.__extend_alphabet[current_col]
             current_cell = "%s%s" % (col_letter, str(start_table_row - 1))
-            sheet[current_cell].value = "[%s]" % name
+            sheet[current_cell].value = "[%s]" % letter
             sheet[current_cell].font = self.__font_reg
             sheet[current_cell].alignment = self.__align_center
-            col_index += 1
+            current_col += 1
 
-        return start_table_row + 1
+        start_table_row += 1
+        return start_table_row
+
+    def create_col_names(self, sheet, start_table_row):
+        banner_row = start_table_row - 2
+        top_banner_cell = "%s%s" % (self.__extend_alphabet[self.banner_col_index], str(banner_row))
+        if sheet[top_banner_cell].value is None:
+            sheet[top_banner_cell].value = "Total"
+
+        # adjust list with the correct no of items for future calculations
+        banner_row = start_table_row - 1
+        current_col = self.banner_col_index
+        current_cell = "%s%s" % (self.__extend_alphabet[current_col], str(banner_row))
+        while sheet[current_cell].value is not None:
+            self.__col_names.append(sheet[current_cell].value)
+            current_col += 1
+            current_cell = "%s%s" % (self.__extend_alphabet[current_col], str(banner_row))
+
+    def insert_numeric_col(self, sheet, start_table_row):
+        col_index = self.banner_col_index + 1
+        sheet.insert_cols(col_index)
+        self.banner_col_index += 1
+
+        if self.__has_stats:
+            banner_row = start_table_row - 3
+        else:
+            banner_row = start_table_row - 2
+
+        # merge banner cells
+        col_adjust = self.banner_col_index
+        is_first = True
+        merge_cells = []
+
+        current_col = self.banner_col_index
+        while current_col < len(self.__col_names) + col_adjust:
+            current_cell = "%s%s" % (self.__extend_alphabet[current_col], str(banner_row))
+            if sheet[current_cell].value is not None:
+                if is_first:
+                    is_first = False
+                else:
+                    range = "%s:%s" % (merge_cells[0], merge_cells[len(merge_cells)-1])
+                    merge_cells = []
+                    sheet.merge_cells(range)
+                merge_cells.append(sheet[current_cell].coordinate)
+            else:
+                merge_cells.append(sheet[current_cell].coordinate)
+            current_col += 1
+
+        range = "%s:%s" % (merge_cells[0], merge_cells[len(merge_cells)-1])
+        merge_cells = []
+        sheet.merge_cells(range)
 
     def format_hyperlink(self, sheet):
         # check if we need to add a row
@@ -247,69 +418,77 @@ class QParser(object):
             sheet["A1"].value = ""
 
         # back to TOC cell
-        sheet.row_dimensions[1].height = 35
-        sheet.row_dimensions[2].height = 36
         sheet["A3"].value = ""
         sheet["A1"].value = '=HYPERLINK("#TOC!A1","Return to Table of Contents")'
         sheet["A1"].font = self.__font_back_hyperlink
         sheet["A1"].alignment = self.__align_left
 
-    def format_titles(self, sheet, table):
+    def format_table_titles(self, sheet, table, start_table_row):
         current_row = 1
         current_col = 0
 
-        # add header and table fills based off the size of the table (easily calculated from column names)
-        for col in range(len(self.__col_names) + 1):
+        col_adjust = self.banner_col_index
+        current_col = 0
+        for col in range(len(self.__col_names) + col_adjust):
             col_letter = self.__extend_alphabet[col]
             current_cell = "%s%s" % (col_letter, str(current_row))
             sheet[current_cell].fill = self.__header_fill
-            next_row_cell = "%s%s" % (col_letter, str(current_row+1))
+            next_row_cell = "%s%s" % (col_letter, str(current_row + 1))
             sheet[next_row_cell].fill = self.__table_fill
             current_col += 1
 
-        # merge that top row for aesthetics
-        sheet.merge_cells(start_row=1, end_row=1, start_column=1, end_column=current_col - 3)
+        col_adjust += 1
 
         # add logos
-        current_cell = "%s%s" % (self.__extend_alphabet[current_col - 3], str(current_row))
+        current_cell = "%s%s" % (self.__extend_alphabet[current_col - col_adjust], str(current_row))
         if self.__is_qualtrics:
-            logo = Image("templates_images/QLogo.png")
+            logo = Image(os.path.join(self.resources_filepath, "QLogo.png"))
         else:
-            logo = Image("templates_images/y2_xtabs.png")
+            logo = Image(os.path.join(self.resources_filepath, "y2_xtabs.png"))
         sheet.add_image(logo, current_cell)
 
-        # figure out where the base description of table will be added
-        next_row_cell = "%s%s" % (self.__extend_alphabet[current_col - 3], str(current_row + 1))
-        sheet[next_row_cell].font = self.__font_reg
-        sheet[next_row_cell].alignment = self.__align_names
+        # merge base description cells
+        table_title_row = 2
+        base_desc_col_index = current_col-col_adjust
+        start_range = "%s%s" % (self.__extend_alphabet[base_desc_col_index], str(table_title_row))
+        end_range = "%s%s" % (self.__extend_alphabet[len(self.__col_names)+1], str(table_title_row))
+        merge_range = "%s:%s" % (start_range, end_range)
+        sheet.merge_cells(merge_range)
+        
+        # add base description
+        desc_location = "%s%s" % (self.__extend_alphabet[base_desc_col_index], str(table_title_row))
+        sheet[desc_location].font = self.__font_reg
+        sheet[desc_location].alignment = self.__align_names
+        sheet[desc_location] = "Base - %s" % table.description
 
-        table.location = "%s%s" % (self.__extend_alphabet[current_col-3], str(2))
-
-        # merge table title and base description cells
-        sheet.merge_cells(start_column=1, end_column=current_col-3, start_row=2, end_row=2)
-        sheet.merge_cells(start_column=current_col-2, end_column=current_col, start_row=2, end_row=2)
+        # merge table title row cells
+        start_range = "%s%s" % ("A", str(table_title_row))
+        end_range = "%s%s" % (self.__extend_alphabet[self.banner_col_index], str(table_title_row))
+        merge_range = "%s:%s" % (start_range, end_range)
+        sheet.merge_cells(merge_range)
 
         # add table title
         sheet["A2"].font = self.__font_reg
         sheet["A2"].alignment = self.__align_names
         table_title = sheet["A2"].value
-        names = table_title.split("by")
-        del names[-1]
-        title = ""
-        for name in names:
-            title = title + name
-        final_title = "%s - %s" % (sheet.title, title)
+        final_title = "%s - %s" % (sheet.title, table_title)
         sheet["A2"].value = final_title
 
-        table.prompt = title
-        return table
+        # merge top corner of table
+        start_range = "A3"
+        end_range = "%s%s" % (self.__extend_alphabet[self.banner_col_index-1],str(start_table_row-1))
+        merge_range = "%s:%s" % (start_range, end_range)
+        sheet.merge_cells(merge_range)
 
     def format_banners(self, sheet, start_row):
+        col_adjust = self.banner_col_index
+        if self.__has_stats is False:
+            sheet.row_dimensions[4].height = 40
+
         current_row = start_row-1
-        sheet.row_dimensions[current_row].height = 49
         while current_row > 1:
             col_index = 1
-            while col_index < len(self.__col_names) + 1:
+            while col_index < len(self.__col_names) + col_adjust:
                 current_cell = "%s%s" % (self.__extend_alphabet[col_index], str(current_row))
                 sheet[current_cell].font = self.__font_reg
                 sheet[current_cell].alignment = self.__align_banners
@@ -317,17 +496,26 @@ class QParser(object):
             current_row -= 1
 
     def format_responses(self, sheet, start_row):
-        self.__border_rows = []
+        if self.__is_numeric:
+            self.format_numeric_details(sheet, start_row)
+            response_col = self.banner_col_index - 2
+        else:
+            response_col = self.banner_col_index - 1
+
+        self.__border_response_rows = set()
         merge_cells = []
         is_top = True
-        while start_row < self.__stats_desc:
-            current_cell = "A%s" % str(start_row)
+
+        current_row = start_row 
+        end_row = self.end_table_row
+        while current_row < end_row:
+            current_cell = "%s%s" % (self.__extend_alphabet[response_col], str(current_row))
             if sheet[current_cell].value == "NET":
                 sheet[current_cell].value = "Total"
 
             # merge response cells together
             if sheet[current_cell].value is not None:
-                self.__border_rows.append(start_row)
+                self.__border_response_rows.add(current_row)
                 if is_top:
                     is_top = False
                 else:
@@ -341,25 +529,82 @@ class QParser(object):
             sheet[current_cell].font = self.__font_bold
             sheet[current_cell].alignment = self.__align_left
             sheet[current_cell].fill = self.__table_fill
-            start_row += 1
+            current_row += 1
 
         range = "%s:%s" % (merge_cells[0], merge_cells[len(merge_cells)-1])
         merge_cells = []
         sheet.merge_cells(range)
 
+        response_col -= 1
+        while response_col >= 0:
+            merge_cells = []
+            is_top = True
+
+            current_row = start_row 
+            end_row = self.end_table_row
+            while current_row < end_row:
+                current_cell = "%s%s" % (self.__extend_alphabet[response_col], str(current_row))
+                if sheet[current_cell].value == "NET":
+                    sheet[current_cell].value = "Total"
+
+                # merge response cells together
+                if sheet[current_cell].value is not None:
+                    self.__border_response_rows.add(current_row)
+                    if is_top:
+                        is_top = False
+                    else:
+                        range = "%s:%s" % (merge_cells[0], merge_cells[len(merge_cells)-1])
+                        merge_cells = []
+                        sheet.merge_cells(range)
+                    merge_cells.append(sheet[current_cell].coordinate)
+                else:
+                    merge_cells.append(sheet[current_cell].coordinate)
+
+                sheet[current_cell].font = self.__font_bold
+                if response_col == 0:
+                    sheet[current_cell].alignment = self.__align_top
+                else:
+                    sheet[current_cell].alignment = self.__align_left
+                sheet[current_cell].fill = self.__table_fill
+                current_row += 1
+            range = "%s:%s" % (merge_cells[0], merge_cells[len(merge_cells)-1])
+            merge_cells = []
+            sheet.merge_cells(range)
+            response_col -= 1
+
+    def format_numeric_details(self, sheet, start_row):
+        numeric_col = self.banner_col_index - 1
+        sheet.column_dimensions[self.__extend_alphabet[numeric_col]].width = 15
+
+        current_row = start_row
+        end_row = self.end_table_row
+        while current_row < end_row:
+            for numeric_scale in self.numeric_details:
+                num_cell = "%s%s" % (self.__extend_alphabet[numeric_col], str(current_row))
+                sheet[num_cell].font = self.__font_bold
+                sheet[num_cell].alignment = self.__align_left
+                sheet[num_cell].fill = self.__table_fill
+                sheet[num_cell].value = "%s" % numeric_scale
+
+                current_row += 1
+
     def format_table_contents(self, sheet, start_row):
         current_row = start_row
+        col_adjust = self.banner_col_index
 
         # change font/alignment and highlight significant cells
-        while current_row < self.__stats_desc:
-            col_no = 1
-            while col_no < len(self.__col_names) + 1:
+        while current_row < self.end_table_row:
+            col_no = self.banner_col_index
+            while col_no < len(self.__col_names) + col_adjust:
                 current_cell = "%s%s" % (self.__extend_alphabet[col_no], str(current_row))
                 sheet[current_cell].font = self.__font_reg
                 sheet[current_cell].alignment = self.__align_center
-                sheet[current_cell].fill = self.__white_fill
                 if sheet[current_cell].data_type == 's':
-                    if sheet[current_cell].value.isupper():
+                    value = sheet[current_cell].value.upper()
+                    value_list = value.split(" ")
+                    if len(value_list) > 1:
+                        sheet[current_cell].fill = self.__hi_significant_fill
+                    elif sheet[current_cell].value.isupper():
                         sheet[current_cell].fill = self.__hi_significant_fill
                     elif sheet[current_cell].value.islower():
                         sheet[current_cell].fill = self.__lo_significant_fill
@@ -367,7 +612,7 @@ class QParser(object):
             current_row += 1
 
     def format_stats_def(self, sheet):
-        current_row = self.__stats_desc
+        current_row = self.end_table_row
         while True:
             current_cell = "A%s" % str(current_row)
             if sheet[current_cell].value is not None:
@@ -377,39 +622,25 @@ class QParser(object):
             current_row += 1
 
     def add_table_borders(self, sheet):
-        for row_no in self.__border_rows:
+        col_adjust = self.banner_col_index
+        for row_no in self.__border_response_rows:
             col_no = 0
-            while col_no < len(self.__col_names) + 1:
+            while col_no < len(self.__col_names) + col_adjust:
                 current_cell = "%s%s" % (self.__extend_alphabet[col_no], str(row_no))
                 sheet[current_cell].border = self.__thin_top
                 col_no += 1
 
         col_no = 0
-        while col_no < len(self.__col_names) + 1:
-            current_cell = "%s%s" % (self.__extend_alphabet[col_no], str(self.__stats_desc))
+        while col_no < len(self.__col_names) + col_adjust:
+            current_cell = "%s%s" % (self.__extend_alphabet[col_no], str(self.end_table_row))
             sheet[current_cell].border = self.__thick_top
             col_no += 1
 
         current_row = 1
-        while current_row < self.__stats_desc:
+        while current_row < self.end_table_row:
             current_cell = "%s%s" % (self.__extend_alphabet[col_no], str(current_row))
             sheet[current_cell].border = self.__thick_left
             current_row += 1
-
-    def add_bases(self, tables):
-        for key, value in tables.iteritems():
-            if int(value.name) < 10:
-                table_name = "Table 0%s" % value.name
-            else:
-                table_name = "Table %s" % value.name
-            
-            sheet = self.__workbook.get_sheet_by_name(table_name)
-
-            sheet[value.location].value = value.description
-            sheet[value.location].font = self.__font_reg
-            sheet[value.location].alignment = self.__align_names
-
-        self.create_toc(tables)
 
     def save(self, path_to_output):
         self.__workbook.save(path_to_output)
@@ -428,16 +659,8 @@ class TOCTable(object):
         return self.__description
 
     @property
-    def size(self):
-        return self.__size
-
-    @property
     def name(self):
         return self.__name
-
-    @property
-    def location(self):
-        return self.__location
 
     @prompt.setter
     def prompt(self, prompt):
@@ -446,12 +669,3 @@ class TOCTable(object):
     @description.setter
     def description(self, desc):
         self.__description = desc
-
-    @size.setter
-    def size(self, pop):
-        self.__size = pop
-
-    @location.setter
-    def location(self, location):
-        self.__location = location
-

@@ -107,7 +107,7 @@ class TrendedModelSheet(object):
         return self.__fields.get(field_name)
 
     def list_field_names(self):
-        return self.__fields.keys()
+        return list(self.__fields.keys())
 
     @property
     def name(self):
@@ -130,7 +130,7 @@ class TrendedModelField(object):
         return self.__groupings.keys()
 
     def grouping_count(self):
-        return len(self.__groupings.keys())
+        return len(list(self.__groupings.keys()))
 
     @property
     def name(self):

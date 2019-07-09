@@ -33,7 +33,7 @@ class ScoreToplineModels(object):
             return True
 
     def list_model_names(self):
-        return self.__models.keys()
+        return list(self.__models.keys())
 
     def get_model(self, model_name):
         return self.__models.get(model_name)
@@ -69,7 +69,7 @@ class ScoreToplineModel(object):
         self.__variables[model_variable] = new_variable
 
     def list_variable_names(self):
-        return self.__variables.keys()
+        return list(self.__variables.keys())
 
     def get_variable(self, variable_name):
         return self.__variables.get(variable_name)

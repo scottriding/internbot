@@ -1,6 +1,6 @@
 from openpyxl import load_workbook
 from openpyxl.styles import PatternFill, Font
-from cell import Cells, Cell, PercentageCell, PopulationCell, SignificantMarker
+from crosstabs.Format_Amazon_Report.cell import Cells, Cell, PercentageCell, PopulationCell, SignificantMarker
 
 class Highlighter(object):
 
@@ -24,7 +24,7 @@ class Highlighter(object):
             self.groups = {}
             self.responses = {}
             self.__cells = Cells()
-        print "Finished!"
+        print("Finished!")
         self.workbook.save(path_to_output + '/Crosstab Report.xlsx')
         
     def parse_rows(self, sheet):
@@ -76,7 +76,8 @@ class Highlighter(object):
                     match_cell.is_significant = True
 
     def highlight_significant(self, sheet):
-        print "Highlighting significant cells in %s" % sheet.title
+        to_print = "Highlighting significant cells in %s" % sheet.title
+        print(to_print)
         for cell in self.__cells:
             if cell.is_significant is True:
                 sheet[cell.location].fill = self.highlight_style

@@ -1,5 +1,5 @@
-from question import Questions
-from sorter import BlockSorter
+from base.question import Questions
+from base.sorter import BlockSorter
 import re
 
 class Blocks(object):
