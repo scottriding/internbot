@@ -141,6 +141,9 @@ class QSFToplineReport(object):
                 response_cells = table.add_row().cells
                 response_cells[1].merge(response_cells[2])
                 response_cells[1].text = response.response
+                if not response.frequencies:
+                    shading_elm = parse_xml(r'<w:shd {} w:fill="FFF206"/>'.format(nsdecls('w')))
+                    response_cells[1]._tc.get_or_add_tcPr().append(shading_elm)
                 for year, average in response.frequencies.items():
                     response_cells[3].text = self.avg_float(average, first_row)
                 first_row = False
@@ -161,6 +164,9 @@ class QSFToplineReport(object):
             response_cells[1].merge(response_cells[3])
             response_cells[1].text = response.response
             freq_col = 4
+            if not response.frequencies:
+                shading_elm = parse_xml(r'<w:shd {} w:fill="FFF206"/>'.format(nsdecls('w')))
+                response_cells[1]._tc.get_or_add_tcPr().append(shading_elm)
             for header in headers:
                 if response.frequencies.get(header) is not None:
                     avg = response.frequencies.get(header)
@@ -180,6 +186,9 @@ class QSFToplineReport(object):
                 cells[1].merge(cells[2])
                 cells[1].text = "%s (n=%s)" % (sub_question.prompt, sub_question.n)
                 response = next((response for response in sub_question.responses if response.code == '1'), None)
+                if not response.frequencies:
+                    shading_elm = parse_xml(r'<w:shd {} w:fill="FFF206"/>'.format(nsdecls('w')))
+                    cells[1]._tc.get_or_add_tcPr().append(shading_elm)
                 for year, frequency in response.frequencies.items():
                     cells[3].text = self.freqs_percent(frequency, first_row)
                 first_row = False
@@ -201,6 +210,9 @@ class QSFToplineReport(object):
             region_cells[1].merge(region_cells[3])
             region_cells[1].text = "%s (n=%s)" % (sub_question.prompt, sub_question.n)
             freq_col = 4
+            if not response.frequencies:
+                shading_elm = parse_xml(r'<w:shd {} w:fill="FFF206"/>'.format(nsdecls('w')))
+                region_cells[1]._tc.get_or_add_tcPr().append(shading_elm)
             for header in headers:
                 if response.frequencies.get(header) is not None:
                     freq = response.frequencies.get(header)
@@ -225,6 +237,9 @@ class QSFToplineReport(object):
                 cells[1].merge(cells[2])
                 cells[1].text = "%s (n=%s)" % (sub_question.prompt, sub_question.n)
                 for response in sub_question.responses:
+                    if not response.frequencies:
+                        shading_elm = parse_xml(r'<w:shd {} w:fill="FFF206"/>'.format(nsdecls('w')))
+                        cells[1]._tc.get_or_add_tcPr().append(shading_elm)
                     for year, frequency in response.frequencies.items():
                         cells[3].text = self.avgs_percent(frequency, first_row)
                 first_row = False
@@ -246,6 +261,9 @@ class QSFToplineReport(object):
                 region_cells[1].merge(region_cells[3])
                 region_cells[1].text = "%s (n=%s)" % (sub_question.prompt, sub_question.n)
                 freq_col = 4
+                if not response.frequencies:
+                    shading_elm = parse_xml(r'<w:shd {} w:fill="FFF206"/>'.format(nsdecls('w')))
+                    region_cells[1]._tc.get_or_add_tcPr().append(shading_elm)
                 for header in headers:
                     if response.frequencies.get(header) is not None:
                         freq = response.frequencies.get(header)
@@ -281,6 +299,9 @@ class QSFToplineReport(object):
                         for year, frequency in response.frequencies.items():
                             question_cells[index].text = self.freqs_percent(frequency, first_row)
                     else:
+                        if not response.frequencies:
+                            shading_elm = parse_xml(r'<w:shd {} w:fill="FFF206"/>'.format(nsdecls('w')))
+                            question_cells[1]._tc.get_or_add_tcPr().append(shading_elm)
                         if first_row is True:
                             question_cells[index].text = "--%"
                         else:

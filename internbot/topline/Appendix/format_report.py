@@ -178,7 +178,7 @@ class DocAppendixBuilder(object):
 
     def write_responses(self, responses, paragraph):
         table = self.__doc.add_table(rows = 0, cols = 5)
-        table.style = 'Topline Table'
+        table.style = 'Topline Table' # Custom format in template
         for response in responses:
             response_cells = table.add_row().cells
             response_cells[0].merge(response_cells[4])
