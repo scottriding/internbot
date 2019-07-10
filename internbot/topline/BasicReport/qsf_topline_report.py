@@ -32,8 +32,8 @@ class QSFToplineReport(object):
         self.doc.save(path_to_output)
 
     def write_question(self, question):
-        paragraph = self.doc.add_paragraph() # each question starts a new paragraph
-        self.write_display_logic(question, paragraph)
+        #paragraph = self.doc.add_paragraph() # each question starts a new paragraph
+        #self.write_display_logic(question, paragraph)
         paragraph = self.doc.add_paragraph()
         self.write_name(question.name, paragraph)
         self.write_prompt(question.prompt, paragraph)
@@ -47,8 +47,8 @@ class QSFToplineReport(object):
         self.doc.add_paragraph("") # space between questions
 
     def write_composite_question(self, question):
-        paragraph = self.doc.add_paragraph() # each question starts a new paragraph
-        self.write_display_logic(question, paragraph)
+        #paragraph = self.doc.add_paragraph() # each question starts a new paragraph
+        #self.write_display_logic(question, paragraph)
         paragraph = self.doc.add_paragraph()
         self.write_name(question.name, paragraph)
         self.write_prompt(question.prompt, paragraph)
@@ -87,14 +87,16 @@ class QSFToplineReport(object):
             paragraph.add_run(" (n = " + str(n) + ")")
 
     def write_display_logic(self, question, paragraph):
-        if question.parent != 'CompositeQuestion' and question.display_logic != "" and question.display_logic is not None:
+        # This is broken still needs to be implemented
+        if question.parent != 'CompositeQuestion' and question.type != 'CompositeMultipleSelect' and question.display_logic != "" and question.display_logic is not None:
             paragraph.add_run(str(question.display_logic))
         elif question.parent == 'CompositeQuestion':
-            for sub in question.questions:
-                if sub.display_logic != "":
-                    question.display_logic = sub.display_logic
-                    break
-            paragraph.add_run(str(question.display_logic))
+            if question.type != 'CompositeMultipleSelect':
+                for sub in question.questions:
+                    if sub.display_logic != "":
+                        question.display_logic = sub.display_logic
+                        break
+                paragraph.add_run(str(question.display_logic))
 
 
     def write_responses(self, responses, stat):

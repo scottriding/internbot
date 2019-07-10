@@ -45,7 +45,6 @@ class ReportGenerator(object):
             if matching_question is not None:
                 matching_response = self.find_response(row["value"], matching_question)
                 if matching_response is not None:
-                    print(matching_question.name)
                     self.add_frequency(matching_response, row, years)
                     self.add_n(matching_question, row)
                     self.add_display_logic(matching_question, question_display)
