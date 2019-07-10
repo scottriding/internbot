@@ -48,8 +48,8 @@ class ToplineView(object):
         btn_bot = tkinter.Button(self.redirect_window, image=self.bot_render, borderwidth=0, highlightthickness=0, relief=tkinter.FLAT, bg="white", height=65, width=158, command=self.topline_help_window)
 
         btn_bot.pack(side=tkinter.TOP, padx=10)
-        btn_trend.pack(side=tkinter.TOP, padx=10)
         btn_basic.pack(side=tkinter.TOP, padx=10)
+        btn_trend.pack(side=tkinter.TOP, padx=10)
         btn_cancel.pack(side=tkinter.TOP, padx=10)
 
         self.redirect_window.deiconify()
@@ -83,6 +83,7 @@ class ToplineView(object):
         self.round_int = 1
 
     def round_menu(self):
+        print("Round Menu")
         self.round_window = tkinter.Toplevel(self.__window)
         self.round_window.withdraw()
         width = 200
@@ -127,23 +128,21 @@ class ToplineView(object):
         Function sets up menu for entry of round number and open of topline file.
         :return: None
         """
+        print("Trended Menu")
         self.round_window.withdraw()
         self.round_int = self.round_entry.get()
         if self.round_int != "" and self.round_int != 1:
             thread = threading.Thread(target=self.year_window_setup(int(self.round_int)))
             thread.start()
 
-
         self.trended_window = tkinter.Toplevel(self.__window)
         self.trended_window.withdraw()
         width = 200
         height = 350
-        self.trended_window.geometry("%dx%d+%d+%d" % (
-        width, height, self.mov_x + self.window_width/2 - width/2, self.mov_y + self.window_height / 2 - height / 2))
+        self.trended_window.geometry("%dx%d+%d+%d" % (width, height, self.mov_x + self.window_width/2 - width/2, self.mov_y + self.window_height / 2 - height / 2))
         self.trended_window.title("Topline Menu")
         message = "Please select the files you \nwill use to run this topline"
-        tkinter.Label(self.trended_window, text=message, font=self.header_font, fg=self.header_color).pack(side=tkinter.TOP,
-                                                                                                  pady=10)
+        tkinter.Label(self.trended_window, text=message, font=self.header_font, fg=self.header_color).pack(side=tkinter.TOP, pady=10)
 
         btn_qsf = tkinter.Button(self.trended_window, text="QSF and CSV", command=self.read_qsf_topline, height=3, width=20)
         btn_csv = tkinter.Button(self.trended_window, text="CSV Only", command=self.read_csv_topline, height=3, width=20)
@@ -162,6 +161,7 @@ class ToplineView(object):
         Funtion sets up help window to give the user info about round numbers.
         :return: None
         """
+
         help_window = tkinter.Toplevel(self.__window)
         help_window.withdraw()
         width = 400
@@ -210,7 +210,7 @@ class ToplineView(object):
         print("Reading in QSF Topline with "+str(self.round_int)+" round(s)")
         self.filename = filedialog.askopenfilename(initialdir=self.fpath, title="Select survey file", filetypes=(("Qualtrics files", "*.qsf"), ("all files", "*.*")))
         if self.filename is not "":
-            #print("Round:" + str(self.round_int))
+            print("Round:" + str(self.round_int))
             if self.round_int != 1 and self.round_int is not "":
                 self.trended_window.withdraw()
                 self.build_topline_leadup()
@@ -239,13 +239,11 @@ class ToplineView(object):
         Funtion sets up the window for entry of trend labels for trended Toplines
         :return: None
         """
-
         self.year_window = tkinter.Toplevel(self.__window)
         self.year_window.withdraw()
         width = 300
         height = 200 + rounds * 25
-        self.year_window.geometry("%dx%d+%d+%d" % (
-        width, height, self.mov_x + self.window_width / 2 - width / 2, self.mov_y + self.window_height / 2 - height / 2))
+        self.year_window.geometry("%dx%d+%d+%d" % (width, height, self.mov_x + self.window_width / 2 - width / 2, self.mov_y + self.window_height / 2 - height / 2))
         self.year_window.title("Trended Years Entry")
         message = "Please input the applicable years \nfor the trended topline report."
         tkinter.Label(self.year_window, text=message, font=self.header_font, fg=self.header_color).pack(expand=True)
@@ -254,13 +252,6 @@ class ToplineView(object):
         year_frame.pack(side=tkinter.TOP, expand=True)
         self.year_window_obj = YearsWindow(self.__window, self.year_window, rounds)
         self.year_window_obj.packing_years(year_frame)
-        btn_finish = tkinter.Button(self.year_window, text="Done", command=self.year_window.withdraw, height=3,
-                                    width=17)
-        btn_cancel = tkinter.Button(self.year_window, text="Cancel", command=self.year_window.destroy, height=3,
-                                    width=17)
-        btn_finish.pack(ipadx=5, side=tkinter.LEFT, expand=False)
-        btn_cancel.pack(ipadx=5, side=tkinter.RIGHT, expand=False)
-        self.year_window.deiconify()
 
         def enter_pressed(event):
             self.year_window.withdraw()
@@ -268,12 +259,20 @@ class ToplineView(object):
         self.year_window.bind("<Return>", enter_pressed)
         self.year_window.bind("<KP_Enter>", enter_pressed)
 
+        btn_finish = tkinter.Button(self.year_window, text="Done", command=self.year_window.withdraw, height=3, width=17)
+        btn_cancel = tkinter.Button(self.year_window, text="Cancel", command=self.year_window.destroy, height=3, width=17)
+        btn_finish.pack(ipadx=5, side=tkinter.LEFT, expand=False)
+        btn_cancel.pack(ipadx=5, side=tkinter.RIGHT, expand=False)
+        self.year_window.deiconify()
+
+
     def build_topline_leadup(self):
         """
         Function serves as a segue between the year_window_setup and the YearsWindow object
         for trended topline reports.
         :return: None
         """
+
         years = self.year_window_obj.read_years()
         self.build_topline_report(years)
 

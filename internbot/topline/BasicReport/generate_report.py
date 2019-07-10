@@ -45,10 +45,10 @@ class ReportGenerator(object):
             if matching_question is not None:
                 matching_response = self.find_response(row["value"], matching_question)
                 if matching_response is not None:
+                    print(matching_question.name)
                     self.add_frequency(matching_response, row, years)
                     self.add_n(matching_question, row)
-                    if question_display != "":
-                        self.add_display_logic(matching_question, question_display)
+                    self.add_display_logic(matching_question, question_display)
                     self.add_stat(matching_question, question_stat)
 
     def generate_topline(self, path_to_template, path_to_output, years):
