@@ -263,7 +263,9 @@ class Internbot:
 
 window = tkinter.Tk()
 window.withdraw()
-window.title("Internbot (Version: 1.0.0)") # Internbot: Y2
+internbot_version = "1.1.0"
+
+window.title("Internbot (Version:"+ internbot_version + ")") # Internbot: Y2
 
 resources_filepath = os.path.expanduser("~/Documents/GitHub/internbot/internbot/templates_images/")
 
@@ -303,7 +305,7 @@ def quit():
 window.bind('<Escape>', quit)
 window.protocol("WM_DELETE_WINDOW", quit)
 
-internbot_version = "1.0.0"
+
 
 window.deiconify()
 Internbot(window)
