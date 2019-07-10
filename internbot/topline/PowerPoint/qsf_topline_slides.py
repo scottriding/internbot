@@ -50,12 +50,15 @@ class QSFToplineSlides(object):
         for question in self.questions:
             to_print = "Writing question: %s" % question.name
             print(to_print)
-            if question.parent == 'CompositeQuestion':
-                self.chart_composite_question(question)
-            elif question.type == 'TE':
+            try:
+                if question.parent == 'CompositeQuestion':
+                    self.chart_composite_question(question)
+                elif question.type == 'TE':
+                    pass
+                else:
+                    self.chart_question(question)
+            except ValueError:
                 pass
-            else:
-                self.chart_question(question)
 
     def chart_question(self, question):
         slide = self.presentation.slides.add_slide(self.presentation.slide_layouts.get_by_name('AutomatedChart'))
