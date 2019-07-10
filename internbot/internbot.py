@@ -274,7 +274,7 @@ screen_width = window.winfo_screenwidth()
 screen_height = window.winfo_screenheight()
 mov_x = screen_width / 2 - 300
 mov_y = screen_height / 2 - 200
-window_height = 450
+window_height = 500
 window_width = 600
 window.geometry("%dx%d+%d+%d" % (window_width, window_height, mov_x, mov_y))
 window['background'] = 'white'
