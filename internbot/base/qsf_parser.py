@@ -445,7 +445,7 @@ class QSFConstantSumParser(object):
         if question.has_carry_forward_responses is False:
             self.basic_constant(constant_sum, question_payload)       
         elif question.has_carry_forward_responses is True and \
-             question_payload['Choices'] > 0:
+             len(question_payload['Choices']) > 0:
             self.mixed_constant(constant_sum, question_payload)
         else:
             self.dynamic_constant(constant_sum, question_payload)
