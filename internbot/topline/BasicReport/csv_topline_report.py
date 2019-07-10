@@ -21,7 +21,7 @@ class CSVToplineReport(object):
         print(to_print)
         if question.display_logic != "":
             display_prompt = self.doc.add_paragraph()
-            display_prompt.add_run("(" + question.display_logic + ")")
+            display_prompt.add_run(question.display_logic)
             self.doc.add_paragraph()
         paragraph = self.doc.add_paragraph() # each question starts a new paragraph
         self.write_name(name, paragraph)
