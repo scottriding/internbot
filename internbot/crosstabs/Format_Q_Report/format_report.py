@@ -5,6 +5,7 @@ from openpyxl.styles import PatternFill, Font, Alignment
 from openpyxl.utils import range_boundaries
 from collections import OrderedDict
 import os
+import re
 
 class QFormatter(object):
 
@@ -318,6 +319,7 @@ class QFormatter(object):
         return start_table_row
 
     def unmerge_response_cols(self, sheet):
+
         merged_ranges =[]  
         for group in sheet.merged_cells.ranges:
             merged_ranges.append(group)
@@ -333,7 +335,10 @@ class QFormatter(object):
                 to_delete = []
                 for range in merged_ranges:
                     str_range = str(range)
-                    if col_letter in str_range:
+                    range_start_end = str_range.split(":")
+                    start_col = re.match("([A-Z]+)\d+", range_start_end[0]).group(1)
+                    end_col = re.match("([A-Z]+)\d+", range_start_end[1]).group(1)
+                    if col_letter == start_col or col_letter == end_col:
                         to_delete.append(range)
                         sheet.unmerge_cells(str_range)
                 for used_range in to_delete:
