@@ -70,6 +70,7 @@ class ReportGenerator(object):
 
     def find_sub_question(self, composite_question, question_to_find):
         absolute_match = None
+        
         for sub_question in composite_question.questions:
             if re.match(sub_question.name, question_to_find):
                 absolute_match = sub_question

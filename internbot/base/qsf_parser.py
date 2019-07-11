@@ -474,6 +474,7 @@ class QSFConstantSumParser(object):
         return constantsum
 
     def question_details(self, question_payload, constant_sum):
+        print(question_payload)
         for code, question in question_payload['Choices'].items():
             sub_question = Question()
             sub_question.id = '%s_%s' % (constant_sum.id, code)
@@ -588,6 +589,8 @@ class QSFCarryForwardParser(object):
                 self.multiselect_match(dynamic_question, questions)
             elif dynamic_question.type == 'MC':
                 self.singleMulti_match(dynamic_question, questions)
+            elif dynamic_question.type == "CompositeConstantSum":
+                self.constantsum_match(dynamic_question, questions)
 
         for statement_question in statement_questions:
             self.statement_match(statement_question, questions)
@@ -647,6 +650,21 @@ class QSFCarryForwardParser(object):
             self.multiselect_into_singleMulti(dynamic_question, matching_question)
         elif matching_question.type == 'MC':
             self.singleMulti_into_singleMulti(dynamic_question, matching_question)
+
+    def constantsum_match(self, dynamic_question, questions):
+        matching_question = next((question for question in questions \
+                             if question.id == dynamic_question.carry_forward_question_id), None)
+        if matching_question.type == "CompositeMultipleSelect":
+            dynamic_question.question_order = matching_question.question_order
+            for question in matching_question.questions:
+                sub_question = Question()
+                sub_question.name ='%s_x%s' % (dynamic_question.name, question.code)
+                sub_question.id = '%s_%s' % (dynamic_question.name, question.code)
+                sub_question.code = question.code
+                sub_question.prompt = question.prompt
+                for response in question.responses:
+                    sub_question.add_dynamic_response(response.response, response.code)
+                dynamic_question.add_question(sub_question)
 
     def matrix_into_matrix(self, dynamic_matrix, matching_matrix):
         dynamic_matrix.question_order = matching_matrix.question_order
