@@ -37,20 +37,20 @@ class PowerPointView(object):
         self.redirect_window = tkinter.Toplevel(self.__window)
         self.redirect_window.withdraw()
         width = 200
-        height = 350
+        height = 250
         self.redirect_window.geometry("%dx%d+%d+%d" % (
         width, height, self.mov_x + self.window_width/2 - width/2, self.mov_y + self.window_height / 2 - height / 2))
         self.redirect_window.title("Topline Menu")
         message = "Please open a survey file."
         tkinter.Label(self.redirect_window, text=message, font=self.header_font, fg=self.header_color).pack(side=tkinter.TOP, pady=10)
 
-        btn_trended = tkinter.Button(self.redirect_window, text="Trended", command=self.round_menu, height=3, width=20)
+        #btn_trended = tkinter.Button(self.redirect_window, text="Trended", command=self.round_menu, height=3, width=20)
         btn_basic = tkinter.Button(self.redirect_window, text="Basic", command=self.read_qsf_topline, height=3, width=20)
         btn_cancel = tkinter.Button(self.redirect_window, text="Cancel", command=self.redirect_window.destroy, height=3, width=20)
         btn_bot = tkinter.Button(self.redirect_window, image=self.bot_render, borderwidth=0, highlightthickness=0, relief=tkinter.FLAT, bg="white", height=65, width=158, command=self.pptx_help_window)
 
         btn_bot.pack(side=tkinter.TOP, padx=10)
-        btn_trended.pack(side=tkinter.TOP, padx=10)
+        #btn_trended.pack(side=tkinter.TOP, padx=10)
         btn_basic.pack(side=tkinter.TOP, padx=10)
         btn_cancel.pack(side=tkinter.TOP, padx=10)
         self.redirect_window.deiconify()
