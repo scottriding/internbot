@@ -301,18 +301,10 @@ class QFormatter(object):
                 break
 
         if self.__is_numeric:
-            self.numeric_details = []
-            table_details = sheet["A3"].value.split()
-            for detail in table_details:
-                if detail != "Comparisons" and detail != "Column":
-                    if detail == "n":
-                        self.numeric_details.append("Population (n)")
-                    else:
-                        self.numeric_details.append(detail)
-                
-
-            if self.__has_stats:
-                self.numeric_details.append("Column Comparisons")
+            self.numeric_details = sheet["A3"].value.split("\n")
+            for n, i in enumerate(self.numeric_details):
+                if i == "Column n":
+                    self.numeric_details[n] = "Population (n)"
 
         self.end_table_row += 1
 
@@ -476,7 +468,7 @@ class QFormatter(object):
         sheet["A2"].font = self.__font_reg
         sheet["A2"].alignment = self.__align_names
         table_title = sheet["A2"].value
-        final_title = "%s - %s" % (sheet.title, table_title)
+        final_title = "%s - %s" % (sheet.title, table.prompt)
         sheet["A2"].value = final_title
 
         # merge top corner of table
