@@ -32,7 +32,8 @@ class Blocks(object):
             
     def sort(self, block_id_order):
         sorter = BlockSorter(block_id_order)
-        self.__blocks = sorter.sort(self.__blocks)    
+        self.__blocks = sorter.sort(self.__blocks)
+
 
     def __repr__(self):
         result = ''
