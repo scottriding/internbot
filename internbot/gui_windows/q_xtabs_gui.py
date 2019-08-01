@@ -28,6 +28,43 @@ class QCrosstabsView(object):
 
     def qresearch_xtabs(self):
         """
+        Function asks user which QResearch crosstab report output to produce.
+        :return: None
+        """
+        self.report_type_window = tkinter.Toplevel(self.__window)
+        self.report_type_window.withdraw()
+        width = 250
+        height = 250
+        self.report_type_window.geometry("%dx%d+%d+%d" % (width, height, self.mov_x + self.window_width / 2 - width / 2, self.mov_y + self.window_height / 2 - height / 2))
+        message = "Choose the report option to generate"
+        tkinter.Label(self.report_type_window, text=message, font=self.header_font, fg=self.header_color).pack(expand=False)
+        btn_toc = tkinter.Button(self.report_type_window, text="Generate Table of Contents", command=self.create_toc, height=3, width=20)
+        btn_format = tkinter.Button(self.report_type_window, text="Format Report", command=self.qresearch_formatting, height=3, width=20)
+        btn_cancel = tkinter.Button(self.report_type_window, text="Cancel", command=self.report_type_window.destroy, height=3, width=20)
+
+        btn_cancel.pack(ipadx=5, side=tkinter.BOTTOM, expand=False)
+        btn_format.pack(ipadx=5, side=tkinter.BOTTOM, expand=False)
+        btn_toc.pack(ipadx=5, side=tkinter.BOTTOM, expand=False)
+        self.report_type_window.deiconify()
+
+    def create_toc(self):
+        ask_qsf = messagebox.askokcancel("Select .qsf survey file", "Please select the survey file for Crosstabs")
+        if ask_qsf is True:
+            survey_file = filedialog.askopenfilename(initialdir = self.fpath, title = "Select Survey File", filetypes = (("qualtrics file", "*.qsf"),("all files", "*.*")))
+            if survey_file is not "":
+                compiler = base.QSFSurveyCompiler()
+                survey = compiler.compile(survey_file)
+                toc_generator = crosstabs.Format_Q_Report.QTOCCompiler(survey)
+                ask_output = messagebox.askokcancel("Select output directory", "Please select file path for final report.")
+                if ask_output is True:
+                    savedirectory = filedialog.asksaveasfilename(defaultextension='.xlsx', filetypes=[('Microsoft Excel files', '.xlsx')])
+                    if savedirectory is not "":
+                        toc_generator.compile_toc(savedirectory)
+                        print("Finished!")
+                        self.open_file_for_user(savedirectory)
+
+    def qresearch_formatting(self):
+        """
         Funtion asks the user formatting style of QResearch Crosstab Report
         :return: None
         """
@@ -36,7 +73,7 @@ class QCrosstabsView(object):
         width = 250
         height = 250
         self.choose_window.geometry("%dx%d+%d+%d" % (width, height, self.mov_x + self.window_width / 2 - width / 2, self.mov_y + self.window_height / 2 - height / 2))
-        message = "Choose the format of\nyour appendix report"
+        message = "Choose the format of\nyour crosstab report"
         tkinter.Label(self.choose_window, text=message, font=self.header_font, fg=self.header_color).pack(expand=False)
         btn_qualtrics = tkinter.Button(self.choose_window, text="Qualtrics Formatting", command=self.qual_qtabs, height=3, width=20)
 
