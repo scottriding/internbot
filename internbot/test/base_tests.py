@@ -7,7 +7,7 @@ import traceback
 
 class TestStringMethods(unittest.TestCase):
 
-    def test_survey_compiler(self):
+    def test_survey_compiler_project_qsfs(self):
         self.file = ""
         try:
             for dirname, dirnames, filenames in os.walk("qsf"):
@@ -21,6 +21,56 @@ class TestStringMethods(unittest.TestCase):
             traceback.print_exc()
             self.fail("QSF FILE "+str(self.file)+"  raised an exception while compiling")
 
+    def test_single_select(self):
+        self.file = ""
+        try:
+            survey = base.QSFSurveyCompiler().compile(self.file)
+        except:
+            traceback.print_exc()
+            self.fail("QSF FILE " + str(self.file) + "  raised an exception while compiling")
+
+
+    def test_multiple_select(self):
+        self.file = ""
+        try:
+            survey = base.QSFSurveyCompiler().compile(self.file)
+        except:
+            traceback.print_exc()
+            self.fail("QSF FILE " + str(self.file) + "  raised an exception while compiling")
+
+    def test_sliders(self):
+        self.file = ""
+        try:
+            survey = base.QSFSurveyCompiler().compile(self.file)
+        except:
+            traceback.print_exc()
+            self.fail("QSF FILE " + str(self.file) + "  raised an exception while compiling")
+
+    def test_matrix(self):
+        self.file = ""
+        try:
+            survey = base.QSFSurveyCompiler().compile(self.file)
+        except:
+            traceback.print_exc()
+            self.fail("QSF FILE " + str(self.file) + "  raised an exception while compiling")
+
+    def test_hot_spots(self):
+        self.file = ""
+        try:
+            survey = base.QSFSurveyCompiler().compile(self.file)
+        except:
+            traceback.print_exc()
+            self.fail("QSF FILE " + str(self.file) + "  raised an exception while compiling")
+
+    def test_rank_order(self):
+        self.file = ""
+        try:
+            survey = base.QSFSurveyCompiler().compile(self.file)
+        except:
+            traceback.print_exc()
+            self.fail("QSF FILE " + str(self.file) + "  raised an exception while compiling")
+
+    
 
 
 if __name__ == '__main__':
