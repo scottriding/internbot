@@ -429,9 +429,10 @@ class QSFMultipleSelectParser(object):
 
     def convert_prompt_from_byte_str(self, prompt):
         prompt = str(prompt)
-        if prompt[0] is "b" and (prompt[len(prompt) - 1] is "'" or prompt[len(prompt) - 1] is '"'):
-            converted = prompt[2: len(prompt) - 1]
-            return converted
+        if len(prompt):
+            if prompt[0] is "b" and (prompt[len(prompt) - 1] is "'" or prompt[len(prompt) - 1] is '"'):
+                converted = prompt[2: len(prompt) - 1]
+                return converted
         return prompt
 
 class QSFConstantSumParser(object):
@@ -548,9 +549,10 @@ class QSFResponsesParser(object):
 
 
     def convert_response_from_byte_str(self, response):
-        if response[0] is "b" and (response[len(response) - 1] is "'" or response[len(response) - 1] is '"'):
-            converted = response[2: len(response) - 1]
-            return converted
+        if len(response) > 0:
+            if response[0] is "b" and (response[len(response) - 1] is "'" or response[len(response) - 1] is '"'):
+                converted = response[2: len(response) - 1]
+                return converted
         return response
                  
 class QSFCarryForwardParser(object):

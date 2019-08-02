@@ -21,6 +21,7 @@ class QSFSurveyCompiler(object):
         return scoring
 
     def parse_json(self, path_to_qsf):
+        print(path_to_qsf)
         with open(path_to_qsf) as file:
             qsf_file = json.load(file)
         return qsf_file
