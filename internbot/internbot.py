@@ -59,34 +59,39 @@ class Internbot:
         btn_quit.pack(padx=5, side=tkinter.TOP, expand=True)
 
     def menu_bar_setup(self):
-        #Menubar Set Up
+        """
+        Function sets up all components of the toplevel menubar
+        :return: None
+        """
         self.menubar = tkinter.Menu(self.__window)
         menu_xtabs = tkinter.Menu(self.menubar, tearoff = 0)
         menu_xtabs.add_command(label="Crosstabs Menu", command=self.software_tabs_menu)
-        #menu_xtabs.add_command(label="SPSS", command=self.spss.spss_crosstabs_menu)
-        #menu_xtabs.add_command(label="Q Research", command=self.q.bases_window)
-        #menu_xtabs.add_command(label="Amazon Legacy", command=self.amazon_xtabs)
         self.menubar.add_cascade(label="Crosstabs", menu=menu_xtabs)
+
         menu_report = tkinter.Menu(self.menubar, tearoff=0)
         menu_report.add_command(label="Topline Menu", command=self.topline.topline_menu)
         menu_report.add_command(label="QSF and CSV", command=self.topline.read_qsf_topline)
         menu_report.add_command(label="CSV Only", command=self.topline.read_csv_topline)
         self.menubar.add_cascade(label="Topline", menu=menu_report)
+
         menu_appendix = tkinter.Menu(self.menubar, tearoff=0)
         menu_appendix.add_command(label="Appendix Menu", command=self.appendix.append_menu)
         menu_appendix.add_command(label="Word Appendix", command=self.appendix.doc_appendix)
         menu_appendix.add_command(label="Excel Appendix", command=self.appendix.excel_appendix_type)
         self.menubar.add_cascade(label="Appendix", menu=menu_appendix)
+
         menu_terminal = tkinter.Menu(self.menubar, tearoff=0)
         menu_terminal.add_command(label="Open Terminal", command=self.reopen_terminal_window)
         menu_terminal.add_command(label="Export Error Log", command=self.export_error_log)
         self.menubar.add_cascade(label="Terminal", menu=menu_terminal)
+
         menu_rnc = tkinter.Menu(self.menubar, tearoff=0)
         menu_rnc.add_command(label="RNC Menu", command=self.rnc.rnc_menu)
         menu_rnc.add_command(label="Scores", command=self.rnc.scores_window)
         menu_rnc.add_command(label="Issue Trended", command=self.rnc.issue_trended_window)
         menu_rnc.add_command(label="Trended Scores", command=self.rnc.trended_scores_window)
         self.menubar.add_cascade(label="RNC", menu=menu_rnc)
+
         menu_quit = tkinter.Menu(self.menubar, tearoff=0)
         menu_quit.add_command(label="Close Internbot", command=self.quit)
         self.menubar.add_cascade(label="Quit", menu=menu_quit)
@@ -138,11 +143,16 @@ class Internbot:
         help_window.bind("<KP_Enter>", enter_pressed)
 
     def terminal_window(self):
-        self.term_window = True
+        """
+        Function handles the terminal window used for messages to the user and errors.
+        :return: None
+        """
+        self.terminal_open = True
         self.term_window = tkinter.Toplevel(self.__window)
         self.term_window.withdraw()
         self.term_window.title("Terminal Window")
         self.term_window['background'] = header_color
+
         width = 500
         height = 600
         self.term_window.geometry("%dx%d+%d+%d" % (
@@ -151,12 +161,16 @@ class Internbot:
         term_text = tkinter.Text(self.term_window, fg='white', height= 600, width=500, background=header_color, padx=5, pady=5)
         term_text.pack()
 
+        #Makes a temporary file in the user's Document folder that al of the contents of the terminal window is written to.
         self.error_log_filename = os.path.expanduser("~/Documents/internbot_error_log.txt")
         self.error_log = open(self.error_log_filename, 'w')
         self.error_log.write("Error Log: " + self.session_time_stamp + "\n")
 
 
-        class PrintToT1(object):
+        class PrintToTermWindow(object):
+            """
+            Class functions to capture stdout and stderr while the program is running and write it to the terminal window
+            """
             def __init__(self, stream, error_log):
                 self.stream = stream
                 self.error_log = error_log
@@ -168,10 +182,14 @@ class Internbot:
                 self.stream.flush()
                 term_text.see(tkinter.END)
 
-        sys.stdout = PrintToT1(sys.stdout, self.error_log)
-        sys.stderr = PrintToT1(sys.stderr, self.error_log)
+        sys.stdout = PrintToTermWindow(sys.stdout, self.error_log)
+        sys.stderr = PrintToTermWindow(sys.stderr, self.error_log)
 
         def update_terminal_flag():
+            """
+            Called on "close" of terminal window
+            :return:
+            """
             self.terminal_open = False
             self.term_window.withdraw()
 
@@ -181,17 +199,24 @@ class Internbot:
         self.term_window.deiconify()
 
     def reopen_terminal_window(self):
+        """
+        Called on reopen of a "closed" terminal window
+        :return:
+        """
         self.terminal_open = True
         self.term_window.deiconify()
 
     def export_error_log(self):
-
+        """
+        Called by menubar command Export Error Log
+        :return:
+        """
         ask_export = messagebox.askokcancel("Export Error Log", "Warning: Internbot will close and you will need to restart it")
         if ask_export:
             self.error_log.close()
             copyfile(self.error_log_filename, os.path.expanduser("~/Desktop/internbot_error_log.txt"))
             self.open_file_for_user(os.path.expanduser("~/Desktop/internbot_error_log.txt"))
-            self.quit()
+            self.quit() # Must quit out here or the program experiences errors because the file has been closed.
 
     def software_tabs_menu(self):
         """
@@ -213,7 +238,6 @@ class Internbot:
         btn_cancel.pack(side=tkinter.BOTTOM, expand=True)
         btn_q.pack(side=tkinter.BOTTOM, expand=True)
         btn_spss.pack(side=tkinter.BOTTOM, expand=True)
-
         sft_window.deiconify()  
 
     def amazon_xtabs(self):
@@ -234,15 +258,24 @@ class Internbot:
                     messagebox.showinfo("Finished", "The highlighted report is saved in your chosen directory.")
 
     def open_sound(self):
-
+        """
+        Plays open R2D2 effect
+        :return:
+        """
         def play_sound():
             audio_file = os.path.join(resources_filepath, "open.mp3")
             return_code = subprocess.call(["afplay", audio_file])
 
+        # Multithreaded so you don't have to wait on the sound library to start the app or open files
         thread_worker = threading.Thread(target=play_sound)
         thread_worker.start()
 
     def open_file_for_user(self, file_path):
+        """
+        Opens requested file for user.
+        :param file_path:
+        :return: None
+        """
         try:
             if os.path.exists(file_path):
                 if platform.system() == 'Darwin':  # macOS
@@ -256,8 +289,13 @@ class Internbot:
             messagebox.showerror("Error", "Error: Could not open file for you \n" + file_path)
 
     def quit(self):
+        """
+        Clean up before exit.
+        :return: None
+        """
         audio_file = os.path.join(resources_filepath, "close.mp3")
         return_code = subprocess.call(["afplay", audio_file])
+        # Delete temporary error log from user's Documents folder
         os.remove(os.path.expanduser("~/Documents/internbot_error_log.txt"))
         self.__window.destroy()
 

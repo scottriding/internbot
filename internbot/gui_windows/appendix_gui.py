@@ -114,7 +114,7 @@ class AppendixView(object):
 
     def excel_appendix_type(self):
         """
-        Funtion asks the user if they would like to create a .docx or a .xlsx
+        Asks the user which template to use for excel style appendix
         :return: None
         """
         self.choose_window = tkinter.Toplevel(self.__window)
@@ -135,6 +135,10 @@ class AppendixView(object):
         self.choose_window.deiconify()
 
     def y2_excel_appendix(self):
+        """
+        Provides necessary flag to create a y2 formatted excel appendix
+        :return:
+        """
         generator = topline.Appendix.AppendixGenerator(self.resources_filepath)
         csvfilename = filedialog.askopenfilename(initialdir=self.fpath, title="Select open ends file",
                                                    filetypes=(("Comma separated files", "*csv"), ("all files", "*.*")))

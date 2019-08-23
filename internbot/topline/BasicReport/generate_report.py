@@ -7,7 +7,7 @@ from collections import OrderedDict
 
 class ReportGenerator(object):
 
-    def __init__(self, path_to_freqs, years = [], survey = None):
+    def __init__(self, path_to_freqs, years=[], survey = None):
         question_data = self.unicode_dict_reader(open(path_to_freqs))
         self.__frequencies = []
         self.headers = []
@@ -15,6 +15,8 @@ class ReportGenerator(object):
         if survey is not None:
             self.__survey = survey
             self.__questions = survey.get_questions()
+            for question in self.__questions:
+                print(question.name)
             self.assign_frequencies(question_data, years)
         else:
             self.__questions = CSVQuestions()
@@ -43,6 +45,7 @@ class ReportGenerator(object):
 
             matching_question = self.find_question(question_name)
             if matching_question is not None:
+                # print("MATCHING QUESTION: "+matching_question.name+" ROW: "+question_name)
                 matching_response = self.find_response(row["value"], matching_question)
                 if matching_response is not None:
                     self.add_frequency(matching_response, row, years)
