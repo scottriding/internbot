@@ -340,8 +340,6 @@ class QFormatter(object):
     def insert_names_row(self, sheet, start_table_row):
         banner_row = start_table_row - 2
         top_banner_cell = "%s%s" % (self.__extend_alphabet[self.banner_col_index], str(banner_row))
-        if sheet[top_banner_cell].value is None:
-            sheet[top_banner_cell].value = "Total"
 
         sheet.insert_rows(start_table_row - 1)
         sheet.row_dimensions[start_table_row - 1].height = 16
@@ -361,8 +359,6 @@ class QFormatter(object):
     def create_col_names(self, sheet, start_table_row):
         banner_row = start_table_row - 2
         top_banner_cell = "%s%s" % (self.__extend_alphabet[self.banner_col_index], str(banner_row))
-        if sheet[top_banner_cell].value is None:
-            sheet[top_banner_cell].value = "Total"
 
         # adjust list with the correct no of items for future calculations
         banner_row = start_table_row - 1
