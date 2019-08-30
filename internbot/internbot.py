@@ -1,350 +1,489 @@
+## internbot modules
+import base
 import crosstabs
-import gui_windows
-import tkinter
-from tkinter import messagebox
-from tkinter import filedialog
-import os, subprocess, platform
-import sys
-import time
-from shutil import copyfile
-import subprocess
-import threading
+import rnc_automation
+import topline
+
+## outside modules
+import kivy
+kivy.require('1.11.1')
+
+from kivy.app import App
+from kivy.uix.button import Button
+from kivy.uix.boxlayout import BoxLayout
+from kivy.uix.image import Image
+from kivy.graphics import Color, Rectangle
+from kivy.uix.popup import Popup
+from kivy.uix.label import Label
+from kivy.core.text import LabelBase
+import webbrowser
 
 
-class Internbot:
+class MainApp(App):
 
-    def __init__ (self, root):
-        self.__window = root
-        self.main_buttons()
-        self.menu_bar_setup()
-        localtime = time.asctime(time.localtime(time.time()))
-        self.session_time_stamp = str("Session:  " + localtime + "   Internbot Version:  " + internbot_version)
-        self.terminal_window()
-        self.fpath = os.path.join(os.path.expanduser("~"), "Desktop")
-        self.__embedded_fields = []
-        self.open_sound()
+    def build(self):
+        self.root = self.create_screens()
+        self.title = "Internbot"
+        self.root.bind(size=self._update_rect, pos=self._update_rect)
 
+        with self.root.canvas.before:
+            self.rect = Rectangle(size=self.root.size, pos=self.root.pos, source='data/images/DWTWNSLC.png')
+        return self.root
 
+    def _update_rect(self, instance, value):
+        self.rect.pos = instance.pos
+        self.rect.size = instance.size
 
-    def main_buttons(self):
-        """
-        Function establishes all the components of the main window
-        :return: None
-        """
-        self.rnc = gui_windows.RNCView(self.__window, mov_x, mov_y, window_width, window_height, header_font, header_color, bot_render, resources_filepath)
-        self.topline = gui_windows.ToplineView(self.__window, mov_x, mov_y, window_width, window_height, header_font, header_color, bot_render, resources_filepath)
-        self.spss = gui_windows.SPSSCrosstabsView(self.__window, mov_x, mov_y, window_width, window_height, header_font, header_color, resources_filepath)
-        self.q = gui_windows.QCrosstabsView(self.__window, mov_x, mov_y, window_width, window_height, header_font, header_color, bot_render, resources_filepath)
-        self.appendix = gui_windows.AppendixView(self.__window, mov_x, mov_y, window_width, window_height, header_font, header_color, bot_render, resources_filepath)
-        self.pptx = gui_windows.PowerPointView(self.__window, mov_x, mov_y, window_width, window_height, header_font, header_color, bot_render, resources_filepath)
+    def create_screens(self):
+        layered_menu = BoxLayout()
 
-        #Button definitions
-        button_frame =tkinter.Frame(self.__window)
-        button_frame.pack(side=tkinter.LEFT, fill=tkinter.BOTH, )
-        btn_xtabs = tkinter.Button(button_frame, text="Crosstab Reports", padx=4, width=20, height=3, command=self.software_tabs_menu, relief=tkinter.FLAT, highlightthickness=0)
-        btn_report = tkinter.Button(button_frame, text="Topline Reports", padx=4, width=20, height=3,command=self.topline.topline_menu, relief=tkinter.FLAT, highlightthickness=0)
-        btn_appen = tkinter.Button(button_frame, text="Topline Appendices", padx=4, width=20, height=3,command=self.appendix.append_menu, relief=tkinter.FLAT, highlightthickness=0)
-        btn_rnc = tkinter.Button(button_frame, text="RNC Reports", padx=4, width=20, height=3,command=self.rnc.rnc_menu, relief=tkinter.FLAT, highlightthickness=0)
-        btn_terminal = tkinter.Button(button_frame, text="Terminal Window", padx=4, width=20, height=3, command=self.reopen_terminal_window, relief=tkinter.FLAT, highlightthickness=0)
-        btn_quit = tkinter.Button(button_frame, text="Quit", padx=4, width=20, height=3,command=self.quit, relief=tkinter.GROOVE, highlightthickness=0)
-        btn_pptx = tkinter.Button(button_frame, text="Topline PowerPoint", padx=4, width=20, height=3, command=self.pptx.pptx_menu, relief=tkinter.FLAT, highlightthickness=0)
-        btn_bot = tkinter.Button(button_frame, image=bot_render, padx=4, pady=10, width=158, height=45, borderwidth=0, highlightthickness=0, relief=tkinter.FLAT, command=self.main_help_window)
-        btn_bot.pack(padx=5, pady=3, side=tkinter.TOP)
-        btn_xtabs.pack(padx=5, side=tkinter.TOP, expand=True)
-        btn_report.pack(padx=5, side=tkinter.TOP, expand=True)
-        btn_appen.pack(padx=5, side=tkinter.TOP, expand=True)
-        btn_pptx.pack(padx=5, side=tkinter.TOP, expand=True)
-        btn_rnc.pack(padx=5, side=tkinter.TOP, expand=True)
-        btn_terminal.pack(padx=5, side=tkinter.TOP, expand=True)
-        btn_quit.pack(padx=5, side=tkinter.TOP, expand=True)
+        self.main_screen = self.create_main_screen()
+        self.crosstabs_screen = self.create_crosstabs_screen()
+        self.topline_screen = self.create_topline_screen()
+        self.qresearch_screen = self.create_qresearch_screen()
+        self.spss_screen = self.create_spss_screen()
+        self.rnc_screen = self.create_rnc_screen()
 
-    def menu_bar_setup(self):
-        """
-        Function sets up all components of the toplevel menubar
-        :return: None
-        """
-        self.menubar = tkinter.Menu(self.__window)
-        menu_xtabs = tkinter.Menu(self.menubar, tearoff = 0)
-        menu_xtabs.add_command(label="Crosstabs Menu", command=self.software_tabs_menu)
-        self.menubar.add_cascade(label="Crosstabs", menu=menu_xtabs)
+        layered_menu.add_widget(self.main_screen)
+        return layered_menu
 
-        menu_report = tkinter.Menu(self.menubar, tearoff=0)
-        menu_report.add_command(label="Topline Menu", command=self.topline.topline_menu)
-        menu_report.add_command(label="QSF and CSV", command=self.topline.read_qsf_topline)
-        menu_report.add_command(label="CSV Only", command=self.topline.read_csv_topline)
-        self.menubar.add_cascade(label="Topline", menu=menu_report)
+    def create_main_screen(self):
+        main_screen = BoxLayout()
 
-        menu_appendix = tkinter.Menu(self.menubar, tearoff=0)
-        menu_appendix.add_command(label="Appendix Menu", command=self.appendix.append_menu)
-        menu_appendix.add_command(label="Word Appendix", command=self.appendix.doc_appendix)
-        menu_appendix.add_command(label="Excel Appendix", command=self.appendix.excel_appendix_type)
-        self.menubar.add_cascade(label="Appendix", menu=menu_appendix)
+        ## buttons
+        button_layout = BoxLayout(orientation='vertical')
 
-        menu_terminal = tkinter.Menu(self.menubar, tearoff=0)
-        menu_terminal.add_command(label="Open Terminal", command=self.reopen_terminal_window)
-        menu_terminal.add_command(label="Export Error Log", command=self.export_error_log)
-        self.menubar.add_cascade(label="Terminal", menu=menu_terminal)
+        xtabs_btn = Button(text="Crosstab Reports", size_hint=(.5,.6), on_press = self.main_to_xtabs)
+        xtabs_btn.font_name = "Y2"
 
-        menu_rnc = tkinter.Menu(self.menubar, tearoff=0)
-        menu_rnc.add_command(label="RNC Menu", command=self.rnc.rnc_menu)
-        menu_rnc.add_command(label="Scores", command=self.rnc.scores_window)
-        menu_rnc.add_command(label="Issue Trended", command=self.rnc.issue_trended_window)
-        menu_rnc.add_command(label="Trended Scores", command=self.rnc.trended_scores_window)
-        self.menubar.add_cascade(label="RNC", menu=menu_rnc)
+        top_btn = Button(text="Topline Reports", size_hint=(.5,.6), on_press = self.main_to_top)
+        top_btn.font_name = "Y2"
+ 
+        rnc_btn = Button(text="RNC Reports", size_hint=(.5,.6), on_press = self.main_to_rnc)
+        rnc_btn.font_name = "Y2"
+        
+        help_btn = Button(text="Help", size_hint=(.5,.15), on_press = self.main_help)
+        help_btn.font_name = "Y2"
+        help_btn.background_normal = ''
+        help_btn.background_color = (0.07, 0.306, 0.651, 1)
 
-        menu_quit = tkinter.Menu(self.menubar, tearoff=0)
-        menu_quit.add_command(label="Close Internbot", command=self.quit)
-        self.menubar.add_cascade(label="Quit", menu=menu_quit)
-        self.__window.config(menu=self.menubar)
+        button_layout.add_widget(xtabs_btn)
+        button_layout.add_widget(top_btn)
+        button_layout.add_widget(rnc_btn)
+        button_layout.add_widget(help_btn)
 
-    def main_help_window(self):
-        """
-        Function serves as an intro to internbot. Explains the help bot to the user.
-        :return: None
-        """
-        help_window = tkinter.Toplevel(self.__window)
-        help_window.withdraw()
+        main_screen.add_widget(button_layout)
 
-        width = 250
-        height = 500
-        help_window.geometry("%dx%d+%d+%d" % (width,height,mov_x + window_width / 2 - width / 2, mov_y + window_height / 2 - height / 2))
-        help_window.title("Internbot Help")
-        message = "\nWelcome to Internbot"
-        tkinter.Label(help_window, text=message, font=header_font, fg=header_color).pack()
-        info_message = "You can find help information throughout"\
-                       "\nInternbot by clicking the bot icon" \
-                       "\n\nShe will tell you a little bit about" \
-                       "\n what you need to input for the" \
-                       "\nreport you are trying to create\n"
-        tkinter.Label(help_window, text=info_message, font=('Trade Gothic LT Pro', 14, )).pack()
-        term_message = "About the Terminal Window"
-        tkinter.Label(help_window, text=term_message, font=header_font, fg=header_color).pack()
-        term_info_message = "The terminal window will show info about\n" \
-                            "the reports as you are running them.\n" \
-                            "If an error occurs that you can't identify: \n" \
-                            "Select Terminal>Export Error Log \n" \
-                            "from the MenuBar. The file will appear  \n" \
-                            "on your desktop. Then send a slack to the\n"\
-                            "R&D channel with the error log and a link\n" \
-                            "to the input file(s) of the report you were\n" \
-                            "running. If you ever close the terminal window,\n" \
-                            "you can reopen it with the Terminal Window\n" \
-                            "button in the main window or Terminal>Open\n" \
-                            " Terminal in the Menubar."
-        tkinter.Label(help_window, text=term_info_message, font=('Trade Gothic LT Pro', 14,)).pack()
-        btn_ok = tkinter.Button(help_window, text="Ok", command=help_window.destroy, height=3, width=20,  highlightthickness=0)
-        btn_ok.pack(pady= 5, side=tkinter.BOTTOM, expand=False)
-        help_window.deiconify()
+        # y2 logo
+        screen_image = Image()
+        screen_image.source = "data/images/y2_white_logo.png"
+        screen_image.post_hint = {'center_x': 0, 'center_y': .5}
 
-        def enter_pressed(event):
-            help_window.destroy()
+        main_screen.add_widget(screen_image)
 
-        help_window.bind("<Return>", enter_pressed)
-        help_window.bind("<KP_Enter>", enter_pressed)
+        return main_screen
 
-    def terminal_window(self):
-        """
-        Function handles the terminal window used for messages to the user and errors.
-        :return: None
-        """
-        self.terminal_open = True
-        self.term_window = tkinter.Toplevel(self.__window)
-        self.term_window.withdraw()
-        self.term_window.title("Terminal Window")
-        self.term_window['background'] = header_color
+    def create_crosstabs_screen(self):
+        crosstabs_screen = BoxLayout(orientation='vertical')
 
-        width = 500
-        height = 600
-        self.term_window.geometry("%dx%d+%d+%d" % (
-            width, height, mov_x + window_width / 2 - 2*width , mov_y + window_height / 2 - height/2))
+        back_arrow = "<"
+        back_btn = Button(text=back_arrow, size_hint=(.1, .05))
+        back_btn.bind(on_press=self.xtabs_to_main)
+        back_btn.font_name = "Y2"
 
-        term_text = tkinter.Text(self.term_window, fg='white', height= 600, width=500, background=header_color, padx=5, pady=5)
-        term_text.pack()
+        crosstabs_screen.add_widget(back_btn)
 
-        #Makes a temporary file in the user's Document folder that al of the contents of the terminal window is written to.
-        self.error_log_filename = os.path.expanduser("~/Documents/internbot_error_log.txt")
-        self.error_log = open(self.error_log_filename, 'w')
-        self.error_log.write("Error Log: " + self.session_time_stamp + "\n")
+        help_btn = Button(text='Help', size_hint=(.1, .05), on_press = self.xtabs_help)
+        help_btn.font_name = "Y2"
+        help_btn.background_normal = ''
+        help_btn.background_color = (.9529, 0.6, .2392, 1)
 
+        crosstabs_screen.add_widget(help_btn)
 
-        class PrintToTermWindow(object):
-            """
-            Class functions to capture stdout and stderr while the program is running and write it to the terminal window
-            """
-            def __init__(self, stream, error_log):
-                self.stream = stream
-                self.error_log = error_log
+        button_layout = BoxLayout()
 
-            def write(self, s):
-                self.stream.write(s)
-                term_text.insert(tkinter.END, s)
-                self.error_log.write(s)
-                self.stream.flush()
-                term_text.see(tkinter.END)
+        qresearch_btn = Button(text='QResearch', size_hint=(.3, .2), on_press = self.xtabs_to_qresearch)
+        qresearch_btn.font_name = "Y2"
+        
+        spss_btn = Button(text='SPSS', size_hint=(.3, .2), on_press = self.xtabs_to_spss)
+        spss_btn.font_name = "Y2"
+        spss_btn.disabled = True
+        
+        button_layout.add_widget(qresearch_btn)
+        button_layout.add_widget(spss_btn)
 
-        sys.stdout = PrintToTermWindow(sys.stdout, self.error_log)
-        sys.stderr = PrintToTermWindow(sys.stderr, self.error_log)
+        crosstabs_screen.add_widget(button_layout)
 
-        def update_terminal_flag():
-            """
-            Called on "close" of terminal window
-            :return:
-            """
-            self.terminal_open = False
-            self.term_window.withdraw()
+        return crosstabs_screen
 
-        print("All information about reports and errors will appear in this window.\n")
+    def create_qresearch_screen(self):
+        qresearch_screen = BoxLayout(orientation='vertical')
 
-        self.term_window.protocol('WM_DELETE_WINDOW', update_terminal_flag)
-        self.term_window.deiconify()
+        back_arrow = "<"
+        back_btn = Button(text=back_arrow, size_hint=(.1, .05))
+        back_btn.bind(on_press=self.qresearch_to_xtabs)
+        back_btn.font_name = "Y2"
 
-    def reopen_terminal_window(self):
-        """
-        Called on reopen of a "closed" terminal window
-        :return:
-        """
-        self.terminal_open = True
-        self.term_window.deiconify()
+        qresearch_screen.add_widget(back_btn)
 
-    def export_error_log(self):
-        """
-        Called by menubar command Export Error Log
-        :return:
-        """
-        ask_export = messagebox.askokcancel("Export Error Log", "Warning: Internbot will close and you will need to restart it")
-        if ask_export:
-            self.error_log.close()
-            copyfile(self.error_log_filename, os.path.expanduser("~/Desktop/internbot_error_log.txt"))
-            self.open_file_for_user(os.path.expanduser("~/Desktop/internbot_error_log.txt"))
-            self.quit() # Must quit out here or the program experiences errors because the file has been closed.
+        double_back_arrow = "<<"
+        double_back_btn = Button(text=double_back_arrow, size_hint=(.1, .05))
+        double_back_btn.bind(on_press=self.qresearch_to_main)
+        double_back_btn.font_name = "Y2"
 
-    def software_tabs_menu(self):
-        """
-        Function sets up the Software Type selection for crosstabs
-        :return:
-        """
-        sft_window = tkinter.Toplevel(self.__window)
-        sft_window.withdraw()
+        qresearch_screen.add_widget(double_back_btn)
 
-        width = 200
-        height = 250
-        sft_window.geometry("%dx%d+%d+%d" % (width,height,mov_x + window_width / 2 - width / 2, mov_y + window_height / 2 - height / 2))
+        help_btn = Button(text='Help', size_hint=(.1, .05), on_press = self.qresearch_help)
+        help_btn.font_name = "Y2"
+        help_btn.background_normal = ''
+        help_btn.background_color = (.9529, 0.6, .2392, 1)
 
-        message = "Please select crosstabs\nsoftware to use:\n"
-        tkinter.Label(sft_window, text = message, font=header_font, fg=header_color).pack()
-        btn_spss = tkinter.Button(sft_window, text="SPSS", command=self.spss.spss_crosstabs_menu, height=3, width=20)
-        btn_q = tkinter.Button(sft_window, text="Q Research", command=self.q.qresearch_xtabs, height=3, width=20)
-        btn_cancel = tkinter.Button(sft_window, text="Cancel", command=sft_window.destroy, height=3, width=20)
-        btn_cancel.pack(side=tkinter.BOTTOM, expand=True)
-        btn_q.pack(side=tkinter.BOTTOM, expand=True)
-        btn_spss.pack(side=tkinter.BOTTOM, expand=True)
-        sft_window.deiconify()  
+        qresearch_screen.add_widget(help_btn)
 
-    def amazon_xtabs(self):
-        """
-        Function runs legacy report for Amazon CX Wave Series.
-        """
-        ask_xlsx = messagebox.askokcancel("Select XLSX Report File", "Please select combined tables .xlsx file")
-        if ask_xlsx is True:
-            tablefile = filedialog.askopenfilename(initialdir = self.fpath, title = "Select report file",filetypes = (("excel files","*.xlsx"),("all files","*.*")))
-            if tablefile is not "":
-                ask_output = messagebox.askokcancel("Select output directory", "Please select folder for final report.")
-                if ask_output is True:
-                    savedirectory = filedialog.askdirectory()
-                    renamer = crosstabs.Format_Amazon_Report.RenameTabs(resources_filepath)
-                    renamed_wb = renamer.rename(tablefile, os.path.join(resources_filepath, "Amazon TOC.csv"), savedirectory)
-                    highlighter = crosstabs.Format_Amazon_Report.Highlighter(renamed_wb)
-                    highlighter.highlight(savedirectory)
-                    messagebox.showinfo("Finished", "The highlighted report is saved in your chosen directory.")
+        button_layout = BoxLayout()
+        toc_btn = Button(text='Create table of contents', size_hint=(.5, .2), on_press = self.create_toc)
+        toc_btn.font_name = "Y2"
+        
+        format_btn = Button(text='Format report', size_hint=(.5, .2), on_press = self.format_qresearch_xtabs)
+        format_btn.font_name = "Y2"
 
-    def open_sound(self):
-        """
-        Plays open R2D2 effect
-        :return:
-        """
-        def play_sound():
-            audio_file = os.path.join(resources_filepath, "open.mp3")
-            return_code = subprocess.call(["afplay", audio_file])
+        button_layout.add_widget(toc_btn)
+        button_layout.add_widget(format_btn)
 
-        # Multithreaded so you don't have to wait on the sound library to start the app or open files
-        thread_worker = threading.Thread(target=play_sound)
-        thread_worker.start()
+        qresearch_screen.add_widget(button_layout)
 
-    def open_file_for_user(self, file_path):
-        """
-        Opens requested file for user.
-        :param file_path:
-        :return: None
-        """
-        try:
-            if os.path.exists(file_path):
-                if platform.system() == 'Darwin':  # macOS
-                    subprocess.call(('open', file_path))
-                    self.open_sound()
-                elif platform.system() == 'Windows':  # Windows
-                    os.startfile(file_path)
-            else:
-                messagebox.showerror("Error", "Error: Could not open file for you \n"+file_path)
-        except IOError:
-            messagebox.showerror("Error", "Error: Could not open file for you \n" + file_path)
+        return qresearch_screen
 
-    def quit(self):
-        """
-        Clean up before exit.
-        :return: None
-        """
-        audio_file = os.path.join(resources_filepath, "close.mp3")
-        return_code = subprocess.call(["afplay", audio_file])
-        # Delete temporary error log from user's Documents folder
-        os.remove(os.path.expanduser("~/Documents/internbot_error_log.txt"))
-        self.__window.destroy()
+    def create_spss_screen(self):
+        spss_screen = BoxLayout(orientation='vertical')
 
-window = tkinter.Tk()
-window.withdraw()
-internbot_version = "1.1.0"
+        back_arrow = "<"
+        back_btn = Button(text=back_arrow, size_hint=(.1, .05))
+        back_btn.bind(on_press=self.spss_to_xtabs)
+        back_btn.font_name = "Y2"
 
-window.title("Internbot (Version:"+ internbot_version + ")") # Internbot: Y2
+        spss_screen.add_widget(back_btn)
 
-resources_filepath = os.path.expanduser("~/Documents/GitHub/internbot/internbot/templates_images/")
+        double_back_arrow = "<<"
+        double_back_btn = Button(text=double_back_arrow, size_hint=(.1, .05))
+        double_back_btn.bind(on_press=self.spss_to_main)
+        double_back_btn.font_name = "Y2"
 
-if platform.system() == 'Windows':  # Windows
-    window.iconbitmap(os.path.join(resources_filepath, 'y2.ico'))
-screen_width = window.winfo_screenwidth()
+        spss_screen.add_widget(double_back_btn)
 
-screen_height = window.winfo_screenheight()
-mov_x = screen_width / 2 - 300
-mov_y = screen_height / 2 - 200
-window_height = 500
-window_width = 600
-window.geometry("%dx%d+%d+%d" % (window_width, window_height, mov_x, mov_y))
-window['background'] = 'white'
+        help_btn = Button(text='Help', size_hint=(.1, .05), on_press = self.spss_help)
+        help_btn.font_name = "Y2"
+        help_btn.background_normal = ''
+        help_btn.background_color = (.9529, 0.6, .2392, 1)
 
-y2_logo = os.path.join(resources_filepath, "Y2Logo.gif")
-help_bot = os.path.join(resources_filepath, "Internbot.gif")
-bot_render = tkinter.PhotoImage(file=help_bot)
-logo_render = tkinter.PhotoImage(file= y2_logo)
-logo_label = tkinter.Label(window, image=logo_render, borderwidth=0, highlightthickness=0, relief=tkinter.FLAT, padx=50)
-logo_label.pack(side=tkinter.RIGHT)
+        spss_screen.add_widget(help_btn)
 
-window.option_add("*Font", ('Trade Gothic LT Pro', 16, ))
-window.option_add("*Button.Foreground", "midnight blue")
+        button_layout = BoxLayout()
+        variable_btn = Button(text='Create variable script', size_hint=(.5, .2), on_press = self.create_spss_variables)
+        variable_btn.font_name = "Y2"
+        
+        table_btn = Button(text='Create table script', size_hint=(.5, .2), on_press = self.create_spss_tables)
+        table_btn.font_name = "Y2"
 
-header_font = ('Trade Gothic LT Pro', 18, 'bold')
-header_color = '#112C4E'
+        build_btn = Button(text='Build report', size_hint=(.5, .2), on_press = self.build_spss_report)
+        build_btn.font_name = "Y2"
 
+        button_layout.add_widget(variable_btn)
+        button_layout.add_widget(table_btn)
+        button_layout.add_widget(build_btn)
 
-def quit():
-    audio_file = os.path.join(resources_filepath, "close.mp3")
-    return_code = subprocess.call(["afplay", audio_file])
-    os.remove(os.path.expanduser("~/Documents/internbot_error_log.txt"))
-    window.withdraw()  # if you want to bring it back
-    sys.exit()  # if you want to exit the entire thing
+        spss_screen.add_widget(button_layout)
 
-window.bind('<Escape>', quit)
-window.protocol("WM_DELETE_WINDOW", quit)
+        return spss_screen
+
+    def create_topline_screen(self):
+        topline_screen = BoxLayout(orientation='vertical')
+
+        back_arrow = "<"
+        back_btn = Button(text=back_arrow, size_hint=(.1, .05))
+        back_btn.bind(on_press=self.top_to_main)
+        back_btn.font_name = "Y2"
+
+        topline_screen.add_widget(back_btn)
+
+        help_btn = Button(text='Help', size_hint=(.1, .05), on_press = self.top_help)
+        help_btn.font_name = "Y2"
+        help_btn.background_normal = ''
+        help_btn.background_color = (.9529, 0.6, .2392, 1)
+
+        topline_screen.add_widget(help_btn)
+
+        button_layout = BoxLayout()
+
+        docx_btn = Button(text='Appendix', size_hint=(.5, .2))
+        docx_btn.font_name = "Y2"
+
+        pptx_btn = Button(text='Document', size_hint=(.5, .2))
+        pptx_btn.font_name = "Y2"
+
+        app_btn = Button(text='Powerpoint', size_hint=(.5, .2))
+        app_btn.font_name = "Y2"
+
+        button_layout.add_widget(docx_btn)
+        button_layout.add_widget(pptx_btn)
+        button_layout.add_widget(app_btn)
+
+        topline_screen.add_widget(button_layout)
+
+        return topline_screen
+
+    def create_rnc_screen(self):
+        rnc_screen = BoxLayout(orientation='vertical')
+
+        back_arrow = "<"
+        back_btn = Button(text=back_arrow, size_hint=(.1, .05))
+        back_btn.bind(on_press=self.rnc_to_main)
+        back_btn.font_name = "Y2"
+
+        rnc_screen.add_widget(back_btn)
+
+        help_btn = Button(text='Help', size_hint=(.1, .05), on_press = self.rnc_help)
+        help_btn.font_name = "Y2"
+        help_btn.background_normal = ''
+        help_btn.background_color = (.9529, 0.6, .2392, 1)
+
+        rnc_screen.add_widget(help_btn)
+
+        button_layout = BoxLayout()
+
+        scores_btn = Button(text='Scores Topline Report', size_hint=(.5, .2))
+        scores_btn.font_name = "Y2"
+
+        issues_btn = Button(text='Issue Trended Report', size_hint=(.5, .2))
+        issues_btn.font_name = "Y2"
+
+        trended_btn = Button(text='Trended Scores Reports', size_hint=(.5, .2))
+        trended_btn.font_name = "Y2"
+
+        button_layout.add_widget(scores_btn)
+        button_layout.add_widget(issues_btn)
+        button_layout.add_widget(trended_btn)
+
+        rnc_screen.add_widget(button_layout)
+
+        return rnc_screen
+
+    def create_toc(self, instance):
+        pass
+
+    def format_qresearch_xtabs(self, instance):
+        pass
+
+    def create_spss_variables(self, instance):
+        pass
+
+    def create_spss_tables(self, instance):
+        pass
+
+    def build_spss_report(self, instance):
+        pass
+
+    def main_to_xtabs(self, instance):
+        self.root.remove_widget(self.main_screen)
+        self.root.add_widget(self.crosstabs_screen)
+        self.rect.source = 'data/images/DWTWNSLC1.jpg'
+
+    def xtabs_to_qresearch(self, instance):
+        self.root.remove_widget(self.crosstabs_screen)
+        self.root.add_widget(self.qresearch_screen)
+
+    def xtabs_to_spss(self, instance):
+        self.root.remove_widget(self.crosstabs_screen)
+        self.root.add_widget(self.spss_screen)
+
+    def qresearch_to_xtabs(self, instance):
+        self.root.remove_widget(self.qresearch_screen)
+        self.root.add_widget(self.crosstabs_screen)
+
+    def spss_to_xtabs(self, instance):
+        self.root.remove_widget(self.spss_screen)
+        self.root.add_widget(self.crosstabs_screen)
+
+    def main_to_top(self, instance):
+        self.root.remove_widget(self.main_screen)
+        self.root.add_widget(self.topline_screen)
+        self.rect.source = 'data/images/DWTWNSLC2.jpg'
+
+    def main_to_rnc(self, instance):
+        self.root.remove_widget(self.main_screen)
+        self.root.add_widget(self.rnc_screen)
+        self.rect.source = 'data/images/DWTWNSLC3.jpg'
+
+    def xtabs_to_main(self, instance):
+        self.root.remove_widget(self.crosstabs_screen)
+        self.root.add_widget(self.main_screen)
+        self.rect.source = 'data/images/DWTWNSLC.png'
+
+    def qresearch_to_main(self, instance):
+        self.root.remove_widget(self.qresearch_screen)
+        self.root.add_widget(self.main_screen)
+        self.rect.source = 'data/images/DWTWNSLC.png'
+
+    def spss_to_main(self, instance):
+        self.root.remove_widget(self.spss_screen)
+        self.root.add_widget(self.main_screen)
+        self.rect.source = 'data/images/DWTWNSLC.png'
+
+    def top_to_main(self, instance):
+        self.root.remove_widget(self.topline_screen)
+        self.root.add_widget(self.main_screen)
+        self.rect.source = 'data/images/DWTWNSLC.png'
+
+    def rnc_to_main(self, instance):
+        self.root.remove_widget(self.rnc_screen)
+        self.root.add_widget(self.main_screen)
+        self.rect.source = 'data/images/DWTWNSLC.png'
+
+    def main_help(self, instance):
+        help_text = "Internbot is Y2 Analytics' report automation tool that \n" 
+        help_text += "manages \"quantity\" in a report so that the analytical \n"
+        help_text += "team can focus on the \"quality\" of a report.\n\n"
+        help_text += "[ref=click][color=F3993D]Click here for examples of reports[/color][/ref]"
+
+        def examples_link(instance, value):
+            webbrowser.open("https://www.dropbox.com/sh/bbcle8f9nifk4bo/AAA-JGnsx1XnhLaD_5Z9oDZna?dl=0")
 
 
+        label = Label(text=help_text, markup=True)
+        label.bind(on_ref_press=examples_link)
+        label.font_family = "Y2"
 
-window.deiconify()
-Internbot(window)
-window.mainloop()
+        popup = Popup(title='Internbot Help',
+        content=label,
+        size_hint=(None, None), size=(400, 400))
+
+        popup.open()
+
+    def xtabs_help(self, instance):
+        help_text = "Crosstabs are a report that \"crosses\" selected dataset \n" 
+        help_text += "variables against the rest of the dataset variables \n"
+        help_text += "visualized in a table form with statistically significant \n"
+        help_text += "values highlighted.\n\n"
+        help_text += "QResearch and SPSS are different crosstab generating \n"
+        help_text += "software that require different automation from internbot.\n\n"
+        help_text += "[ref=click][color=F3993D]Click here for examples of crosstab reports[/color][/ref]"
+
+        def examples_link(instance, value):
+            webbrowser.open("https://www.dropbox.com/sh/2b67i3hbj1teg5j/AACWbEIwGtqq5hK894ItmmGpa?dl=0")
+
+
+        label = Label(text=help_text, markup=True)
+        label.bind(on_ref_press=examples_link)
+        label.font_family = "Y2"
+
+        popup = Popup(title='Crosstabs Help',
+        content=label,
+        size_hint=(None, None), size=(415, 400))
+
+        popup.open()
+
+    def qresearch_help(self, instance):
+        help_text = "QResearch is statistical software located on the new office PC.\n\n"
+        help_text += "Before building a report in QResearch, you will need the \n"
+        help_text += "survey file (.qsf) of the project to produce a table of contents\n"
+        help_text += "in internbot (Create table of contents) and the column variables \n"  
+        help_text += "or banners for building the report in the QResearch software. \n\n"
+        help_text += "Once the QResearch unformatted report is generated in QResearch \n"
+        help_text += "internbot will format it to Qualtrics/Y2 standards (Format report).\n\n"
+        help_text += "[ref=click][color=F3993D]Click here for QResearch files and further instructions[/color][/ref]"
+
+        def examples_link(instance, value):
+            webbrowser.open("https://www.dropbox.com/sh/luixf0mkcfxlfjc/AAC3ncnz0dAdUdQjdJXTeCEsa?dl=0")
+
+
+        label = Label(text=help_text, markup=True)
+        label.bind(on_ref_press=examples_link)
+        label.font_family = "Y2"
+
+        popup = Popup(title='QResearch Help',
+        content=label,
+        size_hint=(None, None), size=(480, 400))
+
+        popup.open()
+
+    def spss_help(self, instance):
+        help_text = "SPSS is statistical software located on the old office PC.\n\n"
+        help_text += "Before building a report in SPSS, you will need the \n"
+        help_text += "survey file (.qsf) of the project to produce a variable script\n"
+        help_text += "in internbot (Create variable script). And the column variables \n"  
+        help_text += "or banners for creating table script in internbot\n" 
+        help_text += "(Create table script). Both files will be used in generating\n" 
+        help_text += "several table files in a folder that internbot will use to create\n"
+        help_text += "the final report (Build report).\n\n"
+        help_text += "[ref=click][color=F3993D]Click here for SPSS files and further instructions[/color][/ref]"
+
+        def examples_link(instance, value):
+            webbrowser.open("")
+
+
+        label = Label(text=help_text, markup=True)
+        label.bind(on_ref_press=examples_link)
+        label.font_family = "Y2"
+
+        popup = Popup(title='SPSS Help',
+        content=label,
+        size_hint=(None, None), size=(480, 400))
+
+        popup.open()
+
+    def top_help(self, instance):
+        help_text = "Topline reports are deliverables that give high level results\n"
+        help_text += "for a survey project.\n\n"
+        help_text += "An Appendix report shows the results of text entries or\n"
+        help_text += "open-ended questions.\n\n"
+        help_text += "Document and Powerpoint show topline frequencies verbatim\n"
+        help_text += "in tables or charts, respectively.\n\n"
+        help_text += "[ref=click][color=F3993D]Click here for Topline report examples[/color][/ref]"
+
+        def examples_link(instance, value):
+            webbrowser.open("https://www.dropbox.com/sh/c653vu8jxx0d42u/AADlcD8HDL2J4HxXqDVT3bAVa?dl=0")
+
+
+        label = Label(text=help_text, markup=True)
+        label.bind(on_ref_press=examples_link)
+        label.font_family = "Y2"
+
+        popup = Popup(title='Topline Help',
+        content=label,
+        size_hint=(None, None), size=(480, 400))
+
+        popup.open()
+
+    def rnc_help(self, instance):
+        help_text = "RNC reports are deliverables on model scoring \n"
+        help_text += "for a targeted region designated by the RNC.\n\n" 
+        help_text += "Scores Topline Report are high-level net model results.\n\n" 
+        help_text += "Issue Trended Report breaks down models by RNC flags.\n\n" 
+        help_text += "Trended Scores Reports are several report models\n" 
+        help_text += "by flags and by weights.\n\n"
+        help_text += "[ref=click][color=F3993D]Click here for RNC report examples[/color][/ref]"
+
+        def examples_link(instance, value):
+            webbrowser.open("https://www.dropbox.com/sh/bmr116skqrlvp1l/AAC9xm56MxnmdRq6TYr_MuPka?dl=0")
+
+
+        label = Label(text=help_text, markup=True)
+        label.bind(on_ref_press=examples_link)
+        label.font_family = "Y2"
+
+        popup = Popup(title='RNC Help',
+        content=label,
+        size_hint=(None, None), size=(480, 400))
+
+        popup.open()
+
+if __name__ == '__main__':
+    KIVY_FONTS = [
+    {
+        "name": "Y2",
+        "fn_regular": "data/fonts/GothamBook.otf"
+    }
+    ]
+    for font in KIVY_FONTS:
+        LabelBase.register(**font)
+    MainApp().run()
