@@ -1,1 +1,0 @@
-from topline.BasicReport.generate_report import ReportGenerator

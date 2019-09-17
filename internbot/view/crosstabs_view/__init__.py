@@ -1,0 +1,1 @@
+from view.crosstabs_view.crosstabs_view import CrosstabsView

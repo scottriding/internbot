@@ -1,2 +1,0 @@
-from crosstabs.Format_SPSS_Report.Generate_Prelim_SPSS_Script.translate_variables import SPSSTranslator
-from crosstabs.Format_SPSS_Report.Generate_Prelim_SPSS_Script.define_tables import TableDefiner
