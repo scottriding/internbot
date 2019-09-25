@@ -51,8 +51,7 @@ class TOCView(BoxLayout):
                 if ext != ".qsf":
                     self.error_message("Please pick a survey (.qsf) file")
                 else:
-                    self.open_file_path = filepath
-                    self.navigated_path = path
+                    self.__open_filename = filepath
                     self.open_file_dialog_to_prompt()
             except IndexError:
                 self.error_message("Please pick a survey (.qsf) file")
@@ -97,7 +96,7 @@ class TOCView(BoxLayout):
         container.add_widget(filechooser)
 
         def save_file(path, filename):
-            self.save_file_path = os.path.join(path, filename)
+            self.__save_filename = os.path.join(path, filename)
             self.finish()
 
         button_layout = BoxLayout()
@@ -118,9 +117,8 @@ class TOCView(BoxLayout):
 
         return file_chooser
 
-    def run(self, survey_builder, toc_builder):
-        self.survey_builder = survey_builder
-        self.toc_builder = toc_builder
+    def run(self, controller):
+        self.__controller = controller
         self.open_file_prompt.open()
 
     def open_file_prompt_to_dialog(self, instance):
@@ -131,38 +129,18 @@ class TOCView(BoxLayout):
         self.save_file_prompt.open()
 
     def save_file_prompt_to_dialog(self, instance):
-        self.save_file_dialog.open()
+        try:
+            self.__survey = self.__controller.build_survey(self.__open_filename)
+            self.save_file_dialog.open()
+        except:
+            self.error_message("Issue parsing survey file.")
 
     def finish(self):
         self.save_file_dialog.dismiss()
-
-        self.terminal_popup = Popup(title = "Compiling table of contents", auto_dismiss=False)
-        self.terminal_popup.size_hint=(.7, .5)
-        self.terminal_popup.pos_hint={'center_x': 0.5, 'center_y': 0.5}
-
-        content_box = BoxLayout(orientation ='vertical')
-
-        terminal_verbatim = Label()
-        content_box.add_widget(terminal_verbatim)
-        
-        button_layout = BoxLayout()
-        save_btn = Button(text='Save terminal log', size_hint=(.2, .1), pos_hint={'center_x': 0.5, 'center_y': 0.5})
-        save_btn.bind(on_press=lambda x: self.save_log(terminal_verbatim.text))
-        close_btn = Button(text = 'Close', size_hint=(.2, .1), pos_hint={'center_x': 0.5, 'center_y': 0.5})
-        close_btn.bind(on_press=self.close_terminal)
-
-        button_layout.add_widget(save_btn)
-        button_layout.add_widget(close_btn)
-
-        self.terminal_popup.add_widget(button_layout)
-
-        self.terminal_popup.open()
-
-        f = io.StringIO()
-        with redirect_stdout(f):
-            self.build_toc()
-
-        terminal_verbatim.text=f.getvalue()
+        try:
+            self.__controller.build_toc_report(self.__survey, self.__save_filename)
+        except:
+            self.error_message("Error creating report.")
 
     def error_message(self, error):
         label = Label(text=error)
@@ -174,12 +152,3 @@ class TOCView(BoxLayout):
 
         popup.open()
 
-    def build_toc(self):
-        survey = self.survey_builder.compile(self.open_file_path)
-        self.toc_builder.compile_toc(survey, self.save_file_path)
-
-    def save_log(self, log_text):
-        pass
-
-    def close_terminal(self, instance):
-        self.terminal_popup.dismiss()

@@ -1,15 +1,18 @@
-
+from model.crosstabs.qresearch import qresearch
 
 class Crosstabs(object):
 
     def __init__(self):
-        pass
+        self.__qresearch = qresearch.QResearch()
 
-    def qresearch_toc(self, survey, path_to_output):
-        pass
+    def build_toc_report(self, survey, path_to_output):
+        self.__qresearch.build_toc_report(survey, path_to_output)
 
-    def qresearch_report(self, path_to_xlsx, path_to_output):
-        pass
+    def format_qresearch_report(self, path_to_workbook, resources_filepath, is_qualtrics):
+        self.__qresearch.format_qresearch_report(path_to_workbook, resources_filepath, is_qualtrics)
+
+    def save_qresearch_report(self, path_to_output):
+        self.__qresearch.save_qresearch_report(path_to_output)
 
     
 

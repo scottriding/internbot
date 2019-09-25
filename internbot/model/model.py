@@ -14,12 +14,14 @@ class Model(object):
         compiler = compile.QSFSurveyCompiler()
         return compiler.compile(path_to_qsf)
 
-    def qresearch_toc(self, path_to_qsf, path_to_output):
-        survey = self.survey(path_to_qsf)
-        self.__xtabs.qresearch_toc(survey, path_to_output)
+    def build_toc_report(self, survey, path_to_output):
+        self.__xtabs.build_toc_report(survey, path_to_output)
 
-    def qresearch_report(self, path_to_xlsx, path_to_output):
-        self.__xtabs.qresearch_report(path_to_xlsx, path_to_output)
+    def format_qresearch_report(self, path_to_workbook, resources_filepath, is_qualtrics):
+        self.__xtabs.format_qresearch_report(path_to_workbook, resources_filepath, is_qualtrics)
+
+    def save_qresearch_report(self, path_to_output):
+        self.__xtabs.save_qresearch_report(path_to_output)
 
     def build_appendix_model(self, path_to_csv):
         self.__topline.build_appendix_model(path_to_csv)

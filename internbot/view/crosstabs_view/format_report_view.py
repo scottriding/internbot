@@ -54,7 +54,7 @@ class FormatReportView(BoxLayout):
                 if ext != ".xlsx":
                     self.error_message("Please pick a QResearch report (.xlsx) file")
                 else:
-                    self.open_file_path = filepath
+                    self.__open_filename = filepath
                     self.open_file_dialog_to_selector()
             except IndexError:
                 self.error_message("Please pick a QResearch report (.xlsx) file")
@@ -124,7 +124,7 @@ class FormatReportView(BoxLayout):
 
         def save_file(path, filename):
             filepath = os.path.join(path, filename)
-            self.save_file_path = filepath
+            self.__save_filename = filepath
             self.finish()
 
         button_layout = BoxLayout()
@@ -158,18 +158,30 @@ class FormatReportView(BoxLayout):
 
     def is_qualtrics(self, instance):
         self.format_selector.dismiss()
-        self.save_file_prompt.open()
-
+        try:
+            self.__controller.build_qresearch_report(self.__open_filename, self.__is_qualtrics)
+            self.save_file_prompt.open()
+        except:
+            self.error_message("Issue formatting report.")
+        
     def is_y2(self, instance):
         self.__is_qualtrics = False
         self.format_selector.dismiss()
-        self.save_file_prompt.open()
+        try:
+            self.__controller.build_qresearch_report(self.__open_filename, self.__is_qualtrics)
+            self.save_file_prompt.open()
+        except:
+            self.error_message("Issue formatting report.")
 
     def save_file_prompt_to_dialog(self, instance):
         self.save_file_dialog.open()
 
     def finish(self):
         self.save_file_dialog.dismiss()
+        try:
+            self.__controller.save_qresearch_report(self.__save_filename)
+        except:
+            self.error_message("Issue saving formatted report.")
 
     def error_message(self, error):
         label = Label(text=error)

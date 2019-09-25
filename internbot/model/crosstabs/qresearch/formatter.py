@@ -7,7 +7,7 @@ from collections import OrderedDict
 import os
 import re
 
-class QXLSXFormatter(object):
+class Formatter(object):
 
     def __init__(self):
         self.__tables = OrderedDict()
@@ -77,7 +77,7 @@ class QXLSXFormatter(object):
                 self.__extend_alphabet.append(triple_letters)
             index += 1
 
-    def format_report(self, path_to_workbook, resources_filepath, is_qualtrics):
+    def format_qresearch_report(self, path_to_workbook, resources_filepath, is_qualtrics):
         table_index = 0
         self.__workbook = load_workbook(path_to_workbook)
         print("Loading workbook")

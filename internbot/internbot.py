@@ -14,6 +14,15 @@ class Controller(object):
     def build_survey(self, path_to_qsf):
         return self.__model.survey(path_to_qsf)
 
+    def build_toc_report(self, survey, path_to_output):
+        self.__model.build_toc_report(survey, path_to_output)
+
+    def build_qresearch_report(self, path_to_workbook, is_qualtrics):
+        self.__model.format_qresearch_report(path_to_workbook, 'resources/images/', is_qualtrics)
+
+    def save_qresearch_report(self, path_to_output):
+        self.__model.save_qresearch_report(path_to_output)
+
     def build_appendix_model(self, path_to_csv):
         self.__model.build_appendix_model(path_to_csv)
 

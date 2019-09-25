@@ -1,12 +1,12 @@
 from openpyxl import Workbook
 from collections import OrderedDict
 
-class QTOCCompiler(object):
+class TOC(object):
 
     def __init__(self):
         self.__workbook = Workbook()
 
-    def compile_toc(self, survey, path_to_output):
+    def build_toc_report(self, survey, path_to_output):
         if self.__workbook.get_sheet_by_name("Sheet") is not None:
             toc_sheet = self.__workbook.get_sheet_by_name("Sheet")
             toc_sheet.title = "TOC"
