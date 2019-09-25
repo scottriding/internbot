@@ -1,19 +1,19 @@
 from openpyxl import load_workbook
 from openpyxl.styles import PatternFill, Font
-from model.crosstabs.format_amazon_report.cell import Cells, Cell, PercentageCell, PopulationCell, SignificantMarker
+from model.crosstabs.amazon.cell import Cells, Cell, PercentageCell, PopulationCell, SignificantMarker
 
 class Highlighter(object):
 
-    def __init__(self, workbook, is_trended_amazon = True):
-        self.trended = is_trended_amazon
-        self.workbook = workbook
+    def __init__(self):
         self.groups = {}
         self.responses = {}
         self.__cells = Cells()
         self.highlight_style = PatternFill("solid", fgColor="C00201")
         self.font_style = Font(name='Arial', size=10, color='ffffff')
     
-    def highlight(self, path_to_output):
+    def highlight(self, workbook, path_to_output, is_trended_amazon = True):
+        self.workbook = workbook
+        self.trended = is_trended_amazon
         for sheet in self.workbook.worksheets:
             if sheet.title != 'TOC':
                 self.parse_rows(sheet)
@@ -25,7 +25,7 @@ class Highlighter(object):
             self.responses = {}
             self.__cells = Cells()
         print("Finished!")
-        self.workbook.save(path_to_output + '/Crosstab Report.xlsx')
+        self.workbook.save(path_to_output)
         
     def parse_rows(self, sheet):
         response_column = sheet['B']

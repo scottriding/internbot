@@ -14,6 +14,12 @@ class Controller(object):
     def build_survey(self, path_to_qsf):
         return self.__model.survey(path_to_qsf)
 
+    def rename(self, path_to_xlsx, path_to_toc, path_to_output):
+        self.__model.rename(path_to_xlsx, path_to_toc, path_to_output)
+
+    def highlight(self, workbook, path_to_output, is_trended_amazon):
+        self.__model.highlight(workbook, path_to_output, is_trended_amazon)
+
     def build_toc_report(self, survey, path_to_output):
         self.__model.build_toc_report(survey, path_to_output)
 

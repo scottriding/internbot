@@ -6,7 +6,7 @@ import csv
 
 class RenameTabs(object):
 
-    def __init__(self, resources_filepath):
+    def __init__(self):
         self.__sheet_names = []
         self.__white_highlight = PatternFill("solid", fgColor="FFFFFF")
         self.__yellow_highlight = PatternFill("solid", fgColor="FFFF00")
@@ -20,7 +20,6 @@ class RenameTabs(object):
         self.__thick_sides = Border(right=Side(style='thick'), left=Side(style='thick'))
         self.__thick_top = Border(top=Side(style='thick'))
         self.__thick_all = Border(top=Side(style='thick'), bottom=Side(style='thick'), right=Side(style='thick'), left=Side(style='thick'))
-        self.resources_filepath = resources_filepath
 
         # calculate the excel alphabet from A to ZZZ
         alphabet = []

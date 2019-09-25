@@ -1,15 +1,15 @@
-from model.crosstabs.format_q_report import compile_toc
-from model.crosstabs.format_q_report import format_xlsx
+from model.crosstabs.amazon import rename_xlsx_tabs
+from model.crosstabs.amazon import highlighter
 
-class QReportBuilder(object):
+class Amazon(object):
 
     def __init__(self):
-        self.__toc = compile_toc.QTOCCompiler()
-        self.__formatter = format_xlsx.QXLSXFormatter()
+        self.__renamer = rename_xlsx_tabs.RenameTabs()
+        self.__highlighter = highlighter.Highlighter()
 
-    def compile_toc(self, survey, path_to_output):
-        self.__toc.compile_toc(survey, path_to_output)
+    def rename(self, path_to_xlsx, path_to_toc, path_to_output, resources_filepath):
+        self.__renamer.rename(path_to_xlsx, path_to_toc, path_to_output, resources_filepath)
 
-    def format_report(self, path_to_workbook, resources_filepath, is_qualtrics):
-        self.__formatter.format_report(path_to_workbook, resources_filepath, is_qualtrics)
+    def highlight(self, workbook, path_to_output, is_trended_amazon):
+        self.__highlighter.highlight(workbook, path_to_output, is_trended_amazon)
 

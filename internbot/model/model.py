@@ -14,6 +14,13 @@ class Model(object):
         compiler = compile.QSFSurveyCompiler()
         return compiler.compile(path_to_qsf)
 
+    def rename(self, path_to_xlsx, path_to_toc, path_to_output):
+        self.__xtabs.rename(path_to_xlsx, path_to_toc, path_to_output)
+
+    def highlight(self, workbook, path_to_output, is_trended_amazon):
+        self.__xtabs.highlight(workbook, path_to_output, is_trended_amazon)
+
+
     def build_toc_report(self, survey, path_to_output):
         self.__xtabs.build_toc_report(survey, path_to_output)
 

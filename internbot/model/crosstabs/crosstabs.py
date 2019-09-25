@@ -1,11 +1,19 @@
 from model.crosstabs.qresearch import qresearch
 from model.crosstabs.spss import spss
+from model.crosstabs.amazon import amazon
 
 class Crosstabs(object):
 
     def __init__(self):
         self.__qresearch = qresearch.QResearch()
         self.__spss = spss.SPSS()
+        self.__amazon = amazon.Amazon()
+
+    def rename(self, path_to_xlsx, path_to_toc, path_to_output):
+        self.__amazon.rename(path_to_xlsx, path_to_toc, path_to_output)
+
+    def highlight(self, workbook, path_to_output, is_trended_amazon):
+        self.__amazon.highlight(workbook, path_to_output, is_trended_amazon)
 
     def build_toc_report(self, survey, path_to_output):
         self.__qresearch.build_toc_report(survey, path_to_output)
