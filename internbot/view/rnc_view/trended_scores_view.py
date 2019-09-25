@@ -168,7 +168,8 @@ class TrendedScoresView(BoxLayout):
 
         return directory_chooser
 
-    def run(self):
+    def run(self, controller):
+        self.__controller = controller
         self.report_descriptions.open()
 
     def report_desc_to_open_prompt(self, round):
@@ -182,7 +183,7 @@ class TrendedScoresView(BoxLayout):
     def open_file_dialog_to_save_prompt(self):
         self.open_file_dialog.dismiss()
         try:
-            #self.__generator.build_report(self.open_filepath, self.round)
+            self.__controller.build_trended_model(self.open_filepath, self.round)
             self.save_folder_prompt.open()
         except Exception:
             self.error_message("Error reading data file.")
@@ -192,10 +193,10 @@ class TrendedScoresView(BoxLayout):
 
     def finish(self):
         self.save_folder_dialog.dismiss()
-#         try:
-#             self.__generator.generate_trended_scores(self.save_filepath)
-#         except Exception as inst:
-#             self.error_message("Error in creating report: " + str(inst.args))
+        try:
+            self.__controller.build_trended_report(self.save_filepath)
+        except Exception as inst:
+            self.error_message("Error in creating report: " + str(inst.args))
 
     def error_message(self, error):
         label = Label(text=error)

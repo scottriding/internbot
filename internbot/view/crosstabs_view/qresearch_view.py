@@ -19,9 +19,7 @@ class QResearchView(BoxLayout):
     def __init__(self, **kwargs):
         super(QResearchView, self).__init__(**kwargs)
 
-        self.__report_formatter = None
-        self.__survey_builder = None
-        self.__toc_builder = None
+        self.__controller = None
 
         self.qresearch_screen = self.create_qresearch_screen()
 
@@ -75,22 +73,18 @@ class QResearchView(BoxLayout):
         return self.__double_back_btn
 
     @property
-    def report_formatter(self):
-        return self.__report_formatter
+    def controller(self):
+        return self.__controller
 
-    @property
-    def survey_builder(self):
-        return self.__survey_builder
-
-    @property
-    def toc_builder(self):
-        return self.__toc_builder
+    @controller.setter
+    def controller(self, controller):
+        self.__controller = controller
 
     def build_toc(self, instance):
-        self.toc_screen.run(self.__survey_builder, self.__toc_builder)
+        self.toc_screen.run(self.__controller)
 
     def format_report(self, instance):
-        self.report_screen.run(self.__report_formatter)
+        self.report_screen.run(self.__controller)
 
     def qresearch_help(self, instance):
         help_text = "QResearch is statistical software located on the new office PC.\n\n"

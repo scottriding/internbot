@@ -162,7 +162,8 @@ class IssueTrendedView(BoxLayout):
 
         return file_chooser
 
-    def run(self):
+    def run(self, controller):
+        self.__controller = controller
         self.report_descriptions.open()
 
     def report_desc_to_open_prompt(self, round):
@@ -175,7 +176,7 @@ class IssueTrendedView(BoxLayout):
 
     def open_file_dialog_to_save_prompt(self):
         try:
-            #self.__generator.build_report(self.open_filepath, self.round)
+            self.__controller.build_issues_model(self.open_filepath, self.round)
             self.open_file_dialog.dismiss()
             self.save_file_prompt.open()
         except:
@@ -186,7 +187,7 @@ class IssueTrendedView(BoxLayout):
 
     def finish(self):
         try:
-            #self.__generator.generate_issue_trended(self.save_filepath)
+            self.__controller.build_issues_report(self.save_filepath)
             self.save_file_dialog.dismiss()
         except Exception as inst:
             self.error_message("Error in creating report: " + str(inst.args))

@@ -36,8 +36,8 @@ class Responses(object):
         return self.__responses[0]
 
     def sort(self, response_order):
-        sorter = ResponseSorter(response_order)
-        self.__responses = sorter.sort(self.__responses)
+        response_sorter = sorter.ResponseSorter(response_order)
+        self.__responses = response_sorter.sort(self.__responses)
 
     def __len__(self):
         return len(self.__responses)

@@ -21,7 +21,7 @@ class SPSSView(BoxLayout):
     def __init__(self, **kwargs):
         super(SPSSView, self).__init__(**kwargs)
 
-        self.__report_generator = None
+        self.__controller = None
 
         self.spss_screen = self.create_spss_screen()
 
@@ -74,6 +74,14 @@ class SPSSView(BoxLayout):
     @property
     def double_back_button(self):
         return self.__double_back_btn
+
+    @property
+    def controller(self):
+        return self.__controller
+
+    @controller.setter
+    def controller(self, controller):
+        self.__controller = controller
 
     def spss_help(self, instance):
         help_text = "SPSS is statistical software located on the old office PC.\n\n"

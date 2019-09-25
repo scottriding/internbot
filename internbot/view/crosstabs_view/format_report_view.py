@@ -145,8 +145,8 @@ class FormatReportView(BoxLayout):
 
         return file_chooser
 
-    def run(self, formatter):
-        self.formatter = formatter
+    def run(self, controller):
+        self.__controller = controller
         self.open_file_prompt.open()
 
     def open_file_prompt_to_dialog(self, instance):
@@ -171,40 +171,6 @@ class FormatReportView(BoxLayout):
     def finish(self):
         self.save_file_dialog.dismiss()
 
-        self.terminal_popup = Popup(title = "Formatting report", auto_dismiss=False)
-        self.terminal_popup.size_hint=(.7, .5)
-        self.terminal_popup.pos_hint={'center_x': 0.5, 'center_y': 0.5}
-
-        content_box = BoxLayout(orientation ='vertical')
-
-        terminal_verbatim = ScrollableLabel()
-        
-        content_box.add_widget(terminal_verbatim)
-        
-        button_layout = BoxLayout()
-        button_layout.size_hint = (1, .1)
-        save_btn = Button(text='Save terminal log', size_hint=(.2, .1), pos_hint={'center_x': 0.5, 'center_y': 0.5})
-        #save_btn.bind(on_press=lambda x: self.save_log(terminal_verbatim.text))
-        close_btn = Button(text = 'Close', size_hint=(.2, .1), pos_hint={'center_x': 0.5, 'center_y': 0.5})
-        close_btn.bind(on_press=self.close_terminal)
-
-        button_layout.add_widget(save_btn)
-        button_layout.add_widget(close_btn)
-
-        content_box.add_widget(button_layout)
-
-        self.terminal_popup.add_widget(content_box)
-
-        self.terminal_popup.open()
-
-        f = io.StringIO()
-        with redirect_stdout(f):
-            print(1)
-            print(2)
-            #self.format_report()
-
-        #terminal_verbatim.text=f.getvalue()
-
     def error_message(self, error):
         label = Label(text=error)
         label.font_family= "Y2"
@@ -214,22 +180,3 @@ class FormatReportView(BoxLayout):
         size_hint=(.5, .8), pos_hint={'center_x': 0.5, 'center_y': 0.5})
 
         popup.open()
-
-    def format_report(self):
-        self.formatter.format_report(self.open_file_path, self.image_dir, self.__is_qualtrics)
-        self.formatter.save(self.save_file_path)
-
-    def close_terminal(self, instance):
-        self.terminal_popup.dismiss()
-
-class ScrollableLabel(ScrollView):
-
-    def __init__(self, **kwargs):
-        super(ScrollableLabel, self).__init__(**kwargs)
-
-        terminal_verbatim = Label(size_hint_y=None)
-        terminal_verbatim.text_size = terminal_verbatim.width, None
-        terminal_verbatim.height = terminal_verbatim.texture_size[1]
-        terminal_verbatim.text = "Lorem ipsum dolor sit amet, consectetur adipiscing elit,\n sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\n\n" * 20
-
-        self.add_widget(terminal_verbatim)

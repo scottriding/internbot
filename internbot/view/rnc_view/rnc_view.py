@@ -20,6 +20,8 @@ class RNCView(BoxLayout):
     def __init__(self, **kwargs):
         super(RNCView, self).__init__(**kwargs)
 
+        self.__controller = None
+
         self.rnc_screen = self.create_rnc_screen()
         self.scores_screen = ScoresToplineView()
         self.issue_screen = IssueTrendedView()
@@ -70,25 +72,21 @@ class RNCView(BoxLayout):
         return self.__back_btn
 
     @property
-    def scores_generator(self):
-        return self.__scores_generator
+    def controller(self):
+        return self.__controller
 
-    @property
-    def issues_generator(self):
-        return self.__issues_generator
-
-    @property
-    def tsr_generator(self):
-        return self.__tsr_generator
+    @controller.setter
+    def controller(self, controller):
+        self.__controller = controller
 
     def build_scores(self, instance):
-        self.scores_screen.run()
+        self.scores_screen.run(self.__controller)
 
     def build_issue(self, instance):
-        self.issue_screen.run()
+        self.issue_screen.run(self.__controller)
 
     def build_tsr(self, instance):
-        self.trended_screen.run()
+        self.trended_screen.run(self.__controller)
 
     def rnc_help(self, instance):
         help_text = "RNC reports are deliverables on model scoring \n"

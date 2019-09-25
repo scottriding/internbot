@@ -10,8 +10,8 @@ class Questions(object):
         self.__questions.append(question)
 
     def sort(self, question_id_order):
-        sorter = QuestionSorter(question_id_order)
-        self.__questions = sorter.sort(self.__questions)
+        q_sorter = sorter.QuestionSorter(question_id_order)
+        self.__questions = q_sorter.sort(self.__questions)
 
     def __len__(self):
         return len(self.__questions)
@@ -30,7 +30,7 @@ class CompositeQuestion(object):
     def __init__(self):
         self.__questions = []
         self.__question_order = []
-        self.__temp_responses = Responses()
+        self.__temp_responses = response.Responses()
         self.__has_carry_forward_responses = False
         self.__has_mixed_responses = False
         self.__has_mixed_answers = False
@@ -175,9 +175,9 @@ class CompositeQuestion(object):
         self.sort()
         
     def sort(self):
-        sorter = CompositeQuestionSorter(self.__question_order)
+        cq_sorter = sorter.CompositeQuestionSorter(self.__question_order)
         if len(self.__questions) > 0:
-            self.__questions = sorter.sort(self.__questions)    
+            self.__questions = cq_sorter.sort(self.__questions)    
 
     def __len__(self):
         return len(self.__questions)
@@ -231,7 +231,7 @@ class CompositeConstantSum(CompositeQuestion):
 class Question(object):
 
     def __init__(self):
-        self.__responses = Responses()
+        self.__responses = response.Responses()
         self.__response_order = []
         self.has_carry_forward_responses = False
         self.__text_entry = False

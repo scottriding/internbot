@@ -5,12 +5,10 @@ from model.topline.appendix import open_end_question
 import csv
 from collections import OrderedDict
 
-
 class Appendix(object):
 
     def __init__(self):
         self.__questions = OrderedDict()
-        self.is_qualtrics = False
 
     def unicode_dict_reader(self, utf8_data, **kwargs):
         csv_reader = csv.DictReader(utf8_data, **kwargs)
@@ -18,8 +16,7 @@ class Appendix(object):
             if row['variable'] != "":
                 yield {key:value for key, value in row.items()}
 
-    def parse_file(self, path_to_appendix, is_qualtrics):
-        self.is_qualtrics = is_qualtrics
+    def build_appendix_model(self, path_to_appendix):
         text_responses = self.unicode_dict_reader(open(path_to_appendix))
         for response in text_responses:
             if self.__questions.get(response['variable']) is None:
@@ -30,14 +27,15 @@ class Appendix(object):
                 current_question = self.__questions.get(response['variable'])
                 current_question.add_response(response['label'])
 
-    def write_appendix(self, path_to_output, path_to_template = '', is_spreadsheet=False):
-        if is_spreadsheet is True:
-            builder = spreadsheet.SSAppendixBuilder(self.is_qualtrics)
+    def build_appendix_report(self, path_to_output, path_to_logos='', path_to_template = '', is_doc=True, is_qualtrics=False):
+        if is_doc:
+            builder = document.Document(path_to_template)
             builder.write_appendix(self.__questions)
             builder.save(path_to_output)
         else:
-            builder = document.DocAppendixBuilder(path_to_template)
+            builder = spreadsheet.Spreadsheet(is_qualtrics, path_to_logos)
             builder.write_appendix(self.__questions)
             builder.save(path_to_output)
+            
         print("Finished!")
 

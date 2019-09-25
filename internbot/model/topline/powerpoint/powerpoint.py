@@ -9,44 +9,38 @@ class Powerpoint(object):
     def __init__(self):
         self.__frequencies = []
 
-    def create_powerpoint(self, path_to_freqs, years = [], survey = None):
+    def build_powerpoint_model(self, path_to_freqs, groups = [], survey = None):
         question_data = self.unicode_dict_reader(open(path_to_freqs))
         self.__survey = survey
-        if self__survey is not None:
+        self.__groups = groups
+        if self.__survey is not None:
             self.__questions = survey.get_questions()
-            self.assign_frequencies(question_data, years)
+            self.assign_frequencies(question_data)
         else:
             pass
         
     def unicode_dict_reader(self, utf8_data, **kwargs):
         csv_reader = csv.DictReader(utf8_data, **kwargs)
-        self.headers = csv_reader.fieldnames
         for row in csv_reader:
             if row['variable'] != "":
                 yield {key: value for key, value in row.items()}
 
-    def assign_frequencies(self, question_data, years):
+    def assign_frequencies(self, question_data):
         for row in question_data:
             question_name = row["variable"]
             response_label = row["label"]
             question_stat = row["stat"]
-            if 'display logic' in self.headers:
-                question_display = row["display logic"]
-            else:
-                question_display = ""
             matching_question = self.find_question(question_name)
             if matching_question is not None:
                 matching_response = self.find_response(row["value"], matching_question)
                 if matching_response is not None:
-                    self.add_frequency(matching_response, row, years)
+                    self.add_frequency(matching_response, row)
                     self.add_n(matching_question, row)
-                    if question_display != "":
-                        self.add_display_logic(matching_question, question_display)
                     self.add_stat(matching_question, question_stat)
 
-    def generate_topline(self, path_to_template, path_to_output, years):
+    def build_powerpoint_report(self, path_to_template, path_to_output):
         if self.__survey is not None:
-            report = qsf_topline_slides.QSFToplineSlides(self.__survey, path_to_template, path_to_output, years)
+            report = qsf_topline_slides.QSFToplineSlides(self.__survey, path_to_template, path_to_output, self.__groups)
         else:
             pass
         report.save(str(path_to_output))
@@ -77,16 +71,18 @@ class Powerpoint(object):
             matching_response = next((response for response in responses if response.response == '1'), None)
 
         if matching_response is None:
-            print("\nCould not match response " +response_to_find+ " from " + matching_question.name + " from CSV to a question in the QSF.\n             *This data will need to be input manually.*\n")
+            matching_response = next((response for response in responses if response.response == response_to_find), None)
+            if matching_response is None:
+                print("\nCould not match response " +response_to_find+ " from " + matching_question.name + " from CSV to a question in the QSF.\n             *This data will need to be input manually.*\n")
         return matching_response
 
-    def add_frequency(self, matching_response, frequency_data, years):
+    def add_frequency(self, matching_response, frequency_data):
         self.__frequencies = OrderedDict()
-        if len(years) > 0:
-            for year in years:
-                round_col = "result %s" % year
+        if len(self.__groups) > 0:
+            for group in self.__groups:
+                round_col = "result %s" % group
                 if frequency_data[round_col] != "":
-                    self.__frequencies[year] = float(frequency_data[round_col])
+                    self.__frequencies[group] = float(frequency_data[round_col])
         else:
             round_col = "result"
             self.__frequencies[0] = float(frequency_data[round_col])

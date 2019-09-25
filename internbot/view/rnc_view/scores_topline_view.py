@@ -175,7 +175,8 @@ class ScoresToplineView(BoxLayout):
 
         return file_chooser
 
-    def run(self):
+    def run(self, controller):
+        self.__controller = controller
         self.report_descriptions.open()
 
     def report_desc_to_open_prompt(self, region, round):
@@ -189,7 +190,7 @@ class ScoresToplineView(BoxLayout):
 
     def open_file_dialog_to_save_prompt(self):
         try:
-            #self.__generator.build_report(self.open_filepath, self.round)
+            self.__controller.build_scores_model(self.open_filepath, self.round, self.region)
             self.open_file_dialog.dismiss()
             self.save_file_prompt.open()
         except:
@@ -200,7 +201,7 @@ class ScoresToplineView(BoxLayout):
 
     def finish(self):
         self.save_file_dialog.dismiss()
-        #self.__generator.generate_scores_topline(self.save_filepath, self.region)
+        self.__controller.build_scores_report(self.save_filepath)
 
     def error_message(self, error):
         label = Label(text=error)

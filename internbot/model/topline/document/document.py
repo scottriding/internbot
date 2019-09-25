@@ -10,17 +10,17 @@ class Document(object):
 
     def __init__(self):
         self.__frequencies = []
-        self.headers = []
 
-    def create_document(self, path_to_freqs, years=[], survey=None):
-        question_data = self.unicode_dict_read(open(path_to_freqs))
+    def build_document_model(self, path_to_freqs, groups=[], survey=None):
+        question_data = self.unicode_dict_reader(open(path_to_freqs))
+        self.__groups = groups
         self.__survey = survey
         if self.__survey is not None:
             self.__questions = survey.get_questions()
-            self.assign_frequencies(question_data, years)
+            self.assign_frequencies(question_data)
         else:
             self.__questions = csv_question.CSVQuestions()
-            self.create_questions(question_data, years)
+            self.create_questions(question_data)
         
     def unicode_dict_reader(self, utf8_data, **kwargs):
         csv_reader = csv.DictReader(utf8_data, **kwargs)
@@ -29,35 +29,29 @@ class Document(object):
             if row['variable'] != "":
                 yield {key: value for key, value in row.items()}
 
-    def create_questions(self, question_data, years):
+    def create_questions(self, question_data):
         for question in question_data:
-            self.__questions.add(question, self.headers, years)
+            self.__questions.add(question, self.__groups)
 
-    def assign_frequencies(self, question_data, years):
+    def assign_frequencies(self, question_data):
         for row in question_data:
             question_name = row["variable"]
             response_label = row["label"]
             question_stat = row["stat"]
-            if 'display logic' in self.headers:
-                question_display = row["display logic"]
-            else:
-                question_display = ""
 
             matching_question = self.find_question(question_name)
             if matching_question is not None:
-                # print("MATCHING QUESTION: "+matching_question.name+" ROW: "+question_name)
                 matching_response = self.find_response(row["value"], matching_question)
                 if matching_response is not None:
-                    self.add_frequency(matching_response, row, years)
+                    self.add_frequency(matching_response, row)
                     self.add_n(matching_question, row)
-                    self.add_display_logic(matching_question, question_display)
                     self.add_stat(matching_question, question_stat)
 
-    def generate_topline(self, path_to_template, path_to_output, years):
+    def build_document_report(self, path_to_template, path_to_output):
         if self.__survey is not None:
-            report = qsf_topline_report.QSFToplineReport(self.__survey.get_questions(), path_to_template, years)
+            report = qsf_topline_report.QSFToplineReport(self.__survey.get_questions(), path_to_template, self.__groups)
         else:
-            report = csv_topline_report.CSVToplineReport(self.__questions, path_to_template, years)
+            report = csv_topline_report.CSVToplineReport(self.__questions, path_to_template, self.__groups)
         report.save(str(path_to_output))
 
     def find_question(self, question_to_find):
@@ -90,18 +84,20 @@ class Document(object):
             matching_response = next((response for response in responses if response.response == '1'), None)
 
         if matching_response is None:
-            print("\nCould not match response " +response_to_find+ " from " +
-                  matching_question.name + " from CSV to a question in the QSF.\n"
+            matching_response = next((response for response in responses if response.response == response_to_find), None)
+            if matching_response is None:
+                print("\nCould not match response " +response_to_find+ " from " +
+                    matching_question.name + " from CSV to a question in the QSF.\n"
                                            "             *This data will need to be input manually.*\n")
         return matching_response
 
-    def add_frequency(self, matching_response, frequency_data, years):
+    def add_frequency(self, matching_response, frequency_data):
         self.__frequencies = OrderedDict()
-        if len(years) > 0:
-            for year in years:
-                round_col = "result %s" % year
+        if len(self.__groups) > 0:
+            for group in self.__groups:
+                round_col = "result %s" % group
                 if frequency_data[round_col] != "":
-                    self.__frequencies[year] = frequency_data[round_col]
+                    self.__frequencies[group] = frequency_data[round_col]
         else:
             round_col = "result"
             self.__frequencies[0] = frequency_data[round_col]
@@ -110,9 +106,6 @@ class Document(object):
     def add_n(self, matching_question, question_data):
         current_n = matching_question.n
         matching_question.n = current_n + int(question_data["n"])
-
-    def add_display_logic(self, matching_question, question_display):
-        matching_question.display_logic = question_display
 
     def add_stat(self, matching_question, stat):
         matching_question.stat = stat

@@ -6,7 +6,7 @@ from docx.shared import Cm
 class CSVToplineReport(object):
 
     def __init__(self, questions, path_to_template, years):
-        self.doc = Document(path_to_template.name)
+        self.doc = Document(path_to_template)
         self.line_break = self.doc.styles['LineBreak']
         self.questions = questions
         self.years = years
@@ -17,12 +17,6 @@ class CSVToplineReport(object):
         
     def write_question(self, name):
         question = self.questions.get(name)
-        to_print = "Writing question: %s" % name
-        print(to_print)
-        if question.display_logic != "":
-            display_prompt = self.doc.add_paragraph()
-            display_prompt.add_run(question.display_logic)
-            self.doc.add_paragraph()
         paragraph = self.doc.add_paragraph() # each question starts a new paragraph
         self.write_name(name, paragraph)
         self.write_prompt(question.prompt, paragraph)

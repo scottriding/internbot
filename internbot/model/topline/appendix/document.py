@@ -1,10 +1,9 @@
-from docx import Document
-from docx.shared import Inches
+import docx
 
 class Document(object):
 
     def __init__ (self, path_to_template, is_qualtrics=False):
-        self.__doc = Document(path_to_template)
+        self.__doc = docx.Document(path_to_template)
 
     def write_appendix(self, questions):
         first_question = True
@@ -22,10 +21,10 @@ class Document(object):
         paragraph.add_run(question.name + ".")
         paragraph_format = paragraph.paragraph_format
         paragraph_format.keep_together = True
-        paragraph_format.left_indent = Inches(1)
+        paragraph_format.left_indent = docx.shared.Inches(1)
         prompt_to_add = "\t%s (n=%s)\n" % (question.prompt, question.response_count)
         paragraph.add_run(prompt_to_add)
-        paragraph_format.first_line_indent = Inches(-1)
+        paragraph_format.first_line_indent = docx.shared.Inches(-1)
 
         self.write_responses(question.responses, paragraph)
 

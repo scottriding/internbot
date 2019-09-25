@@ -9,25 +9,21 @@ class Topline(object):
         self.__document = document.Document()
         self.__powerpoint = powerpoint.Powerpoint()
 
-    def appendix_document(self, path_to_csv, path_to_output):
-        pass
+    def build_appendix_model(self, path_to_csv):
+        self.__appendix.build_appendix_model(path_to_csv)
 
-    def appendix_spreadsheet(self, path_to_csv, path_to_output):
-        pass
+    def build_appendix_report(self, path_to_output, path_to_logos, path_to_template, is_spreadsheet, is_qualtrics):
+        self.__appendix.build_appendix_report(path_to_output, path_to_logos, path_to_template, is_spreadsheet, is_qualtrics)
 
-    def basic_qsf_topline_document(self, survey, path_to_freq, path_to_template, path_to_output):
-        pass
+    def build_document_model(self, path_to_csv, groups, survey):
+        self.__document.build_document_model(path_to_csv, groups, survey)
 
-    def basic_csv_topline_document(self, path_to_freq, path_to_template, path_to_output):
-        pass
+    def build_document_report(self, path_to_template, path_to_output):
+        self.__document.build_document_report(path_to_template, path_to_output)
 
-    def grouped_qsf_topline_document(self, survey, path_to_freq, groups, path_to_template, path_to_output):
-        pass
+    def build_powerpoint_model(self, path_to_csv, groups, survey):
+        self.__powerpoint.build_powerpoint_model(path_to_csv, groups, survey)
 
-    def grouped_csv_topline_document(self, path_to_freq, groups, path_to_template, path_to_output):
-        pass
-
-    def topline_powerpoint(self, path_to_qsf, path_to_freq, path_to_template, path_to_output):
-        pass
-
+    def build_powerpoint_report(self, path_to_template, path_to_output):
+        self.__powerpoint.build_powerpoint_report(path_to_template, path_to_output)
 

@@ -21,13 +21,12 @@ class CrosstabsView(BoxLayout):
     def __init__(self, **kwargs):
         super(CrosstabsView, self).__init__(**kwargs)
 
-        self.__report_formatter = None
-        self.__survey_builder = None
-        self.__toc_builder = None
+        self.__controller = None
 
         self.crosstabs_screen = self.create_crosstabs_screen()
         self.qresearch_screen = QResearchView()
         self.qresearch_screen.back_button.bind(on_press=self.qresearch_to_xtabs)
+
         self.spss_screen = SPSSView()
         self.spss_screen.back_button.bind(on_press=self.spss_to_xtabs)
 
@@ -98,6 +97,16 @@ class CrosstabsView(BoxLayout):
     @property
     def spss_to_main_btn(self):
         return self.__spss_to_main_btn
+
+    @property
+    def controller(self):
+        return self.__controller
+
+    @controller.setter
+    def controller(self, controller):
+        self.__controller = controller
+        self.qresearch_screen.controller = self.__controller
+        self.spss_screen.controller = self.__controller
 
     def xtabs_help(self, instance):
         help_text = "Crosstabs are a report that \"crosses\" selected dataset \n" 

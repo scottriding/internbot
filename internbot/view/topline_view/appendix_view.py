@@ -20,14 +20,14 @@ class AppendixView(BoxLayout):
     def __init__(self, **kwargs):
         super(AppendixView, self).__init__(**kwargs)
 
-        self.is_doc_report = True
+        self.__is_doc_report = True
+        self.__is_qualtrics = False
 
         self.open_file_prompt = self.create_open_file_prompt()
         self.open_file_dialog = self.create_open_file_dialog()
         self.report_selector = self.create_report_selector()
         self.format_selector = self.create_format_selector()
         self.save_file_prompt = self.create_save_file_prompt()
-        self.save_file_dialog = self.create_save_file_dialog()
 
     def create_open_file_prompt(self):
         label = Label(text="Choose labelled appendix verbatims (.csv) file")
@@ -51,6 +51,7 @@ class AppendixView(BoxLayout):
                 if ext != ".csv":
                     self.error_message("Please pick an appendix (.csv) file")
                 else:
+                    self.__open_filename = filepath
                     self.open_file_dialog_to_report_selector()
             except IndexError:
                 self.error_message("Please pick an appendix (.csv) file")
@@ -145,12 +146,13 @@ class AppendixView(BoxLayout):
         container.add_widget(filechooser)
 
         def save_file(path, filename):
+            self.__save_filename = os.path.join(path, filename)
             self.finish()
 
         button_layout = BoxLayout()
         button_layout.size_hint = (1, .1)
 
-        if self.is_doc_report:
+        if self.__is_doc_report:
             file_default = "File name.docx"
         else:
             file_default = "File name.xlsx"
@@ -171,7 +173,8 @@ class AppendixView(BoxLayout):
 
         return file_chooser
 
-    def run(self):
+    def run(self, controller):
+        self.__controller = controller
         self.open_file_prompt.open()
 
     def open_file_prompt_to_dialog(self, instance):
@@ -179,18 +182,23 @@ class AppendixView(BoxLayout):
 
     def open_file_dialog_to_report_selector(self):
         self.open_file_dialog.dismiss()
-        self.report_selector.open()
+        try:
+            self.__controller.build_appendix_model(self.__open_filename)
+            self.report_selector.open()
+        except:
+            self.error_message("Error reading in data file.")
 
     def is_doc(self, instance):
         self.report_selector.dismiss()
-        self.format_selector.open()
+        self.save_file_prompt.open()
 
     def is_sheet(self, instance):
-        self.is_doc_report = False
+        self.__is_doc_report = False
         self.report_selector.dismiss()
         self.format_selector.open()
 
     def is_qualtrics(self, instance):
+        self.__is_qualtrics = True
         self.format_selector.dismiss()
         self.save_file_prompt.open()
 
@@ -199,10 +207,15 @@ class AppendixView(BoxLayout):
         self.save_file_prompt.open()
 
     def save_file_prompt_to_dialog(self, instance):
+        self.save_file_dialog = self.create_save_file_dialog()
         self.save_file_dialog.open()
 
     def finish(self):
         self.save_file_dialog.dismiss()
+        try:
+            self.__controller.build_appendix_report(self.__save_filename, self.__is_doc_report, self.__is_qualtrics)
+        except:
+            self.error_message("Error formatting appendix report.")
         
     def error_message(self, error):
         label = Label(text=error)

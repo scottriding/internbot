@@ -27,6 +27,8 @@ class ToplineView(BoxLayout):
         self.document_screen = DocumentView()
         self.powerppt_screen = PowerpointView()
 
+        self.__controller = None
+
         self.add_widget(self.topline_screen)
 
     def create_topline_screen(self):
@@ -61,7 +63,6 @@ class ToplineView(BoxLayout):
         button_layout.add_widget(app_btn)
 
         topline_screen.add_widget(button_layout)
-        self.__appendix_builder = None
 
         return topline_screen
 
@@ -70,29 +71,21 @@ class ToplineView(BoxLayout):
         return self.__back_btn
 
     @property
-    def survey_builder(self):
-        return self.__survey_builder
+    def controller(self):
+        return self.__controller
 
-    @property
-    def appendix_builder(self):
-        return self.__appendix_builder
-
-    @property
-    def document_builder(self):
-        return self.__document_builder
-
-    @property
-    def powerpoint_builder(self):
-        return self.__powerpoint_builder
+    @controller.setter
+    def controller(self, controller):
+        self.__controller = controller
 
     def build_appendix(self, instance):
-        self.appendix_screen.run()
+        self.appendix_screen.run(self.__controller)
 
     def build_doc(self, instance):
-        self.document_screen.run()
+        self.document_screen.run(self.__controller)
 
     def build_ppt(self, instance):
-        self.powerppt_screen.run()
+        self.powerppt_screen.run(self.__controller)
 
     def top_help(self, instance):
         help_text = "Topline reports are deliverables that give high level results\n"

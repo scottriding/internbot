@@ -20,7 +20,11 @@ class DocumentView(BoxLayout):
     def __init__(self, **kwargs):
         super(DocumentView, self).__init__(**kwargs)
 
+        self.__controller = None
+
         self.is_qsf = True
+        self.__group_names = []
+        self.__survey = None
 
         self.open_survey_prompt = self.create_open_survey_prompt()
         self.open_survey_dialog = self.create_open_survey_dialog()
@@ -52,8 +56,10 @@ class DocumentView(BoxLayout):
                 path, ext = os.path.splitext(filepath)
                 if ext == ".csv":
                     self.is_qsf = False
+                    self.__open_filename = filepath
                     self.open_survey_dialog_to_trended_selector()
                 elif ext == ".qsf":
+                    self.__open_filename = filepath
                     self.open_survey_dialog_to_trended_selector()
                 else:
                     self.error_message("Please pick a survey (.csv or .qsf) file")
@@ -153,7 +159,8 @@ class DocumentView(BoxLayout):
             for i in range(0, number_of_forms):
                 text = "Group #%s" % str(i+1)
                 groups.append(dict.get(text).text)
-            self.trended_labels_to_freqs(groups)
+            self.__group_names = groups
+            self.trended_labels_to_freqs()
 
         enter_btn = Button(text="Enter", size_hint=(.2, .1), pos_hint={'center_x': 0.5, 'center_y': 0.5}, 
         on_press=lambda x: grab_labels())
@@ -186,6 +193,7 @@ class DocumentView(BoxLayout):
                 if ext != ".csv":
                     self.error_message("Please pick a frequencies (.csv) file")
                 else:
+                    self.__open_filename = filepath
                     self.open_freq_dialog_to_save_prompt()
             except IndexError:
                 self.error_message("Please pick a frequencies (.csv) file")
@@ -228,6 +236,7 @@ class DocumentView(BoxLayout):
         container.add_widget(filechooser)
 
         def save_file(path, filename):
+            self.__save_filename = os.path.join(path, filename)
             self.finish()
 
         button_layout = BoxLayout()
@@ -249,7 +258,11 @@ class DocumentView(BoxLayout):
 
         return file_chooser
 
-    def run(self):
+    def run(self, controller):
+        self.is_qsf = True
+        self.__group_names = []
+        self.__survey = None
+        self.__controller = controller
         self.open_survey_prompt.open()
 
     def open_survey_prompt_to_dialog(self, instance):
@@ -257,7 +270,16 @@ class DocumentView(BoxLayout):
 
     def open_survey_dialog_to_trended_selector(self):
         self.open_survey_dialog.dismiss()
-        self.trended_selector.open()
+        
+        if self.is_qsf:
+            #self.__survey = self.__controller.build_survey(self.__open_filename)
+            try:
+                self.__survey = self.__controller.build_survey(self.__open_filename)
+                self.trended_selector.open()
+            except:
+                self.error_message("Issue parsing .qsf file.")
+        else:
+            self.trended_selector.open()
 
     def trended_selector_to_count(self, instance):
         self.trended_selector.dismiss()
@@ -270,7 +292,7 @@ class DocumentView(BoxLayout):
         else:
             self.save_file_prompt.open()
 
-    def trended_labels_to_freqs(self, group_names):
+    def trended_labels_to_freqs(self):
         self.trended_labels.dismiss()
         if self.is_qsf:
             self.open_freq_prompt.open()
@@ -289,6 +311,15 @@ class DocumentView(BoxLayout):
 
     def finish(self):
         self.save_file_dialog.dismiss()
+        try:
+            self.__controller.build_document_model(self.__open_filename, self.__group_names, self.__survey)
+        except:
+            self.error_message("Issue parsing frequency file")
+
+        try:
+            self.__controller.build_document_report(self.__save_filename)
+        except:
+            self.error_message("Issue building topline report")
 
     def error_message(self, error):
         label = Label(text=error)
