@@ -1,6 +1,6 @@
 import csv
 
-class TableScriptGenerator(object):
+class TableScript(object):
 
     def __init__(self):
         self.grouped_question = []

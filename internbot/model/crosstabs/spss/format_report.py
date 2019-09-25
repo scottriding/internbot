@@ -4,7 +4,7 @@ from openpyxl.styles import PatternFill, Font, Alignment
 from openpyxl.drawing.image import Image
 import os
 
-class CrosstabReportWriter(object):
+class Formatter(object):
 
     def __init__ (self):
         self.__workbook = Workbook()

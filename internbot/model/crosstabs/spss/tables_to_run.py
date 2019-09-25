@@ -1,6 +1,6 @@
 import csv
 
-class TableFileGenerator(object):
+class TablesToRun(object):
     
     def define_tables(self, survey, path_to_output):
         self.count = 1

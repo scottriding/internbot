@@ -1,6 +1,6 @@
 import csv
 
-class TablesParser(object):
+class Tables(object):
 
     def __init__(self):
         self.__tables = []

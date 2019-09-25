@@ -1,7 +1,7 @@
 from openpyxl import load_workbook, Workbook
 from collections import OrderedDict
 
-class SPSSParser(object):
+class Parser(object):
 
     def __init__(self):
         self.__tables = []

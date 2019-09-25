@@ -23,6 +23,18 @@ class Model(object):
     def save_qresearch_report(self, path_to_output):
         self.__xtabs.save_qresearch_report(path_to_output)
 
+    def build_variable_script(self, survey, path_to_output):
+        self.__xtabs.build_variable_script(survey, path_to_output)
+
+    def build_table_script(self, tables, banners, embedded_variables, filtering_variable, path_to_output):
+        self.__xtabs.build_table_script(tables, banners, embedded_variables, filtering_variable, path_to_output)
+
+    def build_spss_model(self, path_to_directory):
+        self.__xtabs.build_spss_model(path_to_directory)
+
+    def build_spss_report(self, path_to_output, resources_filepath):
+        self.__xtabs.build_spss_report(path_to_output, resources_filepath)
+
     def build_appendix_model(self, path_to_csv):
         self.__topline.build_appendix_model(path_to_csv)
 

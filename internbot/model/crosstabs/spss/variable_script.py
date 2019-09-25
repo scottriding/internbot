@@ -1,4 +1,4 @@
-class VariableScriptGenerator(object):
+class VariableScript(object):
     
     def define_variables(self, survey, path_to_output):
         questions = survey.get_questions()
