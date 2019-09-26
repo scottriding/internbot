@@ -50,18 +50,15 @@ class PowerpointView(BoxLayout):
         def open_file(path, filename):
             try:
                 filepath = os.path.join(path, filename[0])
-                path, ext = os.path.splitext(filepath)
-                if ext != ".qsf":
-                    self.error_message("Please pick a survey (.qsf) file")
-                else:
-                    self.__open_filename = filepath
-                    self.open_survey_dialog_to_trended_selector()
+                self.__open_filename = filepath
+                self.open_survey_dialog_to_trended_selector()
             except IndexError:
                 self.error_message("Please pick a survey (.qsf) file")
 
         filechooser = FileChooserListView()
         filechooser.path = os.path.expanduser("~")
         filechooser.bind(on_selection=lambda x: filechooser.selection)
+        filechooser.filters = ["*.qsf"]
 
         open_btn = Button(text='open', size_hint=(.2,.1), pos_hint={'center_x': 0.5, 'center_y': 0.5})
         open_btn.bind(on_release=lambda x: open_file(filechooser.path, filechooser.selection))
@@ -182,18 +179,15 @@ class PowerpointView(BoxLayout):
         def open_file(path, filename):
             try:
                 filepath = os.path.join(path, filename[0])
-                path, ext = os.path.splitext(filepath)
-                if ext != ".csv":
-                    self.error_message("Please pick a frequencies (.csv) file")
-                else:
-                    self.__freq_filename = filepath
-                    self.open_freq_dialog_to_open_template_prompt()
+                self.__freq_filename = filepath
+                self.open_freq_dialog_to_open_template_prompt()
             except IndexError:
                 self.error_message("Please pick a frequencies (.csv) file")
 
         filechooser = FileChooserListView()
         filechooser.path = os.path.expanduser("~")
         filechooser.bind(on_selection=lambda x: filechooser.selection)
+        filechooser.filters = ["*.csv"]
 
         open_btn = Button(text='open', size_hint=(.2,.1), pos_hint={'center_x': 0.5, 'center_y': 0.5})
         open_btn.bind(on_release=lambda x: open_file(filechooser.path, filechooser.selection))
@@ -226,18 +220,15 @@ class PowerpointView(BoxLayout):
         def open_file(path, filename):
             try:
                 filepath = os.path.join(path, filename[0])
-                path, ext = os.path.splitext(filepath)
-                if ext != ".pptx":
-                    self.error_message("Please pick a powerpoint template (.pptx) file")
-                else:
-                    self.__template_filename = filepath
-                    self.open_template_dialog_to_save_prompt()
+                self.__template_filename = filepath
+                self.open_template_dialog_to_save_prompt()
             except IndexError:
                 self.error_message("Please pick a powerpoint template (.pptx) file")
 
         filechooser = FileChooserListView()
         filechooser.path = os.path.expanduser("~")
         filechooser.bind(on_selection=lambda x: filechooser.selection)
+        filechooser.filters = ["*.pptx"]
 
         open_btn = Button(text='open', size_hint=(.2,.1), pos_hint={'center_x': 0.5, 'center_y': 0.5})
         open_btn.bind(on_release=lambda x: open_file(filechooser.path, filechooser.selection))
@@ -273,7 +264,11 @@ class PowerpointView(BoxLayout):
         container.add_widget(filechooser)
 
         def save_file(path, filename):
-            self.__save_filename = os.path.join(path, filename)
+            filepath = os.path.join(path, filename)
+            path, ext = os.path.splitext(filepath)
+            if ext != ".pptx":
+                filepath += ".pptx"
+            self.__save_filename = filepath
             self.finish()
 
         button_layout = BoxLayout()
