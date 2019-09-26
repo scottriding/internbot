@@ -1,2 +1,0 @@
-from crosstabs.Format_SPSS_Report.Generate_Table_Script.table_script_generator import TableScriptGenerator
-from crosstabs.Format_SPSS_Report.Generate_Table_Script.table_files_parser import TablesParser

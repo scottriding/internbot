@@ -1,350 +1,83 @@
-import crosstabs
-import gui_windows
-import tkinter
-from tkinter import messagebox
-from tkinter import filedialog
-import os, subprocess, platform
-import sys
-import time
-from shutil import copyfile
-import subprocess
-import threading
+from model import model
+from view import view
 
+class Controller(object):
 
-class Internbot:
+    def __init__(self):
+        self.__view = view.View()
+        self.__model = model.Model()
 
-    def __init__ (self, root):
-        self.__window = root
-        self.main_buttons()
-        self.menu_bar_setup()
-        localtime = time.asctime(time.localtime(time.time()))
-        self.session_time_stamp = str("Session:  " + localtime + "   Internbot Version:  " + internbot_version)
-        self.terminal_window()
-        self.fpath = os.path.join(os.path.expanduser("~"), "Desktop")
-        self.__embedded_fields = []
-        self.open_sound()
+    @property
+    def view(self):
+        return self.__view
 
+    def build_survey(self, path_to_qsf):
+        return self.__model.survey(path_to_qsf)
 
+    def rename(self, path_to_xlsx, path_to_toc):
+        return self.__model.rename(path_to_xlsx, path_to_toc, 'resources/images/')
 
-    def main_buttons(self):
-        """
-        Function establishes all the components of the main window
-        :return: None
-        """
-        self.rnc = gui_windows.RNCView(self.__window, mov_x, mov_y, window_width, window_height, header_font, header_color, bot_render, resources_filepath)
-        self.topline = gui_windows.ToplineView(self.__window, mov_x, mov_y, window_width, window_height, header_font, header_color, bot_render, resources_filepath)
-        self.spss = gui_windows.SPSSCrosstabsView(self.__window, mov_x, mov_y, window_width, window_height, header_font, header_color, resources_filepath)
-        self.q = gui_windows.QCrosstabsView(self.__window, mov_x, mov_y, window_width, window_height, header_font, header_color, bot_render, resources_filepath)
-        self.appendix = gui_windows.AppendixView(self.__window, mov_x, mov_y, window_width, window_height, header_font, header_color, bot_render, resources_filepath)
-        self.pptx = gui_windows.PowerPointView(self.__window, mov_x, mov_y, window_width, window_height, header_font, header_color, bot_render, resources_filepath)
+    def highlight(self, workbook, path_to_output, is_trended_amazon):
+        self.__model.highlight(workbook, path_to_output, is_trended_amazon)
 
-        #Button definitions
-        button_frame =tkinter.Frame(self.__window)
-        button_frame.pack(side=tkinter.LEFT, fill=tkinter.BOTH, )
-        btn_xtabs = tkinter.Button(button_frame, text="Crosstab Reports", padx=4, width=20, height=3, command=self.software_tabs_menu, relief=tkinter.FLAT, highlightthickness=0)
-        btn_report = tkinter.Button(button_frame, text="Topline Reports", padx=4, width=20, height=3,command=self.topline.topline_menu, relief=tkinter.FLAT, highlightthickness=0)
-        btn_appen = tkinter.Button(button_frame, text="Topline Appendices", padx=4, width=20, height=3,command=self.appendix.append_menu, relief=tkinter.FLAT, highlightthickness=0)
-        btn_rnc = tkinter.Button(button_frame, text="RNC Reports", padx=4, width=20, height=3,command=self.rnc.rnc_menu, relief=tkinter.FLAT, highlightthickness=0)
-        btn_terminal = tkinter.Button(button_frame, text="Terminal Window", padx=4, width=20, height=3, command=self.reopen_terminal_window, relief=tkinter.FLAT, highlightthickness=0)
-        btn_quit = tkinter.Button(button_frame, text="Quit", padx=4, width=20, height=3,command=self.quit, relief=tkinter.GROOVE, highlightthickness=0)
-        btn_pptx = tkinter.Button(button_frame, text="Topline PowerPoint", padx=4, width=20, height=3, command=self.pptx.pptx_menu, relief=tkinter.FLAT, highlightthickness=0)
-        btn_bot = tkinter.Button(button_frame, image=bot_render, padx=4, pady=10, width=158, height=45, borderwidth=0, highlightthickness=0, relief=tkinter.FLAT, command=self.main_help_window)
-        btn_bot.pack(padx=5, pady=3, side=tkinter.TOP)
-        btn_xtabs.pack(padx=5, side=tkinter.TOP, expand=True)
-        btn_report.pack(padx=5, side=tkinter.TOP, expand=True)
-        btn_appen.pack(padx=5, side=tkinter.TOP, expand=True)
-        btn_pptx.pack(padx=5, side=tkinter.TOP, expand=True)
-        btn_rnc.pack(padx=5, side=tkinter.TOP, expand=True)
-        btn_terminal.pack(padx=5, side=tkinter.TOP, expand=True)
-        btn_quit.pack(padx=5, side=tkinter.TOP, expand=True)
+    def build_toc_report(self, survey, path_to_output):
+        self.__model.build_toc_report(survey, path_to_output)
 
-    def menu_bar_setup(self):
-        """
-        Function sets up all components of the toplevel menubar
-        :return: None
-        """
-        self.menubar = tkinter.Menu(self.__window)
-        menu_xtabs = tkinter.Menu(self.menubar, tearoff = 0)
-        menu_xtabs.add_command(label="Crosstabs Menu", command=self.software_tabs_menu)
-        self.menubar.add_cascade(label="Crosstabs", menu=menu_xtabs)
+    def build_qresearch_report(self, path_to_workbook, is_qualtrics):
+        self.__model.format_qresearch_report(path_to_workbook, 'resources/images/', is_qualtrics)
 
-        menu_report = tkinter.Menu(self.menubar, tearoff=0)
-        menu_report.add_command(label="Topline Menu", command=self.topline.topline_menu)
-        menu_report.add_command(label="QSF and CSV", command=self.topline.read_qsf_topline)
-        menu_report.add_command(label="CSV Only", command=self.topline.read_csv_topline)
-        self.menubar.add_cascade(label="Topline", menu=menu_report)
+    def save_qresearch_report(self, path_to_output):
+        self.__model.save_qresearch_report(path_to_output)
 
-        menu_appendix = tkinter.Menu(self.menubar, tearoff=0)
-        menu_appendix.add_command(label="Appendix Menu", command=self.appendix.append_menu)
-        menu_appendix.add_command(label="Word Appendix", command=self.appendix.doc_appendix)
-        menu_appendix.add_command(label="Excel Appendix", command=self.appendix.excel_appendix_type)
-        self.menubar.add_cascade(label="Appendix", menu=menu_appendix)
+    def build_variable_script(self, survey, path_to_output):
+        self.__model.build_variable_script(survey, path_to_output)
 
-        menu_terminal = tkinter.Menu(self.menubar, tearoff=0)
-        menu_terminal.add_command(label="Open Terminal", command=self.reopen_terminal_window)
-        menu_terminal.add_command(label="Export Error Log", command=self.export_error_log)
-        self.menubar.add_cascade(label="Terminal", menu=menu_terminal)
+    def build_table_script(self, tables, banners, embedded_variables, filtering_variable, path_to_output):
+        self.__model.build_table_script(tables, banners, embedded_variables, filtering_variable, path_to_output)
 
-        menu_rnc = tkinter.Menu(self.menubar, tearoff=0)
-        menu_rnc.add_command(label="RNC Menu", command=self.rnc.rnc_menu)
-        menu_rnc.add_command(label="Scores", command=self.rnc.scores_window)
-        menu_rnc.add_command(label="Issue Trended", command=self.rnc.issue_trended_window)
-        menu_rnc.add_command(label="Trended Scores", command=self.rnc.trended_scores_window)
-        self.menubar.add_cascade(label="RNC", menu=menu_rnc)
+    def build_spss_model(self, path_to_directory):
+        self.__model.build_spss_model(path_to_directory)
 
-        menu_quit = tkinter.Menu(self.menubar, tearoff=0)
-        menu_quit.add_command(label="Close Internbot", command=self.quit)
-        self.menubar.add_cascade(label="Quit", menu=menu_quit)
-        self.__window.config(menu=self.menubar)
+    def build_spss_report(self, path_to_output):
+        self.__model.build_spss_report(path_to_output, 'resources/images/')
 
-    def main_help_window(self):
-        """
-        Function serves as an intro to internbot. Explains the help bot to the user.
-        :return: None
-        """
-        help_window = tkinter.Toplevel(self.__window)
-        help_window.withdraw()
+    def build_appendix_model(self, path_to_csv):
+        self.__model.build_appendix_model(path_to_csv)
 
-        width = 250
-        height = 500
-        help_window.geometry("%dx%d+%d+%d" % (width,height,mov_x + window_width / 2 - width / 2, mov_y + window_height / 2 - height / 2))
-        help_window.title("Internbot Help")
-        message = "\nWelcome to Internbot"
-        tkinter.Label(help_window, text=message, font=header_font, fg=header_color).pack()
-        info_message = "You can find help information throughout"\
-                       "\nInternbot by clicking the bot icon" \
-                       "\n\nShe will tell you a little bit about" \
-                       "\n what you need to input for the" \
-                       "\nreport you are trying to create\n"
-        tkinter.Label(help_window, text=info_message, font=('Trade Gothic LT Pro', 14, )).pack()
-        term_message = "About the Terminal Window"
-        tkinter.Label(help_window, text=term_message, font=header_font, fg=header_color).pack()
-        term_info_message = "The terminal window will show info about\n" \
-                            "the reports as you are running them.\n" \
-                            "If an error occurs that you can't identify: \n" \
-                            "Select Terminal>Export Error Log \n" \
-                            "from the MenuBar. The file will appear  \n" \
-                            "on your desktop. Then send a slack to the\n"\
-                            "R&D channel with the error log and a link\n" \
-                            "to the input file(s) of the report you were\n" \
-                            "running. If you ever close the terminal window,\n" \
-                            "you can reopen it with the Terminal Window\n" \
-                            "button in the main window or Terminal>Open\n" \
-                            " Terminal in the Menubar."
-        tkinter.Label(help_window, text=term_info_message, font=('Trade Gothic LT Pro', 14,)).pack()
-        btn_ok = tkinter.Button(help_window, text="Ok", command=help_window.destroy, height=3, width=20,  highlightthickness=0)
-        btn_ok.pack(pady= 5, side=tkinter.BOTTOM, expand=False)
-        help_window.deiconify()
+    def build_appendix_report(self, path_to_output, is_spreadsheet, is_qualtrics):
+        self.__model.build_appendix_report(path_to_output, 'resources/images/', 'resources/templates/appendix_template.docx', is_spreadsheet, is_qualtrics)
 
-        def enter_pressed(event):
-            help_window.destroy()
+    def build_document_model(self, path_to_csv, groups, survey):
+        self.__model.build_document_model(path_to_csv, groups, survey)
 
-        help_window.bind("<Return>", enter_pressed)
-        help_window.bind("<KP_Enter>", enter_pressed)
+    def build_document_report(self, path_to_output):
+        self.__model.build_document_report('resources/templates/topline_template.docx', path_to_output)
 
-    def terminal_window(self):
-        """
-        Function handles the terminal window used for messages to the user and errors.
-        :return: None
-        """
-        self.terminal_open = True
-        self.term_window = tkinter.Toplevel(self.__window)
-        self.term_window.withdraw()
-        self.term_window.title("Terminal Window")
-        self.term_window['background'] = header_color
+    def build_powerpoint_model(self, path_to_csv, groups, survey):
+        self.__model.build_powerpoint_model(path_to_csv, groups, survey)
 
-        width = 500
-        height = 600
-        self.term_window.geometry("%dx%d+%d+%d" % (
-            width, height, mov_x + window_width / 2 - 2*width , mov_y + window_height / 2 - height/2))
+    def build_powerpoint_report(self, path_to_template, path_to_output):
+        self.__model.build_powerpoint_report(path_to_template, path_to_output)
 
-        term_text = tkinter.Text(self.term_window, fg='white', height= 600, width=500, background=header_color, padx=5, pady=5)
-        term_text.pack()
+    def build_scores_model(self, path_to_csv, round, location):
+        self.__model.build_scores_model(path_to_csv, round, location)
 
-        #Makes a temporary file in the user's Document folder that al of the contents of the terminal window is written to.
-        self.error_log_filename = os.path.expanduser("~/Documents/internbot_error_log.txt")
-        self.error_log = open(self.error_log_filename, 'w')
-        self.error_log.write("Error Log: " + self.session_time_stamp + "\n")
+    def build_scores_report(self, path_to_output):
+        self.__model.build_scores_report(path_to_output)
 
+    def build_issues_model(self, path_to_csv, round):
+        self.__model.build_issues_model(path_to_csv, round)
 
-        class PrintToTermWindow(object):
-            """
-            Class functions to capture stdout and stderr while the program is running and write it to the terminal window
-            """
-            def __init__(self, stream, error_log):
-                self.stream = stream
-                self.error_log = error_log
+    def build_issues_report(self, path_to_output):
+        self.__model.build_issues_report(path_to_output)
 
-            def write(self, s):
-                self.stream.write(s)
-                term_text.insert(tkinter.END, s)
-                self.error_log.write(s)
-                self.stream.flush()
-                term_text.see(tkinter.END)
+    def build_trended_model(self, path_to_csv, round):
+        self.__model.build_trended_model(path_to_csv, round)
 
-        sys.stdout = PrintToTermWindow(sys.stdout, self.error_log)
-        sys.stderr = PrintToTermWindow(sys.stderr, self.error_log)
+    def build_trended_report(self, path_to_output):
+        self.__model.build_trended_report(path_to_output)
 
-        def update_terminal_flag():
-            """
-            Called on "close" of terminal window
-            :return:
-            """
-            self.terminal_open = False
-            self.term_window.withdraw()
-
-        print("All information about reports and errors will appear in this window.\n")
-
-        self.term_window.protocol('WM_DELETE_WINDOW', update_terminal_flag)
-        self.term_window.deiconify()
-
-    def reopen_terminal_window(self):
-        """
-        Called on reopen of a "closed" terminal window
-        :return:
-        """
-        self.terminal_open = True
-        self.term_window.deiconify()
-
-    def export_error_log(self):
-        """
-        Called by menubar command Export Error Log
-        :return:
-        """
-        ask_export = messagebox.askokcancel("Export Error Log", "Warning: Internbot will close and you will need to restart it")
-        if ask_export:
-            self.error_log.close()
-            copyfile(self.error_log_filename, os.path.expanduser("~/Desktop/internbot_error_log.txt"))
-            self.open_file_for_user(os.path.expanduser("~/Desktop/internbot_error_log.txt"))
-            self.quit() # Must quit out here or the program experiences errors because the file has been closed.
-
-    def software_tabs_menu(self):
-        """
-        Function sets up the Software Type selection for crosstabs
-        :return:
-        """
-        sft_window = tkinter.Toplevel(self.__window)
-        sft_window.withdraw()
-
-        width = 200
-        height = 250
-        sft_window.geometry("%dx%d+%d+%d" % (width,height,mov_x + window_width / 2 - width / 2, mov_y + window_height / 2 - height / 2))
-
-        message = "Please select crosstabs\nsoftware to use:\n"
-        tkinter.Label(sft_window, text = message, font=header_font, fg=header_color).pack()
-        btn_spss = tkinter.Button(sft_window, text="SPSS", command=self.spss.spss_crosstabs_menu, height=3, width=20)
-        btn_q = tkinter.Button(sft_window, text="Q Research", command=self.q.qresearch_xtabs, height=3, width=20)
-        btn_cancel = tkinter.Button(sft_window, text="Cancel", command=sft_window.destroy, height=3, width=20)
-        btn_cancel.pack(side=tkinter.BOTTOM, expand=True)
-        btn_q.pack(side=tkinter.BOTTOM, expand=True)
-        btn_spss.pack(side=tkinter.BOTTOM, expand=True)
-        sft_window.deiconify()  
-
-    def amazon_xtabs(self):
-        """
-        Function runs legacy report for Amazon CX Wave Series.
-        """
-        ask_xlsx = messagebox.askokcancel("Select XLSX Report File", "Please select combined tables .xlsx file")
-        if ask_xlsx is True:
-            tablefile = filedialog.askopenfilename(initialdir = self.fpath, title = "Select report file",filetypes = (("excel files","*.xlsx"),("all files","*.*")))
-            if tablefile is not "":
-                ask_output = messagebox.askokcancel("Select output directory", "Please select folder for final report.")
-                if ask_output is True:
-                    savedirectory = filedialog.askdirectory()
-                    renamer = crosstabs.Format_Amazon_Report.RenameTabs(resources_filepath)
-                    renamed_wb = renamer.rename(tablefile, os.path.join(resources_filepath, "Amazon TOC.csv"), savedirectory)
-                    highlighter = crosstabs.Format_Amazon_Report.Highlighter(renamed_wb)
-                    highlighter.highlight(savedirectory)
-                    messagebox.showinfo("Finished", "The highlighted report is saved in your chosen directory.")
-
-    def open_sound(self):
-        """
-        Plays open R2D2 effect
-        :return:
-        """
-        def play_sound():
-            audio_file = os.path.join(resources_filepath, "open.mp3")
-            return_code = subprocess.call(["afplay", audio_file])
-
-        # Multithreaded so you don't have to wait on the sound library to start the app or open files
-        thread_worker = threading.Thread(target=play_sound)
-        thread_worker.start()
-
-    def open_file_for_user(self, file_path):
-        """
-        Opens requested file for user.
-        :param file_path:
-        :return: None
-        """
-        try:
-            if os.path.exists(file_path):
-                if platform.system() == 'Darwin':  # macOS
-                    subprocess.call(('open', file_path))
-                    self.open_sound()
-                elif platform.system() == 'Windows':  # Windows
-                    os.startfile(file_path)
-            else:
-                messagebox.showerror("Error", "Error: Could not open file for you \n"+file_path)
-        except IOError:
-            messagebox.showerror("Error", "Error: Could not open file for you \n" + file_path)
-
-    def quit(self):
-        """
-        Clean up before exit.
-        :return: None
-        """
-        audio_file = os.path.join(resources_filepath, "close.mp3")
-        return_code = subprocess.call(["afplay", audio_file])
-        # Delete temporary error log from user's Documents folder
-        os.remove(os.path.expanduser("~/Documents/internbot_error_log.txt"))
-        self.__window.destroy()
-
-window = tkinter.Tk()
-window.withdraw()
-internbot_version = "1.1.0"
-
-window.title("Internbot (Version:"+ internbot_version + ")") # Internbot: Y2
-
-resources_filepath = os.path.expanduser("~/Documents/GitHub/internbot/internbot/templates_images/")
-
-if platform.system() == 'Windows':  # Windows
-    window.iconbitmap(os.path.join(resources_filepath, 'y2.ico'))
-screen_width = window.winfo_screenwidth()
-
-screen_height = window.winfo_screenheight()
-mov_x = screen_width / 2 - 300
-mov_y = screen_height / 2 - 200
-window_height = 500
-window_width = 600
-window.geometry("%dx%d+%d+%d" % (window_width, window_height, mov_x, mov_y))
-window['background'] = 'white'
-
-y2_logo = os.path.join(resources_filepath, "Y2Logo.gif")
-help_bot = os.path.join(resources_filepath, "Internbot.gif")
-bot_render = tkinter.PhotoImage(file=help_bot)
-logo_render = tkinter.PhotoImage(file= y2_logo)
-logo_label = tkinter.Label(window, image=logo_render, borderwidth=0, highlightthickness=0, relief=tkinter.FLAT, padx=50)
-logo_label.pack(side=tkinter.RIGHT)
-
-window.option_add("*Font", ('Trade Gothic LT Pro', 16, ))
-window.option_add("*Button.Foreground", "midnight blue")
-
-header_font = ('Trade Gothic LT Pro', 18, 'bold')
-header_color = '#112C4E'
-
-
-def quit():
-    audio_file = os.path.join(resources_filepath, "close.mp3")
-    return_code = subprocess.call(["afplay", audio_file])
-    os.remove(os.path.expanduser("~/Documents/internbot_error_log.txt"))
-    window.withdraw()  # if you want to bring it back
-    sys.exit()  # if you want to exit the entire thing
-
-window.bind('<Escape>', quit)
-window.protocol("WM_DELETE_WINDOW", quit)
-
-
-
-window.deiconify()
-Internbot(window)
-window.mainloop()
+if __name__ == '__main__':
+    controller = Controller()
+    controller.view.controller = controller
+    controller.view.run()
