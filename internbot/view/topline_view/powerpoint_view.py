@@ -110,7 +110,14 @@ class PowerpointView(BoxLayout):
         inputter.add_widget(label)
 
         def inputted_groups(groups):
-            self.create_trended_labels(int(groups))
+            try:
+                count = int(groups)
+                if count < 2:
+                    self.error_message("2 or more items make a trended report")
+                else:
+                    self.create_trended_labels(count)
+            except:
+                self.error_message("Issue parsing grouping count")
 
         button_layout = BoxLayout()
         button_layout.size_hint = (1, .1)
@@ -136,11 +143,18 @@ class PowerpointView(BoxLayout):
         self.trended_count.dismiss()
         self.trended_labels = Popup(size_hint=(.9, .7 ), pos_hint={'center_x': 0.5, 'center_y': 0.5})
 
+        if number_of_forms < 5:
+            self.trended_labels.size_hint = (.9, .4)
+        else:
+            self.trended_labels.size_hint = (.9, .7)
+
+        pop_up_layout = BoxLayout(orientation="vertical")
         entry_layout = BoxLayout(orientation="vertical")
         dict = {}
         for i in range(0, number_of_forms):
             text = "Group #%s" % str(i+1)
-            new_entry = TextInput(text=text, size_hint=(1,.1))
+            new_entry = TextInput(text=text)
+            new_entry.size_hint = (1, .2)
             entry_layout.add_widget(new_entry)
             dict[text] = new_entry
 
@@ -152,12 +166,13 @@ class PowerpointView(BoxLayout):
             self.__group_names = groups
             self.trended_labels_to_freqs()
 
-        enter_btn = Button(text="Enter", size_hint=(.2, .1), pos_hint={'center_x': 0.5, 'center_y': 0.5}, 
+        enter_btn = Button(text="Enter", size_hint=(.2, .2), pos_hint={'center_x': 0.5, 'center_y': 0.5}, 
         on_press=lambda x: grab_labels())
 
-        entry_layout.add_widget(enter_btn)
+        pop_up_layout.add_widget(entry_layout)
+        pop_up_layout.add_widget(enter_btn)
 
-        self.trended_labels.content = entry_layout
+        self.trended_labels.content = pop_up_layout
         self.trended_labels.title = "Enter group names"
         self.trended_labels.open()
 
@@ -293,7 +308,8 @@ class PowerpointView(BoxLayout):
     def run(self, controller):
         self.__group_names = []
         self.__controller = controller
-        self.open_survey_prompt.open()
+        #self.open_survey_prompt.open()
+        self.trended_count.open()
 
     def open_survey_prompt_to_dialog(self, instance):
         self.open_survey_dialog.open()
