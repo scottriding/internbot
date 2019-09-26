@@ -137,10 +137,11 @@ class IssueTrendedView(BoxLayout):
         container.add_widget(filechooser)
 
         def save_file(path, filename):
-            self.save_filepath = os.path.join(path, filename)
+            filepath = os.path.join(path, filename)
             path, ext = os.path.splitext(filepath)
             if ext != ".xlsx":
                 filepath += ".xlsx"
+            self.save_filepath = filepath
             self.finish()
 
         button_layout = BoxLayout()

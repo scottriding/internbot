@@ -66,7 +66,6 @@ class TrendedScoreReport(object):
                 self.write_sheet(sheet, workbook_details.get_sheet(sheet_name))
 
     def write_sheet(self, sheet, sheet_details):
-        print(sheet_details.name)
         self.write_first_row(sheet)
         current_row_field = 2
         current_row_grouping = 2
@@ -149,10 +148,6 @@ class TrendedScoreReport(object):
             middle_border = True
         for grouping_name in grouping_names:
             grouping = field_object.get_grouping(grouping_name)
-            
-            
-            if grouping.name == 'All Voters':
-                print(grouping.frequencies)
 
             field_cell = "A%s" % (current_row)
             grouping_cell = "B%s" % (current_row)

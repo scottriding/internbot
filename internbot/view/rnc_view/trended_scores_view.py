@@ -189,9 +189,9 @@ class TrendedScoresView(BoxLayout):
         self.save_folder_dialog.open()
 
     def finish(self):
-        self.save_folder_dialog.dismiss()
         try:
             self.__controller.build_trended_report(self.save_filepath)
+            self.save_folder_dialog.dismiss()
         except Exception as inst:
             self.error_message("Error in creating report: " + str(inst.args))
 

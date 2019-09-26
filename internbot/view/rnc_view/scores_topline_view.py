@@ -150,10 +150,11 @@ class ScoresToplineView(BoxLayout):
         container.add_widget(filechooser)
 
         def save_file(path, filename):
-            self.save_filepath = os.path.join(path, filename)
+            filepath = os.path.join(path, filename)
             path, ext = os.path.splitext(filepath)
             if ext != ".xlsx":
                 filepath += ".xlsx"
+            self.save_filepath = filepath
             self.finish()
 
         button_layout = BoxLayout()
@@ -200,8 +201,11 @@ class ScoresToplineView(BoxLayout):
         self.save_file_dialog.open()
 
     def finish(self):
-        self.save_file_dialog.dismiss()
-        self.__controller.build_scores_report(self.save_filepath)
+        try:
+            self.__controller.build_scores_report(self.save_filepath)
+            self.save_file_dialog.dismiss()
+        except:
+            self.error_message("Issue formatting report")
 
     def error_message(self, error):
         label = Label(text=error)

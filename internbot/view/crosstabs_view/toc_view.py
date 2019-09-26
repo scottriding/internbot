@@ -92,10 +92,11 @@ class TOCView(BoxLayout):
         container.add_widget(filechooser)
 
         def save_file(path, filename):
-            self.__save_filename = os.path.join(path, filename)
+            filepath = os.path.join(path, filename)
             path, ext = os.path.splitext(filepath)
             if ext != ".xlsx":
                 filepath += ".xlsx"
+            self.__save_filename = filepath
             self.finish()
 
         button_layout = BoxLayout()
@@ -135,9 +136,9 @@ class TOCView(BoxLayout):
             self.error_message("Issue parsing survey file.")
 
     def finish(self):
-        self.save_file_dialog.dismiss()
         try:
             self.__controller.build_toc_report(self.__survey, self.__save_filename)
+            self.save_file_dialog.dismiss()
         except:
             self.error_message("Error creating report.")
 

@@ -177,9 +177,9 @@ class FormatReportView(BoxLayout):
         self.save_file_dialog.open()
 
     def finish(self):
-        self.save_file_dialog.dismiss()
         try:
             self.__controller.save_qresearch_report(self.__save_filename)
+            self.save_file_dialog.dismiss()
         except:
             self.error_message("Issue saving formatted report.")
 
