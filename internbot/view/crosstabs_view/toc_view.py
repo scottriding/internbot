@@ -47,19 +47,15 @@ class TOCView(BoxLayout):
         def open_file(path, filename):
             try:
                 filepath = os.path.join(path, filename[0])
-                path, ext = os.path.splitext(filepath)
-                if ext != ".qsf":
-                    self.error_message("Please pick a survey (.qsf) file")
-                else:
-                    self.__open_filename = filepath
-                    self.open_file_dialog_to_prompt()
+                self.__open_filename = filepath
+                self.open_file_dialog_to_prompt()
             except IndexError:
                 self.error_message("Please pick a survey (.qsf) file")
 
         filechooser = FileChooserListView()
         filechooser.path = os.path.expanduser("~")
         filechooser.bind(on_selection=lambda x: filechooser.selection)
-        filechooser.show_hidden = False
+        filechooser.filters = ["*.qsf"]
 
         open_btn = Button(text='open', size_hint=(.2,.1), pos_hint={'center_x': 0.5, 'center_y': 0.5})
         open_btn.bind(on_release=lambda x: open_file(filechooser.path, filechooser.selection))
@@ -97,6 +93,9 @@ class TOCView(BoxLayout):
 
         def save_file(path, filename):
             self.__save_filename = os.path.join(path, filename)
+            path, ext = os.path.splitext(filepath)
+            if ext != ".xlsx":
+                filepath += ".xlsx"
             self.finish()
 
         button_layout = BoxLayout()

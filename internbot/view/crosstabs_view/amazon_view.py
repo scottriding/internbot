@@ -48,17 +48,15 @@ class AmazonView(BoxLayout):
             try:
                 filepath = os.path.join(path, filename[0])
                 path, ext = os.path.splitext(filepath)
-                if ext != ".xlsx":
-                    self.error_message("Please pick an Amazon report (.xlsx) file")
-                else:
-                    self.__open_filename = filepath
-                    self.open_file_dialog_to_toc_prompt()
+                self.__open_filename = filepath
+                self.open_file_dialog_to_toc_prompt()
             except IndexError:
                 self.error_message("Please pick an Amazon report (.xlsx) file")
 
         filechooser = FileChooserListView()
-        filechooser.path = os.path.expanduser("~")
         filechooser.bind(on_selection=lambda x: filechooser.selection)
+        filechooser.path = os.path.expanduser("~")
+        filechooser.filters = ["*.xlsx"]
 
         open_btn = Button(text='open', size_hint=(.2,.1), pos_hint={'center_x': 0.5, 'center_y': 0.5})
         open_btn.bind(on_release=lambda x: open_file(filechooser.path, filechooser.selection))
@@ -91,17 +89,14 @@ class AmazonView(BoxLayout):
         def open_file(path, filename):
             try:
                 filepath = os.path.join(path, filename[0])
-                path, ext = os.path.splitext(filepath)
-                if ext != ".csv":
-                    self.error_message("Please pick table of contents (.csv) file")
-                else:
-                    self.__toc_filename = filepath
-                    self.toc_dialog_to_trended_selector()
+                self.__toc_filename = filepath
+                self.toc_dialog_to_trended_selector()
             except IndexError:
                 self.error_message("Please pick a table of contents (.csv) file")
 
         filechooser = FileChooserListView()
         filechooser.path = os.path.expanduser("~")
+        filechooser.filters = ["*.csv"]
         filechooser.bind(on_selection=lambda x: filechooser.selection)
 
         open_btn = Button(text='open', size_hint=(.2,.1), pos_hint={'center_x': 0.5, 'center_y': 0.5})
@@ -165,6 +160,9 @@ class AmazonView(BoxLayout):
 
         def save_file(path, filename):
             filepath = os.path.join(path, filename)
+            path, ext = os.path.splitext(filepath)
+            if ext != ".xlsx":
+                filepath += ".xlsx"
             self.__save_filename = filepath
             self.finish()
 

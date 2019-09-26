@@ -50,18 +50,15 @@ class FormatReportView(BoxLayout):
         def open_file(path, filename):
             try:
                 filepath = os.path.join(path, filename[0])
-                path, ext = os.path.splitext(filepath)
-                if ext != ".xlsx":
-                    self.error_message("Please pick a QResearch report (.xlsx) file")
-                else:
-                    self.__open_filename = filepath
-                    self.open_file_dialog_to_selector()
+                self.__open_filename = filepath
+                self.open_file_dialog_to_selector()
             except IndexError:
                 self.error_message("Please pick a QResearch report (.xlsx) file")
 
         filechooser = FileChooserListView()
         filechooser.path = os.path.expanduser("~")
         filechooser.bind(on_selection=lambda x: filechooser.selection)
+        filechooser.filters = ["*.xlsx"]
 
         open_btn = Button(text='open', size_hint=(.2,.1), pos_hint={'center_x': 0.5, 'center_y': 0.5})
         open_btn.bind(on_release=lambda x: open_file(filechooser.path, filechooser.selection))
@@ -124,6 +121,9 @@ class FormatReportView(BoxLayout):
 
         def save_file(path, filename):
             filepath = os.path.join(path, filename)
+            path, ext = os.path.splitext(filepath)
+            if ext != ".xlsx":
+                filepath += ".xlsx"
             self.__save_filename = filepath
             self.finish()
 
