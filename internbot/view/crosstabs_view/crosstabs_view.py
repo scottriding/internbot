@@ -1,6 +1,7 @@
 ## crosstabs modules
 from view.crosstabs_view.qresearch_view import QResearchView
 from view.crosstabs_view.spss_view import SPSSView
+from view.crosstabs_view.amazon_view import AmazonView
 
 ## outside modules
 import kivy
@@ -29,6 +30,8 @@ class CrosstabsView(BoxLayout):
 
         self.spss_screen = SPSSView()
         self.spss_screen.back_button.bind(on_press=self.spss_to_xtabs)
+
+        self.amazon_screen = AmazonView()
 
         self.__qresearch_to_main_btn = self.qresearch_screen.double_back_button
         self.qresearch_screen.double_back_button.bind(on_press=self.qresearch_to_xtabs)
@@ -62,7 +65,11 @@ class CrosstabsView(BoxLayout):
         spss_btn = Button(text='SPSS', size_hint=(.1, .1), on_press = self.xtabs_to_spss)
         spss_btn.font_name = "Y2"
         spss_btn.disabled = True
+
+        amaz_btn = Button(text='Amazon', size_hint=(.1, .1), on_press = self.xtabs_to_amaz)
+        amaz_btn.font_name = "Y2"
         
+        button_layout.add_widget(amaz_btn)
         button_layout.add_widget(qresearch_btn)
         button_layout.add_widget(spss_btn)
 
@@ -77,6 +84,9 @@ class CrosstabsView(BoxLayout):
     def xtabs_to_spss(self, instance):
         self.remove_widget(self.crosstabs_screen)
         self.add_widget(self.spss_screen)
+
+    def xtabs_to_amaz(self, instance):
+        self.amazon_screen.run(self.__controller)
 
     def qresearch_to_xtabs(self, instance):
         self.remove_widget(self.qresearch_screen)

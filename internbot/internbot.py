@@ -14,8 +14,8 @@ class Controller(object):
     def build_survey(self, path_to_qsf):
         return self.__model.survey(path_to_qsf)
 
-    def rename(self, path_to_xlsx, path_to_toc, path_to_output):
-        self.__model.rename(path_to_xlsx, path_to_toc, path_to_output)
+    def rename(self, path_to_xlsx, path_to_toc):
+        return self.__model.rename(path_to_xlsx, path_to_toc, 'resources/images/')
 
     def highlight(self, workbook, path_to_output, is_trended_amazon):
         self.__model.highlight(workbook, path_to_output, is_trended_amazon)
