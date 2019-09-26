@@ -106,18 +106,15 @@ class ScoresToplineView(BoxLayout):
         def open_file(path, filename):
             try:
                 filepath = os.path.join(path, filename[0])
-                path, ext = os.path.splitext(filepath)
-                if ext != ".csv":
-                    self.error_message("Please pick a scores topline data (.csv) file")
-                else:
-                    self.open_filepath = filepath
-                    self.open_file_dialog_to_save_prompt()
+                self.open_filepath = filepath
+                self.open_file_dialog_to_save_prompt()
             except IndexError:
                 self.error_message("Please pick a scores topline data (.csv) file")
 
         filechooser = FileChooserListView()
         filechooser.path = os.path.expanduser("~")
         filechooser.bind(on_selection=lambda x: filechooser.selection)
+        filechooser.filters = ["*.csv"]
 
         open_btn = Button(text='open', size_hint=(.2,.1), pos_hint={'center_x': 0.5, 'center_y': 0.5})
         open_btn.bind(on_release=lambda x: open_file(filechooser.path, filechooser.selection))
@@ -154,6 +151,9 @@ class ScoresToplineView(BoxLayout):
 
         def save_file(path, filename):
             self.save_filepath = os.path.join(path, filename)
+            path, ext = os.path.splitext(filepath)
+            if ext != ".xlsx":
+                filepath += ".xlsx"
             self.finish()
 
         button_layout = BoxLayout()
