@@ -25,6 +25,7 @@ class AmazonView(BoxLayout):
         self.open_file_dialog = self.create_open_file_dialog()
         self.open_toc_prompt = self.create_toc_prompt()
         self.open_toc_dialog = self.create_toc_dialog()
+        self.trended_selector = self.create_trended_selector()
         self.save_file_prompt = self.create_save_file_prompt()
         self.save_file_dialog = self.create_save_file_dialog()
 
@@ -95,7 +96,7 @@ class AmazonView(BoxLayout):
                     self.error_message("Please pick table of contents (.csv) file")
                 else:
                     self.__toc_filename = filepath
-                    self.toc_dialog_to_save_prompt()
+                    self.toc_dialog_to_trended_selector()
             except IndexError:
                 self.error_message("Please pick a table of contents (.csv) file")
 
@@ -115,6 +116,32 @@ class AmazonView(BoxLayout):
         size_hint=(.9, .7 ), pos_hint={'center_x': 0.5, 'center_y': 0.5})
 
         return file_chooser 
+
+    def create_trended_selector(self):
+        chooser = BoxLayout(orientation='vertical')
+
+        text = "Does this report have grouped or trended banners?"
+        label = Label(text=text)
+        label.font_family = "Y2"
+
+        chooser.add_widget(label)
+
+        button_layout = BoxLayout()
+        button_layout.size_hint = (1, .1)
+        yes_btn = Button(text="Yes", on_press=self.is_trended)
+
+        no_btn = Button(text="No", on_press=self.is_basic)
+
+        button_layout.add_widget(yes_btn)
+        button_layout.add_widget(no_btn)
+
+        chooser.add_widget(button_layout)
+
+        trended_chooser = Popup(title='Trended crosstabs',
+        content=chooser,
+        size_hint=(.9, .7 ), pos_hint={'center_x': 0.5, 'center_y': 0.5})
+
+        return trended_chooser
 
     def create_save_file_prompt(self):
         label = Label(text="Choose a file location and name for Amazon crosstabs report")
@@ -160,6 +187,7 @@ class AmazonView(BoxLayout):
         return file_chooser
 
     def run(self, controller):
+        self.__is_trended = False
         self.__controller = controller
         self.open_file_prompt.open()
 
@@ -173,8 +201,17 @@ class AmazonView(BoxLayout):
     def toc_prompt_to_dialog(self, instance):
         self.open_toc_dialog.open()
 
-    def toc_dialog_to_save_prompt(self):
+    def toc_dialog_to_trended_selector(self):
         self.open_toc_dialog.dismiss()
+        self.trended_selector.open()
+
+    def is_trended(self, instance):
+        self.__is_trended = True
+        self.trended_selector.dismiss()
+        self.save_file_prompt.open()
+
+    def is_basic(self, instance):
+        self.trended_selector.dismiss()
         self.save_file_prompt.open()
 
     def save_file_prompt_to_dialog(self, instance):
@@ -182,9 +219,11 @@ class AmazonView(BoxLayout):
 
     def finish(self):
         self.save_file_dialog.dismiss()
-        self.__is_trended = False
-        workbook = self.__controller.rename(self.__open_filename, self.__toc_filename)
-        self.__controller.highlight(workbook, self.__save_filename, self.__is_trended)
+        try:
+            workbook = self.__controller.rename(self.__open_filename, self.__toc_filename)
+            self.__controller.highlight(workbook, self.__save_filename, self.__is_trended)
+        except:
+            self.error_message("Issue formatting report.")
 
     def error_message(self, error):
         label = Label(text=error)
