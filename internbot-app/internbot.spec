@@ -37,5 +37,5 @@ coll = COLLECT(exe, Tree('/users/y2analytics/Documents/GitHub/internbot/internbo
                name='internbot')
 app = BUNDLE(coll,
              name='internbot.app',
-             icon='/users/y2analytics/Documents/GitHub/internbot/internbot/internbot.ico',
+             icon='/users/y2analytics/Documents/GitHub/internbot/internbot/resources/images/y2.icns',
              bundle_identifier=None)
