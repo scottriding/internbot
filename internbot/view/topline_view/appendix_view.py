@@ -143,13 +143,14 @@ class AppendixView(BoxLayout):
         container.add_widget(filechooser)
 
         def save_file(path, filename):
-            self.__save_filename = os.path.join(path, filename)
+            filepath = os.path.join(path, filename)
             path, ext = os.path.splitext(filepath)
             if ext != ".xlsx" and ext != ".docx":
                 if self.__is_doc_report:
                     filepath += ".docx"
                 else:
                     filepath += ".xlsx"
+            self.__save_filename = filepath
             self.finish()
 
         button_layout = BoxLayout()
