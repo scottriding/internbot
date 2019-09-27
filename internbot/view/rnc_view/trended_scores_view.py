@@ -67,6 +67,7 @@ class TrendedScoresView(BoxLayout):
         return round_inputter
 
     def create_open_file_prompt(self):
+        popup_layout = BoxLayout(orientation='vertical')
         help_text = "Choose trended score reports (TSR) data (.csv) file \n\n"
         help_text += "[ref=click][color=F3993D]Click here for TSR data examples[/color][/ref]"
 
@@ -77,10 +78,17 @@ class TrendedScoresView(BoxLayout):
         report_label.bind(on_ref_press=examples_link)
         report_label.font_family = "Y2"
 
+        popup_layout.add_widget(report_label)
+
+        save_btn = Button(text='>', size_hint=(.2,.2))
+        save_btn.pos_hint={'center_x': 0.5, 'center_y': 0.5}
+        save_btn.bind(on_release=self.open_file_prompt_to_dialog)
+
+        popup_layout.add_widget(save_btn)
+
         popup = Popup(title="Select TSR data file",
-        content=report_label,
-        size_hint=(.7, .5), pos_hint={'center_x': 0.5, 'center_y': 0.5},
-        on_dismiss=self.open_file_prompt_to_dialog)
+        content=popup_layout,
+        size_hint=(.7, .5), pos_hint={'center_x': 0.5, 'center_y': 0.5})
 
         return popup
 
@@ -115,13 +123,21 @@ class TrendedScoresView(BoxLayout):
         return file_chooser 
 
     def create_save_folder_prompt(self):
+        popup_layout = BoxLayout(orientation='vertical')
         label = Label(text="Choose a folder and name for several trended score reports")
         label.font_family= "Y2"
 
+        popup_layout.add_widget(label)
+
+        save_btn = Button(text='>', size_hint=(.2,.2))
+        save_btn.pos_hint={'center_x': 0.5, 'center_y': 0.5}
+        save_btn.bind(on_release=self.save_folder_prompt_to_dialog)
+
+        popup_layout.add_widget(save_btn)
+
         popup = Popup(title="Select location for multiple reports",
-        content=label,
-        size_hint=(.7, .5), pos_hint={'center_x': 0.5, 'center_y': 0.5},
-        on_dismiss=self.save_folder_prompt_to_dialog)
+        content=popup_layout,
+        size_hint=(.7, .5), pos_hint={'center_x': 0.5, 'center_y': 0.5})
 
         return popup
 
@@ -175,6 +191,7 @@ class TrendedScoresView(BoxLayout):
         self.open_file_prompt.open()
 
     def open_file_prompt_to_dialog(self, instance):
+        self.open_file_prompt.dismiss()
         self.open_file_dialog.open()
 
     def open_file_dialog_to_save_prompt(self):
@@ -186,6 +203,7 @@ class TrendedScoresView(BoxLayout):
             self.error_message("Error reading data file.")
         
     def save_folder_prompt_to_dialog(self, instance):
+        self.save_folder_prompt.dismiss()
         self.save_folder_dialog.open()
 
     def finish(self):

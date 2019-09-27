@@ -69,6 +69,7 @@ class IssueTrendedView(BoxLayout):
         return round_inputter
 
     def create_open_file_prompt(self):
+        popup_layout = BoxLayout(orientation='vertical')
         help_text = "Choose issue trended report data (.csv) file \n\n"
         help_text += "[ref=click][color=F3993D]Click here for issue trended data examples[/color][/ref]"
 
@@ -79,10 +80,17 @@ class IssueTrendedView(BoxLayout):
         report_label.bind(on_ref_press=examples_link)
         report_label.font_family = "Y2"
 
+        popup_layout.add_widget(report_label)
+
+        save_btn = Button(text='>', size_hint=(.2,.2))
+        save_btn.pos_hint={'center_x': 0.5, 'center_y': 0.5}
+        save_btn.bind(on_release=self.open_file_prompt_to_dialog)
+
+        popup_layout.add_widget(save_btn)
+
         popup = Popup(title="Select issue trended data file",
-        content=report_label,
-        size_hint=(.7, .5), pos_hint={'center_x': 0.5, 'center_y': 0.5},
-        on_dismiss=self.open_file_prompt_to_dialog)
+        content=popup_layout,
+        size_hint=(.7, .5), pos_hint={'center_x': 0.5, 'center_y': 0.5})
 
         return popup
 
@@ -117,13 +125,21 @@ class IssueTrendedView(BoxLayout):
         return file_chooser 
 
     def create_save_file_prompt(self):
+        popup_layout = BoxLayout(orientation='vertical')
         label = Label(text="Choose a file location and name for issue trended report")
         label.font_family= "Y2"
 
+        popup_layout.add_widget(label)
+
+        save_btn = Button(text='>', size_hint=(.2,.2))
+        save_btn.pos_hint={'center_x': 0.5, 'center_y': 0.5}
+        save_btn.bind(on_release=self.save_file_prompt_to_dialog)
+
+        popup_layout.add_widget(save_btn)
+
         popup = Popup(title="Select save file location",
-        content=label,
-        size_hint=(.7, .5), pos_hint={'center_x': 0.5, 'center_y': 0.5},
-        on_dismiss=self.save_file_prompt_to_dialog)
+        content=popup_layout,
+        size_hint=(.7, .5), pos_hint={'center_x': 0.5, 'center_y': 0.5})
 
         return popup
 
@@ -173,6 +189,7 @@ class IssueTrendedView(BoxLayout):
         self.open_file_prompt.open()
 
     def open_file_prompt_to_dialog(self, instance):
+        self.open_file_prompt.dismiss()
         self.open_file_dialog.open()
 
     def open_file_dialog_to_save_prompt(self):
@@ -184,6 +201,7 @@ class IssueTrendedView(BoxLayout):
             self.error_message("Error in reading data file")
 
     def save_file_prompt_to_dialog(self, instance):
+        self.save_file_prompt.dismiss()
         self.save_file_dialog.open()
 
     def finish(self):

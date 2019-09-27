@@ -33,6 +33,7 @@ class PowerpointView(BoxLayout):
         self.save_file_dialog = self.create_save_file_dialog()
 
     def create_survey_prompt(self):
+        popup_layout = BoxLayout(orientation='vertical')
         help_text = "Choose survey (.csv or .qsf) file\n\n"
         help_text += "[ref=click][color=F3993D]Click here for examples of survey files[/color][/ref]"
 
@@ -43,10 +44,17 @@ class PowerpointView(BoxLayout):
         label.bind(on_ref_press=examples_link)
         label.font_family= "Y2"
 
+        popup_layout.add_widget(label)
+
+        save_btn = Button(text='>', size_hint=(.2,.2))
+        save_btn.pos_hint={'center_x': 0.5, 'center_y': 0.5}
+        save_btn.bind(on_release=self.open_survey_prompt_to_dialog)
+
+        popup_layout.add_widget(save_btn)
+
         popup = Popup(title="Select survey file",
-        content=label,
-        size_hint=(.7, .5), pos_hint={'center_x': 0.5, 'center_y': 0.5},
-        on_dismiss=self.open_survey_prompt_to_dialog)
+        content=popup_layout,
+        size_hint=(.7, .5), pos_hint={'center_x': 0.5, 'center_y': 0.5})
 
         return popup
 
@@ -191,6 +199,7 @@ class PowerpointView(BoxLayout):
         self.trended_labels.open()
 
     def create_open_freq_prompt(self):
+        popup_layout = BoxLayout(orientation='vertical')
         help_text = "Choose a frequencies (.csv) file\n\n"
         help_text += "[ref=click][color=F3993D]Click here for examples of frequency files[/color][/ref]"
 
@@ -201,10 +210,17 @@ class PowerpointView(BoxLayout):
         label.bind(on_ref_press=examples_link)
         label.font_family= "Y2"
 
+        popup_layout.add_widget(label)
+
+        save_btn = Button(text='>', size_hint=(.2,.2))
+        save_btn.pos_hint={'center_x': 0.5, 'center_y': 0.5}
+        save_btn.bind(on_release=self.open_freq_prompt_to_dialog)
+
+        popup_layout.add_widget(save_btn)
+
         popup = Popup(title="Select frequencies file",
-        content=label,
-        size_hint=(.7, .5), pos_hint={'center_x': 0.5, 'center_y': 0.5},
-        on_dismiss=self.open_freq_prompt_to_dialog)
+        content=popup_layout,
+        size_hint=(.7, .5), pos_hint={'center_x': 0.5, 'center_y': 0.5})
 
         return popup
 
@@ -239,6 +255,7 @@ class PowerpointView(BoxLayout):
         return file_chooser 
 
     def create_template_prompt(self):
+        popup_layout = BoxLayout(orientation='vertical')
         help_text = "Choose a powerpoint template (.pptx) file\n\n"
         help_text += "[ref=click][color=F3993D]Click here for examples of template files[/color][/ref]"
 
@@ -249,10 +266,17 @@ class PowerpointView(BoxLayout):
         label.bind(on_ref_press=examples_link)
         label.font_family= "Y2"
 
+        popup_layout.add_widget(label)
+
+        save_btn = Button(text='>', size_hint=(.2,.2))
+        save_btn.pos_hint={'center_x': 0.5, 'center_y': 0.5}
+        save_btn.bind(on_release=self.open_template_prompt_to_dialog)
+
+        popup_layout.add_widget(save_btn)
+
         popup = Popup(title="Select template file",
-        content=label,
-        size_hint=(.7, .5), pos_hint={'center_x': 0.5, 'center_y': 0.5},
-        on_dismiss=self.open_template_prompt_to_dialog)
+        content=popup_layout,
+        size_hint=(.7, .5), pos_hint={'center_x': 0.5, 'center_y': 0.5})
 
         return popup
 
@@ -287,13 +311,21 @@ class PowerpointView(BoxLayout):
         return file_chooser 
 
     def create_save_file_prompt(self):
+        popup_layout = BoxLayout(orientation='vertical')
         label = Label(text="Choose a file location and name for topline powerpoint report")
         label.font_family= "Y2"
 
+        popup_layout.add_widget(label)
+
+        save_btn = Button(text='>', size_hint=(.2,.2))
+        save_btn.pos_hint={'center_x': 0.5, 'center_y': 0.5}
+        save_btn.bind(on_release=self.save_file_prompt_to_dialog)
+
+        popup_layout.add_widget(save_btn)
+
         popup = Popup(title="Select save file location",
-        content=label,
-        size_hint=(.7, .5), pos_hint={'center_x': 0.5, 'center_y': 0.5},
-        on_dismiss=self.save_file_prompt_to_dialog)
+        content=popup_layout,
+        size_hint=(.7, .5), pos_hint={'center_x': 0.5, 'center_y': 0.5})
 
         return popup
 
@@ -339,6 +371,7 @@ class PowerpointView(BoxLayout):
         self.open_survey_prompt.open()
         
     def open_survey_prompt_to_dialog(self, instance):
+        self.open_survey_prompt.dismiss()
         self.open_survey_dialog.open()
 
     def open_survey_dialog_to_trended_selector(self):
@@ -359,6 +392,7 @@ class PowerpointView(BoxLayout):
         self.open_freq_prompt.open()
 
     def open_freq_prompt_to_dialog(self, instance):
+        self.open_freq_prompt.dismiss()
         self.open_freq_dialog.open()
 
     def open_freq_dialog_to_open_template_prompt(self):
@@ -367,6 +401,7 @@ class PowerpointView(BoxLayout):
         self.open_template_prompt.open()
 
     def open_template_prompt_to_dialog(self, instance):
+        self.open_template_prompt.dismiss()
         self.open_template_dialog.open()
 
     def open_template_dialog_to_save_prompt(self):
@@ -374,6 +409,7 @@ class PowerpointView(BoxLayout):
         self.save_file_prompt.open()
 
     def save_file_prompt_to_dialog(self, instance):
+        self.save_file_prompt.dismiss()
         self.save_file_dialog.open()
 
     def finish(self):
