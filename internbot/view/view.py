@@ -19,7 +19,6 @@ from kivy.core.audio import SoundLoader
 import webbrowser
 import os
 
-
 class View(App):
 
     def build(self):
@@ -42,6 +41,7 @@ class View(App):
 
         self.open_sound = SoundLoader.load('resources/sounds/open.mp3')
         self.close_sound = SoundLoader.load('resources/sounds/close.mp3')
+        self.icon = 'resources/images/y2.icns'
 
         self.open_sound.play()
 
@@ -157,7 +157,7 @@ class View(App):
         help_text += "[ref=click][color=F3993D]Click here for examples of reports[/color][/ref]"
 
         def examples_link(instance, value):
-            webbrowser.open("https://www.dropbox.com/sh/bbcle8f9nifk4bo/AAA-JGnsx1XnhLaD_5Z9oDZna?dl=0")
+            webbrowser.open("https://www.dropbox.com/sh/ia0c3b2lvq8kb68/AAAV4ELm-FPW1giqs4RZdRMra?dl=0")
 
 
         label = Label(text=help_text, markup=True)

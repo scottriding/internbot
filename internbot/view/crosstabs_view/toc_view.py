@@ -13,6 +13,7 @@ from kivy.uix.filechooser import FileChooserListView, FileChooserIconView
 import os
 import io
 from contextlib import redirect_stdout
+import webbrowser
 
 
 class TOCView(BoxLayout):
@@ -30,7 +31,14 @@ class TOCView(BoxLayout):
         self.save_file_dialog = self.create_save_file_dialog()
 
     def create_open_file_prompt(self):
-        label = Label(text="Choose Qualtrics survey file (.qsf) for project")
+        help_text = "Choose Qualtrics survey file (.qsf) for project\n\n"
+        help_text += "[ref=click][color=F3993D]Click here for examples of generated table of contents[/color][/ref]"
+
+        def examples_link(instance, value):
+            webbrowser.open("https://www.dropbox.com/sh/lyhon1rrgjv88xi/AABh9gVKfON5zVMUYKQL6pzwa?dl=0")
+
+        label = Label(text=help_text, markup=True)
+        label.bind(on_ref_press=examples_link)
         label.font_family= "Y2"
 
         popup = Popup(title="Select survey file",

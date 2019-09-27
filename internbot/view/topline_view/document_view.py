@@ -36,7 +36,14 @@ class DocumentView(BoxLayout):
         self.save_file_dialog = self.create_save_file_dialog()
 
     def create_open_survey_prompt(self):
-        label = Label(text="Choose survey (.csv or .qsf) file")
+        help_text = "Choose survey (.csv or .qsf) file\n\n"
+        help_text += "[ref=click][color=F3993D]Click here for examples of survey files[/color][/ref]"
+
+        def examples_link(instance, value):
+            webbrowser.open("https://www.dropbox.com/sh/qrk41o9k3dc761d/AAAr3L7bk2GTOJEQBfU9m5F-a?dl=0")
+
+        label = Label(text=help_text, markup=True)
+        label.bind(on_ref_press=examples_link)
         label.font_family= "Y2"
 
         popup = Popup(title="Select survey file",
@@ -87,9 +94,15 @@ class DocumentView(BoxLayout):
     def create_trended_selector(self):
         chooser = BoxLayout(orientation='vertical')
 
-        text = "Does this report have grouped or trended frequencies?"
-        label = Label(text=text)
-        label.font_family = "Y2"
+        help_text = "Does this report have grouped or trended frequencies?\n\n"
+        help_text += "[ref=click][color=F3993D]Click here for examples of trended reports[/color][/ref]"
+
+        def examples_link(instance, value):
+            webbrowser.open("https://www.dropbox.com/sh/tfr7twrf5cmt7md/AADQx960X8E4BaR2Nr0aD_yca?dl=0")
+
+        label = Label(text=help_text, markup=True)
+        label.bind(on_ref_press=examples_link)
+        label.font_family= "Y2"
 
         chooser.add_widget(label)
 
@@ -166,6 +179,7 @@ class DocumentView(BoxLayout):
             text = "Group #%s" % str(i+1)
             new_entry = TextInput(text=text)
             new_entry.size_hint = (1, .2)
+            new_entry.write_tab = False
             entry_layout.add_widget(new_entry)
             dict[text] = new_entry
 
@@ -188,7 +202,14 @@ class DocumentView(BoxLayout):
         self.trended_labels.open()
 
     def create_open_freq_prompt(self):
-        label = Label(text="Choose a frequencies (.csv) file")
+        help_text = "Choose a frequencies (.csv) file\n\n"
+        help_text += "[ref=click][color=F3993D]Click here for examples of frequency files[/color][/ref]"
+
+        def examples_link(instance, value):
+            webbrowser.open("https://www.dropbox.com/sh/5jxxjp9fd3djfj5/AAAXE1qgqw3Jk2kefD4cElvIa?dl=0")
+
+        label = Label(text=help_text, markup=True)
+        label.bind(on_ref_press=examples_link)
         label.font_family= "Y2"
 
         popup = Popup(title="Select frequencies file",

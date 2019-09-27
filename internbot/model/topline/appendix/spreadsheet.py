@@ -11,7 +11,7 @@ class Spreadsheet(object):
         self.__is_qualtrics = is_qualtrics
         self.resources_filepath = resources_filepath
 
-        if is_qualtrics:
+        if is_qualtrics is True:
             # fill colors
             self.__header_fill = PatternFill("solid", fgColor = "1E262E")
         else:
@@ -96,7 +96,7 @@ class Spreadsheet(object):
         sheet["B1"].fill = self.__header_fill
         sheet["C1"].fill = self.__header_fill
 
-        if self.__is_qualtrics:
+        if self.__is_qualtrics is True:
             logo = Image(os.path.join(self.resources_filepath, "QLogo.png"))
         else:
             logo = Image(os.path.join(self.resources_filepath, "y2_xtabs.png"))

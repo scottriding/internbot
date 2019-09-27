@@ -30,7 +30,14 @@ class AppendixView(BoxLayout):
         self.save_file_prompt = self.create_save_file_prompt()
 
     def create_open_file_prompt(self):
-        label = Label(text="Choose labelled appendix verbatims (.csv) file")
+        help_text = "Choose labelled appendix verbatims (.csv) file\n\n"
+        help_text += "[ref=click][color=F3993D]Click here for examples of verbatim files[/color][/ref]"
+
+        def examples_link(instance, value):
+            webbrowser.open("https://www.dropbox.com/sh/tmg33zeh71sb71k/AAB5tpanqADX96yB3VL5yLw_a?dl=0")
+
+        label = Label(text=help_text, markup=True)
+        label.bind(on_ref_press=examples_link)
         label.font_family= "Y2"
 
         popup = Popup(title="Select appendix file",
@@ -73,9 +80,15 @@ class AppendixView(BoxLayout):
     def create_report_selector(self):
         chooser = BoxLayout(orientation='vertical')
 
-        text = "Choose from the following report options."
-        label = Label(text=text)
-        label.font_family = "Y2"
+        help_text = "Choose from the following report options\n\n"
+        help_text += "[ref=click][color=F3993D]Click here for examples of report formats[/color][/ref]"
+
+        def examples_link(instance, value):
+            webbrowser.open("https://www.dropbox.com/sh/pcpgh1uin5lzt3w/AABHLm6f_bKzh_RIWqslqFKSa?dl=0")
+
+        label = Label(text=help_text, markup=True)
+        label.bind(on_ref_press=examples_link)
+        label.font_family= "Y2"
 
         chooser.add_widget(label)
 

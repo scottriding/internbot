@@ -130,7 +130,6 @@ class CrosstabsView(BoxLayout):
         def examples_link(instance, value):
             webbrowser.open("https://www.dropbox.com/sh/2b67i3hbj1teg5j/AACWbEIwGtqq5hK894ItmmGpa?dl=0")
 
-
         label = Label(text=help_text, markup=True)
         label.bind(on_ref_press=examples_link)
         label.font_family = "Y2"

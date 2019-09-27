@@ -30,7 +30,14 @@ class AmazonView(BoxLayout):
         self.save_file_dialog = self.create_save_file_dialog()
 
     def create_open_file_prompt(self):
-        label = Label(text="Choose unformatted Amazon SPSS (.xlsx) crosstab report")
+        help_text = "Choose unformatted Amazon SPSS (.xlsx) crosstab report\n\n"
+        help_text += "[ref=click][color=F3993D]Click here for examples of unformatted reports[/color][/ref]"
+
+        def examples_link(instance, value):
+            webbrowser.open("https://www.dropbox.com/sh/1mu0eogzluyy8s1/AACXSWbtpTP5nuXEANE3ud0qa?dl=0")
+
+        label = Label(text=help_text, markup=True)
+        label.bind(on_ref_press=examples_link)
         label.font_family= "Y2"
 
         popup = Popup(title="Select crosstab file",
@@ -75,6 +82,15 @@ class AmazonView(BoxLayout):
         label = Label(text="Choose table of contents (.csv) crosstab file")
         label.font_family= "Y2"
 
+        help_text = "Choose table of contents (.csv) crosstab file\n\n"
+        help_text += "[ref=click][color=F3993D]Click here for examples of table of content files[/color][/ref]"
+
+        def examples_link(instance, value):
+            webbrowser.open("https://www.dropbox.com/sh/md12sy6blwc5rzo/AACNcJMpFxKhBstbevxlAsZja?dl=0")
+
+        label = Label(text=help_text, markup=True)
+        label.bind(on_ref_press=examples_link)
+
         popup = Popup(title="Select table of contents file",
         content=label,
         size_hint=(.7, .5), pos_hint={'center_x': 0.5, 'center_y': 0.5},
@@ -115,9 +131,14 @@ class AmazonView(BoxLayout):
     def create_trended_selector(self):
         chooser = BoxLayout(orientation='vertical')
 
-        text = "Does this report have grouped or trended banners?"
-        label = Label(text=text)
-        label.font_family = "Y2"
+        help_text = "Does this report have grouped or trended banners?\n\n"
+        help_text += "[ref=click][color=F3993D]Click here for examples of trended banners[/color][/ref]"
+
+        def examples_link(instance, value):
+            webbrowser.open("https://www.dropbox.com/sh/5vnjdqh6rji5w78/AAC0T3o-UgPNEfWalmP8PrIYa?dl=0")
+
+        label = Label(text=help_text, markup=True)
+        label.bind(on_ref_press=examples_link)
 
         chooser.add_widget(label)
 

@@ -33,7 +33,14 @@ class FormatReportView(BoxLayout):
         self.save_file_path = ''
 
     def create_open_file_prompt(self):
-        label = Label(text="Choose unformatted QResearch (.xlsx) crosstab report")
+        help_text = "Choose unformatted QResearch (.xlsx) crosstab report\n\n"
+        help_text += "[ref=click][color=F3993D]Click here for examples of unformatted reports[/color][/ref]"
+
+        def examples_link(instance, value):
+            webbrowser.open("https://www.dropbox.com/sh/zwiaf534dfsgtlf/AABmd51ihZVairDCoRZuPbHRa?dl=0")
+
+        label = Label(text=help_text, markup=True)
+        label.bind(on_ref_press=examples_link)
         label.font_family= "Y2"
 
         popup = Popup(title="Select crosstab file",
