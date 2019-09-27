@@ -30,7 +30,8 @@ class AmazonView(BoxLayout):
         self.save_file_dialog = self.create_save_file_dialog()
 
     def create_open_file_prompt(self):
-        help_text = "Choose unformatted Amazon SPSS (.xlsx) crosstab report\n\n"
+        popup_layout = BoxLayout(orientation='vertical')
+        help_text = "Choose an unformatted Amazon SPSS (.xlsx) crosstab report\n\n"
         help_text += "[ref=click][color=F3993D]Click here for examples of unformatted reports[/color][/ref]"
 
         def examples_link(instance, value):
@@ -40,10 +41,17 @@ class AmazonView(BoxLayout):
         label.bind(on_ref_press=examples_link)
         label.font_family= "Y2"
 
+        popup_layout.add_widget(label)
+
+        save_btn = Button(text='>', size_hint=(.2,.2))
+        save_btn.pos_hint={'center_x': 0.5, 'center_y': 0.5}
+        save_btn.bind(on_release=self.open_file_prompt_to_dialog)
+
+        popup_layout.add_widget(save_btn)
+
         popup = Popup(title="Select crosstab file",
-        content=label,
-        size_hint=(.7, .5), pos_hint={'center_x': 0.5, 'center_y': 0.5},
-        on_dismiss=self.open_file_prompt_to_dialog)
+        content=popup_layout,
+        size_hint=(.7, .5), pos_hint={'center_x': 0.5, 'center_y': 0.5})
 
         return popup
 
@@ -79,9 +87,7 @@ class AmazonView(BoxLayout):
         return file_chooser 
 
     def create_toc_prompt(self):
-        label = Label(text="Choose table of contents (.csv) crosstab file")
-        label.font_family= "Y2"
-
+        popup_layout = BoxLayout(orientation='vertical')
         help_text = "Choose table of contents (.csv) crosstab file\n\n"
         help_text += "[ref=click][color=F3993D]Click here for examples of table of content files[/color][/ref]"
 
@@ -91,10 +97,17 @@ class AmazonView(BoxLayout):
         label = Label(text=help_text, markup=True)
         label.bind(on_ref_press=examples_link)
 
+        popup_layout.add_widget(label)
+
+        save_btn = Button(text='>', size_hint=(.2,.2))
+        save_btn.pos_hint={'center_x': 0.5, 'center_y': 0.5}
+        save_btn.bind(on_release=self.toc_prompt_to_dialog)
+
+        popup_layout.add_widget(save_btn)
+
         popup = Popup(title="Select table of contents file",
-        content=label,
-        size_hint=(.7, .5), pos_hint={'center_x': 0.5, 'center_y': 0.5},
-        on_dismiss=self.toc_prompt_to_dialog)
+        content=popup_layout,
+        size_hint=(.7, .5), pos_hint={'center_x': 0.5, 'center_y': 0.5})
 
         return popup
 
@@ -160,13 +173,21 @@ class AmazonView(BoxLayout):
         return trended_chooser
 
     def create_save_file_prompt(self):
+        popup_layout = BoxLayout(orientation='vertical')
         label = Label(text="Choose a file location and name for Amazon crosstabs report")
         label.font_family= "Y2"
 
+        popup_layout.add_widget(label)
+
+        save_btn = Button(text='>', size_hint=(.2,.2))
+        save_btn.pos_hint={'center_x': 0.5, 'center_y': 0.5}
+        save_btn.bind(on_release=self.save_file_prompt_to_dialog)
+
+        popup_layout.add_widget(save_btn)
+
         popup = Popup(title="Select save file location",
-        content=label,
-        size_hint=(.7, .5), pos_hint={'center_x': 0.5, 'center_y': 0.5},
-        on_dismiss=self.save_file_prompt_to_dialog)
+        content=popup_layout,
+        size_hint=(.7, .5), pos_hint={'center_x': 0.5, 'center_y': 0.5})
 
         return popup
 
@@ -211,6 +232,7 @@ class AmazonView(BoxLayout):
         self.open_file_prompt.open()
 
     def open_file_prompt_to_dialog(self, instance):
+        self.open_file_prompt.dismiss()
         self.open_file_dialog.open()
 
     def open_file_dialog_to_toc_prompt(self):
@@ -218,6 +240,7 @@ class AmazonView(BoxLayout):
         self.open_toc_prompt.open()
 
     def toc_prompt_to_dialog(self, instance):
+        self.open_toc_prompt.dismiss()
         self.open_toc_dialog.open()
 
     def toc_dialog_to_trended_selector(self):
@@ -234,6 +257,7 @@ class AmazonView(BoxLayout):
         self.save_file_prompt.open()
 
     def save_file_prompt_to_dialog(self, instance):
+        self.save_file_prompt.dismiss()
         self.save_file_dialog.open()
 
     def finish(self):
