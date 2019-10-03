@@ -1,6 +1,8 @@
 from model import model
 from view import view
 
+import os
+
 class Controller(object):
 
     def __init__(self):
@@ -15,7 +17,7 @@ class Controller(object):
         return self.__model.survey(path_to_qsf)
 
     def rename(self, path_to_xlsx, path_to_toc):
-        return self.__model.rename(path_to_xlsx, path_to_toc, 'resources/images/')
+        return self.__model.rename(path_to_xlsx, path_to_toc, image_folder)
 
     def highlight(self, workbook, path_to_output, is_trended_amazon):
         self.__model.highlight(workbook, path_to_output, is_trended_amazon)
@@ -24,7 +26,7 @@ class Controller(object):
         self.__model.build_toc_report(survey, path_to_output)
 
     def build_qresearch_report(self, path_to_workbook, is_qualtrics):
-        self.__model.format_qresearch_report(path_to_workbook, 'resources/images/', is_qualtrics)
+        self.__model.format_qresearch_report(path_to_workbook, image_folder, is_qualtrics)
 
     def save_qresearch_report(self, path_to_output):
         self.__model.save_qresearch_report(path_to_output)
@@ -39,19 +41,21 @@ class Controller(object):
         self.__model.build_spss_model(path_to_directory)
 
     def build_spss_report(self, path_to_output):
-        self.__model.build_spss_report(path_to_output, 'resources/images/')
+        self.__model.build_spss_report(path_to_output, image_folder)
 
     def build_appendix_model(self, path_to_csv):
         self.__model.build_appendix_model(path_to_csv)
 
     def build_appendix_report(self, path_to_output, is_spreadsheet, is_qualtrics):
-        self.__model.build_appendix_report(path_to_output, 'resources/images/', 'resources/templates/appendix_template.docx', is_spreadsheet, is_qualtrics)
+        template_path = os.path.join(template_folder, "appendix_template.docx")
+        self.__model.build_appendix_report(path_to_output, image_folder, template_path, is_spreadsheet, is_qualtrics)
 
     def build_document_model(self, path_to_csv, groups, survey):
         self.__model.build_document_model(path_to_csv, groups, survey)
 
     def build_document_report(self, path_to_output):
-        self.__model.build_document_report('resources/templates/topline_template.docx', path_to_output)
+        template_path = os.path.join(template_folder, "topline_template.docx")
+        self.__model.build_document_report(template_path, path_to_output)
 
     def build_powerpoint_model(self, path_to_csv, groups, survey):
         self.__model.build_powerpoint_model(path_to_csv, groups, survey)
@@ -78,6 +82,9 @@ class Controller(object):
         self.__model.build_trended_report(path_to_output)
 
 if __name__ == '__main__':
+    ## temporary solution for pyinstaller issue with images and templates -- data field in spec file not working
+    template_folder = os.path.expanduser("~/Documents/GitHub/internbot/internbot/resources/templates/")
+    image_folder = os.path.expanduser("~/Documents/GitHub/internbot/internbot/resources/images/")
     controller = Controller()
     controller.view.controller = controller
     controller.view.run()
