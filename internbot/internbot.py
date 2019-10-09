@@ -82,9 +82,9 @@ class Controller(object):
         self.__model.build_trended_report(path_to_output)
 
 if __name__ == '__main__':
-    ## temporary solution for pyinstaller issue with images and templates -- data field in spec file not working
-    template_folder = os.path.expanduser("~/Documents/GitHub/internbot/internbot/resources/templates/")
-    image_folder = os.path.expanduser("~/Documents/GitHub/internbot/internbot/resources/images/")
+    print("Welcome to internbot!")
+    template_folder = os.path.join(sys._MEIPASS, 'resources/templates/')
+    image_folder = os.path.join(sys._MEIPASS, 'resources/images/')
     controller = Controller()
     controller.view.controller = controller
     controller.view.run()
