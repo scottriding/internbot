@@ -53,9 +53,9 @@ class Formatter(object):
     def save(self, path_to_output):
         self.__workbook.save(path_to_output)
 
-    def write_report(self, tables, resources_filepath):
+    def write_report(self, tables, image_path):
         self.__tables = tables
-        self.__resources_filepath = resources_filepath
+        self.__image_path = image_path
         if self.__workbook.get_sheet_by_name("Sheet") is not None:
             toc_sheet = self.__workbook.get_sheet_by_name('Sheet')
             toc_sheet.title = "TOC"
@@ -131,7 +131,7 @@ class Formatter(object):
         sheet["C1"].fill = self.__report_header
         sheet["D1"].fill = self.__report_header
 
-        image = Image(os.path.join(self.resources_filepath, "QLogo.png"))
+        image = Image(image_path)
         sheet.add_image(image, "D1")
 
         sheet["A2"].font = self.__font_bold
@@ -199,7 +199,7 @@ class Formatter(object):
             index += 1
 
         current_cell = "%s%s" % (self.extend_alphabet[index - 3], current_row)
-        logo = Image(os.path.join(self.resources_filepath, "QLogo.png"))
+        logo = Image(image_path)
         sheet.add_image(logo, current_cell)
 
         next_row_cell = "%s%s" % (self.extend_alphabet[index - 3], current_row + 1)

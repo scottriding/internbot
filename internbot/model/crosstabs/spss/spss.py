@@ -44,8 +44,8 @@ class SPSS(object):
             filepath = "%s/%s.xlsx" % (path_to_directory, table)
             self.__report_parser.add_table(filepath)
 
-    def build_spss_report(self, path_to_output, resources_filepath):
-        self.__formatter.write_report(self.__parser.get_tables(), resources_filepath)
+    def build_spss_report(self, path_to_output, image_path):
+        self.__formatter.write_report(self.__parser.get_tables(), image_path)
         self.__formatter.save(path_to_output)
 
 

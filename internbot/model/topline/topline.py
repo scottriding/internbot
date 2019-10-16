@@ -12,8 +12,8 @@ class Topline(object):
     def build_appendix_model(self, path_to_csv):
         self.__appendix.build_appendix_model(path_to_csv)
 
-    def build_appendix_report(self, path_to_output, path_to_logos, path_to_template, is_spreadsheet, is_qualtrics):
-        self.__appendix.build_appendix_report(path_to_output, path_to_logos, path_to_template, is_spreadsheet, is_qualtrics)
+    def build_appendix_report(self, path_to_output, is_document, image_path, template_path):
+        self.__appendix.build_appendix_report(path_to_output, is_document, image_path, template_path)
 
     def build_document_model(self, path_to_csv, groups, survey):
         self.__document.build_document_model(path_to_csv, groups, survey)

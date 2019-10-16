@@ -26,7 +26,8 @@ class AppendixView(BoxLayout):
         self.open_file_prompt = self.create_open_file_prompt()
         self.open_file_dialog = self.create_open_file_dialog()
         self.report_selector = self.create_report_selector()
-        self.format_selector = self.create_format_selector()
+        self.document_format_selector = self.create_document_format_selector()
+        self.spreadsheet_format_selector = self.create_spreadsheet_format_selector()
         self.save_file_prompt = self.create_save_file_prompt()
 
     def create_open_file_prompt(self):
@@ -117,7 +118,7 @@ class AppendixView(BoxLayout):
 
         return report_chooser
 
-    def create_format_selector(self):
+    def create_document_format_selector(self):
         chooser = BoxLayout(orientation='vertical')
 
         text = "Choose from the following format options."
@@ -128,11 +129,39 @@ class AppendixView(BoxLayout):
 
         button_layout = BoxLayout()
         button_layout.size_hint = (1, .1)
-        qualtrics_btn = Button(text="Qualtrics", on_press=self.is_qualtrics)
 
+        policy_btn = Button(text="Utah Policy", on_press=self.is_policy)
+        y2_btn = Button(text="Y2 Analytics", on_press=self.is_y2)
+
+        button_layout.add_widget(policy_btn)
+        button_layout.add_widget(y2_btn)
+
+        chooser.add_widget(button_layout)
+
+        format_chooser = Popup(title='Choose format',
+        content=chooser,
+        size_hint=(.9, .7 ), pos_hint={'center_x': 0.5, 'center_y': 0.5})
+
+        return format_chooser 
+
+    def create_spreadsheet_format_selector(self):
+        chooser = BoxLayout(orientation='vertical')
+
+        text = "Choose from the following format options."
+        label = Label(text=text)
+        label.font_family = "Y2"
+
+        chooser.add_widget(label)
+
+        button_layout = BoxLayout()
+        button_layout.size_hint = (1, .1)
+
+        qualtrics_btn = Button(text="Qualtrics", on_press=self.is_qualtrics)
+        policy_btn = Button(text="Utah Policy", on_press=self.is_policy)
         y2_btn = Button(text="Y2 Analytics", on_press=self.is_y2)
 
         button_layout.add_widget(qualtrics_btn)
+        button_layout.add_widget(policy_btn)
         button_layout.add_widget(y2_btn)
 
         chooser.add_widget(button_layout)
@@ -224,20 +253,32 @@ class AppendixView(BoxLayout):
 
     def is_doc(self, instance):
         self.report_selector.dismiss()
-        self.save_file_prompt.open()
+        self.document_format_selector.open()
 
     def is_sheet(self, instance):
         self.__is_doc_report = False
         self.report_selector.dismiss()
-        self.format_selector.open()
+        self.spreadsheet_format_selector.open()
 
     def is_qualtrics(self, instance):
-        self.__is_qualtrics = True
-        self.format_selector.dismiss()
+        self.__template_name = "QUALTRICS"
+        self.document_format_selector.dismiss()
+        self.spreadsheet_format_selector.dismiss()
+
         self.save_file_prompt.open()
 
     def is_y2(self, instance):
-        self.format_selector.dismiss()
+        self.__template_name = "Y2"
+        self.document_format_selector.dismiss()
+        self.spreadsheet_format_selector.dismiss()
+            
+        self.save_file_prompt.open()
+
+    def is_policy(self, instance):
+        self.__template_name = "UT_POLICY"
+        self.document_format_selector.dismiss()
+        self.spreadsheet_format_selector.dismiss()
+
         self.save_file_prompt.open()
 
     def save_file_prompt_to_dialog(self, instance):
@@ -248,7 +289,7 @@ class AppendixView(BoxLayout):
     def finish(self):
         self.save_file_dialog.dismiss()
         try:
-            self.__controller.build_appendix_report(self.__save_filename, self.__is_doc_report, self.__is_qualtrics)
+            self.__controller.build_appendix_report(self.__save_filename, self.__is_doc_report, self.__template_name)
         except:
             self.error_message("Error formatting appendix report.")
         

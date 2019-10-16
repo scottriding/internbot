@@ -18,8 +18,8 @@ class Crosstabs(object):
     def build_toc_report(self, survey, path_to_output):
         self.__qresearch.build_toc_report(survey, path_to_output)
 
-    def format_qresearch_report(self, path_to_workbook, resources_filepath, is_qualtrics):
-        self.__qresearch.format_qresearch_report(path_to_workbook, resources_filepath, is_qualtrics)
+    def format_qresearch_report(self, path_to_workbook, image_path):
+        self.__qresearch.format_qresearch_report(path_to_workbook, image_path)
 
     def save_qresearch_report(self, path_to_output):
         self.__qresearch.save_qresearch_report(path_to_output)
@@ -33,8 +33,8 @@ class Crosstabs(object):
     def build_spss_model(self, path_to_directory):
         self.__spss.build_spss_model(path_to_directory)
 
-    def build_spss_report(self, path_to_output, resources_filepath):
-        self.__spss.build_spss_report(path_to_output, resources_filepath)
+    def build_spss_report(self, path_to_output, image_path):
+        self.__spss.build_spss_report(path_to_output, image_path)
 
     
 

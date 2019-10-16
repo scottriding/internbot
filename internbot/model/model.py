@@ -23,8 +23,8 @@ class Model(object):
     def build_toc_report(self, survey, path_to_output):
         self.__xtabs.build_toc_report(survey, path_to_output)
 
-    def format_qresearch_report(self, path_to_workbook, resources_filepath, is_qualtrics):
-        self.__xtabs.format_qresearch_report(path_to_workbook, resources_filepath, is_qualtrics)
+    def format_qresearch_report(self, path_to_workbook, image_path):
+        self.__xtabs.format_qresearch_report(path_to_workbook, image_path)
 
     def save_qresearch_report(self, path_to_output):
         self.__xtabs.save_qresearch_report(path_to_output)
@@ -38,14 +38,14 @@ class Model(object):
     def build_spss_model(self, path_to_directory):
         self.__xtabs.build_spss_model(path_to_directory)
 
-    def build_spss_report(self, path_to_output, resources_filepath):
-        self.__xtabs.build_spss_report(path_to_output, resources_filepath)
+    def build_spss_report(self, path_to_output, image_path):
+        self.__xtabs.build_spss_report(path_to_output, image_path)
 
     def build_appendix_model(self, path_to_csv):
         self.__topline.build_appendix_model(path_to_csv)
 
-    def build_appendix_report(self, path_to_output, path_to_logos, path_to_template, is_spreadsheet, is_qualtrics):
-        self.__topline.build_appendix_report(path_to_output, path_to_logos, path_to_template, is_spreadsheet, is_qualtrics)
+    def build_appendix_report(self, path_to_output, is_document, image_path, template_path):
+        self.__topline.build_appendix_report(path_to_output, is_document, image_path, template_path)
 
     def build_document_model(self, path_to_csv, groups, survey):
         self.__topline.build_document_model(path_to_csv, groups, survey)

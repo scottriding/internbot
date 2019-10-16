@@ -9,6 +9,21 @@ class Controller(object):
         self.__view = view.View()
         self.__model = model.Model()
 
+        self.__topline_templates = {}
+        self.__topline_templates["Y2"] = os.path.join(template_folder, "topline_template.docx")
+        self.__topline_templates["QUALTRICS"] = ""
+        self.__topline_templates["UT_POLICY"] = os.path.join(template_folder, "utpolicy_top_template.docx")        
+
+        self.__appendix_templates = {}
+        self.__appendix_templates["Y2"] = os.path.join(template_folder, "appendix_template.docx")
+        self.__appendix_templates["QUALTRICS"] = ""
+        self.__appendix_templates["UT_POLICY"] = os.path.join(template_folder, "utpolicy_app_template.docx")
+
+        self.__template_logos = {}
+        self.__template_logos["Y2"] = os.path.join(image_folder, "y2_xtabs.png")
+        self.__template_logos["QUALTRICS"] = os.path.join(image_folder, "QLogo.png")
+        self.__template_logos["UT_POLICY"] = os.path.join(image_folder, "y2_utpol_logo.png")
+
     @property
     def view(self):
         return self.__view
@@ -25,8 +40,8 @@ class Controller(object):
     def build_toc_report(self, survey, path_to_output):
         self.__model.build_toc_report(survey, path_to_output)
 
-    def build_qresearch_report(self, path_to_workbook, is_qualtrics):
-        self.__model.format_qresearch_report(path_to_workbook, image_folder, is_qualtrics)
+    def build_qresearch_report(self, path_to_workbook, template_name):
+        self.__model.format_qresearch_report(path_to_workbook, self.__template_logos.get(template_name))
 
     def save_qresearch_report(self, path_to_output):
         self.__model.save_qresearch_report(path_to_output)
@@ -40,22 +55,22 @@ class Controller(object):
     def build_spss_model(self, path_to_directory):
         self.__model.build_spss_model(path_to_directory)
 
-    def build_spss_report(self, path_to_output):
-        self.__model.build_spss_report(path_to_output, image_folder)
+    def build_spss_report(self, path_to_output, template_name):
+        self.__model.build_spss_report(path_to_output, self.__template_logos.get(template_name))
 
     def build_appendix_model(self, path_to_csv):
         self.__model.build_appendix_model(path_to_csv)
 
-    def build_appendix_report(self, path_to_output, is_spreadsheet, is_qualtrics):
-        template_path = os.path.join(template_folder, "appendix_template.docx")
-        self.__model.build_appendix_report(path_to_output, image_folder, template_path, is_spreadsheet, is_qualtrics)
+    def build_appendix_report(self, path_to_output, is_document, template_name):
+        template_path = self.__appendix_templates.get(template_name)
+        image_path = self.__template_logos.get(template_name)
+        self.__model.build_appendix_report(path_to_output, is_document, image_path, template_path)
 
     def build_document_model(self, path_to_csv, groups, survey):
         self.__model.build_document_model(path_to_csv, groups, survey)
 
-    def build_document_report(self, path_to_output):
-        template_path = os.path.join(template_folder, "topline_template.docx")
-        self.__model.build_document_report(template_path, path_to_output)
+    def build_document_report(self, template_name, path_to_output):
+        self.__model.build_document_report(self.__topline_templates.get(template_name), path_to_output)
 
     def build_powerpoint_model(self, path_to_csv, groups, survey):
         self.__model.build_powerpoint_model(path_to_csv, groups, survey)
@@ -82,9 +97,10 @@ class Controller(object):
         self.__model.build_trended_report(path_to_output)
 
 if __name__ == '__main__':
-    ## temporary solution for pyinstaller issue with images and templates -- data field in spec file not working
-    template_folder = os.path.expanduser("~/Documents/GitHub/internbot/internbot/resources/templates/")
-    image_folder = os.path.expanduser("~/Documents/GitHub/internbot/internbot/resources/images/")
+    ## directories here only work outside of executable
+    template_folder = "resources/templates"
+    image_folder = "resources/images"
+
     controller = Controller()
     controller.view.controller = controller
     controller.view.run()

@@ -2,7 +2,7 @@ import docx
 
 class Document(object):
 
-    def __init__ (self, path_to_template, is_qualtrics=False):
+    def __init__ (self, path_to_template):
         self.__doc = docx.Document(path_to_template)
 
     def write_appendix(self, questions):

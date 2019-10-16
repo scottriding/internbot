@@ -6,13 +6,15 @@ import os
 
 class Spreadsheet(object):
 
-    def __init__(self, is_qualtrics, resources_filepath):
+    def __init__(self, image_path):
         self.__workbook = Workbook()
-        self.__is_qualtrics = is_qualtrics
-        self.resources_filepath = resources_filepath
-
-        if is_qualtrics is True:
-            # fill colors
+        self.__image_path = image_path
+        is_qualtrics = (os.path.basename(image_path) == "QLogo.png")
+        self.set_formatting(is_qualtrics)
+        
+    def set_formatting(self, is_qualtrics):
+        # fill
+        if is_qualtrics:
             self.__header_fill = PatternFill("solid", fgColor = "1E262E")
         else:
             self.__header_fill = PatternFill("solid", fgColor = "0F243E")
@@ -30,6 +32,12 @@ class Spreadsheet(object):
 
         # borders
         self.__thin_bottom = Border(bottom = Side(style = 'thin'))
+
+        # logo adjustment
+        if is_qualtrics:
+            self.__row_height = 35
+        else:
+            self.__row_height = 52
 
     def write_appendix(self, questions):
         if self.__workbook.get_sheet_by_name("Sheet") is not None:
@@ -87,19 +95,13 @@ class Spreadsheet(object):
         sheet.column_dimensions["B"].width = 55
         sheet.column_dimensions["C"].width = 33
 
-        if self.__is_qualtrics:
-            sheet.row_dimensions[1].height = 35
-        else:
-            sheet.row_dimensions[1].height = 52
+        sheet.row_dimensions[1].height = self.__row_height
 
         sheet["A1"].fill = self.__header_fill
         sheet["B1"].fill = self.__header_fill
         sheet["C1"].fill = self.__header_fill
 
-        if self.__is_qualtrics is True:
-            logo = Image(os.path.join(self.resources_filepath, "QLogo.png"))
-        else:
-            logo = Image(os.path.join(self.resources_filepath, "y2_xtabs.png"))
+        logo = Image(self.__image_path)
         sheet.add_image(logo, "C1")
 
     def write_question(self, question, sheet):

@@ -28,8 +28,6 @@ class FormatReportView(BoxLayout):
         self.save_file_dialog = self.create_save_file_dialog()
 
         self.open_file_path = ''
-        self.image_dir = 'resources/images/'
-        self.__is_qualtrics = True
         self.save_file_path = ''
 
     def create_open_file_prompt(self):
@@ -99,11 +97,13 @@ class FormatReportView(BoxLayout):
 
         button_layout = BoxLayout()
         button_layout.size_hint = (1, .1)
-        qualtrics_btn = Button(text="Qualtrics", on_press=self.is_qualtrics)
 
+        qualtrics_btn = Button(text="Qualtrics", on_press=self.is_qualtrics)
+        policy_btn = Button(text="Utah Policy", on_press=self.is_policy)
         y2_btn = Button(text="Y2 Analytics", on_press=self.is_y2)
 
         button_layout.add_widget(qualtrics_btn)
+        button_layout.add_widget(policy_btn)
         button_layout.add_widget(y2_btn)
 
         chooser.add_widget(button_layout)
@@ -183,16 +183,23 @@ class FormatReportView(BoxLayout):
     def is_qualtrics(self, instance):
         self.format_selector.dismiss()
         try:
-            self.__controller.build_qresearch_report(self.__open_filename, self.__is_qualtrics)
+            self.__controller.build_qresearch_report(self.__open_filename, "QUALTRICS")
+            self.save_file_prompt.open()
+        except:
+            self.error_message("Issue formatting report.")
+
+    def is_policy(self, instance):
+        self.format_selector.dismiss()
+        try:
+            self.__controller.build_qresearch_report(self.__open_filename, "UT_POLICY")
             self.save_file_prompt.open()
         except:
             self.error_message("Issue formatting report.")
         
     def is_y2(self, instance):
-        self.__is_qualtrics = False
         self.format_selector.dismiss()
         try:
-            self.__controller.build_qresearch_report(self.__open_filename, self.__is_qualtrics)
+            self.__controller.build_qresearch_report(self.__open_filename, "Y2")
             self.save_file_prompt.open()
         except:
             self.error_message("Issue formatting report.")

@@ -32,6 +32,7 @@ class DocumentView(BoxLayout):
         self.trended_count = self.create_trended_count()
         self.open_freq_prompt = self.create_open_freq_prompt()
         self.open_freq_dialog = self.create_open_freq_dialog()
+        self.format_selector = self.create_format_selector()
         self.save_file_prompt = self.create_save_file_prompt()
         self.save_file_dialog = self.create_save_file_dialog()
 
@@ -243,7 +244,7 @@ class DocumentView(BoxLayout):
             try:
                 filepath = os.path.join(path, filename[0])
                 self.__open_filename = filepath
-                self.open_freq_dialog_to_save_prompt()
+                self.open_freq_dialog_to_format_selector()
             except IndexError:
                 self.error_message("Please pick a frequencies (.csv) file")
 
@@ -264,6 +265,32 @@ class DocumentView(BoxLayout):
         size_hint=(.9, .7 ), pos_hint={'center_x': 0.5, 'center_y': 0.5})
 
         return file_chooser
+
+    def create_format_selector(self):
+        chooser = BoxLayout(orientation='vertical')
+
+        text = "Choose from the following format options."
+        label = Label(text=text)
+        label.font_family = "Y2"
+
+        chooser.add_widget(label)
+
+        button_layout = BoxLayout()
+        button_layout.size_hint = (1, .1)
+        policy_btn = Button(text="Utah Policy", on_press=self.is_policy)
+
+        y2_btn = Button(text="Y2 Analytics", on_press=self.is_y2)
+
+        button_layout.add_widget(policy_btn)
+        button_layout.add_widget(y2_btn)
+
+        chooser.add_widget(button_layout)
+
+        format_chooser = Popup(title='Choose format',
+        content=chooser,
+        size_hint=(.9, .7 ), pos_hint={'center_x': 0.5, 'center_y': 0.5})
+
+        return format_chooser 
 
     def create_save_file_prompt(self):
         popup_layout = BoxLayout(orientation='vertical')
@@ -321,7 +348,7 @@ class DocumentView(BoxLayout):
         return file_chooser
 
     def run(self, controller):
-        self.is_qsf = True
+        self.__template_name = ""
         self.__group_names = []
         self.__survey = None
         self.__controller = controller
@@ -352,21 +379,31 @@ class DocumentView(BoxLayout):
         if self.is_qsf:
             self.open_freq_prompt.open()
         else:
-            self.save_file_prompt.open()
+            self.format_selector.open()
 
     def trended_labels_to_freqs(self):
         self.trended_labels.dismiss()
         if self.is_qsf:
             self.open_freq_prompt.open()
         else:
-            self.save_file_prompt.open()
+            self.format_selector.open()
 
     def open_freq_prompt_to_dialog(self, instance):
         self.open_freq_prompt.dismiss()
         self.open_freq_dialog.open()
 
-    def open_freq_dialog_to_save_prompt(self):
+    def open_freq_dialog_to_format_selector(self):
         self.open_freq_dialog.dismiss()
+        self.format_selector.open()
+
+    def is_y2(self, instance):
+        self.__template_name = "Y2"
+        self.format_selector.dismiss()
+        self.save_file_prompt.open()
+
+    def is_policy(self, instance):
+        self.__template_name = "UT_POLICY"
+        self.format_selector.dismiss()
         self.save_file_prompt.open()
 
     def save_file_prompt_to_dialog(self, instance):
@@ -381,7 +418,7 @@ class DocumentView(BoxLayout):
             self.error_message("Issue parsing frequency file")
 
         try:
-            self.__controller.build_document_report(self.__save_filename)
+            self.__controller.build_document_report(self.__template_name, self.__save_filename)
         except:
             self.error_message("Issue building topline report")
 
