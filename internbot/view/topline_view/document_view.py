@@ -412,8 +412,15 @@ class DocumentView(BoxLayout):
 
     def finish(self):
         self.save_file_dialog.dismiss()
-        self.__controller.build_document_model(self.__open_filename, self.__group_names, self.__survey)
-        self.__controller.build_document_report(self.__template_name, self.__save_filename)
+        try:
+            self.__controller.build_document_model(self.__open_filename, self.__group_names, self.__survey)
+        except:
+            self.error_message("Issue parsing frequency file")
+
+        try:
+            self.__controller.build_document_report(self.__template_name, self.__save_filename)
+        except:
+            self.error_message("Issue building topline report")
 
     def error_message(self, error):
         label = Label(text=error)

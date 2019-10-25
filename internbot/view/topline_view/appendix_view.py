@@ -245,8 +245,11 @@ class AppendixView(BoxLayout):
 
     def open_file_dialog_to_report_selector(self):
         self.open_file_dialog.dismiss()
-        self.__controller.build_appendix_model(self.__open_filename)
-        self.report_selector.open()
+        try:
+            self.__controller.build_appendix_model(self.__open_filename)
+            self.report_selector.open()
+        except:
+            self.error_message("Error reading in data file.")
 
     def is_doc(self, instance):
         self.report_selector.dismiss()
