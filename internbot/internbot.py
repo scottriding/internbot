@@ -23,6 +23,7 @@ class Controller(object):
         self.__template_logos["Y2"] = os.path.join(image_folder, "y2_xtabs.png")
         self.__template_logos["QUALTRICS"] = os.path.join(image_folder, "QLogo.png")
         self.__template_logos["UT_POLICY"] = os.path.join(image_folder, "y2_utpol_logo.png")
+        self.__template_logos["WHATSAPP"] = os.path.join(image_folder, "whatsapp.png")
 
     @property
     def view(self):

@@ -101,7 +101,7 @@ class FormatReportView(BoxLayout):
         qualtrics_btn = Button(text="Qualtrics", on_press=self.is_qualtrics)
         policy_btn = Button(text="Utah Policy", on_press=self.is_policy)
         y2_btn = Button(text="Y2 Analytics", on_press=self.is_y2)
-        wa_btn = Button(text="Whatsapp", on_press=self.is_whatsapp)
+        wa_btn = Button(text="WhatsApp", on_press=self.is_whatsapp)
 
         button_layout.add_widget(qualtrics_btn)
         button_layout.add_widget(policy_btn)

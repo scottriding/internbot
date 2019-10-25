@@ -64,7 +64,7 @@ class Formatter(object):
                 self.__extend_alphabet.append(triple_letters)
             index += 1
 
-        def format_qresearch_report(self, path_to_workbook, image_path):
+    def format_qresearch_report(self, path_to_workbook, image_path):
         table_index = 0
         self.__workbook = load_workbook(path_to_workbook)
         print("Loading workbook")
@@ -89,8 +89,7 @@ class Formatter(object):
                     table_index += 1    
         print("Done!")
 
-    def set_template(self, is_qualtrics):
-        is_qualtrics = (os.path.basename(self.__image_path) == "QLogo.png")
+    def set_template(self):
         if (os.path.basename(self.__image_path) == "QLogo.png"):
             self.__row_height = 35
             self.__header_fill = PatternFill("solid", fgColor = "1E262E")
@@ -107,10 +106,10 @@ class Formatter(object):
             self.__hi_significant_fill = PatternFill("solid", fgColor = "2083E7")
             self.__lo_significant_fill = PatternFill("solid", fgColor = "2083E7")
         elif (os.path.basename(self.__image_path) == "whatsapp.png"):
-            self.__row_height = 35
-            self.__header_fill = PatternFill("solid", fgColor = "1EBDA5")
-            self.__hi_significant_fill = PatternFill("solid", fgColor = "2083E7")
-            self.__lo_significant_fill = PatternFill("solid", fgColor = "2083E7")
+            self.__row_height = 57
+            self.__header_fill = PatternFill("solid", fgColor = "445963")
+            self.__hi_significant_fill = PatternFill("solid", fgColor = "1EBDA5")
+            self.__lo_significant_fill = PatternFill("solid", fgColor = "1EBDA5")
 
         self.__table_fill = PatternFill("solid", fgColor = "E7E6E6")
         self.__white_fill = PatternFill("solid", fgColor = "FFFFFF")
@@ -133,7 +132,7 @@ class Formatter(object):
         toc_sheet.column_dimensions[table_no_col].width = 9
         toc_sheet.column_dimensions[table_title_col].width = 100
         toc_sheet.column_dimensions[base_desc_col].width = 33
-        toc_sheet.column_dimensions[base_size_col].width = 29.5
+        toc_sheet.column_dimensions[base_size_col].width = 34
 
         if toc_sheet["A1"].value is not None:
             toc_sheet.insert_rows(1)
