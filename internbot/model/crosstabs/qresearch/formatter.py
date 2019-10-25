@@ -64,16 +64,13 @@ class Formatter(object):
                 self.__extend_alphabet.append(triple_letters)
             index += 1
 
-    def format_qresearch_report(self, path_to_workbook, image_path):
+        def format_qresearch_report(self, path_to_workbook, image_path):
         table_index = 0
         self.__workbook = load_workbook(path_to_workbook)
         print("Loading workbook")
 
         self.__image_path = image_path
-        print(os.path.basename(image_path))
-        print(image_path)
-        is_qualtrics = (os.path.basename(image_path) == "QLogo.png")
-        self.set_template(is_qualtrics)
+        self.set_template()
 
         for sheet in self.__workbook.worksheets:
             if sheet.title == 'TOC':
@@ -93,14 +90,25 @@ class Formatter(object):
         print("Done!")
 
     def set_template(self, is_qualtrics):
-        if is_qualtrics:
+        is_qualtrics = (os.path.basename(self.__image_path) == "QLogo.png")
+        if (os.path.basename(self.__image_path) == "QLogo.png"):
             self.__row_height = 35
             self.__header_fill = PatternFill("solid", fgColor = "1E262E")
             self.__hi_significant_fill = PatternFill("solid", fgColor = "2DCCD3")
             self.__lo_significant_fill = PatternFill("solid", fgColor = "2DCCD3")
-        else:
+        elif (os.path.basename(self.__image_path) == "y2_xtabs.png"):
             self.__row_height = 52
             self.__header_fill = PatternFill("solid", fgColor = "0F243E")
+            self.__hi_significant_fill = PatternFill("solid", fgColor = "2083E7")
+            self.__lo_significant_fill = PatternFill("solid", fgColor = "2083E7")
+        elif (os.path.basename(self.__image_path) == "y2_utpol_logo.png"):
+            self.__row_height = 52
+            self.__header_fill = PatternFill("solid", fgColor = "0F243E")
+            self.__hi_significant_fill = PatternFill("solid", fgColor = "2083E7")
+            self.__lo_significant_fill = PatternFill("solid", fgColor = "2083E7")
+        elif (os.path.basename(self.__image_path) == "whatsapp.png"):
+            self.__row_height = 35
+            self.__header_fill = PatternFill("solid", fgColor = "1EBDA5")
             self.__hi_significant_fill = PatternFill("solid", fgColor = "2083E7")
             self.__lo_significant_fill = PatternFill("solid", fgColor = "2083E7")
 
