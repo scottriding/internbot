@@ -12,6 +12,7 @@ class CSVToplineReport(object):
         self.years = years
         names = questions.list_names()
         for name in names:
+            print(name)
             self.write_question(name)
         print("Finished!")
         
@@ -99,6 +100,10 @@ class CSVToplineReport(object):
         
     def freqs_percent(self, freq, is_first=False):
         result = 0
+        if freq == "NaN":
+            return freq
+        if freq == "NA":
+            return freq
         if float(freq) >= 1.0:
             result = int(freq) * 100
         else:

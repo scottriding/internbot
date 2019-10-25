@@ -70,10 +70,7 @@ class Formatter(object):
         print("Loading workbook")
 
         self.__image_path = image_path
-        print(os.path.basename(image_path))
-        print(image_path)
-        is_qualtrics = (os.path.basename(image_path) == "QLogo.png")
-        self.set_template(is_qualtrics)
+        self.set_template()
 
         for sheet in self.__workbook.worksheets:
             if sheet.title == 'TOC':
@@ -92,17 +89,27 @@ class Formatter(object):
                     table_index += 1    
         print("Done!")
 
-    def set_template(self, is_qualtrics):
-        if is_qualtrics:
+    def set_template(self):
+        if (os.path.basename(self.__image_path) == "QLogo.png"):
             self.__row_height = 35
             self.__header_fill = PatternFill("solid", fgColor = "1E262E")
             self.__hi_significant_fill = PatternFill("solid", fgColor = "2DCCD3")
             self.__lo_significant_fill = PatternFill("solid", fgColor = "2DCCD3")
-        else:
+        elif (os.path.basename(self.__image_path) == "y2_xtabs.png"):
             self.__row_height = 52
             self.__header_fill = PatternFill("solid", fgColor = "0F243E")
             self.__hi_significant_fill = PatternFill("solid", fgColor = "2083E7")
             self.__lo_significant_fill = PatternFill("solid", fgColor = "2083E7")
+        elif (os.path.basename(self.__image_path) == "y2_utpol_logo.png"):
+            self.__row_height = 52
+            self.__header_fill = PatternFill("solid", fgColor = "0F243E")
+            self.__hi_significant_fill = PatternFill("solid", fgColor = "2083E7")
+            self.__lo_significant_fill = PatternFill("solid", fgColor = "2083E7")
+        elif (os.path.basename(self.__image_path) == "whatsapp.png"):
+            self.__row_height = 57
+            self.__header_fill = PatternFill("solid", fgColor = "445963")
+            self.__hi_significant_fill = PatternFill("solid", fgColor = "1EBDA5")
+            self.__lo_significant_fill = PatternFill("solid", fgColor = "1EBDA5")
 
         self.__table_fill = PatternFill("solid", fgColor = "E7E6E6")
         self.__white_fill = PatternFill("solid", fgColor = "FFFFFF")
@@ -125,7 +132,7 @@ class Formatter(object):
         toc_sheet.column_dimensions[table_no_col].width = 9
         toc_sheet.column_dimensions[table_title_col].width = 100
         toc_sheet.column_dimensions[base_desc_col].width = 33
-        toc_sheet.column_dimensions[base_size_col].width = 29.5
+        toc_sheet.column_dimensions[base_size_col].width = 34
 
         if toc_sheet["A1"].value is not None:
             toc_sheet.insert_rows(1)
@@ -234,6 +241,7 @@ class Formatter(object):
         sheet.column_dimensions["B"].width = 25
 
     def parse_col_names(self, sheet):
+        print("Parsing column names")
         # calculate column names or determine end of table if applicable
         self.__col_names = []
         col_cell_row = None
@@ -305,6 +313,7 @@ class Formatter(object):
         return start_table_row
 
     def unmerge_response_cols(self, sheet):
+        print("Unmerge response columns")
 
         merged_ranges =[]  
         for group in sheet.merged_cells.ranges:
@@ -332,6 +341,7 @@ class Formatter(object):
                 col_index += 1
 
     def insert_names_row(self, sheet, start_table_row):
+        print("Insert names row")
         banner_row = start_table_row - 2
         top_banner_cell = "%s%s" % (self.__extend_alphabet[self.banner_col_index], str(banner_row))
 
@@ -411,6 +421,7 @@ class Formatter(object):
         sheet["A1"].alignment = self.__align_left
 
     def format_table_titles(self, sheet, table, start_table_row):
+        print("Format table titles")
         current_row = 1
         current_col = 0
 
@@ -465,6 +476,7 @@ class Formatter(object):
         sheet.merge_cells(merge_range)
 
     def format_banners(self, sheet, start_row):
+        print("format banners")
         col_adjust = self.banner_col_index
         if self.__has_stats is False:
             sheet.row_dimensions[4].height = 40
@@ -480,6 +492,7 @@ class Formatter(object):
             current_row -= 1
 
     def format_responses(self, sheet, start_row):
+        print("Format responses")
         if self.__is_numeric:
             self.format_numeric_details(sheet, start_row)
             response_col = self.banner_col_index - 2
@@ -573,6 +586,7 @@ class Formatter(object):
                 current_row += 1
 
     def format_table_contents(self, sheet, start_row):
+        print("format table")
         current_row = start_row
         col_adjust = self.banner_col_index
 
@@ -596,6 +610,7 @@ class Formatter(object):
             current_row += 1
 
     def format_stats_def(self, sheet):
+        print("format stats def")
         current_row = self.end_table_row
         while True:
             current_cell = "A%s" % str(current_row)
@@ -606,6 +621,7 @@ class Formatter(object):
             current_row += 1
 
     def add_table_borders(self, sheet):
+        print("table borders")
         col_adjust = self.banner_col_index
         for row_no in self.__border_response_rows:
             col_no = 0

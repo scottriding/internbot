@@ -82,7 +82,8 @@ class CSVQuestion(object):
         return self.__stat
 
     def add_response(self, response_name, response_data, response_pop, groups):
-        self.__n += int(response_pop)
+        if response_pop != "NA":
+            self.__n += int(response_pop)
         self.__responses.append(CSVResponse(response_name, response_data, groups))
 
     def add_stat(self, stat):
