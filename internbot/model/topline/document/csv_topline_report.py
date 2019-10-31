@@ -99,6 +99,9 @@ class CSVToplineReport(object):
         
     def freqs_percent(self, freq, is_first=False):
         result = 0
+        if freq == "NA":
+            return
+
         if float(freq) >= 1.0:
             result = int(freq) * 100
         else:

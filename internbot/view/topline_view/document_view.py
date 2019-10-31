@@ -277,12 +277,14 @@ class DocumentView(BoxLayout):
 
         button_layout = BoxLayout()
         button_layout.size_hint = (1, .1)
-        policy_btn = Button(text="Utah Policy", on_press=self.is_policy)
 
+        policy_btn = Button(text="Utah Policy", on_press=self.is_policy)
         y2_btn = Button(text="Y2 Analytics", on_press=self.is_y2)
+        oth_btn = Button(text="Other", on_press=self.is_other)
 
         button_layout.add_widget(policy_btn)
         button_layout.add_widget(y2_btn)
+        button_layout.add_widget(oth_btn)
 
         chooser.add_widget(button_layout)
 
@@ -406,21 +408,17 @@ class DocumentView(BoxLayout):
         self.format_selector.dismiss()
         self.save_file_prompt.open()
 
+    def is_other(self, instance):
+        self.format_selector.dismiss()
+
     def save_file_prompt_to_dialog(self, instance):
         self.save_file_prompt.dismiss()
         self.save_file_dialog.open()
 
     def finish(self):
         self.save_file_dialog.dismiss()
-        try:
-            self.__controller.build_document_model(self.__open_filename, self.__group_names, self.__survey)
-        except:
-            self.error_message("Issue parsing frequency file")
-
-        try:
-            self.__controller.build_document_report(self.__template_name, self.__save_filename)
-        except:
-            self.error_message("Issue building topline report")
+        self.__controller.build_document_model(self.__open_filename, self.__group_names, self.__survey)
+        self.__controller.build_document_report(self.__template_name, self.__save_filename)
 
     def error_message(self, error):
         label = Label(text=error)
