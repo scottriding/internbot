@@ -1,6 +1,5 @@
 ## crosstabs modules
 from view.crosstabs_view.qresearch_view import QResearchView
-from view.crosstabs_view.spss_view import SPSSView
 from view.crosstabs_view.amazon_view import AmazonView
 
 ## outside modules
@@ -28,16 +27,10 @@ class CrosstabsView(BoxLayout):
         self.qresearch_screen = QResearchView()
         self.qresearch_screen.back_button.bind(on_press=self.qresearch_to_xtabs)
 
-        self.spss_screen = SPSSView()
-        self.spss_screen.back_button.bind(on_press=self.spss_to_xtabs)
-
         self.amazon_screen = AmazonView()
 
         self.__qresearch_to_main_btn = self.qresearch_screen.double_back_button
         self.qresearch_screen.double_back_button.bind(on_press=self.qresearch_to_xtabs)
-
-        self.__spss_to_main_btn = self.spss_screen.double_back_button
-        self.spss_screen.double_back_button.bind(on_press=self.spss_to_xtabs)
 
         self.add_widget(self.crosstabs_screen)
 
@@ -61,17 +54,12 @@ class CrosstabsView(BoxLayout):
 
         qresearch_btn = Button(text='QResearch', size_hint=(.1, .1), on_press = self.xtabs_to_qresearch)
         qresearch_btn.font_name = "Y2"
-        
-        spss_btn = Button(text='SPSS', size_hint=(.1, .1), on_press = self.xtabs_to_spss)
-        spss_btn.font_name = "Y2"
-        spss_btn.disabled = True
 
         amaz_btn = Button(text='Amazon', size_hint=(.1, .1), on_press = self.xtabs_to_amaz)
         amaz_btn.font_name = "Y2"
         
         button_layout.add_widget(amaz_btn)
         button_layout.add_widget(qresearch_btn)
-        button_layout.add_widget(spss_btn)
 
         crosstabs_screen.add_widget(button_layout)
 
@@ -81,19 +69,11 @@ class CrosstabsView(BoxLayout):
         self.remove_widget(self.crosstabs_screen)
         self.add_widget(self.qresearch_screen)
 
-    def xtabs_to_spss(self, instance):
-        self.remove_widget(self.crosstabs_screen)
-        self.add_widget(self.spss_screen)
-
     def xtabs_to_amaz(self, instance):
         self.amazon_screen.run(self.__controller)
 
     def qresearch_to_xtabs(self, instance):
         self.remove_widget(self.qresearch_screen)
-        self.add_widget(self.crosstabs_screen)
-
-    def spss_to_xtabs(self, instance):
-        self.remove_widget(self.spss_screen)
         self.add_widget(self.crosstabs_screen)
 
     @property
@@ -105,10 +85,6 @@ class CrosstabsView(BoxLayout):
         return self.__qresearch_to_main_btn
 
     @property
-    def spss_to_main_btn(self):
-        return self.__spss_to_main_btn
-
-    @property
     def controller(self):
         return self.__controller
 
@@ -116,7 +92,6 @@ class CrosstabsView(BoxLayout):
     def controller(self, controller):
         self.__controller = controller
         self.qresearch_screen.controller = self.__controller
-        self.spss_screen.controller = self.__controller
 
     def xtabs_help(self, instance):
         help_text = "Crosstabs are a report that \"crosses\" selected dataset \n" 
