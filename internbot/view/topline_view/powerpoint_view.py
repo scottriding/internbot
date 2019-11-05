@@ -34,7 +34,7 @@ class PowerpointView(BoxLayout):
 
     def create_survey_prompt(self):
         popup_layout = BoxLayout(orientation='vertical')
-        help_text = "Choose survey (.csv or .qsf) file\n\n"
+        help_text = "Choose survey (.qsf) file\n\n"
         help_text += "[ref=click][color=F3993D]Click here for examples of survey files[/color][/ref]"
 
         def examples_link(instance, value):
