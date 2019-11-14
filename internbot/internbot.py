@@ -18,6 +18,7 @@ class Controller(object):
         self.__appendix_templates["Y2"] = os.path.join(template_folder, "appendix_template.docx")
         self.__appendix_templates["QUALTRICS"] = ""
         self.__appendix_templates["UT_POLICY"] = os.path.join(template_folder, "utpolicy_app_template.docx")
+        self.__appendix_templates["OTHER"] = None
 
         self.__template_logos = {}
         self.__template_logos["Y2"] = os.path.join(image_folder, "y2_xtabs.png")
@@ -50,9 +51,11 @@ class Controller(object):
     def build_appendix_model(self, path_to_csv):
         self.__model.build_appendix_model(path_to_csv)
 
-    def build_appendix_report(self, path_to_output, is_document, template_name):
+    def build_appendix_report(self, path_to_output, is_document, template_name, other_template=None):
         template_path = self.__appendix_templates.get(template_name)
         image_path = self.__template_logos.get(template_name)
+        if other_template is not None:
+            template_path = other_template
         self.__model.build_appendix_report(path_to_output, is_document, image_path, template_path)
 
     def build_document_model(self, path_to_csv, groups, survey):

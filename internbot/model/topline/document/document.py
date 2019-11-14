@@ -53,6 +53,7 @@ class Document(object):
         else:
             report = csv_topline_report.CSVToplineReport(self.__questions, path_to_template, self.__groups)
         report.save(str(path_to_output))
+        self.__frequencies = [] ## empty out frequencies
 
     def find_question(self, question_to_find):
         matching_question = self.__survey.blocks.find_question_by_name(question_to_find)

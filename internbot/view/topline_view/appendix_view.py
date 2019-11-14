@@ -28,6 +28,7 @@ class AppendixView(BoxLayout):
         self.report_selector = self.create_report_selector()
         self.document_format_selector = self.create_document_format_selector()
         self.spreadsheet_format_selector = self.create_spreadsheet_format_selector()
+        self.other_template_dialog = self.create_other_template_dialog()
         self.save_file_prompt = self.create_save_file_prompt()
 
     def create_open_file_prompt(self):
@@ -132,9 +133,11 @@ class AppendixView(BoxLayout):
 
         policy_btn = Button(text="Utah Policy", on_press=self.is_policy)
         y2_btn = Button(text="Y2 Analytics", on_press=self.is_y2)
+        oth_btn = Button(text="Other", on_press=self.is_other)
 
         button_layout.add_widget(policy_btn)
         button_layout.add_widget(y2_btn)
+        button_layout.add_widget(oth_btn)
 
         chooser.add_widget(button_layout)
 
@@ -171,6 +174,36 @@ class AppendixView(BoxLayout):
         size_hint=(.9, .7 ), pos_hint={'center_x': 0.5, 'center_y': 0.5})
 
         return format_chooser 
+
+    def create_other_template_dialog(self):
+        chooser = BoxLayout()
+        container = BoxLayout(orientation='vertical')
+
+        def open_file(path, filename):
+            try:
+                filepath = os.path.join(path, filename[0])
+                self.__template_file_path = filepath
+                self.other_template_dialog_to_save()
+            except IndexError:
+                self.error_message("Please select a template document (.docx) file")
+
+        filechooser = FileChooserListView()
+        filechooser.path = os.path.expanduser("~")
+        filechooser.bind(on_selection=lambda x: filechooser.selection)
+        filechooser.filters = ["*.docx"]
+
+        open_btn = Button(text='open', size_hint=(.2,.1), pos_hint={'center_x': 0.5, 'center_y': 0.5})
+        open_btn.bind(on_release=lambda x: open_file(filechooser.path, filechooser.selection))
+
+        container.add_widget(filechooser)
+        container.add_widget(open_btn)
+        chooser.add_widget(container)
+
+        file_chooser = Popup(title='Open file',
+        content=chooser,
+        size_hint=(.9, .7 ), pos_hint={'center_x': 0.5, 'center_y': 0.5})
+
+        return file_chooser 
 
     def create_save_file_prompt(self):
         popup_layout = BoxLayout(orientation='vertical')
@@ -236,6 +269,7 @@ class AppendixView(BoxLayout):
         return file_chooser
 
     def run(self, controller):
+        self.__template_file_path = None
         self.__controller = controller
         self.open_file_prompt.open()
 
@@ -281,6 +315,17 @@ class AppendixView(BoxLayout):
 
         self.save_file_prompt.open()
 
+    def is_other(self, instance):
+        self.__template_name = "OTHER"
+        self.document_format_selector.dismiss()
+        self.spreadsheet_format_selector.dismiss()
+
+        self.other_template_dialog.open()
+
+    def other_template_dialog_to_save(self):
+        self.other_template_dialog.dismiss()
+        self.save_file_prompt.open()
+
     def save_file_prompt_to_dialog(self, instance):
         self.save_file_prompt.dismiss()
         self.save_file_dialog = self.create_save_file_dialog()
@@ -288,10 +333,10 @@ class AppendixView(BoxLayout):
 
     def finish(self):
         self.save_file_dialog.dismiss()
-        try:
-            self.__controller.build_appendix_report(self.__save_filename, self.__is_doc_report, self.__template_name)
-        except:
-            self.error_message("Error formatting appendix report.")
+        #try:
+        self.__controller.build_appendix_report(self.__save_filename, self.__is_doc_report, self.__template_name, self.__template_file_path)
+#         except:
+#             self.error_message("Error formatting appendix report.")
         
     def error_message(self, error):
         label = Label(text=error)

@@ -35,6 +35,7 @@ class Appendix(object):
 
         builder.write_appendix(self.__questions)
         builder.save(path_to_output)
+        self.__questions = OrderedDict() ## empty out questions
             
         print("Finished!")
 

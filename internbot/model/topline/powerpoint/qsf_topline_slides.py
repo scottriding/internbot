@@ -55,7 +55,8 @@ class QSFToplineSlides(object):
 
     def chart_composite_question(self, question):
         if len(self.years) > 0:
-            pass
+            for sub_question in question.questions:
+                self.chart_question(sub_question)
         else:
             if question.type == 'CompositeMatrix':
                 slide_1 = self.presentation.slides.add_slide(self.presentation.slide_layouts.get_by_name('AutomatedChart'))

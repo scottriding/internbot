@@ -44,6 +44,7 @@ class Powerpoint(object):
         else:
             pass
         report.save(str(path_to_output))
+        self.__frequencies = [] ## empty out frequencies
 
     def find_question(self, question_to_find):
         matching_question = self.__survey.blocks.find_question_by_name(question_to_find)
