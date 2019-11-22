@@ -87,7 +87,7 @@ class QSFToplineSlides(object):
         header = slide.shapes[0]
         header.text = str(question.name)
         n_box = slide.shapes[1]
-        n_box.text = "N=" + str(question.n)
+        #n_box.text = "N=" + str(question.n)
         count_box = slide.shapes[2]
         count_box.text = "Slide 1 of 1"
 
@@ -95,7 +95,7 @@ class QSFToplineSlides(object):
         header = slide.shapes[0]
         header.text = str(question.name)
         n_box = slide.shapes[1]
-        n_box.text = "n's in charts"
+        #n_box.text = "n's in charts"
         count_box = slide.shapes[2]
         count_box.text = "Slide "+str(slide_number)+" of "+str(slide_total)
 
@@ -359,7 +359,7 @@ class QSFToplineSlides(object):
         is_first = True
 
         for sub_question in sub_questions:
-            categories.append(str(sub_question.prompt) + " (n=" + str(sub_question.n) + ")")
+            #categories.append(str(sub_question.prompt) + " (n=" + str(sub_question.n) + ")")
             if is_first:
                 for response in sub_question.responses:
                     series_names.append(response.response)
@@ -419,7 +419,7 @@ class QSFToplineSlides(object):
         is_first = True
 
         for sub_question in sub_questions:
-            series_names.append(str(sub_question.prompt) + " (n=" + str(sub_question.n) + ")")
+            #series_names.append(str(sub_question.prompt) + " (n=" + str(sub_question.n) + ")")
             if is_first:
                 for response in sub_question.responses:
                     categories.append(response.response)
@@ -478,7 +478,7 @@ class QSFToplineSlides(object):
         is_first = True
 
         for sub_question in sub_questions:
-            categories.append(str(sub_question.prompt) + " (n=" + str(sub_question.n) + ")")
+            #categories.append(str(sub_question.prompt) + " (n=" + str(sub_question.n) + ")")
             if is_first:
                 for response in sub_question.responses:
                     series_names.append(response.response)
@@ -538,7 +538,7 @@ class QSFToplineSlides(object):
         is_first = True
 
         for sub_question in sub_questions:
-            series_names.append(str(sub_question.prompt) + " (n=" + str(sub_question.n) + ")")
+            #series_names.append(str(sub_question.prompt) + " (n=" + str(sub_question.n) + ")")
             if is_first:
                 for response in sub_question.responses:
                     categories.append(response.response)
@@ -597,7 +597,7 @@ class QSFToplineSlides(object):
         is_first = True
 
         for sub_question in sub_questions:
-            categories.append(str(sub_question.prompt) + " (n=" + str(sub_question.n) + ")")
+            #categories.append(str(sub_question.prompt) + " (n=" + str(sub_question.n) + ")")
             if is_first:
                 for response in sub_question.responses:
                     series_names.append(response.response)
@@ -705,7 +705,7 @@ class QSFToplineSlides(object):
 
         for sub_question in sub_questions:
             for response in sub_question.responses:
-                categories.append(response.response + " (n=" + str(sub_question.n) + ")")
+                #categories.append(response.response + " (n=" + str(sub_question.n) + ")")
                 for year, frequency in response.frequencies.items():
                     frequencies.append(frequency)
 
@@ -744,7 +744,7 @@ class QSFToplineSlides(object):
 
         for sub_question in sub_questions:
             for response in sub_question.responses:
-                categories.append(response.response + " (n=" + str(sub_question.n) + ")")
+                #categories.append(response.response + " (n=" + str(sub_question.n) + ")")
                 for year, frequency in response.frequencies.items():
                     frequencies.append(frequency)
 

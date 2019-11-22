@@ -16,7 +16,8 @@ class Blocks(object):
                 return block
         return None
 
-    def get_questions(self):
+    @property
+    def questions(self):
         result = []
         for block in self.__blocks:
             result.extend(block.questions)
@@ -24,7 +25,6 @@ class Blocks(object):
         
     def find_question_by_name(self, question_name):
         for block in self.__blocks:
-            block.blockid
             matching_question = block.find_question_by_name(question_name)
             if matching_question is not None:
                 break
@@ -82,6 +82,10 @@ class Block(object):
     @blockid.setter
     def blockid(self, id):
         self.__blockid = str(id)
+
+    @questions.setter
+    def questions(self, questions):
+        self.__questions = questions
         
     def __repr__(self):
         result = "Block: %s\n" % (self.name)

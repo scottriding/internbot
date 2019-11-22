@@ -14,7 +14,7 @@ class Powerpoint(object):
         self.__survey = survey
         self.__groups = groups
         if self.__survey is not None:
-            self.__questions = survey.get_questions()
+            self.__questions = survey.questions
             self.assign_frequencies(question_data)
         else:
             pass

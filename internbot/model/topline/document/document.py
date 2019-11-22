@@ -1,6 +1,7 @@
-from model.topline.document import csv_question
-from model.topline.document import csv_topline_report
-from model.topline.document import qsf_topline_report
+from model.base import survey
+from model.base import block
+from model.base import question
+from model.topline.document import topline_report
 
 import csv
 import re
@@ -8,105 +9,99 @@ from collections import OrderedDict
 
 class Document(object):
 
-    def __init__(self):
-        self.__frequencies = []
-
     def build_document_model(self, path_to_freqs, groups=[], survey=None):
-        question_data = self.unicode_dict_reader(open(path_to_freqs))
+        assigner = FrequencyAssigner(path_to_freqs, groups, survey)
+        self.__questions = assigner.assign()
+        for question in self.__questions:
+            print(question)
+
+    def build_document_report(self, path_to_template, path_to_output):
+        pass
+
+class FrequencyAssigner(object):
+
+    def __init__(self, path_to_freqs, groups, inputted_survey):
         self.__groups = groups
-        self.__survey = survey
-        if self.__survey is not None:
-            self.__questions = survey.get_questions()
-            self.assign_frequencies(question_data)
-        else:
-            self.__questions = csv_question.CSVQuestions()
-            self.create_questions(question_data)
-        
+        self.__frequency_data = self.unicode_dict_reader(open(path_to_freqs))
+
+        if inputted_survey is None:
+            inputted_survey = survey.Survey("CSV Survey")
+            default_block = block.Block("Default")
+            questions = self.create_questions(self.unicode_dict_reader(open(path_to_freqs)))
+            default_block.questions = questions
+            inputted_survey.add_block(default_block)
+        self.__question_blocks = inputted_survey.blocks
+
     def unicode_dict_reader(self, utf8_data, **kwargs):
         csv_reader = csv.DictReader(utf8_data, **kwargs)
-        self.headers = csv_reader.fieldnames
         for row in csv_reader:
             if row['variable'] != "":
                 yield {key: value for key, value in row.items()}
 
     def create_questions(self, question_data):
-        for question in question_data:
-            self.__questions.add(question, self.__groups)
+        questions = question.Questions()
+        for response_row in question_data:
+            question_name = response_row['variable']
+            question_prompt = response_row['prompt']
+            matching_question = questions.find_by_name(question_name)
+            if matching_question:
+                matching_question.add_response(response_row['label'], response_row['value'])
+            else:
+                new_question = question.Question()
+                new_question.name = question_name
+                new_question.prompt = question_prompt
+                new_question.add_response(response_row['label'], response_row['value'])
+                questions.add(new_question)
+        return questions
 
-    def assign_frequencies(self, question_data):
-        for row in question_data:
-            question_name = row["variable"]
-            response_label = row["label"]
-            question_stat = row["stat"]
-
+    def assign(self):
+        for response_row in self.__frequency_data:
+            question_name = response_row['variable']
             matching_question = self.find_question(question_name)
-            if matching_question is not None:
-                matching_response = self.find_response(row["value"], matching_question)
-                if matching_response is not None:
-                    self.add_frequency(matching_response, row)
-                    self.add_n(matching_question, row)
-                    self.add_stat(matching_question, question_stat)
-
-    def build_document_report(self, path_to_template, path_to_output):
-        if self.__survey is not None:
-            report = qsf_topline_report.QSFToplineReport(self.__survey.get_questions(), path_to_template, self.__groups)
-        else:
-            report = csv_topline_report.CSVToplineReport(self.__questions, path_to_template, self.__groups)
-        report.save(str(path_to_output))
-        self.__frequencies = [] ## empty out frequencies
+            if matching_question:
+                response_value = response_row['value']
+                matching_response = self.find_response(response_label, response_value, matching_question)
+                if matching_response:
+                    self.add_frequency(matching_response, response_row)
+        return self.__question_blocks
 
     def find_question(self, question_to_find):
-        matching_question = self.__survey.blocks.find_question_by_name(question_to_find)
-        if matching_question is None:
-            print("\nCould not match question "+question_to_find+
-                  " from CSV to a question in the QSF.\n        "
-                  "     *This data will need to be input manually.*\n")
-            return None
-        elif matching_question.parent == "CompositeQuestion":
+        matching_question = self.__question_blocks.find_question_by_name(question_to_find)
+        if matching_question.parent == 'CompositeQuestion':
             matching_question = self.find_sub_question(matching_question, question_to_find)
         return matching_question
 
     def find_sub_question(self, composite_question, question_to_find):
         absolute_match = None
-        
         for sub_question in composite_question.questions:
             if re.match(sub_question.name, question_to_find):
                 absolute_match = sub_question
         return absolute_match
 
-    def find_response(self, response_to_find, matching_question):
-        if response_to_find == 'NA':
-            matching_question.add_NA()
-            return matching_question.get_NA()
+    def find_response(self, response_label, response_value, matching_question):
         responses = matching_question.responses
 
-        matching_response = next((response for response in responses if response.code == response_to_find), None)
-        if response_to_find == 'On':
-            matching_response = next((response for response in responses if response.response == '1'), None)
-
+        matching_response = next((response for response in responses if response.value == response_value), None)
         if matching_response is None:
-            matching_response = next((response for response in responses if response.response == response_to_find), None)
-            if matching_response is None:
-                print("\nCould not match response " +response_to_find+ " from " +
-                    matching_question.name + " from CSV to a question in the QSF.\n"
-                                           "             *This data will need to be input manually.*\n")
+             matching_response = next((response for response in responses if response.label == response_label), None)
+
+        ## hotspot edge case
+        if response_label == 'On':
+            matching_response = next((response for response in responses if response.label == '1'), None)
+
         return matching_response
 
-    def add_frequency(self, matching_response, frequency_data):
-        self.__frequencies = OrderedDict()
+    def add_frequency(self, matching_response, response_row):
+        stat = response_row['stat']
+
         if len(self.__groups) > 0:
             for group in self.__groups:
-                round_col = "result %s" % group
-                if frequency_data[round_col] != "":
-                    self.__frequencies[group] = frequency_data[round_col]
+                result_col = "result %s" % group
+                n_col = "n %s" % group
+
+                matching_response.add_frequency(response_row[result_col], response_row[n_col], stat, group)
         else:
-            round_col = "result"
-            self.__frequencies[0] = frequency_data[round_col]
-        matching_response.frequencies = self.__frequencies
-
-    def add_n(self, matching_question, question_data):
-        current_n = matching_question.n
-        matching_question.n = current_n + int(question_data["n"])
-
-    def add_stat(self, matching_question, stat):
-        matching_question.stat = stat
+            result_col = "result"
+            n_col = "n"
+            matching_response.add_frequency(response_row[result_col], response_row[n_col], stat)
+        

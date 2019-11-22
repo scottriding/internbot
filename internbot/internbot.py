@@ -2,6 +2,7 @@ from model import model
 from view import view
 
 import os
+import fnmatch
 
 class Controller(object):
 
@@ -12,13 +13,12 @@ class Controller(object):
         self.__topline_templates = {}
         self.__topline_templates["Y2"] = os.path.join(template_folder, "topline_template.docx")
         self.__topline_templates["QUALTRICS"] = ""
-        self.__topline_templates["UT_POLICY"] = os.path.join(template_folder, "utpolicy_top_template.docx")        
+        self.__topline_templates["UT_POLICY"] = os.path.join(template_folder, "utpolicy_top_template.docx")     
 
         self.__appendix_templates = {}
         self.__appendix_templates["Y2"] = os.path.join(template_folder, "appendix_template.docx")
         self.__appendix_templates["QUALTRICS"] = ""
         self.__appendix_templates["UT_POLICY"] = os.path.join(template_folder, "utpolicy_app_template.docx")
-        self.__appendix_templates["OTHER"] = None
 
         self.__template_logos = {}
         self.__template_logos["Y2"] = os.path.join(image_folder, "y2_xtabs.png")
@@ -61,8 +61,12 @@ class Controller(object):
     def build_document_model(self, path_to_csv, groups, survey):
         self.__model.build_document_model(path_to_csv, groups, survey)
 
-    def build_document_report(self, template_name, path_to_output):
-        self.__model.build_document_report(self.__topline_templates.get(template_name), path_to_output)
+    def build_document_report(self, template_name, path_to_output, template_path=None):
+        if template_path is not None:
+            path_to_template = template_path
+        else:
+            path_to_template = self.__topline_templates.get(template_name)
+        self.__model.build_document_report(path_to_template, path_to_output)
 
     def build_powerpoint_model(self, path_to_csv, groups, survey):
         self.__model.build_powerpoint_model(path_to_csv, groups, survey)

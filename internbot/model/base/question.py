@@ -13,6 +13,12 @@ class Questions(object):
         q_sorter = sorter.QuestionSorter(question_id_order)
         self.__questions = q_sorter.sort(self.__questions)
 
+    def find_by_name(self, question_name):
+        for question in self.__questions:
+            if question.name == question_name:
+                return question
+        return None
+
     def __len__(self):
         return len(self.__questions)
 
@@ -166,8 +172,8 @@ class CompositeQuestion(object):
     def has_carry_forward_statements(self, type):
         self.__has_carry_forward_statements = bool(type)
         
-    def add_response(self, response, code):
-        self.__temp_responses.add(response, code)
+    def add_response(self, label, value):
+        self.__temp_responses.add(label, value)
         self.sort()    
         
     def add_question(self, question):
@@ -213,7 +219,7 @@ class CompositeMultipleSelect(CompositeQuestion):
 class CompositeHotSpot(CompositeQuestion):
 
     def __init__(self):
-        super(CompositeHotSpot, self).__init__()    
+        super(CompositeHotSpot, self).__init__()
 
     @property
     def type(self):
@@ -233,14 +239,10 @@ class Question(object):
     def __init__(self):
         self.__responses = response.Responses()
         self.__response_order = []
-        self.has_carry_forward_responses = False
-        self.__text_entry = False
+        self.__has_carry_forward_responses = False
         self.__has_mixed_responses = False
         self.__has_carry_forward_statements = False
         self.__has_carry_forward_answers = False
-        self.__n = 0
-        self.__display_logic = None
-        self.__stat = None
 
     @property
     def has_carry_forward_statements(self):
@@ -315,14 +317,6 @@ class Question(object):
         self.__prompt = str(prompt)
 
     @property
-    def n(self):
-        return self.__n
-
-    @n.setter
-    def n(self, n):
-        self.__n = int(n)
-
-    @property
     def responses(self):
         return self.__responses
 
@@ -334,14 +328,6 @@ class Question(object):
     def response_order(self, response_order):
         for response_location in response_order:
             self.__response_order.append(str(response_location))
-
-    @property
-    def text_entry(self):
-        return self.__text_entry
-
-    @text_entry.setter
-    def text_entry(self, entry):
-        self.__text_entry = bool(entry)
     
     @property
     def parent(self):
@@ -363,31 +349,15 @@ class Question(object):
     def display_logic(self, logic):
         self.__display_logic = str(logic)
 
-    @property
-    def stat(self):
-        return self.__stat
+    def add_response(self, label, value=None):
+        self.__responses.add(label, value)
+        if len(self.__response_order) > 0:
+            self.__responses.sort(self.__response_order)
 
-    @stat.setter
-    def stat(self, stat):
-        self.__stat = str(stat)
-
-    def add_response(self, response, code=None):
-        self.__responses.add(response, code)
-        self.__responses.sort(self.__response_order)
-
-    def add_dynamic_response(self, response, code=None):
-        self.__responses.add_dynamic(response, code)
-        self.__responses.sort(self.__response_order)
-
-    def add_text_response(self, response):
-        self.__responses.add_text(response)
-
-
-    def add_NA(self):
-        self.__responses.add_NA()
-
-    def get_NA(self):
-        return self.__responses.get_NA()
+    def add_dynamic_response(self, label, value=None):
+        self.__responses.add_dynamic(label, value)
+        if len(self.__response_order) > 0:
+            self.__responses.sort(self.__response_order)
 
     def __repr__(self):
         result = ''
