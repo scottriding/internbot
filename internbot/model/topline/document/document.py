@@ -59,6 +59,7 @@ class FrequencyAssigner(object):
             question_name = response_row['variable']
             matching_question = self.find_question(question_name)
             if matching_question:
+                response_label = response_row['label']
                 response_value = response_row['value']
                 matching_response = self.find_response(response_label, response_value, matching_question)
                 if matching_response:
