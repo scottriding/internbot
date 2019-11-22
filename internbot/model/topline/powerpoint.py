@@ -5,9 +5,9 @@ from pptx.enum.dml import MSO_COLOR_TYPE, MSO_THEME_COLOR
 from pptx.util import Inches, Pt
 from pptx.dml.color import RGBColor
 
-class QSFToplineSlides(object):
+class Powerpoint(object):
 
-    def __init__(self, survey, path_to_template, path_to_output, years):
+    def chart_questions(self, survey, path_to_template, path_to_output, years):
         self.presentation = Presentation(path_to_template)
         self.questions = survey.get_questions()
         self.survey = survey
@@ -15,12 +15,6 @@ class QSFToplineSlides(object):
         self.path_to_output = path_to_output
         self.slide_layouts = self.presentation.slide_layouts
 
-    def save(self, path_to_output):
-        self.chart_questions()
-        self.presentation.save(path_to_output)
-        print("Finished!")
-
-    def chart_questions(self):
         title_slide = self.presentation.slides[0]
         title_slide.shapes[0].text = self.survey.name
         title_slide.shapes[1].text = "Y2 Analytics Slide Automation"
@@ -36,6 +30,11 @@ class QSFToplineSlides(object):
                     self.chart_question(question)
             except ValueError:
                 pass
+
+    def save(self, path_to_output):
+        self.chart_questions()
+        self.presentation.save(path_to_output)
+        print("Finished!")
 
     def chart_question(self, question):
         slide = self.presentation.slides.add_slide(self.presentation.slide_layouts.get_by_name('AutomatedChart'))
@@ -776,10 +775,3 @@ class QSFToplineSlides(object):
         fill = series.format.fill
         fill.solid()
         fill.fore_color.theme_color = MSO_THEME_COLOR.ACCENT_1
-
-
-
-
-
-
-

@@ -3,6 +3,85 @@ from openpyxl.styles.borders import Border, Side
 from openpyxl.styles import PatternFill, Font, Alignment
 from openpyxl.drawing.image import Image
 import os
+import csv
+from collections import OrderedDict
+import docx
+
+class Appendix(object):
+
+    def __init__(self):
+        self.__questions = OrderedDict()
+
+    def unicode_dict_reader(self, utf8_data, **kwargs):
+        csv_reader = csv.DictReader(utf8_data, **kwargs)
+        for row in csv_reader:
+            if row['variable'] != "":
+                yield {key:value for key, value in row.items()}
+
+    def build_appendix_model(self, path_to_appendix):
+        text_responses = self.unicode_dict_reader(open(path_to_appendix))
+        for response in text_responses:
+            if self.__questions.get(response['variable']) is None:
+                new_question = open_end_question.OpenEndQuestion(response['variable'], response['prompt'])
+                new_question.add_response(response['label'])
+                self.__questions[response['variable']] = new_question
+            else:
+                current_question = self.__questions.get(response['variable'])
+                current_question.add_response(response['label'])
+
+    def build_appendix_report(self, path_to_output, is_document, image_path, template_path):
+        if is_document:
+            builder = document.Document(template_path)
+        else:
+            builder = spreadsheet.Spreadsheet(image_path)
+
+        builder.write_appendix(self.__questions)
+        builder.save(path_to_output)
+        self.__questions = OrderedDict() ## empty out questions
+            
+        print("Finished!")
+
+class Document(object):
+
+    def __init__ (self, path_to_template):
+        self.__doc = docx.Document(path_to_template)
+
+    def write_appendix(self, questions):
+        first_question = True
+        for question, value in questions.items():
+            if first_question is False:
+                self.__doc.add_page_break()
+            paragraph = self.__doc.add_paragraph()
+            self.write_question(value, paragraph)
+            self.__doc.add_paragraph()
+            first_question = False
+
+    def write_question(self, question, paragraph):
+        to_print = "Writing: %s" % question.name
+        print(to_print)
+        paragraph.add_run(question.name + ".")
+        paragraph_format = paragraph.paragraph_format
+        paragraph_format.keep_together = True
+        paragraph_format.left_indent = docx.shared.Inches(1)
+        prompt_to_add = "\t%s (n=%s)\n" % (question.prompt, question.response_count)
+        paragraph.add_run(prompt_to_add)
+        paragraph_format.first_line_indent = docx.shared.Inches(-1)
+
+        self.write_responses(question.responses, paragraph)
+
+    def write_responses(self, responses, paragraph):
+        table = self.__doc.add_table(rows = 0, cols = 5)
+        try:
+            table.style = 'Appendix' # Custom format in template
+        except KeyError:
+            pass
+        for response in responses:
+            response_cells = table.add_row().cells
+            response_cells[0].merge(response_cells[4])
+            response_cells[0].text = response
+
+    def save(self, path_to_output):
+        self.__doc.save(path_to_output)
 
 class Spreadsheet(object):
 
@@ -146,3 +225,4 @@ class Spreadsheet(object):
 
     def save(self, path_to_output):
         self.__workbook.save(path_to_output)
+

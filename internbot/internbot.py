@@ -98,5 +98,10 @@ if __name__ == '__main__':
     image_folder = "resources/images"
 
     controller = Controller()
-    controller.view.controller = controller
-    controller.view.run()
+    #controller.view.controller = controller
+    #controller.view.run()
+
+    survey = controller.build_survey("/users/y2analytics/Desktop/Internbot_statsivus.qsf")
+    controller.build_powerpoint_model("/users/y2analytics/Desktop/freqs.csv", ["A", "B"], survey)
+    #controller.build_document_model("/users/y2analytics/Desktop/freqs.csv", ["A", "B"], survey)
+    #controller.build_document_report("Y2", "/users/y2analytics/Desktop/test.docx", None)

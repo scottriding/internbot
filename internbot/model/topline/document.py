@@ -5,19 +5,17 @@ from docx.enum.text import WD_ALIGN_PARAGRAPH, WD_BREAK
 from docx.oxml import parse_xml
 from docx.oxml.ns import nsdecls
 
-class QSFToplineReport(object):
-
-    def __init__ (self, questions, path_to_template, groups):
-        self.doc = Document(path_to_template)
-        self.questions = questions
-        self.groups = groups
+class Document(object):
 
     def save(self, path_to_output):
         self.write_questions()
         self.save_file(path_to_output)
         print("Finished!")
 
-    def write_questions(self):
+    def write_questions(self, questions, path_to_template, groups):
+        self.doc = Document(path_to_template)
+        self.questions = questions
+        self.groups = groups
         for question in self.questions:
             to_print = "Writing question: %s" % question.name
             print(to_print)

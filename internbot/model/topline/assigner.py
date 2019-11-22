@@ -1,26 +1,14 @@
 from model.base import survey
 from model.base import block
 from model.base import question
-from model.topline.document import topline_report
 
 import csv
 import re
 from collections import OrderedDict
 
-class Document(object):
+class Assigner(object):
 
-    def build_document_model(self, path_to_freqs, groups=[], survey=None):
-        assigner = FrequencyAssigner(path_to_freqs, groups, survey)
-        self.__questions = assigner.assign()
-        for question in self.__questions:
-            print(question)
-
-    def build_document_report(self, path_to_template, path_to_output):
-        pass
-
-class FrequencyAssigner(object):
-
-    def __init__(self, path_to_freqs, groups, inputted_survey):
+    def __init__(self, path_to_freqs, groups=[], inputted_survey=None):
         self.__groups = groups
         self.__frequency_data = self.unicode_dict_reader(open(path_to_freqs))
 
@@ -45,12 +33,20 @@ class FrequencyAssigner(object):
             question_prompt = response_row['prompt']
             matching_question = questions.find_by_name(question_name)
             if matching_question:
-                matching_question.add_response(response_row['label'], response_row['value'])
+                if response_row.get('value'):
+                    value = response_row['value']
+                else:
+                    value = '1'                    
+                matching_question.add_response(response_row['label'], value)
             else:
                 new_question = question.Question()
                 new_question.name = question_name
                 new_question.prompt = question_prompt
-                new_question.add_response(response_row['label'], response_row['value'])
+                if response_row.get('value'):
+                    value = response_row['value']
+                else:
+                    value = '1'
+                new_question.add_response(response_row['label'], value)
                 questions.add(new_question)
         return questions
 
@@ -105,4 +101,10 @@ class FrequencyAssigner(object):
             result_col = "result"
             n_col = "n"
             matching_response.add_frequency(response_row[result_col], response_row[n_col], stat)
+
+    @property
+    def question_blocks(self):
+        return self.__question_blocks
+
+
         
