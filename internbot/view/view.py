@@ -163,7 +163,7 @@ class View(App):
         help_content = RelativeLayout()
         content_cancel = Button(text='confirm', 
 						pos_hint={'center_x': 0.5, 'center_y': 0.15}, 
-        				size_hint=(.35, .25),
+        				size_hint=(.2, .2),
         				background_normal='',
         				background_color=(0, 0.4, 1, 1))
         help_content.add_widget(content_cancel)

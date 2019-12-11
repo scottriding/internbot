@@ -12,6 +12,7 @@ from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.popup import Popup
 from kivy.uix.label import Label
 from kivy.core.text import LabelBase
+from kivy.uix.relativelayout import RelativeLayout
 import webbrowser
 import os
 
@@ -95,18 +96,28 @@ class ToplineView(BoxLayout):
         help_text += "Document and Powerpoint show topline frequencies verbatim\n"
         help_text += "in tables or charts, respectively.\n\n"
         help_text += "[ref=click][color=F3993D]Click here for Topline report examples[/color][/ref]"
+        help_text += "\n\n\n\n"
 
         def examples_link(instance, value):
             webbrowser.open("https://www.dropbox.com/sh/c653vu8jxx0d42u/AADlcD8HDL2J4HxXqDVT3bAVa?dl=0")
-
-
-        label = Label(text=help_text, markup=True)
-        label.bind(on_ref_press=examples_link)
-        label.font_family = "Y2"
-
+        
+        help_content = RelativeLayout()
+        content_cancel = Button(text='confirm', 
+						pos_hint={'center_x': 0.5, 'center_y': 0.15}, 
+        				size_hint=(.3, .2),
+        				background_normal='',
+        				background_color=(0, 0.4, 1, 1))
+        help_content.add_widget(content_cancel)
+        help_label = (Label(text=help_text, markup=True))
+        help_label.bind(on_ref_press=examples_link)
+        help_label.font_family = "Y2"
+        help_content.add_widget(help_label)
+		
         popup = Popup(title='Topline Help',
-        content=label,
-        size_hint=(.6, .5), pos_hint={'center_x': 0.5, 'center_y': 0.5})
+        content=help_content,
+        auto_dismiss=False,
+        size_hint=(.6, .6), pos_hint={'center_x': 0.5, 'center_y': 0.5})
+        
 
         popup.open()
-
+        content_cancel.bind(on_press=popup.dismiss)
