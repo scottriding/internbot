@@ -12,6 +12,7 @@ from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.popup import Popup
 from kivy.uix.label import Label
 from kivy.core.text import LabelBase
+from kivy.uix.relativelayout import RelativeLayout
 import webbrowser
 
 
@@ -96,17 +97,28 @@ class RNCView(BoxLayout):
         help_text += "Trended Scores Reports are several report models\n" 
         help_text += "by flags and by weights.\n\n"
         help_text += "[ref=click][color=F3993D]Click here for RNC report examples[/color][/ref]"
+        help_text += "\n\n\n\n"
 
         def examples_link(instance, value):
             webbrowser.open("https://www.dropbox.com/sh/bmr116skqrlvp1l/AAC9xm56MxnmdRq6TYr_MuPka?dl=0")
-
-
-        label = Label(text=help_text, markup=True)
-        label.bind(on_ref_press=examples_link)
-        label.font_family = "Y2"
-
+        
+        help_content = RelativeLayout()
+        content_cancel = Button(text='confirm', 
+						pos_hint={'center_x': 0.5, 'center_y': 0.15}, 
+        				size_hint=(.2, .15),
+        				background_normal='',
+        				background_color=(0, 0.4, 1, 1))
+        help_content.add_widget(content_cancel)
+        help_label = (Label(text=help_text, markup=True))
+        help_label.bind(on_ref_press=examples_link)
+        help_label.font_family = "Y2"
+        help_content.add_widget(help_label)
+		
         popup = Popup(title='RNC Help',
-        content=label,
-        size_hint=(.6, .5), pos_hint={'center_x': 0.5, 'center_y': 0.5})
+        content=help_content,
+        auto_dismiss=False,
+        size_hint=(.6, .7), pos_hint={'center_x': 0.5, 'center_y': 0.5})
+        
 
         popup.open()
+        content_cancel.bind(on_press=popup.dismiss)

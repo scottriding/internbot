@@ -10,6 +10,7 @@ from kivy.uix.button import Button
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.popup import Popup
 from kivy.uix.label import Label
+from kivy.uix.relativelayout import RelativeLayout
 import webbrowser
 import os
 
@@ -98,14 +99,25 @@ class QResearchView(BoxLayout):
 
         def examples_link(instance, value):
             webbrowser.open("https://www.dropbox.com/sh/luixf0mkcfxlfjc/AAC3ncnz0dAdUdQjdJXTeCEsa?dl=0")
-
-
-        label = Label(text=help_text, markup=True)
-        label.bind(on_ref_press=examples_link)
-        label.font_family = "Y2"
-
+        
+        help_content = RelativeLayout()
+        content_cancel = Button(text='confirm', 
+						pos_hint={'center_x': 0.5, 'center_y': 0.15}, 
+        				size_hint=(.2, .15),
+        				background_normal='',
+        				background_color=(0, 0.4, 1, 1))
+        help_content.add_widget(content_cancel)
+        help_label = (Label(text=help_text, markup=True))
+        help_label.bind(on_ref_press=examples_link)
+        help_label.font_family = "Y2"
+        help_content.add_widget(help_label)
+		
         popup = Popup(title='QResearch Help',
-        content=label,
-        size_hint=(.6, .5), pos_hint={'center_x': 0.5, 'center_y': 0.5})
+        content=help_content,
+        auto_dismiss=False,
+        size_hint=(.6, .8), pos_hint={'center_x': 0.5, 'center_y': 0.5})
+        
 
         popup.open()
+        content_cancel.bind(on_press=popup.dismiss)
+        
