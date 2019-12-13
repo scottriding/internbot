@@ -456,8 +456,8 @@ class DocumentView(BoxLayout):
 
     def finish(self):
         self.save_file_dialog.dismiss()
-        self.__controller.build_document_model(self.__open_filename, self.__group_names, self.__survey)
-        self.__controller.build_document_report(self.__template_name, self.__save_filename, self.__other_template_path)
+        questions = self.__controller.build_document_model(self.__open_filename, self.__group_names, self.__survey)
+        self.__controller.build_document_report(questions, self.__template_name, self.__save_filename, self.__other_template_path)
 
     def error_message(self, error):
         label = Label(text=error)

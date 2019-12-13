@@ -49,30 +49,30 @@ class Controller(object):
         self.__model.save_qresearch_report(path_to_output)
 
     def build_appendix_model(self, path_to_csv):
-        self.__model.build_appendix_model(path_to_csv)
+        return self.__model.build_appendix_model(path_to_csv)
 
-    def build_appendix_report(self, path_to_output, is_document, template_name, other_template=None):
+    def build_appendix_report(self, questions, path_to_output, is_document, template_name, other_template=None):
         template_path = self.__appendix_templates.get(template_name)
         image_path = self.__template_logos.get(template_name)
         if other_template is not None:
             template_path = other_template
-        self.__model.build_appendix_report(path_to_output, is_document, image_path, template_path)
+        self.__model.build_appendix_report(questions, path_to_output, is_document, image_path, template_path)
 
     def build_document_model(self, path_to_csv, groups, survey):
-        self.__model.build_document_model(path_to_csv, groups, survey)
+        return self.__model.build_document_model(path_to_csv, groups, survey)
 
-    def build_document_report(self, template_name, path_to_output, template_path=None):
+    def build_document_report(self, questions, template_name, path_to_output, template_path=None):
         if template_path is not None:
             path_to_template = template_path
         else:
             path_to_template = self.__topline_templates.get(template_name)
-        self.__model.build_document_report(path_to_template, path_to_output)
+        self.__model.build_document_report(questions, path_to_template, path_to_output)
 
     def build_powerpoint_model(self, path_to_csv, groups, survey):
-        self.__model.build_powerpoint_model(path_to_csv, groups, survey)
+        return self.__model.build_powerpoint_model(path_to_csv, groups, survey)
 
-    def build_powerpoint_report(self, path_to_template, path_to_output):
-        self.__model.build_powerpoint_report(path_to_template, path_to_output)
+    def build_powerpoint_report(self, questions, path_to_template, path_to_output):
+        self.__model.build_powerpoint_report(questions, path_to_template, path_to_output)
 
     def build_scores_model(self, path_to_csv, round, location):
         self.__model.build_scores_model(path_to_csv, round, location)
@@ -98,10 +98,5 @@ if __name__ == '__main__':
     image_folder = "resources/images"
 
     controller = Controller()
-    #controller.view.controller = controller
-    #controller.view.run()
-
-    survey = controller.build_survey("/users/y2analytics/Desktop/Internbot_statsivus.qsf")
-    controller.build_powerpoint_model("/users/y2analytics/Desktop/freqs.csv", ["A", "B"], survey)
-    #controller.build_document_model("/users/y2analytics/Desktop/freqs.csv", ["A", "B"], survey)
-    #controller.build_document_report("Y2", "/users/y2analytics/Desktop/test.docx", None)
+    controller.view.controller = controller
+    controller.view.run()

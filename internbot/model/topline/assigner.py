@@ -38,6 +38,7 @@ class Assigner(object):
                 else:
                     value = '1'                    
                 matching_question.add_response(response_row['label'], value)
+                matching_question.type = "MC"
             else:
                 new_question = question.Question()
                 new_question.name = question_name
@@ -47,6 +48,7 @@ class Assigner(object):
                 else:
                     value = '1'
                 new_question.add_response(response_row['label'], value)
+                new_question.type = "MC"
                 questions.add(new_question)
         return questions
 

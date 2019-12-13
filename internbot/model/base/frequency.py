@@ -15,12 +15,11 @@ class Frequencies(object):
         return self.__groups
 
     def add(self, result, population, stat, group="basic"):
-        if self.__frequencies.get(group) is not None:
-            group_freqs = self.__frequencies[group]
-            groups_freqs.append(Frequency(result, population, stat))
-        else:
-            self.__frequencies[group] = [Frequency(result, population, stat)]
+            self.__frequencies[group] = Frequency(result, population, stat)
             self.__groups.append(group)
+
+    def __len__(self):
+        return len(self.__frequencies)
 
 class Frequency(object):
 

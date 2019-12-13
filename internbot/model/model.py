@@ -42,22 +42,22 @@ class Model(object):
         self.__xtabs.build_spss_report(path_to_output, image_path)
 
     def build_appendix_model(self, path_to_csv):
-        self.__topline.build_appendix_model(path_to_csv)
+        return self.__topline.build_appendix_model(path_to_csv)
 
-    def build_appendix_report(self, path_to_output, is_document, image_path, template_path):
-        self.__topline.build_appendix_report(path_to_output, is_document, image_path, template_path)
+    def build_appendix_report(self, question_blocks, path_to_output, is_document, image_path, template_path):
+        self.__topline.build_appendix_report(question_blocks, path_to_output, is_document, image_path, template_path)
 
     def build_document_model(self, path_to_csv, groups, survey):
-        self.__topline.build_document_model(path_to_csv, groups, survey)
+        return self.__topline.build_document_model(path_to_csv, groups, survey)
 
-    def build_document_report(self, path_to_template, path_to_output):
-        self.__topline.build_document_report(path_to_template, path_to_output)
+    def build_document_report(self, question_blocks, path_to_template, path_to_output):
+        self.__topline.build_document_report(question_blocks, path_to_template, path_to_output)
 
     def build_powerpoint_model(self, path_to_csv, groups, survey):
-        self.__topline.build_powerpoint_model(path_to_csv, groups, survey)
+        return self.__topline.build_powerpoint_model(path_to_csv, groups, survey)
 
-    def build_powerpoint_report(self, path_to_template, path_to_output):
-        self.__topline.build_powerpoint_report(path_to_template, path_to_output)
+    def build_powerpoint_report(self, question_blocks, path_to_template, path_to_output):
+        self.__topline.build_powerpoint_report(question_blocks, path_to_template, path_to_output)
 
     def build_scores_model(self, path_to_csv, round, location):
         self.__rnc.build_scores_model(path_to_csv, round, location)

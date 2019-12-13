@@ -112,6 +112,7 @@ class QSFQuestionsParser(object):
             self.parse_dynamic(question, question_payload)
             self.parse_type(question, question_payload, question_element)
         self.__questions = self.carryforwardparser.carry_forward(self.__questions)
+
         return self.__questions
 
     def parse_dynamic(self, question, question_payload):
@@ -533,7 +534,7 @@ class QSFResponsesParser(object):
 
     def parse_basic(self, question, question_payload):
         for value, label in question_payload['Choices'].items():
-            question.add_response(self.convert_response_from_byte_str(str(label['Display'])), value)
+            question.add_response(label['Display'], value)
         for old_value, new_value in self.__response_order.items():
             matching_response = next((response for response in question.responses if response.value == old_value), None)
             if matching_response is not None:
