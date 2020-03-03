@@ -177,7 +177,7 @@ class Document(object):
         paragraph_format = paragraph.paragraph_format
         paragraph_format.keep_together = True
         paragraph_format.left_indent = Inches(1)
-        paragraph.add_run("\t" + prompt + ". ")
+        paragraph.add_run("\t" + prompt + " ")
         paragraph_format.first_line_indent = Inches(-1)
 
     def write_responses(self, question, paragraph):

@@ -25,6 +25,7 @@ class Controller(object):
         self.__template_logos["QUALTRICS"] = os.path.join(image_folder, "QLogo.png")
         self.__template_logos["UT_POLICY"] = os.path.join(image_folder, "y2_utpol_logo.png")
         self.__template_logos["WHATSAPP"] = os.path.join(image_folder, "whatsapp.png")
+        self.__template_logos["FACEBOOK"] = os.path.join(image_folder, "FB.png")
 
     @property
     def view(self):
@@ -71,8 +72,11 @@ class Controller(object):
     def build_powerpoint_model(self, path_to_csv, groups, survey):
         return self.__model.build_powerpoint_model(path_to_csv, groups, survey)
 
-    def build_powerpoint_report(self, questions, path_to_template, path_to_output):
-        self.__model.build_powerpoint_report(questions, path_to_template, path_to_output)
+    def pick_template_layout(self, path_to_template):
+        return self.__model.pick_template_layout(path_to_template)
+
+    def build_powerpoint_report(self, questions, layout_index, path_to_output):
+        self.__model.build_powerpoint_report(questions, layout_index, path_to_output)
 
     def build_scores_model(self, path_to_csv, round, location):
         self.__model.build_scores_model(path_to_csv, round, location)
@@ -100,3 +104,11 @@ if __name__ == '__main__':
     controller = Controller()
     controller.view.controller = controller
     controller.view.run()
+
+    ## below is developer code for new powerpoint automation
+
+    #survey = controller.build_survey("/users/y2analytics/Desktop/Files/Internbot_statsivus.qsf")
+    #questions = controller.build_powerpoint_model("/users/y2analytics/Desktop/Files/freqs.csv", ["A", "B"], None)
+    #print(controller.pick_template_layout("/users/y2analytics/Desktop/Charts template.pptx"))
+    #layout_index = 1
+    #controller.build_powerpoint_report(questions, layout_index, "/users/y2analytics/Desktop/test.pptx")

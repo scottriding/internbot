@@ -397,7 +397,7 @@ class PowerpointView(BoxLayout):
 
     def open_freq_dialog_to_open_template_prompt(self):
         self.open_freq_dialog.dismiss()
-        self.__controller.build_powerpoint_model(self.__freq_filename, self.__group_names, self.__survey)
+        self.__questions = self.__controller.build_powerpoint_model(self.__freq_filename, self.__group_names, self.__survey)
         self.open_template_prompt.open()
 
     def open_template_prompt_to_dialog(self, instance):
@@ -414,7 +414,7 @@ class PowerpointView(BoxLayout):
 
     def finish(self):
         self.save_file_dialog.dismiss()
-        self.__controller.build_powerpoint_report(self.__template_filename, self.__save_filename)
+        self.__controller.build_powerpoint_report(self.__questions, self.__template_filename, self.__save_filename)
 
     def error_message(self, error):
         label = Label(text=error)

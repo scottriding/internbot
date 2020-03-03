@@ -56,8 +56,11 @@ class Model(object):
     def build_powerpoint_model(self, path_to_csv, groups, survey):
         return self.__topline.build_powerpoint_model(path_to_csv, groups, survey)
 
-    def build_powerpoint_report(self, question_blocks, path_to_template, path_to_output):
-        self.__topline.build_powerpoint_report(question_blocks, path_to_template, path_to_output)
+    def pick_template_layout(self, path_to_template):
+        return self.__topline.pick_template_layout(path_to_template)
+
+    def build_powerpoint_report(self, question_blocks, layout_index, path_to_output):
+        self.__topline.build_powerpoint_report(question_blocks, layout_index, path_to_output)
 
     def build_scores_model(self, path_to_csv, round, location):
         self.__rnc.build_scores_model(path_to_csv, round, location)

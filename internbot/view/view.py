@@ -124,7 +124,7 @@ class View(App):
     def main_to_xtabs(self, instance):
         self.root.remove_widget(self.main_screen)
         self.root.add_widget(self.crosstabs_screen)
-        self.rect.source = 'resources/images/DWTWNSLC3.jpg'
+        self.rect.source = 'resources/images/CANYON.jpg'
 
     def xtabs_to_main(self, instance):
         self.root.remove_widget(self.crosstabs_screen)
@@ -134,7 +134,7 @@ class View(App):
     def main_to_top(self, instance):
         self.root.remove_widget(self.main_screen)
         self.root.add_widget(self.topline_screen)
-        self.rect.source = 'resources/images/DWTWNSLC2.jpg'
+        self.rect.source = 'resources/images/TEMPLE.jpg'
 
     def top_to_main(self, instance):
         self.root.remove_widget(self.topline_screen)
@@ -144,7 +144,7 @@ class View(App):
     def main_to_rnc(self, instance):
         self.root.remove_widget(self.main_screen)
         self.root.add_widget(self.rnc_screen)
-        self.rect.source = 'resources/images/DWTWNSLC1.jpg'
+        self.rect.source = 'resources/images/CAPITOL.jpg'
 
     def rnc_to_main(self, instance):
         self.root.remove_widget(self.rnc_screen)

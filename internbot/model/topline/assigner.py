@@ -66,8 +66,9 @@ class Assigner(object):
 
     def find_question(self, question_to_find):
         matching_question = self.__question_blocks.find_question_by_name(question_to_find)
-        if matching_question.parent == 'CompositeQuestion':
-            matching_question = self.find_sub_question(matching_question, question_to_find)
+        if matching_question is not None:
+            if matching_question.parent == 'CompositeQuestion':
+                matching_question = self.find_sub_question(matching_question, question_to_find)
         return matching_question
 
     def find_sub_question(self, composite_question, question_to_find):

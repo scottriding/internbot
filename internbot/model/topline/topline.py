@@ -29,5 +29,8 @@ class Topline(object):
         frequency_assigner = assigner.Assigner(path_to_csv, groups, survey)
         return frequency_assigner.assign()
 
-    def build_powerpoint_report(self, question_blocks, path_to_template, path_to_output):
-        self.__powerpoint.build_powerpoint_report(question_blocks, path_to_template, path_to_output)
+    def pick_template_layout(self, path_to_template):
+        return self.__powerpoint.pick_template_layout(path_to_template)
+
+    def build_powerpoint_report(self, question_blocks, layout_index, path_to_output):
+        self.__powerpoint.build_powerpoint_report(question_blocks, layout_index, path_to_output)

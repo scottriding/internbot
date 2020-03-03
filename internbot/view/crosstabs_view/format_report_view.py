@@ -98,15 +98,17 @@ class FormatReportView(BoxLayout):
         button_layout = BoxLayout()
         button_layout.size_hint = (1, .1)
 
+        y2_btn = Button(text="Y2 Analytics", on_press=self.is_y2)
         qualtrics_btn = Button(text="Qualtrics", on_press=self.is_qualtrics)
         policy_btn = Button(text="Utah Policy", on_press=self.is_policy)
-        y2_btn = Button(text="Y2 Analytics", on_press=self.is_y2)
         wa_btn = Button(text="WhatsApp", on_press=self.is_whatsapp)
+        fb_btn = Button(text="Facebook", on_press=self.is_fb)
 
+        button_layout.add_widget(y2_btn)
         button_layout.add_widget(qualtrics_btn)
         button_layout.add_widget(policy_btn)
-        button_layout.add_widget(y2_btn)
         button_layout.add_widget(wa_btn)
+        button_layout.add_widget(fb_btn)
 
         chooser.add_widget(button_layout)
 
@@ -209,6 +211,11 @@ class FormatReportView(BoxLayout):
     def is_whatsapp(self, instance):
         self.format_selector.dismiss()
         self.__controller.build_qresearch_report(self.__open_filename, "WHATSAPP")
+        self.save_file_prompt.open()
+
+    def is_fb(self, instance):
+        self.format_selector.dismiss()
+        self.__controller.build_qresearch_report(self.__open_filename, "FACEBOOK")
         self.save_file_prompt.open()
 
     def save_file_prompt_to_dialog(self, instance):

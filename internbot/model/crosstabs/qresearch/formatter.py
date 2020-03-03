@@ -86,7 +86,7 @@ class Formatter(object):
                     to_print = "Formatting: %s" % sheet.title
                     print(to_print)
                     self.format_sheet(sheet)
-                    table_index += 1    
+                    table_index += 1
         print("Done!")
 
     def set_template(self):
@@ -110,6 +110,11 @@ class Formatter(object):
             self.__header_fill = PatternFill("solid", fgColor = "445963")
             self.__hi_significant_fill = PatternFill("solid", fgColor = "1EBDA5")
             self.__lo_significant_fill = PatternFill("solid", fgColor = "1EBDA5")
+        elif (os.path.basename(self.__image_path) == "FB.png"):
+            self.__row_height = 57
+            self.__header_fill = PatternFill("solid", fgColor = "344854")
+            self.__hi_significant_fill = PatternFill(fill_type=None)
+            self.__lo_significant_fill = PatternFill(fill_type=None)
 
         self.__table_fill = PatternFill("solid", fgColor = "E7E6E6")
         self.__white_fill = PatternFill("solid", fgColor = "FFFFFF")
