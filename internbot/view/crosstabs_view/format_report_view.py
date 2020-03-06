@@ -33,10 +33,22 @@ class FormatReportView(BoxLayout):
     def create_open_file_prompt(self):
         popup_layout = BoxLayout(orientation='vertical')
         help_text = "Choose unformatted QResearch (.xlsx) crosstab report\n\n"
-        help_text += "[ref=click][color=F3993D]Click here for examples of unformatted reports[/color][/ref]"
+        help_text += "[ref=click][color=F3993D][u]Click here for examples of unformatted reports[/u][/color][/ref]"
 
         def examples_link(instance, value):
             webbrowser.open("https://www.dropbox.com/sh/zwiaf534dfsgtlf/AABmd51ihZVairDCoRZuPbHRa?dl=0")
+
+        popup = Popup(title="",
+        separator_height = 0,
+        content=popup_layout,
+        size_hint=(.7, .5), 
+        pos_hint={'center_x': 0.5, 'center_y': 0.5},
+        auto_dismiss=False)
+
+        close_btn = Button(text='x', size_hint=(.08,.2))
+        close_btn.bind(on_release=popup.dismiss)
+
+        popup_layout.add_widget(close_btn)
 
         label = Label(text=help_text, markup=True)
         label.bind(on_ref_press=examples_link)
@@ -44,21 +56,38 @@ class FormatReportView(BoxLayout):
 
         popup_layout.add_widget(label)
 
-        save_btn = Button(text='>', size_hint=(.2,.2))
-        save_btn.pos_hint={'center_x': 0.5, 'center_y': 0.5}
-        save_btn.bind(on_release=self.open_file_prompt_to_dialog)
+        next_btn = Button(text='Next', size_hint=(.2,.2))
+        next_btn.pos_hint={'center_x': 0.5, 'center_y': 0.5}
+        next_btn.bind(on_release=self.open_file_prompt_to_dialog)
 
-        popup_layout.add_widget(save_btn)
-
-        popup = Popup(title="Select crosstab file",
-        content=popup_layout,
-        size_hint=(.7, .5), pos_hint={'center_x': 0.5, 'center_y': 0.5})
+        popup_layout.add_widget(next_btn)
 
         return popup
 
     def create_open_file_dialog(self):
-        chooser = BoxLayout()
+        chooser_layout = BoxLayout(orientation='vertical')
         container = BoxLayout(orientation='vertical')
+
+        file_chooser = Popup(title='',
+        separator_height = 0,
+        content=chooser_layout,
+        size_hint=(.9, .7), 
+        pos_hint={'center_x': 0.5, 'center_y': 0.5},
+        auto_dismiss=False)
+
+        button_layout = BoxLayout(orientation='vertical')
+        button_layout.size_hint = (.1, .2)
+
+        close_btn = Button(text='x')
+        close_btn.bind(on_release=file_chooser.dismiss)
+
+        back_btn = Button(text='<')
+        back_btn.bind(on_release=self.open_dialog_to_prompt)
+
+        button_layout.add_widget(close_btn)
+        button_layout.add_widget(back_btn)
+
+        chooser_layout.add_widget(button_layout)
 
         def open_file(path, filename):
             try:
@@ -68,26 +97,43 @@ class FormatReportView(BoxLayout):
             except IndexError:
                 self.error_message("Please pick a QResearch report (.xlsx) file")
 
-        filechooser = FileChooserListView()
-        filechooser.path = os.path.expanduser("~")
-        filechooser.bind(on_selection=lambda x: filechooser.selection)
-        filechooser.filters = ["*.xlsx"]
+        chooser_view = FileChooserListView()
+        chooser_view.path = os.path.expanduser("~")
+        chooser_view.bind(on_selection=lambda x: chooser_view.selection)
+        chooser_view.filters = ["*.xlsx"]
 
         open_btn = Button(text='open', size_hint=(.2,.1), pos_hint={'center_x': 0.5, 'center_y': 0.5})
-        open_btn.bind(on_release=lambda x: open_file(filechooser.path, filechooser.selection))
+        open_btn.bind(on_release=lambda x: open_file(chooser_view.path, chooser_view.selection))
 
-        container.add_widget(filechooser)
+        container.add_widget(chooser_view)
         container.add_widget(open_btn)
-        chooser.add_widget(container)
-
-        file_chooser = Popup(title='Open file',
-        content=chooser,
-        size_hint=(.9, .7 ), pos_hint={'center_x': 0.5, 'center_y': 0.5})
+        chooser_layout.add_widget(container)
 
         return file_chooser 
 
     def create_format_selector(self):
         chooser = BoxLayout(orientation='vertical')
+
+        popup = Popup(title="",
+        separator_height = 0,
+        content=chooser,
+        size_hint=(.9, .7), 
+        pos_hint={'center_x': 0.5, 'center_y': 0.5},
+        auto_dismiss=False)
+
+        menu_layout = BoxLayout(orientation='vertical')
+        menu_layout.size_hint = (.1, .2)
+
+        close_btn = Button(text='x')
+        close_btn.bind(on_release=popup.dismiss)
+
+        back_btn = Button(text='<')
+        back_btn.bind(on_release=self.selector_to_open_file_dialog)
+
+        menu_layout.add_widget(close_btn)
+        menu_layout.add_widget(back_btn)
+
+        chooser.add_widget(menu_layout)
 
         text = "Choose from the following format options."
         label = Label(text=text)
@@ -112,39 +158,72 @@ class FormatReportView(BoxLayout):
 
         chooser.add_widget(button_layout)
 
-        format_chooser = Popup(title='Choose format',
-        content=chooser,
-        size_hint=(.9, .7 ), pos_hint={'center_x': 0.5, 'center_y': 0.5})
-
-        return format_chooser 
+        return popup 
 
     def create_save_file_prompt(self):
         popup_layout = BoxLayout(orientation='vertical')
         label = Label(text="Choose a file location and name for QResearch crosstabs report")
         label.font_family= "Y2"
 
+        popup = Popup(title="",
+        separator_height = 0,
+        content=popup_layout,
+        size_hint=(.7, .5), 
+        pos_hint={'center_x': 0.5, 'center_y': 0.5},
+        auto_dismiss=False)
+
+        button_layout = BoxLayout(orientation='vertical')
+        button_layout.size_hint = (.15, .3)
+
+        close_btn = Button(text='x')
+        close_btn.bind(on_release=popup.dismiss)
+
+        back_btn = Button(text='<')
+        back_btn.bind(on_release=self.save_file_prompt_to_selector)
+
+        button_layout.add_widget(close_btn)
+        button_layout.add_widget(back_btn)
+        popup_layout.add_widget(button_layout)
+
         popup_layout.add_widget(label)
 
-        save_btn = Button(text='>', size_hint=(.2,.2))
+        save_btn = Button(text='Next', size_hint=(.2,.2))
         save_btn.pos_hint={'center_x': 0.5, 'center_y': 0.5}
         save_btn.bind(on_release=self.save_file_prompt_to_dialog)
 
         popup_layout.add_widget(save_btn)
 
-        popup = Popup(title="Select save file location",
-        content=popup_layout,
-        size_hint=(.7, .5), pos_hint={'center_x': 0.5, 'center_y': 0.5})
-
         return popup
 
     def create_save_file_dialog(self):
-        chooser = BoxLayout()
+        chooser_layout = BoxLayout(orientation='vertical')
         container = BoxLayout(orientation='vertical')
 
-        filechooser = FileChooserIconView()
-        filechooser.path = os.path.expanduser("~")
+        file_chooser = Popup(title='',
+        separator_height = 0,
+        content=chooser_layout,
+        size_hint=(.9, .7), 
+        pos_hint={'center_x': 0.5, 'center_y': 0.5},
+        auto_dismiss=False)
 
-        container.add_widget(filechooser)
+        menu_layout = BoxLayout(orientation='vertical')
+        menu_layout.size_hint = (.1, .2)
+
+        close_btn = Button(text='x')
+        close_btn.bind(on_release=file_chooser.dismiss)
+
+        back_btn = Button(text='<')
+        back_btn.bind(on_release=self.save_dialog_to_prompt)
+
+        menu_layout.add_widget(close_btn)
+        menu_layout.add_widget(back_btn)
+
+        chooser_layout.add_widget(menu_layout)
+
+        chooser_view = FileChooserIconView()
+        chooser_view.path = os.path.expanduser("~")
+
+        container.add_widget(chooser_view)
 
         def save_file(path, filename):
             filepath = os.path.join(path, filename)
@@ -160,15 +239,11 @@ class FormatReportView(BoxLayout):
         button_layout.add_widget(file_name)
 
         save_btn = Button(text='save', size_hint=(.2,1))
-        save_btn.bind(on_release=lambda x: save_file(filechooser.path, file_name.text))
+        save_btn.bind(on_release=lambda x: save_file(chooser_view.path, file_name.text))
 
         button_layout.add_widget(save_btn)
         container.add_widget(button_layout)
-        chooser.add_widget(container)
-
-        file_chooser = Popup(title='Save report',
-        content=chooser,
-        size_hint=(.9, .7 ), pos_hint={'center_x': 0.5, 'center_y': 0.5})
+        chooser_layout.add_widget(container)
 
         return file_chooser
 
@@ -180,9 +255,17 @@ class FormatReportView(BoxLayout):
         self.open_file_prompt.dismiss()
         self.open_file_dialog.open()
 
+    def open_dialog_to_prompt(self, instance):
+        self.open_file_dialog.dismiss()
+        self.open_file_prompt.open()
+
     def open_file_dialog_to_selector(self):
         self.open_file_dialog.dismiss()
         self.format_selector.open()
+
+    def selector_to_open_file_dialog(self, instance):
+        self.format_selector.dismiss()
+        self.open_file_dialog.open()
 
     def is_qualtrics(self, instance):
         self.format_selector.dismiss()
@@ -216,6 +299,14 @@ class FormatReportView(BoxLayout):
     def is_fb(self, instance):
         self.format_selector.dismiss()
         self.__controller.build_qresearch_report(self.__open_filename, "FACEBOOK")
+        self.save_file_prompt.open()
+
+    def save_file_prompt_to_selector(self, instance):
+        self.save_file_prompt.dismiss()
+        self.format_selector.open()
+
+    def save_dialog_to_prompt(self, instance):
+        self.save_file_dialog.dismiss()
         self.save_file_prompt.open()
 
     def save_file_prompt_to_dialog(self, instance):

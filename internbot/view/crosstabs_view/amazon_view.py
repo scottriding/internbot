@@ -274,7 +274,7 @@ class AmazonView(BoxLayout):
 
         popup_layout.add_widget(label)
 
-        save_btn = Button(text='>', size_hint=(.2,.2))
+        save_btn = Button(text='Next', size_hint=(.2,.2))
         save_btn.pos_hint={'center_x': 0.5, 'center_y': 0.5}
         save_btn.bind(on_release=self.save_file_prompt_to_dialog)
 
