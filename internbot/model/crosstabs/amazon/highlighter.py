@@ -76,8 +76,6 @@ class Highlighter(object):
                     match_cell.is_significant = True
 
     def highlight_significant(self, sheet):
-        to_print = "Highlighting significant cells in %s" % sheet.title
-        print(to_print)
         for cell in self.__cells:
             if cell.is_significant is True:
                 sheet[cell.location].fill = self.highlight_style

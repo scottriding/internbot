@@ -32,10 +32,22 @@ class AmazonView(BoxLayout):
     def create_open_file_prompt(self):
         popup_layout = BoxLayout(orientation='vertical')
         help_text = "Choose an unformatted Amazon SPSS (.xlsx) crosstab report\n\n"
-        help_text += "[ref=click][color=F3993D]Click here for examples of unformatted reports[/color][/ref]"
+        help_text += "[ref=click][color=F3993D][u]Click here for examples of unformatted reports[/u][/color][/ref]"
 
         def examples_link(instance, value):
             webbrowser.open("https://www.dropbox.com/sh/1mu0eogzluyy8s1/AACXSWbtpTP5nuXEANE3ud0qa?dl=0")
+
+        popup = Popup(title="",
+        separator_height = 0,
+        content=popup_layout,
+        size_hint=(.7, .5), 
+        pos_hint={'center_x': 0.5, 'center_y': 0.5},
+        auto_dismiss=False)
+
+        close_btn = Button(text='x', size_hint=(.08,.2))
+        close_btn.bind(on_release=popup.dismiss)
+
+        popup_layout.add_widget(close_btn)
 
         label = Label(text=help_text, markup=True)
         label.bind(on_ref_press=examples_link)
@@ -43,21 +55,37 @@ class AmazonView(BoxLayout):
 
         popup_layout.add_widget(label)
 
-        save_btn = Button(text='>', size_hint=(.2,.2))
-        save_btn.pos_hint={'center_x': 0.5, 'center_y': 0.5}
-        save_btn.bind(on_release=self.open_file_prompt_to_dialog)
+        next_btn = Button(text='Next', size_hint=(.2,.2), pos_hint={'center_x': 0.5, 'center_y': 0.5})
+        next_btn.bind(on_release=self.open_file_prompt_to_dialog)
 
-        popup_layout.add_widget(save_btn)
-
-        popup = Popup(title="Select crosstab file",
-        content=popup_layout,
-        size_hint=(.7, .5), pos_hint={'center_x': 0.5, 'center_y': 0.5})
+        popup_layout.add_widget(next_btn)
 
         return popup
 
     def create_open_file_dialog(self):
-        chooser = BoxLayout()
+        chooser_layout = BoxLayout(orientation='vertical')
         container = BoxLayout(orientation='vertical')
+
+        file_chooser = Popup(title='',
+        separator_height = 0,
+        content=chooser_layout,
+        size_hint=(.9, .7), 
+        pos_hint={'center_x': 0.5, 'center_y': 0.5},
+        auto_dismiss=False)
+
+        button_layout = BoxLayout(orientation='vertical')
+        button_layout.size_hint = (.1, .2)
+
+        close_btn = Button(text='x')
+        close_btn.bind(on_release=file_chooser.dismiss)
+
+        back_btn = Button(text='<')
+        back_btn.bind(on_release=self.open_dialog_to_prompt)
+
+        button_layout.add_widget(close_btn)
+        button_layout.add_widget(back_btn)
+
+        chooser_layout.add_widget(button_layout)
 
         def open_file(path, filename):
             try:
@@ -68,52 +96,86 @@ class AmazonView(BoxLayout):
             except IndexError:
                 self.error_message("Please pick an Amazon report (.xlsx) file")
 
-        filechooser = FileChooserListView()
-        filechooser.bind(on_selection=lambda x: filechooser.selection)
-        filechooser.path = os.path.expanduser("~")
-        filechooser.filters = ["*.xlsx"]
+        chooser_view = FileChooserListView()
+        chooser_view.bind(on_selection=lambda x: chooser_view.selection)
+        chooser_view.path = os.path.expanduser("~")
+        chooser_view.filters = ["*.xlsx"]
 
         open_btn = Button(text='open', size_hint=(.2,.1), pos_hint={'center_x': 0.5, 'center_y': 0.5})
-        open_btn.bind(on_release=lambda x: open_file(filechooser.path, filechooser.selection))
+        open_btn.bind(on_release=lambda x: open_file(chooser_view.path, chooser_view.selection))
 
-        container.add_widget(filechooser)
+        container.add_widget(chooser_view)
         container.add_widget(open_btn)
-        chooser.add_widget(container)
-
-        file_chooser = Popup(title='Open file',
-        content=chooser,
-        size_hint=(.9, .7 ), pos_hint={'center_x': 0.5, 'center_y': 0.5})
+        chooser_layout.add_widget(container)
 
         return file_chooser 
 
     def create_toc_prompt(self):
         popup_layout = BoxLayout(orientation='vertical')
         help_text = "Choose table of contents (.csv) crosstab file\n\n"
-        help_text += "[ref=click][color=F3993D]Click here for examples of table of content files[/color][/ref]"
+        help_text += "[ref=click][color=F3993D][u]Click here for examples of table of content files[/u][/color][/ref]"
 
         def examples_link(instance, value):
             webbrowser.open("https://www.dropbox.com/sh/md12sy6blwc5rzo/AACNcJMpFxKhBstbevxlAsZja?dl=0")
+
+        popup = Popup(title="",
+        separator_height = 0,
+        content=popup_layout,
+        size_hint=(.7, .5), 
+        pos_hint={'center_x': 0.5, 'center_y': 0.5},
+        auto_dismiss=False)
+
+        button_layout = BoxLayout(orientation='vertical')
+        button_layout.size_hint = (.15, .3)
+
+        close_btn = Button(text='x')
+        close_btn.bind(on_release=popup.dismiss)
+
+        back_btn = Button(text='<')
+        back_btn.bind(on_release=self.toc_prompt_to_open_dialog)
+
+        button_layout.add_widget(close_btn)
+        button_layout.add_widget(back_btn)
+
+        popup_layout.add_widget(button_layout)
 
         label = Label(text=help_text, markup=True)
         label.bind(on_ref_press=examples_link)
 
         popup_layout.add_widget(label)
 
-        save_btn = Button(text='>', size_hint=(.2,.2))
+        save_btn = Button(text='Next', size_hint=(.2,.2))
         save_btn.pos_hint={'center_x': 0.5, 'center_y': 0.5}
         save_btn.bind(on_release=self.toc_prompt_to_dialog)
 
         popup_layout.add_widget(save_btn)
 
-        popup = Popup(title="Select table of contents file",
-        content=popup_layout,
-        size_hint=(.7, .5), pos_hint={'center_x': 0.5, 'center_y': 0.5})
-
         return popup
 
     def create_toc_dialog(self):
-        chooser = BoxLayout()
+        chooser_layout = BoxLayout(orientation='vertical')
         container = BoxLayout(orientation='vertical')
+
+        file_chooser = Popup(title='',
+        separator_height = 0,
+        content=chooser_layout,
+        size_hint=(.9, .7), 
+        pos_hint={'center_x': 0.5, 'center_y': 0.5},
+        auto_dismiss=False)
+
+        button_layout = BoxLayout(orientation='vertical')
+        button_layout.size_hint = (.1, .2)
+
+        close_btn = Button(text='x')
+        close_btn.bind(on_release=file_chooser.dismiss)
+
+        back_btn = Button(text='<')
+        back_btn.bind(on_release=self.toc_dialog_to_prompt)
+
+        button_layout.add_widget(close_btn)
+        button_layout.add_widget(back_btn)
+
+        chooser_layout.add_widget(button_layout)
 
         def open_file(path, filename):
             try:
@@ -123,21 +185,17 @@ class AmazonView(BoxLayout):
             except IndexError:
                 self.error_message("Please pick a table of contents (.csv) file")
 
-        filechooser = FileChooserListView()
-        filechooser.path = os.path.expanduser("~")
-        filechooser.filters = ["*.csv"]
-        filechooser.bind(on_selection=lambda x: filechooser.selection)
+        chooser_view = FileChooserListView()
+        chooser_view.path = os.path.expanduser("~")
+        chooser_view.filters = ["*.csv"]
+        chooser_view.bind(on_selection=lambda x: chooser_view.selection)
 
         open_btn = Button(text='open', size_hint=(.2,.1), pos_hint={'center_x': 0.5, 'center_y': 0.5})
-        open_btn.bind(on_release=lambda x: open_file(filechooser.path, filechooser.selection))
+        open_btn.bind(on_release=lambda x: open_file(chooser_view.path, chooser_view.selection))
 
-        container.add_widget(filechooser)
+        container.add_widget(chooser_view)
         container.add_widget(open_btn)
-        chooser.add_widget(container)
-
-        file_chooser = Popup(title='Open file',
-        content=chooser,
-        size_hint=(.9, .7 ), pos_hint={'center_x': 0.5, 'center_y': 0.5})
+        chooser_layout.add_widget(container)
 
         return file_chooser 
 
@@ -145,10 +203,31 @@ class AmazonView(BoxLayout):
         chooser = BoxLayout(orientation='vertical')
 
         help_text = "Does this report have grouped or trended banners?\n\n"
-        help_text += "[ref=click][color=F3993D]Click here for examples of trended banners[/color][/ref]"
+        help_text += "[ref=click][color=F3993D][u]Click here for examples of trended banners[/u][/color][/ref]"
 
         def examples_link(instance, value):
             webbrowser.open("https://www.dropbox.com/sh/5vnjdqh6rji5w78/AAC0T3o-UgPNEfWalmP8PrIYa?dl=0")
+
+        popup = Popup(title="",
+        separator_height = 0,
+        content=chooser,
+        size_hint=(.9, .7), 
+        pos_hint={'center_x': 0.5, 'center_y': 0.5},
+        auto_dismiss=False)
+
+        button_layout = BoxLayout(orientation='vertical')
+        button_layout.size_hint = (.1, .2)
+
+        close_btn = Button(text='x')
+        close_btn.bind(on_release=popup.dismiss)
+
+        back_btn = Button(text='<')
+        back_btn.bind(on_release=self.trended_selector_to_toc_dialog)
+
+        button_layout.add_widget(close_btn)
+        button_layout.add_widget(back_btn)
+
+        chooser.add_widget(button_layout)
 
         label = Label(text=help_text, markup=True)
         label.bind(on_ref_press=examples_link)
@@ -166,16 +245,32 @@ class AmazonView(BoxLayout):
 
         chooser.add_widget(button_layout)
 
-        trended_chooser = Popup(title='Trended crosstabs',
-        content=chooser,
-        size_hint=(.9, .7 ), pos_hint={'center_x': 0.5, 'center_y': 0.5})
-
-        return trended_chooser
+        return popup
 
     def create_save_file_prompt(self):
         popup_layout = BoxLayout(orientation='vertical')
         label = Label(text="Choose a file location and name for Amazon crosstabs report")
         label.font_family= "Y2"
+
+        popup = Popup(title="",
+        separator_height = 0,
+        content=popup_layout,
+        size_hint=(.7, .5), 
+        pos_hint={'center_x': 0.5, 'center_y': 0.5},
+        auto_dismiss=False)
+
+        button_layout = BoxLayout(orientation='vertical')
+        button_layout.size_hint = (.15, .3)
+
+        close_btn = Button(text='x')
+        close_btn.bind(on_release=popup.dismiss)
+
+        back_btn = Button(text='<')
+        back_btn.bind(on_release=self.save_file_prompt_to_selector)
+
+        button_layout.add_widget(close_btn)
+        button_layout.add_widget(back_btn)
+        popup_layout.add_widget(button_layout)
 
         popup_layout.add_widget(label)
 
@@ -185,20 +280,37 @@ class AmazonView(BoxLayout):
 
         popup_layout.add_widget(save_btn)
 
-        popup = Popup(title="Select save file location",
-        content=popup_layout,
-        size_hint=(.7, .5), pos_hint={'center_x': 0.5, 'center_y': 0.5})
-
         return popup
 
     def create_save_file_dialog(self):
-        chooser = BoxLayout()
+        chooser_layout = BoxLayout(orientation='vertical')
         container = BoxLayout(orientation='vertical')
 
-        filechooser = FileChooserIconView()
-        filechooser.path = os.path.expanduser("~")
+        file_chooser = Popup(title='',
+        separator_height = 0,
+        content=chooser_layout,
+        size_hint=(.9, .7), 
+        pos_hint={'center_x': 0.5, 'center_y': 0.5},
+        auto_dismiss=False)
 
-        container.add_widget(filechooser)
+        menu_layout = BoxLayout(orientation='vertical')
+        menu_layout.size_hint = (.1, .2)
+
+        close_btn = Button(text='x')
+        close_btn.bind(on_release=file_chooser.dismiss)
+
+        back_btn = Button(text='<')
+        back_btn.bind(on_release=self.save_dialog_to_prompt)
+
+        menu_layout.add_widget(close_btn)
+        menu_layout.add_widget(back_btn)
+
+        chooser_layout.add_widget(menu_layout)
+
+        chooser_view = FileChooserIconView()
+        chooser_view.path = os.path.expanduser("~")
+
+        container.add_widget(chooser_view)
 
         def save_file(path, filename):
             filepath = os.path.join(path, filename)
@@ -214,15 +326,11 @@ class AmazonView(BoxLayout):
         button_layout.add_widget(file_name)
 
         save_btn = Button(text='save', size_hint=(.2,1))
-        save_btn.bind(on_release=lambda x: save_file(filechooser.path, file_name.text))
+        save_btn.bind(on_release=lambda x: save_file(chooser_view.path, file_name.text))
 
         button_layout.add_widget(save_btn)
         container.add_widget(button_layout)
-        chooser.add_widget(container)
-
-        file_chooser = Popup(title='Save report',
-        content=chooser,
-        size_hint=(.9, .7 ), pos_hint={'center_x': 0.5, 'center_y': 0.5})
+        chooser_layout.add_widget(container)
 
         return file_chooser
 
@@ -235,15 +343,35 @@ class AmazonView(BoxLayout):
         self.open_file_prompt.dismiss()
         self.open_file_dialog.open()
 
+    def open_dialog_to_prompt(self, instance):
+        self.open_file_dialog.dismiss()
+        self.open_file_prompt.open()
+
     def open_file_dialog_to_toc_prompt(self):
         self.open_file_dialog.dismiss()
         self.open_toc_prompt.open()
+
+    def toc_prompt_to_open_dialog(self, instance):
+        self.open_toc_prompt.dismiss()
+        self.open_file_dialog.open()
 
     def toc_prompt_to_dialog(self, instance):
         self.open_toc_prompt.dismiss()
         self.open_toc_dialog.open()
 
+    def toc_dialog_to_prompt(self, instance):
+        self.open_toc_dialog.dismiss()
+        self.open_toc_prompt.open()
+
     def toc_dialog_to_trended_selector(self):
+        self.open_toc_dialog.dismiss()
+        self.trended_selector.open()
+
+    def trended_selector_to_toc_dialog(self, instance):
+        self.trended_selector.dismiss()
+        self.open_toc_dialog.open()
+
+    def toc_dialog_to_selector(self, instance):
         self.open_toc_dialog.dismiss()
         self.trended_selector.open()
 
@@ -253,12 +381,21 @@ class AmazonView(BoxLayout):
         self.save_file_prompt.open()
 
     def is_basic(self, instance):
+        self.__is_trended = False
         self.trended_selector.dismiss()
         self.save_file_prompt.open()
+
+    def save_file_prompt_to_selector(self, instance):
+        self.save_file_prompt.dismiss()
+        self.trended_selector.open()
 
     def save_file_prompt_to_dialog(self, instance):
         self.save_file_prompt.dismiss()
         self.save_file_dialog.open()
+
+    def save_dialog_to_prompt(self, instance):
+        self.save_file_dialog.dismiss()
+        self.save_file_prompt.open()
 
     def finish(self):
         self.save_file_dialog.dismiss()
