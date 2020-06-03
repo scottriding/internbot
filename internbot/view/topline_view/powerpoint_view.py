@@ -32,6 +32,8 @@ class PowerpointView(BoxLayout):
         self.save_file_prompt = self.create_save_file_prompt()
         self.save_file_dialog = self.create_save_file_dialog()
 
+        self.is_qsf = True
+
     def create_survey_prompt(self):
         popup_layout = BoxLayout(orientation='vertical')
         help_text = "Choose survey (.csv or .qsf) file\n\n"
@@ -65,8 +67,16 @@ class PowerpointView(BoxLayout):
         def open_file(path, filename):
             try:
                 filepath = os.path.join(path, filename[0])
-                self.__open_filename = filepath
-                self.open_survey_dialog_to_trended_selector()
+                path, ext = os.path.splitext(filepath)
+                if ext == ".csv":
+                    self.is_qsf = False
+                    self.__open_filename = filepath
+                    self.open_survey_dialog_to_trended_selector()
+                elif ext == ".qsf":
+                    self.__open_filename = filepath
+                    self.open_survey_dialog_to_trended_selector()
+                else:
+                    self.error_message("Please pick a survey (.csv or .qsf) file")
             except IndexError:
                 self.error_message("Please pick a survey (.csv or .qsf) file")
 
@@ -231,7 +241,7 @@ class PowerpointView(BoxLayout):
         def open_file(path, filename):
             try:
                 filepath = os.path.join(path, filename[0])
-                self.__freq_filename = filepath
+                self.__open_filename = filepath
                 self.open_freq_dialog_to_open_template_prompt()
             except IndexError:
                 self.error_message("Please pick a frequencies (.csv) file")
@@ -381,8 +391,9 @@ class PowerpointView(BoxLayout):
             try:
                 self.__survey = self.__controller.build_survey(self.__open_filename)
                 self.trended_selector.open()
-            except:
-                self.error_message("Issue parsing .qsf file.")
+            except Exception as inst:
+                string = "Issue parsing .qsf: %s" % str(inst)
+                self.error_message(string)
         else:
             self.trended_selector.open()
 
@@ -410,8 +421,15 @@ class PowerpointView(BoxLayout):
 
     def open_freq_dialog_to_open_template_prompt(self):
         self.open_freq_dialog.dismiss()
-        self.__questions = self.__controller.build_powerpoint_model(self.__freq_filename, self.__group_names, self.__survey)
-        self.open_template_prompt.open()
+        try:
+            self.__questions = self.__controller.build_powerpoint_model(self.__open_filename, self.__group_names, self.__survey)
+            self.open_template_prompt.open()
+        except KeyError as key_error:
+            string = "Misspelled or missing column (%s):\n %s" % (type(key_error), str(key_error))
+            self.error_message(string)
+        except Exception as inst:
+            string = "Error (%s):\n %s" % (type(inst), str(inst))
+            self.error_message(string)
 
     def open_template_prompt_to_dialog(self, instance):
         self.open_template_prompt.dismiss()
@@ -427,7 +445,12 @@ class PowerpointView(BoxLayout):
 
     def finish(self):
         self.save_file_dialog.dismiss()
-        self.__controller.build_powerpoint_report(self.__questions, self.__template_filename, self.__save_filename)
+        #try:
+        self.__controller.build_powerpoint_report(self.__questions, 1, self.__save_filename)
+        # except Exception as inst:
+#             string = "Error (%s):\n %s" % (type(inst), str(inst))
+#             self.error_message(string)
+
 
     def error_message(self, error):
         label = Label(text=error)
