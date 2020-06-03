@@ -193,9 +193,16 @@ class IssueTrendedView(BoxLayout):
         self.open_file_dialog.open()
 
     def open_file_dialog_to_save_prompt(self):
-        self.__controller.build_issues_model(self.open_filepath, self.round)
-        self.open_file_dialog.dismiss()
-        self.save_file_prompt.open()
+        try:
+            self.__controller.build_issues_model(self.open_filepath, self.round)
+            self.open_file_dialog.dismiss()
+            self.save_file_prompt.open()
+        except KeyError as key_error:
+            string = "Misspelled or missing column (%s):\n %s" % (type(key_error), str(key_error))
+            self.error_message(string)
+        except Exception as inst:
+            string = "Error (%s):\n %s" % (type(inst), str(inst))
+            self.error_message(string)
 
     def save_file_prompt_to_dialog(self, instance):
         self.save_file_prompt.dismiss()

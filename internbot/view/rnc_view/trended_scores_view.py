@@ -196,8 +196,15 @@ class TrendedScoresView(BoxLayout):
 
     def open_file_dialog_to_save_prompt(self):
         self.open_file_dialog.dismiss()
-        self.__controller.build_trended_model(self.open_filepath, self.round)
-        self.save_folder_prompt.open()
+        try:
+            self.__controller.build_trended_model(self.open_filepath, self.round)
+            self.save_folder_prompt.open()
+        except KeyError as key_error:
+            string = "Misspelled or missing column (%s):\n %s" % (type(key_error), str(key_error))
+            self.error_message(string)
+        except Exception as inst:
+            string = "Error (%s):\n %s" % (type(inst), str(inst))
+            self.error_message(string)
         
     def save_folder_prompt_to_dialog(self, instance):
         self.save_folder_prompt.dismiss()

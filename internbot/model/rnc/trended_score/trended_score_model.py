@@ -11,7 +11,7 @@ class TrendedModelWorkbooks(object):
         ## grab row details
         workbook_name = workbook_details['Workbook']
         sheet_name = workbook_details['Sheet']
-        field_name = workbook_details['Field Name']
+        field_name = workbook_details['FieldName']
         grouping_name = workbook_details['Grouping']
         count = int(workbook_details['Count'])
 
