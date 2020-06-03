@@ -96,10 +96,9 @@ class Controller(object):
         self.__model.build_trended_report(path_to_output)
 
 if __name__ == '__main__':
-    ## directories here only work outside of executable
-    template_folder = "resources/templates"
-    image_folder = "resources/images"
-
+    print("Welcome to internbot!")
+    template_folder = os.path.join(sys._MEIPASS, 'resources/templates/')
+    image_folder = os.path.join(sys._MEIPASS, 'resources/images/')
     controller = Controller()
     controller.view.controller = controller
     controller.view.run()
