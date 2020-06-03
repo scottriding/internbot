@@ -269,34 +269,48 @@ class FormatReportView(BoxLayout):
 
     def is_qualtrics(self, instance):
         self.format_selector.dismiss()
-        self.__controller.build_qresearch_report(self.__open_filename, "QUALTRICS")
-        self.save_file_prompt.open()
+        try:
+            self.__controller.build_qresearch_report(self.__open_filename, "QUALTRICS")
+            self.save_file_prompt.open()
+        except Exception as inst:
+            string = "Issue formatting report:/n %s" % str(inst)
+            self.error_message(string)
 
     def is_policy(self, instance):
         self.format_selector.dismiss()
         try:
             self.__controller.build_qresearch_report(self.__open_filename, "UT_POLICY")
             self.save_file_prompt.open()
-        except:
-            self.error_message("Issue formatting report.")
+        except Exception as inst:
+            string = "Issue formatting report:/n %s" % str(inst)
+            self.error_message(string)
         
     def is_y2(self, instance):
         self.format_selector.dismiss()
         try:
             self.__controller.build_qresearch_report(self.__open_filename, "Y2")
             self.save_file_prompt.open()
-        except:
-            self.error_message("Issue formatting report.")
+        except Exception as inst:
+            string = "Issue formatting report:/n %s" % str(inst)
+            self.error_message(string)
 
     def is_whatsapp(self, instance):
         self.format_selector.dismiss()
-        self.__controller.build_qresearch_report(self.__open_filename, "WHATSAPP")
-        self.save_file_prompt.open()
+        try:
+            self.__controller.build_qresearch_report(self.__open_filename, "WHATSAPP")
+            self.save_file_prompt.open()
+        except Exception as inst:
+            string = "Issue formatting report:/n %s" % str(inst)
+            self.error_message(string)
 
     def is_fb(self, instance):
         self.format_selector.dismiss()
-        self.__controller.build_qresearch_report(self.__open_filename, "FACEBOOK")
-        self.save_file_prompt.open()
+        try:
+            self.__controller.build_qresearch_report(self.__open_filename, "FACEBOOK")
+            self.save_file_prompt.open()
+        except Exception as inst:
+            string = "Issue formatting report:/n %s" % str(inst)
+            self.error_message(string)
 
     def save_file_prompt_to_selector(self, instance):
         self.save_file_prompt.dismiss()
