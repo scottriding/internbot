@@ -445,11 +445,11 @@ class PowerpointView(BoxLayout):
 
     def finish(self):
         self.save_file_dialog.dismiss()
-        #try:
-        self.__controller.build_powerpoint_report(self.__questions, 1, self.__save_filename)
-        # except Exception as inst:
-#             string = "Error (%s):\n %s" % (type(inst), str(inst))
-#             self.error_message(string)
+        try:
+            self.__controller.build_powerpoint_report(self.__questions, 1, self.__save_filename)
+        except Exception as inst:
+            string = "Error (%s):\n %s" % (type(inst), str(inst))
+            self.error_message(string)
 
 
     def error_message(self, error):
