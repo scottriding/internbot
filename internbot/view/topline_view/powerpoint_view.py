@@ -34,7 +34,7 @@ class PowerpointView(BoxLayout):
 
     def create_survey_prompt(self):
         popup_layout = BoxLayout(orientation='vertical')
-        help_text = "Choose survey (.qsf) file\n\n"
+        help_text = "Choose survey (.csv or .qsf) file\n\n"
         help_text += "[ref=click][color=F3993D]Click here for examples of survey files[/color][/ref]"
 
         def examples_link(instance, value):
@@ -68,12 +68,12 @@ class PowerpointView(BoxLayout):
                 self.__open_filename = filepath
                 self.open_survey_dialog_to_trended_selector()
             except IndexError:
-                self.error_message("Please pick a survey (.qsf) file")
+                self.error_message("Please pick a survey (.csv or .qsf) file")
 
         filechooser = FileChooserListView()
         filechooser.path = os.path.expanduser("~")
         filechooser.bind(on_selection=lambda x: filechooser.selection)
-        filechooser.filters = ["*.qsf"]
+        filechooser.filters = ["*.qsf", "*.csv"]
 
         open_btn = Button(text='open', size_hint=(.2,.1), pos_hint={'center_x': 0.5, 'center_y': 0.5})
         open_btn.bind(on_release=lambda x: open_file(filechooser.path, filechooser.selection))
@@ -376,8 +376,15 @@ class PowerpointView(BoxLayout):
 
     def open_survey_dialog_to_trended_selector(self):
         self.open_survey_dialog.dismiss()
-        self.__survey = self.__controller.build_survey(self.__open_filename)
-        self.trended_selector.open()
+
+        if self.is_qsf:
+            try:
+                self.__survey = self.__controller.build_survey(self.__open_filename)
+                self.trended_selector.open()
+            except:
+                self.error_message("Issue parsing .qsf file.")
+        else:
+            self.trended_selector.open()
 
     def trended_selector_to_count(self, instance):
         self.trended_selector.dismiss()
@@ -385,11 +392,17 @@ class PowerpointView(BoxLayout):
 
     def trended_selector_to_freqs(self, instance):
         self.trended_selector.dismiss()
-        self.open_freq_prompt.open()
+        if self.is_qsf:
+            self.open_freq_prompt.open()
+        else:
+            self.open_freq_dialog_to_open_template_prompt.open()
 
     def trended_labels_to_freqs(self):
         self.trended_labels.dismiss()
-        self.open_freq_prompt.open()
+        if self.is_qsf:
+            self.open_freq_prompt.open()
+        else:
+            self.open_freq_dialog_to_open_template_prompt.open()
 
     def open_freq_prompt_to_dialog(self, instance):
         self.open_freq_prompt.dismiss()

@@ -56,7 +56,7 @@ class ToplineView(BoxLayout):
         pptx_btn = Button(text='Document', size_hint=(.1, .1), on_press = self.build_doc)
         pptx_btn.font_name = "Y2"
 
-        app_btn = Button(text='Powerpoint', size_hint=(.1, .1), on_press = self.build_ppt)
+        app_btn = Button(text='Powerpoint', size_hint=(.1, .1), on_press = self.build_ppt, disabled=True)
         app_btn.font_name = "Y2"
 
         button_layout.add_widget(docx_btn)

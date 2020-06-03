@@ -11,7 +11,7 @@ from kivy.uix.popup import Popup
 from kivy.uix.label import Label
 from kivy.core.text import LabelBase
 from kivy.uix.textinput import TextInput
-from kivy.uix.filechooser import FileChooserListView, FileChooserIconView
+from kivy.uix.filechooser import FileChooserListView
 import webbrowser
 import os
 
@@ -348,7 +348,7 @@ class DocumentView(BoxLayout):
         chooser = BoxLayout()
         container = BoxLayout(orientation='vertical')
 
-        filechooser = FileChooserIconView()
+        filechooser = FileChooserListView()
         filechooser.path = os.path.expanduser("~")
 
         container.add_widget(filechooser)
@@ -456,8 +456,15 @@ class DocumentView(BoxLayout):
 
     def finish(self):
         self.save_file_dialog.dismiss()
-        questions = self.__controller.build_document_model(self.__open_filename, self.__group_names, self.__survey)
-        self.__controller.build_document_report(questions, self.__template_name, self.__save_filename, self.__other_template_path)
+        try:
+            questions = self.__controller.build_document_model(self.__open_filename, self.__group_names, self.__survey)
+            self.__controller.build_document_report(questions, self.__template_name, self.__save_filename, self.__other_template_path)
+        except KeyError as key_error:
+            string = "Misspelled or missing column (%s):\n %s" % (type(key_error), str(key_error))
+            self.error_message(string)
+        except Exception as inst:
+            string = "Error (%s):\n %s" % (type(inst), str(inst))
+            self.error_message(string)
 
     def error_message(self, error):
         label = Label(text=error)

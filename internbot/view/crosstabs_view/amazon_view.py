@@ -7,7 +7,7 @@ from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.popup import Popup
 from kivy.uix.label import Label
 from kivy.uix.textinput import TextInput
-from kivy.uix.filechooser import FileChooserListView, FileChooserIconView
+from kivy.uix.filechooser import FileChooserListView
 from kivy.uix.scrollview import ScrollView
 from kivy.properties import StringProperty
 import webbrowser
@@ -73,19 +73,10 @@ class AmazonView(BoxLayout):
         pos_hint={'center_x': 0.5, 'center_y': 0.5},
         auto_dismiss=False)
 
-        button_layout = BoxLayout(orientation='vertical')
-        button_layout.size_hint = (.1, .2)
-
-        close_btn = Button(text='x')
+        close_btn = Button(text='x', size_hint=(.05,.1))
         close_btn.bind(on_release=file_chooser.dismiss)
 
-        back_btn = Button(text='<')
-        back_btn.bind(on_release=self.open_dialog_to_prompt)
-
-        button_layout.add_widget(close_btn)
-        button_layout.add_widget(back_btn)
-
-        chooser_layout.add_widget(button_layout)
+        chooser_layout.add_widget(close_btn)
 
         def open_file(path, filename):
             try:
@@ -125,19 +116,10 @@ class AmazonView(BoxLayout):
         pos_hint={'center_x': 0.5, 'center_y': 0.5},
         auto_dismiss=False)
 
-        button_layout = BoxLayout(orientation='vertical')
-        button_layout.size_hint = (.15, .3)
-
-        close_btn = Button(text='x')
+        close_btn = Button(text='x', size_hint=(.08,.2))
         close_btn.bind(on_release=popup.dismiss)
 
-        back_btn = Button(text='<')
-        back_btn.bind(on_release=self.toc_prompt_to_open_dialog)
-
-        button_layout.add_widget(close_btn)
-        button_layout.add_widget(back_btn)
-
-        popup_layout.add_widget(button_layout)
+        popup_layout.add_widget(close_btn)
 
         label = Label(text=help_text, markup=True)
         label.bind(on_ref_press=examples_link)
@@ -163,19 +145,10 @@ class AmazonView(BoxLayout):
         pos_hint={'center_x': 0.5, 'center_y': 0.5},
         auto_dismiss=False)
 
-        button_layout = BoxLayout(orientation='vertical')
-        button_layout.size_hint = (.1, .2)
-
-        close_btn = Button(text='x')
+        close_btn = Button(text='x', size_hint=(.05,.1))
         close_btn.bind(on_release=file_chooser.dismiss)
 
-        back_btn = Button(text='<')
-        back_btn.bind(on_release=self.toc_dialog_to_prompt)
-
-        button_layout.add_widget(close_btn)
-        button_layout.add_widget(back_btn)
-
-        chooser_layout.add_widget(button_layout)
+        chooser_layout.add_widget(close_btn)
 
         def open_file(path, filename):
             try:
@@ -215,19 +188,10 @@ class AmazonView(BoxLayout):
         pos_hint={'center_x': 0.5, 'center_y': 0.5},
         auto_dismiss=False)
 
-        button_layout = BoxLayout(orientation='vertical')
-        button_layout.size_hint = (.1, .2)
-
-        close_btn = Button(text='x')
+        close_btn = Button(text='x', size_hint=(.05,.1))
         close_btn.bind(on_release=popup.dismiss)
 
-        back_btn = Button(text='<')
-        back_btn.bind(on_release=self.trended_selector_to_toc_dialog)
-
-        button_layout.add_widget(close_btn)
-        button_layout.add_widget(back_btn)
-
-        chooser.add_widget(button_layout)
+        chooser.add_widget(close_btn)
 
         label = Label(text=help_text, markup=True)
         label.bind(on_ref_press=examples_link)
@@ -259,18 +223,10 @@ class AmazonView(BoxLayout):
         pos_hint={'center_x': 0.5, 'center_y': 0.5},
         auto_dismiss=False)
 
-        button_layout = BoxLayout(orientation='vertical')
-        button_layout.size_hint = (.15, .3)
-
-        close_btn = Button(text='x')
+        close_btn = Button(text='x', size_hint=(.08,.2))
         close_btn.bind(on_release=popup.dismiss)
 
-        back_btn = Button(text='<')
-        back_btn.bind(on_release=self.save_file_prompt_to_selector)
-
-        button_layout.add_widget(close_btn)
-        button_layout.add_widget(back_btn)
-        popup_layout.add_widget(button_layout)
+        popup_layout.add_widget(close_btn)
 
         popup_layout.add_widget(label)
 
@@ -293,21 +249,12 @@ class AmazonView(BoxLayout):
         pos_hint={'center_x': 0.5, 'center_y': 0.5},
         auto_dismiss=False)
 
-        menu_layout = BoxLayout(orientation='vertical')
-        menu_layout.size_hint = (.1, .2)
-
-        close_btn = Button(text='x')
+        close_btn = Button(text='x', size_hint=(.05,.1))
         close_btn.bind(on_release=file_chooser.dismiss)
 
-        back_btn = Button(text='<')
-        back_btn.bind(on_release=self.save_dialog_to_prompt)
+        chooser_layout.add_widget(close_btn)
 
-        menu_layout.add_widget(close_btn)
-        menu_layout.add_widget(back_btn)
-
-        chooser_layout.add_widget(menu_layout)
-
-        chooser_view = FileChooserIconView()
+        chooser_view = FileChooserListView()
         chooser_view.path = os.path.expanduser("~")
 
         container.add_widget(chooser_view)

@@ -10,7 +10,7 @@ from kivy.uix.popup import Popup
 from kivy.uix.label import Label
 from kivy.core.text import LabelBase
 from kivy.uix.textinput import TextInput
-from kivy.uix.filechooser import FileChooserListView, FileChooserIconView
+from kivy.uix.filechooser import FileChooserListView
 import webbrowser
 import os
 
@@ -145,7 +145,7 @@ class TrendedScoresView(BoxLayout):
         chooser = BoxLayout()
         container = BoxLayout(orientation='vertical')
 
-        folderchooser = FileChooserIconView()
+        folderchooser = FileChooserListView()
         folderchooser.path = os.path.expanduser("~")
 
         container.add_widget(folderchooser)
@@ -196,11 +196,8 @@ class TrendedScoresView(BoxLayout):
 
     def open_file_dialog_to_save_prompt(self):
         self.open_file_dialog.dismiss()
-        try:
-            self.__controller.build_trended_model(self.open_filepath, self.round)
-            self.save_folder_prompt.open()
-        except Exception:
-            self.error_message("Error reading data file.")
+        self.__controller.build_trended_model(self.open_filepath, self.round)
+        self.save_folder_prompt.open()
         
     def save_folder_prompt_to_dialog(self, instance):
         self.save_folder_prompt.dismiss()

@@ -10,7 +10,7 @@ from kivy.uix.popup import Popup
 from kivy.uix.label import Label
 from kivy.core.text import LabelBase
 from kivy.uix.textinput import TextInput
-from kivy.uix.filechooser import FileChooserListView, FileChooserIconView
+from kivy.uix.filechooser import FileChooserListView
 from kivy.core.window import Window, Keyboard
 
 import webbrowser
@@ -147,7 +147,7 @@ class IssueTrendedView(BoxLayout):
         chooser = BoxLayout()
         container = BoxLayout(orientation='vertical')
 
-        filechooser = FileChooserIconView()
+        filechooser = FileChooserListView()
         filechooser.path = os.path.expanduser("~")
 
         container.add_widget(filechooser)
@@ -193,12 +193,9 @@ class IssueTrendedView(BoxLayout):
         self.open_file_dialog.open()
 
     def open_file_dialog_to_save_prompt(self):
-        try:
-            self.__controller.build_issues_model(self.open_filepath, self.round)
-            self.open_file_dialog.dismiss()
-            self.save_file_prompt.open()
-        except:
-            self.error_message("Error in reading data file")
+        self.__controller.build_issues_model(self.open_filepath, self.round)
+        self.open_file_dialog.dismiss()
+        self.save_file_prompt.open()
 
     def save_file_prompt_to_dialog(self, instance):
         self.save_file_prompt.dismiss()

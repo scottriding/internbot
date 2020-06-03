@@ -33,7 +33,7 @@ class View(App):
             LabelBase.register(**font)
         
         self.root = self.create_screens()
-        self.title = "Internbot - 1.2.0"
+        self.title = "Internbot - 1.2.1"
         self.root.bind(size=self._update_rect, pos=self._update_rect)
         self.root.bind(on_close=self.play_close)
 

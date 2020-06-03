@@ -7,7 +7,7 @@ from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.popup import Popup
 from kivy.uix.label import Label
 from kivy.uix.textinput import TextInput
-from kivy.uix.filechooser import FileChooserListView, FileChooserIconView
+from kivy.uix.filechooser import FileChooserListView
 from kivy.uix.scrollview import ScrollView
 from kivy.properties import StringProperty
 import webbrowser
@@ -220,7 +220,7 @@ class FormatReportView(BoxLayout):
 
         chooser_layout.add_widget(menu_layout)
 
-        chooser_view = FileChooserIconView()
+        chooser_view = FileChooserListView()
         chooser_view.path = os.path.expanduser("~")
 
         container.add_widget(chooser_view)
@@ -269,11 +269,8 @@ class FormatReportView(BoxLayout):
 
     def is_qualtrics(self, instance):
         self.format_selector.dismiss()
-        try:
-            self.__controller.build_qresearch_report(self.__open_filename, "QUALTRICS")
-            self.save_file_prompt.open()
-        except:
-            self.error_message("Issue formatting report.")
+        self.__controller.build_qresearch_report(self.__open_filename, "QUALTRICS")
+        self.save_file_prompt.open()
 
     def is_policy(self, instance):
         self.format_selector.dismiss()
@@ -314,11 +311,8 @@ class FormatReportView(BoxLayout):
         self.save_file_dialog.open()
 
     def finish(self):
-        try:
-            self.__controller.save_qresearch_report(self.__save_filename)
-            self.save_file_dialog.dismiss()
-        except:
-            self.error_message("Issue saving formatted report.")
+        self.__controller.save_qresearch_report(self.__save_filename)
+        self.save_file_dialog.dismiss()
 
     def error_message(self, error):
         label = Label(text=error)

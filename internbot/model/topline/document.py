@@ -13,6 +13,12 @@ class Document(object):
         self.__question_blocks = question_blocks
         self.__document = docx.Document(path_to_template)
 
+        # depending on template, this could not be in styles
+        try:
+            self.line_break = self.__document.styles['LineBreak']
+        except KeyError:
+            self.line_break = None
+
         self.write_questions()
         print("Saving report...")
         self.__document.save(path_to_output)
@@ -32,7 +38,9 @@ class Document(object):
             else:
                 self.write_question(question)
 
-            self.__document.add_paragraph("")
+            line_break = self.__document.add_paragraph("")
+            if self.line_break is not None:
+                line_break.style = self.line_break
             self.__document.add_paragraph("")
 
     def write_matrix_question(self, matrix_question):
@@ -100,16 +108,18 @@ class Document(object):
 
     def write_binary_question(self, binary_question):
         paragraph = self.__document.add_paragraph()
-        paragraph_format = paragraph.paragraph_format
-        paragraph_format.keep_together = True
-        paragraph.add_run(binary_question.prompt + ". ")
+        self.write_name(binary_question.name, paragraph)
+        self.write_prompt(binary_question.prompt, paragraph)
 
         groups = self.pull_binary_groups(binary_question)
         if len(groups) == 1:
             table = self.__document.add_table(rows=1, cols=5)
             first_row = True
+            cells = table.add_row().cells
+            cells[1].merge(cells[2])
+            cells[3].text = "Average"
             for sub_question in binary_question.questions:
-                cells = table.add_rows().cells
+                cells = table.add_row().cells
                 cells[1].merge(cells[2])
                 response = next((response for response in sub_question.responses if response.value == 1), None)
                 if not response.frequencies:
@@ -118,45 +128,56 @@ class Document(object):
                 else:
                     for group, frequency in response.frequencies.frequencies.items():
                         cells[1].text = "%s (n=%s)" % (sub_question.prompt, frequency.population)
+                        if frequency.stat == 'percent':
+                            freq = self.percent(frequency.result, first_row)
+                        elif frequency.stat == 'mean':
+                            freq = self.mean(frequency.result)
+                        else:
+                            freq = str(frequency.result)
+                        cells[3].text = freq
+                first_row = False
                 
         else:
             table = self.__document.add_table(rows=1, cols=len(groups)+4)
             titles_row = table.add_row().cells
             titles_row[1].merge(titles_row[2])
             headers_index = 0
-            while headers_index < len(groups):
-                header_text = "Total %s" % groups[headers_index]
-                titles_row[headers_index+4].text = header_text
-                headers_index += 1
- 
             first_row = True
-            for sub_question in binary_question.questions:
-                cells = table.add_row().cells
-                cells[1].merge(cells[3])
-                freq_col = 4
-                cells[1].text = sub_question.prompt
-                response = next((response for response in sub_question.responses if response.value == '1'), None)
-                if response is not None:
-                    total_n = 0
-                    for group in groups:
-                        group_n = 0
-                        if response.frequencies.frequencies.get(group) is not None:
-                            freq = response.frequencies.frequencies.get(group)
-                            total_n += int(freq.population)
-                            titles_row[freq_col].text += " (n=%s)" % str(freq.population)
-                            if freq.stat == 'percent':
-                                text = self.percent(freq.result, first_row)
-                            elif freq.stat == 'mean':
-                                text = self.mean(freq.result)
-                            else:
-                                text = str(freq.result)
-                            cells[freq_col].text = text
-                        else:
+            first_group = True
+            row = -1
+            table_rows = []
+            while headers_index < len(groups):
+                header_text = "Average %s" % groups[headers_index]
+                titles_row[headers_index+4].text = header_text
+                for sub_question in binary_question.questions:
+                    if first_group:
+                        cells = table.add_row().cells
+                        cells[1].merge(cells[2])
+                        cells[1].text = sub_question.prompt
+                        table_rows.append(cells)
+                        row += 1
+                    else:
+                        row += 1
+                    for response in sub_question.responses:
+                        if not response.frequencies:
                             shading_elm = parse_xml(r'<w:shd {} w:fill="FFF206"/>'.format(nsdecls('w')))
-                            cells[1]._tc.get_or_add_tcPr().append(shading_elm)
-                        first_row = False
-                        freq_col += 1
-                    cells[1].text += " (n=%s)" % str(total_n)
+                            table_rows[row][1]._tc.get_or_add_tcPr().append(shading_elm)
+                        else:
+                            for group, frequency in response.frequencies.frequencies.items():
+                                if group == groups[headers_index]:
+                                    if frequency.stat == 'percent':
+                                        freq = self.percent(frequency.result, first_row)
+                                        first_row = False
+                                    elif frequency.stat == 'mean':
+                                        freq = self.mean(frequency.result)
+                                    else:
+                                        freq = str(frequency.result)
+                                    table_rows[row][headers_index+4].text = freq
+                                    n_text = " (%s n=%s)" % (group, frequency.population)
+                                    table_rows[row][1].text += n_text
+                headers_index += 1
+                row = -1
+                first_group = False
 
     def write_open_ended(self, question):
         paragraph = self.__document.add_paragraph()  # each question starts a new paragraph
@@ -270,30 +291,32 @@ class Document(object):
                 freq_col += 1           
 
     def percent(self, freq, is_first):
-        if freq == 'NA':
-            return freq
-        if float(freq) >= 1.0:
-            result = int(freq) * 100
-        else:
-            percent = float(freq)
-            percent = percent * 100
-            if percent >= 0 and percent < 1:
-                result = "<1"
+        try:
+            if float(freq) >= 1.0:
+                result = int(freq) * 100
             else:
-                result = int(round(percent))
-        if is_first:
-            result = str(result) + "%"
-        return str(result)
+                percent = float(freq)
+                percent = percent * 100
+                if percent >= 0 and percent < 1:
+                    result = "<1"
+                else:
+                    result = int(round(percent))
+            if is_first:
+                result = str(result) + "%"
+            return str(result)
+        except:
+            return freq
 
     def mean(self, freq):
-        if freq == "NA":
+        try:
+            freq = float(freq)
+            if freq >= 0 and freq < 1:
+                result =  '<1'
+            else:
+                result = int(round(freq))
+            return str(result)
+        except:
             return freq
-        freq = float(freq)
-        if freq >= 0 and freq < 1:
-            result =  '<1'
-        else:
-            result = int(round(freq))
-        return str(result)
         
     def save(self, path_to_output):
         self.__document.save(path_to_output)

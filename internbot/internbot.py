@@ -52,12 +52,11 @@ class Controller(object):
     def build_appendix_model(self, path_to_csv):
         return self.__model.build_appendix_model(path_to_csv)
 
-    def build_appendix_report(self, questions, path_to_output, is_document, template_name, other_template=None):
+    def build_appendix_report(self, questions, path_to_output, template_name, other_template=None):
         template_path = self.__appendix_templates.get(template_name)
-        image_path = self.__template_logos.get(template_name)
         if other_template is not None:
             template_path = other_template
-        self.__model.build_appendix_report(questions, path_to_output, is_document, image_path, template_path)
+        self.__model.build_appendix_report(questions, path_to_output, template_path)
 
     def build_document_model(self, path_to_csv, groups, survey):
         return self.__model.build_document_model(path_to_csv, groups, survey)
@@ -105,10 +104,3 @@ if __name__ == '__main__':
     controller.view.controller = controller
     controller.view.run()
 
-    ## below is developer code for new powerpoint automation
-
-    #survey = controller.build_survey("/users/y2analytics/Desktop/Files/Internbot_statsivus.qsf")
-    #questions = controller.build_powerpoint_model("/users/y2analytics/Desktop/Files/freqs.csv", ["A", "B"], None)
-    #print(controller.pick_template_layout("/users/y2analytics/Desktop/Charts template.pptx"))
-    #layout_index = 1
-    #controller.build_powerpoint_report(questions, layout_index, "/users/y2analytics/Desktop/test.pptx")

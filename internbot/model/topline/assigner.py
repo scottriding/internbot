@@ -15,6 +15,7 @@ class Assigner(object):
         if inputted_survey is None:
             inputted_survey = survey.Survey("CSV Survey")
             default_block = block.Block("Default")
+            questions = []
             questions = self.create_questions(self.unicode_dict_reader(open(path_to_freqs)))
             default_block.questions = questions
             inputted_survey.add_block(default_block)

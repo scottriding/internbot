@@ -15,8 +15,8 @@ class Topline(object):
         frequency_assigner = assigner.Assigner(path_to_csv)
         return frequency_assigner.question_blocks
 
-    def build_appendix_report(self, question_blocks, path_to_output, is_document, image_path, template_path):
-        self.__appendix.build_appendix_report(question_blocks, path_to_output, is_document, image_path, template_path)
+    def build_appendix_report(self, question_blocks, path_to_output, template_path):
+        self.__appendix.build_appendix_report(question_blocks, path_to_output, template_path)
 
     def build_document_model(self, path_to_csv, groups, survey):
         frequency_assigner = assigner.Assigner(path_to_csv, groups, survey)
