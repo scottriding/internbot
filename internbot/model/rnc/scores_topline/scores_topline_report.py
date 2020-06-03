@@ -115,35 +115,36 @@ class ScoresToplineReport(object):
         
             current = self.models.get_model(model_name)
             
-            # net model name
-            key_sheet[current_model_cell].value = current.name
-            key_sheet[current_model_cell].font = self.net_style
-            key_sheet[current_model_cell].border = self.all_border
-            key_sheet[current_model_cell].fill = self.key_models
+            if current.name != "Turnout General":
+                # net model name
+                key_sheet[current_model_cell].value = current.name
+                key_sheet[current_model_cell].font = self.net_style
+                key_sheet[current_model_cell].border = self.all_border
+                key_sheet[current_model_cell].fill = self.key_models
         
-            # net model survey question reference
-            key_sheet[current_refer_cell].font = self.net_style
-            key_sheet[current_refer_cell].border = self.all_border
-            key_sheet[current_refer_cell].fill = self.key_models
+                # net model survey question reference
+                key_sheet[current_refer_cell].font = self.net_style
+                key_sheet[current_refer_cell].border = self.all_border
+                key_sheet[current_refer_cell].fill = self.key_models
 
-            current_round_row = self.write_current_key_variables(key_sheet, current, current_round_row)
+                current_round_row = self.write_current_key_variables(key_sheet, current, current_round_row)
 
-            if self.rounds > 1:
-                # check if model is NA or not in this particular round
-                variable_names = current.list_variable_names()
-                freq_to_check = current.get_variable(variable_names[0]).round_weighted_freq(self.rounds-1)
-                if freq_to_check != "NA" and freq_to_check != "":
-                    # net model name
-                    key_sheet[previous_model_cell].value = current.name
-                    key_sheet[previous_model_cell].font = self.net_style
-                    key_sheet[previous_model_cell].border = self.all_border
-                    key_sheet[previous_model_cell].fill = self.key_models
+                if self.rounds > 1:
+                    # check if model is NA or not in this particular round
+                    variable_names = current.list_variable_names()
+                    freq_to_check = current.get_variable(variable_names[0]).round_weighted_freq(self.rounds-1)
+                    if freq_to_check != "NA" and freq_to_check != "":
+                        # net model name
+                        key_sheet[previous_model_cell].value = current.name
+                        key_sheet[previous_model_cell].font = self.net_style
+                        key_sheet[previous_model_cell].border = self.all_border
+                        key_sheet[previous_model_cell].fill = self.key_models
     
-                    # net model survey question reference
-                    key_sheet[previous_refer_cell].font = self.net_style
-                    key_sheet[previous_refer_cell].border = self.all_border
-                    key_sheet[previous_refer_cell].fill = self.key_models
-                    previous_round_row = self.write_previous_key_variables(key_sheet, current, previous_round_row)
+                        # net model survey question reference
+                        key_sheet[previous_refer_cell].font = self.net_style
+                        key_sheet[previous_refer_cell].border = self.all_border
+                        key_sheet[previous_refer_cell].fill = self.key_models
+                        previous_round_row = self.write_previous_key_variables(key_sheet, current, previous_round_row)
 
     def write_current_key_variables(self, key_sheet, model, current_row):
         current_row += 1
@@ -541,11 +542,15 @@ class ScoresToplineReport(object):
         cell_two = cells_first[1]
         cell_one_value = score_sheet[cell_one].value
         cell_two_value = score_sheet[cell_two].value
-        formula_first_soluation = cell_one_value - cell_two_value
+        formula_first_soluation = None
+        if cell_one_value is not None:
+            if cell_two_value is not None:
+                formula_first_soluation = cell_one_value - cell_two_value
 
         # formatting
         score_sheet[results_cell].value = "=%s - %s" % (current_round_cell, calculate_round_cell)
-        score_sheet[results_cell].fill = self.highlight(formula_current_solution, formula_first_soluation)
+        if formula_first_soluation is not None:
+            score_sheet[results_cell].fill = self.highlight(formula_current_solution, formula_first_soluation)
         score_sheet[results_cell].border = self.all_border
         score_sheet[results_cell].number_format = '0%'
 

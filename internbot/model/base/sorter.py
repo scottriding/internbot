@@ -71,8 +71,8 @@ class ResponseSorter(Sorter):
     
     def compare(self, response1, response2):
         try:
-            response1_location = self.sort_order.index(response1.code)
-            response2_location = self.sort_order.index(response2.code)
+            response1_location = self.sort_order.index(response1.value)
+            response2_location = self.sort_order.index(response2.value)
             if response1_location > response2_location:
                 return 1
             elif response1_location < response2_location:

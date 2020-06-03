@@ -11,7 +11,7 @@ from kivy.uix.popup import Popup
 from kivy.uix.label import Label
 from kivy.core.text import LabelBase
 from kivy.uix.textinput import TextInput
-from kivy.uix.filechooser import FileChooserListView, FileChooserIconView
+from kivy.uix.filechooser import FileChooserListView
 import webbrowser
 import os
 
@@ -160,7 +160,7 @@ class ScoresToplineView(BoxLayout):
         chooser = BoxLayout()
         container = BoxLayout(orientation='vertical')
 
-        filechooser = FileChooserIconView()
+        filechooser = FileChooserListView()
         filechooser.path = os.path.expanduser("~")
 
         container.add_widget(filechooser)
@@ -211,19 +211,20 @@ class ScoresToplineView(BoxLayout):
             self.__controller.build_scores_model(self.open_filepath, self.round, self.region)
             self.open_file_dialog.dismiss()
             self.save_file_prompt.open()
-        except:
-            self.error_message("Error reading data file")       
+        except KeyError as key_error:
+            string = "Misspelled or missing column (%s):\n %s" % (type(key_error), str(key_error))
+            self.error_message(string)
+        except Exception as inst:
+            string = "Error (%s):\n %s" % (type(inst), str(inst))
+            self.error_message(string)
 
     def save_file_prompt_to_dialog(self, instance):
         self.save_file_prompt.dismiss()
         self.save_file_dialog.open()
 
     def finish(self):
-        try:
-            self.__controller.build_scores_report(self.save_filepath)
-            self.save_file_dialog.dismiss()
-        except:
-            self.error_message("Issue formatting report")
+        self.__controller.build_scores_report(self.save_filepath)
+        self.save_file_dialog.dismiss()
 
     def error_message(self, error):
         label = Label(text=error)

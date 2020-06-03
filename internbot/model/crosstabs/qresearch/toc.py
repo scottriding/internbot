@@ -13,7 +13,7 @@ class TOC(object):
         else:
             toc_sheet = self.__workbook.create_sheet("TOC")
         self.write_header(toc_sheet)
-        self.write_tables(survey.get_questions(), toc_sheet)
+        self.write_tables(survey.blocks, toc_sheet)
         self.__workbook.save(path_to_output)
 
     def write_header(self, sheet):
@@ -22,21 +22,22 @@ class TOC(object):
         sheet["C1"].value = "Base Description"
         sheet["D1"].value = "Base Size"
 
-    def write_tables(self, questions, sheet):
+    def write_tables(self, blocks, sheet):
         current_row = 2
         table_iteration = 1
-        for question in questions:
-            table_no_cell = "A%s" % current_row
-            question_title_cell = "B%s" % current_row
+        for block in blocks:
+            for question in block.questions:
+                table_no_cell = "A%s" % current_row
+                question_title_cell = "B%s" % current_row
 
-            if table_iteration < 10:
-                table_name = "Table 0%s" % table_iteration
-            else:
-                table_name = "Table %s" % table_iteration
+                if table_iteration < 10:
+                    table_name = "Table 0%s" % table_iteration
+                else:
+                    table_name = "Table %s" % table_iteration
 
-            sheet[table_no_cell].value = table_name
-            sheet[question_title_cell].value = "%s: %s" % (question.name, question.prompt)
-            table_iteration += 1
-            current_row += 1
+                sheet[table_no_cell].value = table_name
+                sheet[question_title_cell].value = "%s: %s" % (question.name, question.prompt)
+                table_iteration += 1
+                current_row += 1
 
 

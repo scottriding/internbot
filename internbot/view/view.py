@@ -16,6 +16,7 @@ from kivy.uix.popup import Popup
 from kivy.uix.label import Label
 from kivy.core.text import LabelBase
 from kivy.core.audio import SoundLoader
+from kivy.uix.relativelayout import RelativeLayout
 import webbrowser
 import os
 
@@ -32,7 +33,7 @@ class View(App):
             LabelBase.register(**font)
         
         self.root = self.create_screens()
-        self.title = "Internbot - 1.2.0"
+        self.title = "Internbot - 1.2.1"
         self.root.bind(size=self._update_rect, pos=self._update_rect)
         self.root.bind(on_close=self.play_close)
 
@@ -123,7 +124,7 @@ class View(App):
     def main_to_xtabs(self, instance):
         self.root.remove_widget(self.main_screen)
         self.root.add_widget(self.crosstabs_screen)
-        self.rect.source = 'resources/images/DWTWNSLC3.jpg'
+        self.rect.source = 'resources/images/CANYON.jpg'
 
     def xtabs_to_main(self, instance):
         self.root.remove_widget(self.crosstabs_screen)
@@ -133,7 +134,7 @@ class View(App):
     def main_to_top(self, instance):
         self.root.remove_widget(self.main_screen)
         self.root.add_widget(self.topline_screen)
-        self.rect.source = 'resources/images/DWTWNSLC2.jpg'
+        self.rect.source = 'resources/images/TEMPLE.jpg'
 
     def top_to_main(self, instance):
         self.root.remove_widget(self.topline_screen)
@@ -143,7 +144,7 @@ class View(App):
     def main_to_rnc(self, instance):
         self.root.remove_widget(self.main_screen)
         self.root.add_widget(self.rnc_screen)
-        self.rect.source = 'resources/images/DWTWNSLC1.jpg'
+        self.rect.source = 'resources/images/CAPITOL.jpg'
 
     def rnc_to_main(self, instance):
         self.root.remove_widget(self.rnc_screen)
@@ -154,18 +155,28 @@ class View(App):
         help_text = "Internbot is Y2 Analytics' report automation tool that \n" 
         help_text += "manages \"quantity\" in a report so that the analytical \n"
         help_text += "team can focus on the \"quality\" of a report.\n\n"
-        help_text += "[ref=click][color=F3993D]Click here for examples of reports[/color][/ref]"
+        help_text += "[ref=click][color=F3993D]Click here for examples of reports[/color][/ref]\n\n"
 
         def examples_link(instance, value):
             webbrowser.open("https://www.dropbox.com/sh/ia0c3b2lvq8kb68/AAAV4ELm-FPW1giqs4RZdRMra?dl=0")
-
-
-        label = Label(text=help_text, markup=True)
-        label.bind(on_ref_press=examples_link)
-        label.font_family = "Y2"
-
+        
+        help_content = RelativeLayout()
+        content_cancel = Button(text='confirm', 
+						pos_hint={'center_x': 0.5, 'center_y': 0.15}, 
+        				size_hint=(.2, .2),
+        				background_normal='',
+        				background_color=(0, 0.4, 1, 1))
+        help_content.add_widget(content_cancel)
+        help_label = (Label(text=help_text, markup=True))
+        help_label.bind(on_ref_press=examples_link)
+        help_label.font_family = "Y2"
+        help_content.add_widget(help_label)
+		
         popup = Popup(title='Internbot Help',
-        content=label,
+        content=help_content,
+        auto_dismiss=False,
         size_hint=(.6, .4), pos_hint={'center_x': 0.5, 'center_y': 0.5})
+        
 
         popup.open()
+        content_cancel.bind(on_press=popup.dismiss)

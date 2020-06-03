@@ -2,12 +2,30 @@ from model import model
 from view import view
 
 import os
+import fnmatch
 
 class Controller(object):
 
     def __init__(self):
         self.__view = view.View()
         self.__model = model.Model()
+
+        self.__topline_templates = {}
+        self.__topline_templates["Y2"] = os.path.join(template_folder, "topline_template.docx")
+        self.__topline_templates["QUALTRICS"] = ""
+        self.__topline_templates["UT_POLICY"] = os.path.join(template_folder, "utpolicy_top_template.docx")     
+
+        self.__appendix_templates = {}
+        self.__appendix_templates["Y2"] = os.path.join(template_folder, "appendix_template.docx")
+        self.__appendix_templates["QUALTRICS"] = ""
+        self.__appendix_templates["UT_POLICY"] = os.path.join(template_folder, "utpolicy_app_template.docx")
+
+        self.__template_logos = {}
+        self.__template_logos["Y2"] = os.path.join(image_folder, "y2_xtabs.png")
+        self.__template_logos["QUALTRICS"] = os.path.join(image_folder, "QLogo.png")
+        self.__template_logos["UT_POLICY"] = os.path.join(image_folder, "y2_utpol_logo.png")
+        self.__template_logos["WHATSAPP"] = os.path.join(image_folder, "whatsapp.png")
+        self.__template_logos["FACEBOOK"] = os.path.join(image_folder, "FB.png")
 
     @property
     def view(self):
@@ -25,43 +43,39 @@ class Controller(object):
     def build_toc_report(self, survey, path_to_output):
         self.__model.build_toc_report(survey, path_to_output)
 
-    def build_qresearch_report(self, path_to_workbook, is_qualtrics):
-        self.__model.format_qresearch_report(path_to_workbook, image_folder, is_qualtrics)
+    def build_qresearch_report(self, path_to_workbook, template_name):
+        self.__model.format_qresearch_report(path_to_workbook, self.__template_logos.get(template_name))
 
     def save_qresearch_report(self, path_to_output):
         self.__model.save_qresearch_report(path_to_output)
 
-    def build_variable_script(self, survey, path_to_output):
-        self.__model.build_variable_script(survey, path_to_output)
-
-    def build_table_script(self, tables, banners, embedded_variables, filtering_variable, path_to_output):
-        self.__model.build_table_script(tables, banners, embedded_variables, filtering_variable, path_to_output)
-
-    def build_spss_model(self, path_to_directory):
-        self.__model.build_spss_model(path_to_directory)
-
-    def build_spss_report(self, path_to_output):
-        self.__model.build_spss_report(path_to_output, image_folder)
-
     def build_appendix_model(self, path_to_csv):
-        self.__model.build_appendix_model(path_to_csv)
+        return self.__model.build_appendix_model(path_to_csv)
 
-    def build_appendix_report(self, path_to_output, is_spreadsheet, is_qualtrics):
-        template_path = os.path.join(template_folder, "appendix_template.docx")
-        self.__model.build_appendix_report(path_to_output, image_folder, template_path, is_spreadsheet, is_qualtrics)
+    def build_appendix_report(self, questions, path_to_output, template_name, other_template=None):
+        template_path = self.__appendix_templates.get(template_name)
+        if other_template is not None:
+            template_path = other_template
+        self.__model.build_appendix_report(questions, path_to_output, template_path)
 
     def build_document_model(self, path_to_csv, groups, survey):
-        self.__model.build_document_model(path_to_csv, groups, survey)
+        return self.__model.build_document_model(path_to_csv, groups, survey)
 
-    def build_document_report(self, path_to_output):
-        template_path = os.path.join(template_folder, "topline_template.docx")
-        self.__model.build_document_report(template_path, path_to_output)
+    def build_document_report(self, questions, template_name, path_to_output, template_path=None):
+        if template_path is not None:
+            path_to_template = template_path
+        else:
+            path_to_template = self.__topline_templates.get(template_name)
+        self.__model.build_document_report(questions, path_to_template, path_to_output)
 
     def build_powerpoint_model(self, path_to_csv, groups, survey):
-        self.__model.build_powerpoint_model(path_to_csv, groups, survey)
+        return self.__model.build_powerpoint_model(path_to_csv, groups, survey)
 
-    def build_powerpoint_report(self, path_to_template, path_to_output):
-        self.__model.build_powerpoint_report(path_to_template, path_to_output)
+    def pick_template_layout(self, path_to_template):
+        return self.__model.pick_template_layout(path_to_template)
+
+    def build_powerpoint_report(self, questions, layout_index, path_to_output):
+        self.__model.build_powerpoint_report(questions, layout_index, path_to_output)
 
     def build_scores_model(self, path_to_csv, round, location):
         self.__model.build_scores_model(path_to_csv, round, location)
@@ -82,9 +96,11 @@ class Controller(object):
         self.__model.build_trended_report(path_to_output)
 
 if __name__ == '__main__':
-    print("Welcome to internbot!")
-    template_folder = os.path.join(sys._MEIPASS, 'resources/templates/')
-    image_folder = os.path.join(sys._MEIPASS, 'resources/images/')
+    ## directories here only work outside of executable
+    template_folder = "resources/templates"
+    image_folder = "resources/images"
+
     controller = Controller()
     controller.view.controller = controller
     controller.view.run()
+

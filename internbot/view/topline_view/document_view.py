@@ -11,7 +11,7 @@ from kivy.uix.popup import Popup
 from kivy.uix.label import Label
 from kivy.core.text import LabelBase
 from kivy.uix.textinput import TextInput
-from kivy.uix.filechooser import FileChooserListView, FileChooserIconView
+from kivy.uix.filechooser import FileChooserListView
 import webbrowser
 import os
 
@@ -32,6 +32,8 @@ class DocumentView(BoxLayout):
         self.trended_count = self.create_trended_count()
         self.open_freq_prompt = self.create_open_freq_prompt()
         self.open_freq_dialog = self.create_open_freq_dialog()
+        self.format_selector = self.create_format_selector()
+        self.other_template_dialog = self.create_other_template_dialog()
         self.save_file_prompt = self.create_save_file_prompt()
         self.save_file_dialog = self.create_save_file_dialog()
 
@@ -243,7 +245,7 @@ class DocumentView(BoxLayout):
             try:
                 filepath = os.path.join(path, filename[0])
                 self.__open_filename = filepath
-                self.open_freq_dialog_to_save_prompt()
+                self.open_freq_dialog_to_format_selector()
             except IndexError:
                 self.error_message("Please pick a frequencies (.csv) file")
 
@@ -251,6 +253,64 @@ class DocumentView(BoxLayout):
         filechooser.path = os.path.expanduser("~")
         filechooser.bind(on_selection=lambda x: filechooser.selection)
         filechooser.filters = ["*.csv"]
+
+        open_btn = Button(text='open', size_hint=(.2,.1), pos_hint={'center_x': 0.5, 'center_y': 0.5})
+        open_btn.bind(on_release=lambda x: open_file(filechooser.path, filechooser.selection))
+
+        container.add_widget(filechooser)
+        container.add_widget(open_btn)
+        chooser.add_widget(container)
+
+        file_chooser = Popup(title='Open file',
+        content=chooser,
+        size_hint=(.9, .7 ), pos_hint={'center_x': 0.5, 'center_y': 0.5})
+
+        return file_chooser
+
+    def create_format_selector(self):
+        chooser = BoxLayout(orientation='vertical')
+
+        text = "Choose from the following format options."
+        label = Label(text=text)
+        label.font_family = "Y2"
+
+        chooser.add_widget(label)
+
+        button_layout = BoxLayout()
+        button_layout.size_hint = (1, .1)
+
+        policy_btn = Button(text="Utah Policy", on_press=self.is_policy)
+        y2_btn = Button(text="Y2 Analytics", on_press=self.is_y2)
+        oth_btn = Button(text="Other", on_press=self.is_other)
+
+        button_layout.add_widget(policy_btn)
+        button_layout.add_widget(y2_btn)
+        button_layout.add_widget(oth_btn)
+
+        chooser.add_widget(button_layout)
+
+        format_chooser = Popup(title='Choose format',
+        content=chooser,
+        size_hint=(.9, .7 ), pos_hint={'center_x': 0.5, 'center_y': 0.5})
+
+        return format_chooser 
+
+    def create_other_template_dialog(self):
+        chooser = BoxLayout()
+        container = BoxLayout(orientation='vertical')
+
+        def open_file(path, filename):
+            try:
+                filepath = os.path.join(path, filename[0])
+                self.__template_file_path = filepath
+                self.other_template_dialog_to_save()
+            except IndexError:
+                self.error_message("Please select a template document (.docx) file")
+
+        filechooser = FileChooserListView()
+        filechooser.path = os.path.expanduser("~")
+        filechooser.bind(on_selection=lambda x: filechooser.selection)
+        filechooser.filters = ["*.docx"]
 
         open_btn = Button(text='open', size_hint=(.2,.1), pos_hint={'center_x': 0.5, 'center_y': 0.5})
         open_btn.bind(on_release=lambda x: open_file(filechooser.path, filechooser.selection))
@@ -288,7 +348,7 @@ class DocumentView(BoxLayout):
         chooser = BoxLayout()
         container = BoxLayout(orientation='vertical')
 
-        filechooser = FileChooserIconView()
+        filechooser = FileChooserListView()
         filechooser.path = os.path.expanduser("~")
 
         container.add_widget(filechooser)
@@ -321,9 +381,10 @@ class DocumentView(BoxLayout):
         return file_chooser
 
     def run(self, controller):
-        self.is_qsf = True
+        self.__template_name = ""
         self.__group_names = []
         self.__survey = None
+        self.__other_template_path = None
         self.__controller = controller
         self.open_survey_prompt.open()
 
@@ -352,21 +413,41 @@ class DocumentView(BoxLayout):
         if self.is_qsf:
             self.open_freq_prompt.open()
         else:
-            self.save_file_prompt.open()
+            self.format_selector.open()
 
     def trended_labels_to_freqs(self):
         self.trended_labels.dismiss()
         if self.is_qsf:
             self.open_freq_prompt.open()
         else:
-            self.save_file_prompt.open()
+            self.format_selector.open()
 
     def open_freq_prompt_to_dialog(self, instance):
         self.open_freq_prompt.dismiss()
         self.open_freq_dialog.open()
 
-    def open_freq_dialog_to_save_prompt(self):
+    def open_freq_dialog_to_format_selector(self):
         self.open_freq_dialog.dismiss()
+        self.format_selector.open()
+
+    def is_y2(self, instance):
+        self.__template_name = "Y2"
+        self.format_selector.dismiss()
+        self.save_file_prompt.open()
+
+    def is_policy(self, instance):
+        self.__template_name = "UT_POLICY"
+        self.format_selector.dismiss()
+        self.save_file_prompt.open()
+
+    def is_other(self, instance):
+        self.__template_name = "OTHER"
+        self.format_selector.dismiss()
+
+        self.other_template_dialog.open()
+
+    def other_template_dialog_to_save(self):
+        self.other_template_dialog.dismiss()
         self.save_file_prompt.open()
 
     def save_file_prompt_to_dialog(self, instance):
@@ -376,14 +457,14 @@ class DocumentView(BoxLayout):
     def finish(self):
         self.save_file_dialog.dismiss()
         try:
-            self.__controller.build_document_model(self.__open_filename, self.__group_names, self.__survey)
-        except:
-            self.error_message("Issue parsing frequency file")
-
-        try:
-            self.__controller.build_document_report(self.__save_filename)
-        except:
-            self.error_message("Issue building topline report")
+            questions = self.__controller.build_document_model(self.__open_filename, self.__group_names, self.__survey)
+            self.__controller.build_document_report(questions, self.__template_name, self.__save_filename, self.__other_template_path)
+        except KeyError as key_error:
+            string = "Misspelled or missing column (%s):\n %s" % (type(key_error), str(key_error))
+            self.error_message(string)
+        except Exception as inst:
+            string = "Error (%s):\n %s" % (type(inst), str(inst))
+            self.error_message(string)
 
     def error_message(self, error):
         label = Label(text=error)

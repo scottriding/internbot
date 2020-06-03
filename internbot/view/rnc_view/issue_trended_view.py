@@ -10,7 +10,7 @@ from kivy.uix.popup import Popup
 from kivy.uix.label import Label
 from kivy.core.text import LabelBase
 from kivy.uix.textinput import TextInput
-from kivy.uix.filechooser import FileChooserListView, FileChooserIconView
+from kivy.uix.filechooser import FileChooserListView
 from kivy.core.window import Window, Keyboard
 
 import webbrowser
@@ -147,7 +147,7 @@ class IssueTrendedView(BoxLayout):
         chooser = BoxLayout()
         container = BoxLayout(orientation='vertical')
 
-        filechooser = FileChooserIconView()
+        filechooser = FileChooserListView()
         filechooser.path = os.path.expanduser("~")
 
         container.add_widget(filechooser)
@@ -197,8 +197,12 @@ class IssueTrendedView(BoxLayout):
             self.__controller.build_issues_model(self.open_filepath, self.round)
             self.open_file_dialog.dismiss()
             self.save_file_prompt.open()
-        except:
-            self.error_message("Error in reading data file")
+        except KeyError as key_error:
+            string = "Misspelled or missing column (%s):\n %s" % (type(key_error), str(key_error))
+            self.error_message(string)
+        except Exception as inst:
+            string = "Error (%s):\n %s" % (type(inst), str(inst))
+            self.error_message(string)
 
     def save_file_prompt_to_dialog(self, instance):
         self.save_file_prompt.dismiss()

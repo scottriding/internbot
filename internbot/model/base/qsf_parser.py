@@ -112,6 +112,7 @@ class QSFQuestionsParser(object):
             self.parse_dynamic(question, question_payload)
             self.parse_type(question, question_payload, question_element)
         self.__questions = self.carryforwardparser.carry_forward(self.__questions)
+
         return self.__questions
 
     def parse_dynamic(self, question, question_payload):
@@ -369,8 +370,8 @@ class QSFQuestionHotSpotParser(object):
             sub_question.subtype = question_payload['Selector']
             sub_question.name = '%s_%s' % (hotspot.name, code)
             sub_question.prompt = current_question['Display']
-            sub_question.add_response('0',1)
-            sub_question.add_response('1',2)
+            sub_question.add_response('0','1')
+            sub_question.add_response('1','2')
             hotspot.add_question(sub_question)
 
 class QSFMultipleSelectParser(object):
@@ -506,14 +507,13 @@ class QSFResponsesParser(object):
             question.response_order = question_payload['ChoiceOrder']
 
         if question_payload.get('RecodeValues') is not None:
-            response_codes = []
-            for old_code, new_code in question_payload['RecodeValues'].items():
-                response_codes.append(new_code)
-                if question.response_order.__contains__(old_code):
-                    question.response_order.remove(old_code)
-                self.__response_order[old_code] = new_code
-            question.response_order = response_codes
-
+            response_values = []
+            for old_value, new_value in question_payload['RecodeValues'].items():
+                response_values.append(new_value)
+                if question.response_order.__contains__(old_value):
+                    question.response_order.remove(old_value)
+                self.__response_order[old_value] = new_value
+            question.response_order = response_values
 
     def parse_NPS(self, question, question_payload):
         if question_payload.get('ChoiceOrder') and len(question_payload['ChoiceOrder']) > 0:
@@ -523,23 +523,23 @@ class QSFResponsesParser(object):
                 question.response_order = question_payload['ChoiceOrder']
 
         for iteration in question_payload['Choices']:
-            for response, code in iteration.items():
-                question.add_response(code, code)
+            for response, value in iteration.items():
+                question.add_response(value, value)
 
-        for old_code, new_code in self.__response_order.items():
-            matching_response = next((response for response in question.responses if response.code == old_code), None)
+        for old_value, new_value in self.__response_order.items():
+            matching_response = next((response for response in question.responses if response.value == old_value), None)
             if matching_response is not None:
-                matching_response.code = new_code
-                matching_response.response = self.convert_response_from_byte_str(matching_response)
+                matching_response.value = new_value
+                matching_response.label = self.convert_response_from_byte_str(matching_response)
 
     def parse_basic(self, question, question_payload):
-        for code, response in question_payload['Choices'].items():
-            question.add_response(self.convert_response_from_byte_str(str(response['Display'])), code)
-        for old_code, new_code in self.__response_order.items():
-            matching_response = next((response for response in question.responses if response.code == old_code), None)
+        for value, label in question_payload['Choices'].items():
+            question.add_response(label['Display'], value)
+        for old_value, new_value in self.__response_order.items():
+            matching_response = next((response for response in question.responses if response.value == old_value), None)
             if matching_response is not None:
-                matching_response.code = new_code
-                matching_response.response = self.convert_response_from_byte_str(matching_response.response)
+                matching_response.value = new_value
+                matching_response.label = self.convert_response_from_byte_str(matching_response.label)
 
     def convert_response_from_byte_str(self, response):
         if len(response) > 0:
@@ -623,7 +623,7 @@ class QSFCarryForwardParser(object):
             for question in dynamic_question.questions:
                 question.response_order = matching_question.response_order
                 for response in matching_question.responses:
-                    question.add_dynamic_response(response.response, response.code)
+                    question.add_dynamic_response(response.label, response.value)
 
     def multiselect_match(self, dynamic_question, questions):
         matching_question = next((question for question in questions \
@@ -657,7 +657,7 @@ class QSFCarryForwardParser(object):
                 sub_question.code = current_q.code
                 sub_question.prompt = current_q.prompt
                 for response in current_q.responses:
-                    sub_question.add_dynamic_response(response.response, response.code)
+                    sub_question.add_dynamic_response(response.label, response.value)
                 dynamic_question.add_question(sub_question)
 
     def matrix_into_matrix(self, dynamic_matrix, matching_matrix):
@@ -669,7 +669,7 @@ class QSFCarryForwardParser(object):
             sub_question.code = current_q.code
             sub_question.prompt = current_q.prompt
             for response in current_q.responses:
-                sub_question.add_dynamic_response(response.response, response.code)
+                sub_question.add_dynamic_response(response.label, response.value)
             dynamic_matrix.add_question(sub_question)
 
     def multiselect_into_matrix(self, dynamic_matrix, matching_multiselect):
@@ -681,19 +681,19 @@ class QSFCarryForwardParser(object):
             sub_question.code = current_q.code
             sub_question.prompt = current_q.prompt
             for sub_responses in dynamic_matrix.temp_responses:
-                sub_question.add_dynamic_response(sub_responses.response, sub_responses.code)
+                sub_question.add_dynamic_response(sub_responses.label, sub_responses.value)
             dynamic_matrix.add_question(sub_question)
 
     def singleMulti_into_matrix(self, dynamic_matrix, matching_MC):
         dynamic_matrix.question_order = matching_MC.response_order
         for response in matching_MC.responses:
             sub_question = question.Question()
-            sub_question.name = '%s_x%s' % (dynamic_matrix.name, response.code)
-            sub_question.id = '%s_%s' % (dynamic_matrix.id, response.code)
-            sub_question.code = response.code
-            sub_question.prompt = response.response
+            sub_question.name = '%s_x%s' % (dynamic_matrix.name, response.value)
+            sub_question.id = '%s_%s' % (dynamic_matrix.id, response.value)
+            sub_question.code = response.value
+            sub_question.prompt = response.label
             for sub_response in dynamic_matrix.temp_responses:
-                sub_question.add_dynamic_response(sub_response.response, sub_response.code)
+                sub_question.add_dynamic_response(sub_response.label, sub_response.value)
             dynamic_matrix.add_question(sub_question)
 
     def matrix_into_multiselect(self, multiselect, matrix):
@@ -716,17 +716,17 @@ class QSFCarryForwardParser(object):
             current_q.code = sub_question.code
             current_q.prompt = sub_question.prompt
             for response in sub_question.responses:
-                current_q.add_dynamic_response(response.response, response.code)
+                current_q.add_dynamic_response(response.label, response.value)
             dynamic_multi.add_question(current_q)
 
     def singleMulti_into_multiselect(self, multiselect_question, matching_MC):
         multiselect_question.question_order = matching_MC.response_order
         for response in matching_MC.responses:
             sub_question = question.Question()
-            sub_question.name = '%s_x%s' % (multiselect_question.name, response.code)
-            sub_question.id = '%s_%s' % (multiselect_question.id, response.code)
-            sub_question.code = response.code
-            sub_question.prompt = response.response
+            sub_question.name = '%s_x%s' % (multiselect_question.name, response.value)
+            sub_question.id = '%s_%s' % (multiselect_question.id, response.value)
+            sub_question.code = response.value
+            sub_question.prompt = response.label
             sub_question.add_dynamic_response('1', 1)
             multiselect_question.add_question(sub_question)
 
@@ -743,7 +743,7 @@ class QSFCarryForwardParser(object):
     def singleMulti_into_singleMulti(self, dynamic_MC, matching_MC):
         dynamic_MC.response_order = matching_MC.response_order
         for response in matching_MC.responses:
-            dynamic_MC.add_dynamic_response(response.response, response.code)
+            dynamic_MC.add_dynamic_response(response.label, response.value)
 
 class MLStripper(parser.HTMLParser):
     def __init__(self):

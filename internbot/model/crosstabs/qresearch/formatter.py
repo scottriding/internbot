@@ -18,19 +18,6 @@ class Formatter(object):
         self.set_borders()
         self.calculate_excel_col_names()
 
-    def set_highlight_colors(self):
-        if self.__is_qualtrics:
-            self.__header_fill = PatternFill("solid", fgColor = "1E262E")
-            self.__hi_significant_fill = PatternFill("solid", fgColor = "2DCCD3")
-            self.__lo_significant_fill = PatternFill("solid", fgColor = "2DCCD3")
-        else:
-            self.__header_fill = PatternFill("solid", fgColor = "0F243E")
-            self.__hi_significant_fill = PatternFill("solid", fgColor = "2083E7")
-            self.__lo_significant_fill = PatternFill("solid", fgColor = "2083E7")
-
-        self.__table_fill = PatternFill("solid", fgColor = "E7E6E6")
-        self.__white_fill = PatternFill("solid", fgColor = "FFFFFF")
-
     def set_fonts(self):
         self.__font_reg = Font(name = 'Arial', size = 8)
         self.__font_small = Font(name = 'Arial', size = 7)
@@ -77,13 +64,14 @@ class Formatter(object):
                 self.__extend_alphabet.append(triple_letters)
             index += 1
 
-    def format_qresearch_report(self, path_to_workbook, resources_filepath, is_qualtrics):
+    def format_qresearch_report(self, path_to_workbook, image_path):
         table_index = 0
         self.__workbook = load_workbook(path_to_workbook)
         print("Loading workbook")
-        self.resources_filepath = resources_filepath
-        self.__is_qualtrics = is_qualtrics
-        self.set_highlight_colors()
+
+        self.__image_path = image_path
+        self.set_template()
+
         for sheet in self.__workbook.worksheets:
             if sheet.title == 'TOC':
                 print("Parsing TOC")
@@ -98,8 +86,38 @@ class Formatter(object):
                     to_print = "Formatting: %s" % sheet.title
                     print(to_print)
                     self.format_sheet(sheet)
-                    table_index += 1    
+                    table_index += 1
         print("Done!")
+
+    def set_template(self):
+        if (os.path.basename(self.__image_path) == "QLogo.png"):
+            self.__row_height = 35
+            self.__header_fill = PatternFill("solid", fgColor = "1E262E")
+            self.__hi_significant_fill = PatternFill("solid", fgColor = "2DCCD3")
+            self.__lo_significant_fill = PatternFill("solid", fgColor = "2DCCD3")
+        elif (os.path.basename(self.__image_path) == "y2_xtabs.png"):
+            self.__row_height = 52
+            self.__header_fill = PatternFill("solid", fgColor = "0F243E")
+            self.__hi_significant_fill = PatternFill("solid", fgColor = "2083E7")
+            self.__lo_significant_fill = PatternFill("solid", fgColor = "2083E7")
+        elif (os.path.basename(self.__image_path) == "y2_utpol_logo.png"):
+            self.__row_height = 52
+            self.__header_fill = PatternFill("solid", fgColor = "0F243E")
+            self.__hi_significant_fill = PatternFill("solid", fgColor = "2083E7")
+            self.__lo_significant_fill = PatternFill("solid", fgColor = "2083E7")
+        elif (os.path.basename(self.__image_path) == "whatsapp.png"):
+            self.__row_height = 57
+            self.__header_fill = PatternFill("solid", fgColor = "445963")
+            self.__hi_significant_fill = PatternFill("solid", fgColor = "1EBDA5")
+            self.__lo_significant_fill = PatternFill("solid", fgColor = "1EBDA5")
+        elif (os.path.basename(self.__image_path) == "FB.png"):
+            self.__row_height = 57
+            self.__header_fill = PatternFill("solid", fgColor = "344854")
+            self.__hi_significant_fill = PatternFill(fill_type=None)
+            self.__lo_significant_fill = PatternFill(fill_type=None)
+
+        self.__table_fill = PatternFill("solid", fgColor = "E7E6E6")
+        self.__white_fill = PatternFill("solid", fgColor = "FFFFFF")
 
     def parse_toc(self, toc_sheet):
         table_no_col = "A"
@@ -119,25 +137,19 @@ class Formatter(object):
         toc_sheet.column_dimensions[table_no_col].width = 9
         toc_sheet.column_dimensions[table_title_col].width = 100
         toc_sheet.column_dimensions[base_desc_col].width = 33
-        toc_sheet.column_dimensions[base_size_col].width = 29.5
+        toc_sheet.column_dimensions[base_size_col].width = 34
 
         if toc_sheet["A1"].value is not None:
             toc_sheet.insert_rows(1)
 
-        if self.__is_qualtrics:
-            toc_sheet.row_dimensions[1].height = 35
-        else:
-            toc_sheet.row_dimensions[1].height = 52
+        toc_sheet.row_dimensions[1].height = self.__row_height
         
         toc_sheet[table_no_cell].fill = self.__header_fill
         toc_sheet[table_title_cell].fill = self.__header_fill
         toc_sheet[base_desc_cell].fill = self.__header_fill
         toc_sheet[base_size_cell].fill = self.__header_fill
 
-        if self.__is_qualtrics:
-            logo = Image(os.path.join(self.resources_filepath, "QLogo.png"))
-        else:
-            logo = Image(os.path.join(self.resources_filepath, "y2_xtabs.png"))
+        logo = Image(self.__image_path)
         toc_sheet.add_image(logo, base_size_cell)
         
         current_row += 1
@@ -153,10 +165,7 @@ class Formatter(object):
                 toc_sheet[base_desc_cell].fill = self.__header_fill
                 toc_sheet[base_size_cell].fill = self.__header_fill
 
-                if self.__is_qualtrics:
-                    logo = Image(os.path.join(self.resources_filepath, "QLogo.png"))
-                else:
-                    logo = Image(os.path.join(self.resources_filepath, "y2_xtabs.png"))
+                logo = Image(self.__image_path)
                 toc_sheet.add_image(logo, base_size_cell)
 
             elif current_row == 2:
@@ -229,10 +238,7 @@ class Formatter(object):
         self.add_table_borders(sheet)
         
     def adjust_dimensions(self, sheet):
-        if self.__is_qualtrics:
-            sheet.row_dimensions[1].height = 35
-        else:
-            sheet.row_dimensions[1].height = 52
+        sheet.row_dimensions[1].height = self.__row_height
 
         sheet.row_dimensions[2].height = 36
         sheet.row_dimensions[3].height = 37
@@ -434,10 +440,7 @@ class Formatter(object):
 
         # add logos
         current_cell = "%s%s" % (self.__extend_alphabet[current_col - col_adjust], str(current_row))
-        if self.__is_qualtrics:
-            logo = Image(os.path.join(self.resources_filepath, "QLogo.png"))
-        else:
-            logo = Image(os.path.join(self.resources_filepath, "y2_xtabs.png"))
+        logo = Image(self.__image_path)
         sheet.add_image(logo, current_cell)
 
         # merge base description cells

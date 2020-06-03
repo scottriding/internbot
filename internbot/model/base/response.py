@@ -1,4 +1,5 @@
 from model.base import sorter
+from model.base import frequency
 
 from operator import attrgetter
 from collections import OrderedDict
@@ -8,32 +9,15 @@ class Responses(object):
     def __init__(self):
         self.__responses = []
 
-    def add(self, response, code=None):
+    def add(self, label, value=None):
         self.__responses.append(
-            Response(response, code)
+            Response(label, value)
         )
 
-    def add_dynamic(self, response, code=None):
-        response = Response(response, code)
+    def add_dynamic(self, label, value=None):
+        response = Response(label, value)
         response.is_dynamic = True
         self.__responses.append(response)
-
-    def add_text(self, response):
-        self.__responses.append(
-            TextResponse(response)
-        )
-
-    def add_NA(self):
-        self.__responses.append(
-            NAResponse()
-        )
-
-    def get_NA(self):
-        return next((response for response in self.__responses \
-                     if response.type == 'NAResponse'), None)
-
-    def get_first(self):
-        return self.__responses[0]
 
     def sort(self, response_order):
         response_sorter = sorter.ResponseSorter(response_order)
@@ -53,45 +37,35 @@ class Responses(object):
 
 class Response(object):
 
-    def __init__ (self, response, code=None):
-        self.response = response
-        self.code = code
-        self.__has_frequency = False
+    def __init__ (self, label, value=None):
+        self.__label = label
+        self.__value = value
         self.__is_dynamic = False
-        self.__frequencies = OrderedDict()
+        self.__frequencies = frequency.Frequencies()
 
     @property
     def type(self):
         return 'Response'
 
     @property
-    def response(self):
-        return self.__response
+    def label(self):
+        return self.__label
 
-    @response.setter
-    def response(self, response):
-        self.__response = str(response)
+    @label.setter
+    def label(self, label):
+        self.__label = str(label)
 
     @property
-    def code(self):
-        return self.__code
+    def value(self):
+        return self.__value
 
-    @code.setter
-    def code(self, code):
-        self.__code = str(code)
+    @value.setter
+    def value(self, value):
+        self.__value = str(value)
 
     @property
     def frequencies(self):
         return self.__frequencies
-
-    @frequencies.setter
-    def frequencies(self, frequency):
-        self.__frequencies = frequency
-        self.__has_frequency = True
-
-    @property
-    def has_frequency(self):
-        return self.__has_frequency
 
     @property
     def is_dynamic(self):
@@ -101,25 +75,10 @@ class Response(object):
     def is_dynamic(self, type):
         self.__is_dynamic = bool(type)
 
+    def add_frequency(self, result, population, stat, group="Basic"):
+        self.__frequencies.add(result, population, stat, group)
+
     def __repr__(self):
         result = ""
-        result += "%s: %s" % (self.code, self.response)
+        result += "%s: %s" % (self.__value, self.__label)
         return result
-
-class TextResponse(Response):
-
-    def __init__(self, response):
-        super(TextResponse, self).__init__(response)
-
-    @property
-    def type(self):
-        return 'TextResponse'
-
-class NAResponse(Response):
-
-    def __init__(self):
-        super(NAResponse, self).__init__('NA')
-
-    @property
-    def type(self):
-        return 'NAResponse'

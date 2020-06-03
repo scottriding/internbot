@@ -24,8 +24,9 @@ class Survey(object):
     def add_scores(self, scores):
         self.__scoring.add(scores)
 
-    def get_questions(self):
-        return self.__blocks.get_questions()
+    @property
+    def blocks(self):
+        return self.__blocks
 
     def __repr__ (self):
         result = ''
