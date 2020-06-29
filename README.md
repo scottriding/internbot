@@ -9,11 +9,11 @@ Formatting report automation tool for the Y2 Analytics analytical team. The foll
 
 ## Installation Instructions
 
-Download installer from secure internal location. Depending on the MacOS you may need to go into your Security settings and give the app permission to run.
+Download installer from secure internal location. Right click and "Open" .pkg file to run.
 
 ## Operating Instructions
 
-Follow the following google document for using internbot: (TO DO)
+Follow pinned google spreadsheet in research_and_dev channel for instructions on how to run.
 
 ## Troubleshooting (for Users)
 
