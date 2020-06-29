@@ -6,6 +6,7 @@ from openpyxl.utils import range_boundaries
 from collections import OrderedDict
 import os
 import re
+import math
 
 class Formatter(object):
 
@@ -228,6 +229,9 @@ class Formatter(object):
             self.create_col_names(sheet, start_table_row)
         if self.__is_numeric:
             self.insert_numeric_col(sheet, start_table_row)
+
+        if (os.path.basename(self.__image_path) == "y2_utpol_logo.png"):
+            self.insert_moe_row(sheet)
         self.format_hyperlink(sheet)
         table = self.__tables.get(sheet.title)
         self.format_table_titles(sheet, table, start_table_row)
@@ -375,6 +379,35 @@ class Formatter(object):
             current_col += 1
             current_cell = "%s%s" % (self.__extend_alphabet[current_col], str(banner_row))
 
+    def insert_moe_row(self, sheet):
+        moe_row = self.end_table_row
+        sheet.insert_rows(moe_row)
+
+        n_row = moe_row - 2
+
+        cell = "B%s" % moe_row
+        sheet[cell].value = "Margin of error"
+
+        for cell in sheet[3]:
+            if cell.value is not None:
+                if "Total" in cell.value:
+                    total_col = cell.column
+
+        ## we have n column and moe row and n row
+        current_col = total_col - 1
+        current_cell = "%s%s" % (self.__extend_alphabet[current_col], n_row)
+        while sheet[current_cell].value is not None:
+            moe_cell = "%s%s" % (self.__extend_alphabet[current_col], moe_row)
+            if sheet[current_cell].value < 10:
+                sheet[moe_cell].value = "*"
+            else:
+                sheet[moe_cell].value = (math.sqrt((.25/sheet[current_cell].value))*1.96)*(math.sqrt((1500000-sheet[current_cell].value)/(1500000-1))*100)
+                sheet[moe_cell].number_format = "0.0"
+            current_col += 1
+            current_cell = "%s%s" % (self.__extend_alphabet[current_col], n_row)
+
+        self.end_table_row += 1
+
     def insert_numeric_col(self, sheet, start_table_row):
         col_index = self.banner_col_index + 1
         sheet.insert_cols(col_index)
@@ -459,7 +492,7 @@ class Formatter(object):
 
         # merge table title row cells
         start_range = "%s%s" % ("A", str(table_title_row))
-        end_range = "%s%s" % (self.__extend_alphabet[self.banner_col_index], str(table_title_row))
+        end_range = "%s%s" % (self.__extend_alphabet[self.banner_col_index-1], str(table_title_row))
         merge_range = "%s:%s" % (start_range, end_range)
         sheet.merge_cells(merge_range)
 
