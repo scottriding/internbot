@@ -245,7 +245,7 @@ class Formatter(object):
         sheet.row_dimensions[1].height = self.__row_height
 
         sheet.row_dimensions[2].height = 36
-        sheet.row_dimensions[3].height = 37
+        sheet.row_dimensions[3].height = 50
         sheet.column_dimensions["A"].width = 50
         sheet.column_dimensions["B"].width = 25
 
