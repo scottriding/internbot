@@ -231,7 +231,7 @@ class Formatter(object):
             self.insert_numeric_col(sheet, start_table_row)
 
         if (os.path.basename(self.__image_path) == "y2_utpol_logo.png"):
-            self.insert_moe_row(sheet)
+            self.insert_moe_row(sheet, start_table_row)
         self.format_hyperlink(sheet)
         table = self.__tables.get(sheet.title)
         self.format_table_titles(sheet, table, start_table_row)
@@ -379,34 +379,45 @@ class Formatter(object):
             current_col += 1
             current_cell = "%s%s" % (self.__extend_alphabet[current_col], str(banner_row))
 
-    def insert_moe_row(self, sheet):
-        moe_row = self.end_table_row
-        sheet.insert_rows(moe_row)
+    def insert_moe_row(self, sheet, start_table_row):
+        # anywhere there's a Total n, we need to calculate margin of error for it
+        moe_rows = []
+        response_col = self.banner_col_index - 1
+        current_row = start_table_row - 1
+        while current_row < self.end_table_row:
+            current_cell = "%s%s" % (self.__extend_alphabet[response_col], current_row)
+            if sheet[current_cell].value is not None:
+                if "Total" in sheet[current_cell].value:
+                    moe_rows.append(current_row)
+            current_row += 1
 
-        n_row = moe_row - 2
+        moe_rows.reverse()
+        for row in moe_rows:
+            moe_row = row + 3
+            n_row = row + 1
+            sheet.insert_rows(moe_row)
 
-        cell = "B%s" % moe_row
-        sheet[cell].value = "Margin of error"
-
-        for cell in sheet[3]:
-            if cell.value is not None:
-                if "Total" in cell.value:
-                    total_col = cell.column
-
-        ## we have n column and moe row and n row
-        current_col = total_col - 1
-        current_cell = "%s%s" % (self.__extend_alphabet[current_col], n_row)
-        while sheet[current_cell].value is not None:
+            # drop in MOE calculations
+            current_col = response_col
             moe_cell = "%s%s" % (self.__extend_alphabet[current_col], moe_row)
-            if sheet[current_cell].value < 10:
-                sheet[moe_cell].value = "*"
-            else:
-                sheet[moe_cell].value = (math.sqrt((.25/sheet[current_cell].value))*1.96)*(math.sqrt((1500000-sheet[current_cell].value)/(1500000-1))*100)
-                sheet[moe_cell].number_format = "0.0"
-            current_col += 1
-            current_cell = "%s%s" % (self.__extend_alphabet[current_col], n_row)
+            sheet[moe_cell].value = "Margin of error"
 
-        self.end_table_row += 1
+            current_col += 1
+            n_cell = "%s%s" % (self.__extend_alphabet[current_col], n_row)
+            moe_cell = "%s%s" % (self.__extend_alphabet[current_col], moe_row)
+            while sheet[n_cell].value is not None:
+                if sheet[n_cell].value < 10:
+                    sheet[moe_cell].value = "*"
+                else:
+                    # Utah statewide population sample - 1500000
+                    # South SL population sample - 25000
+                    sheet[moe_cell].value = (math.sqrt((.25/sheet[n_cell].value))*1.96)*(math.sqrt((25000-sheet[n_cell].value)/(25000-1))*100)
+                    sheet[moe_cell].number_format = "0.0"
+                current_col += 1
+                n_cell = "%s%s" % (self.__extend_alphabet[current_col], n_row)
+                moe_cell = "%s%s" % (self.__extend_alphabet[current_col], moe_row)
+
+            self.end_table_row += 1
 
     def insert_numeric_col(self, sheet, start_table_row):
         col_index = self.banner_col_index + 1
