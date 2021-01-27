@@ -13,17 +13,14 @@ class Controller(object):
         self.__topline_templates = {}
         self.__topline_templates["Y2"] = os.path.join(template_folder, "topline_template.docx")
         self.__topline_templates["QUALTRICS"] = ""
-        self.__topline_templates["UT_POLICY"] = os.path.join(template_folder, "utpolicy_top_template.docx")     
 
         self.__appendix_templates = {}
         self.__appendix_templates["Y2"] = os.path.join(template_folder, "appendix_template.docx")
         self.__appendix_templates["QUALTRICS"] = ""
-        self.__appendix_templates["UT_POLICY"] = os.path.join(template_folder, "utpolicy_app_template.docx")
 
         self.__template_logos = {}
         self.__template_logos["Y2"] = os.path.join(image_folder, "y2_xtabs.png")
         self.__template_logos["QUALTRICS"] = os.path.join(image_folder, "QLogo.png")
-        self.__template_logos["UT_POLICY"] = os.path.join(image_folder, "y2_utpol_logo.png")
         self.__template_logos["WHATSAPP"] = os.path.join(image_folder, "whatsapp.png")
         self.__template_logos["FACEBOOK"] = os.path.join(image_folder, "FB.png")
 

@@ -101,11 +101,6 @@ class Formatter(object):
             self.__header_fill = PatternFill("solid", fgColor = "0F243E")
             self.__hi_significant_fill = PatternFill("solid", fgColor = "2083E7")
             self.__lo_significant_fill = PatternFill("solid", fgColor = "2083E7")
-        elif (os.path.basename(self.__image_path) == "y2_utpol_logo.png"):
-            self.__row_height = 52
-            self.__header_fill = PatternFill("solid", fgColor = "0F243E")
-            self.__hi_significant_fill = PatternFill("solid", fgColor = "2083E7")
-            self.__lo_significant_fill = PatternFill("solid", fgColor = "2083E7")
         elif (os.path.basename(self.__image_path) == "whatsapp.png"):
             self.__row_height = 57
             self.__header_fill = PatternFill("solid", fgColor = "445963")
@@ -230,8 +225,7 @@ class Formatter(object):
         if self.__is_numeric:
             self.insert_numeric_col(sheet, start_table_row)
 
-        if (os.path.basename(self.__image_path) == "y2_utpol_logo.png"):
-            self.insert_moe_row(sheet, start_table_row)
+        #self.insert_moe_row(sheet, start_table_row)
         self.format_hyperlink(sheet)
         table = self.__tables.get(sheet.title)
         self.format_table_titles(sheet, table, start_table_row)
@@ -321,7 +315,6 @@ class Formatter(object):
         return start_table_row
 
     def unmerge_response_cols(self, sheet):
-
         merged_ranges =[]  
         for group in sheet.merged_cells.ranges:
             merged_ranges.append(group)
@@ -496,10 +489,11 @@ class Formatter(object):
         sheet.merge_cells(merge_range)
         
         # add base description
-        desc_location = "%s%s" % (self.__extend_alphabet[base_desc_col_index], str(table_title_row))
-        sheet[desc_location].font = self.__font_reg
-        sheet[desc_location].alignment = self.__align_names
-        sheet[desc_location] = "Base - %s" % table.description
+        if table.description is not None:
+            desc_location = "%s%s" % (self.__extend_alphabet[base_desc_col_index], str(table_title_row))
+            sheet[desc_location].font = self.__font_reg
+            sheet[desc_location].alignment = self.__align_names
+            sheet[desc_location] = "Base - %s" % table.description
 
         # merge table title row cells
         start_range = "%s%s" % ("A", str(table_title_row))
