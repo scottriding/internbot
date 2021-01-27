@@ -279,11 +279,9 @@ class DocumentView(BoxLayout):
         button_layout = BoxLayout()
         button_layout.size_hint = (1, .1)
 
-        policy_btn = Button(text="Utah Policy", on_press=self.is_policy)
         y2_btn = Button(text="Y2 Analytics", on_press=self.is_y2)
         oth_btn = Button(text="Other", on_press=self.is_other)
 
-        button_layout.add_widget(policy_btn)
         button_layout.add_widget(y2_btn)
         button_layout.add_widget(oth_btn)
 
@@ -432,11 +430,6 @@ class DocumentView(BoxLayout):
 
     def is_y2(self, instance):
         self.__template_name = "Y2"
-        self.format_selector.dismiss()
-        self.save_file_prompt.open()
-
-    def is_policy(self, instance):
-        self.__template_name = "UT_POLICY"
         self.format_selector.dismiss()
         self.save_file_prompt.open()
 

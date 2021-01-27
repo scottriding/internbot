@@ -127,13 +127,11 @@ class FormatReportView(BoxLayout):
 
         y2_btn = Button(text="Y2 Analytics", on_press=self.is_y2)
         qualtrics_btn = Button(text="Qualtrics", on_press=self.is_qualtrics)
-        policy_btn = Button(text="Utah Policy", on_press=self.is_policy)
         wa_btn = Button(text="WhatsApp", on_press=self.is_whatsapp)
         fb_btn = Button(text="Facebook", on_press=self.is_fb)
 
         button_layout.add_widget(y2_btn)
         button_layout.add_widget(qualtrics_btn)
-        button_layout.add_widget(policy_btn)
         button_layout.add_widget(wa_btn)
         button_layout.add_widget(fb_btn)
 
@@ -242,15 +240,6 @@ class FormatReportView(BoxLayout):
             string = "Issue formatting report:/n %s" % str(inst)
             self.error_message(string)
 
-    def is_policy(self, instance):
-        self.format_selector.dismiss()
-        try:
-            self.__controller.build_qresearch_report(self.__open_filename, "UT_POLICY")
-            self.save_file_prompt.open()
-        except Exception as inst:
-            string = "Issue formatting report:/n %s" % str(inst)
-            self.error_message(string)
-        
     def is_y2(self, instance):
         self.format_selector.dismiss()
         try:
