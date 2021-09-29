@@ -6,6 +6,7 @@ from openpyxl.utils import range_boundaries
 from collections import OrderedDict
 import os
 import re
+import math
 
 class Formatter(object):
 
@@ -96,11 +97,6 @@ class Formatter(object):
             self.__hi_significant_fill = PatternFill("solid", fgColor = "2DCCD3")
             self.__lo_significant_fill = PatternFill("solid", fgColor = "2DCCD3")
         elif (os.path.basename(self.__image_path) == "y2_xtabs.png"):
-            self.__row_height = 52
-            self.__header_fill = PatternFill("solid", fgColor = "0F243E")
-            self.__hi_significant_fill = PatternFill("solid", fgColor = "2083E7")
-            self.__lo_significant_fill = PatternFill("solid", fgColor = "2083E7")
-        elif (os.path.basename(self.__image_path) == "y2_utpol_logo.png"):
             self.__row_height = 52
             self.__header_fill = PatternFill("solid", fgColor = "0F243E")
             self.__hi_significant_fill = PatternFill("solid", fgColor = "2083E7")
@@ -228,6 +224,8 @@ class Formatter(object):
             self.create_col_names(sheet, start_table_row)
         if self.__is_numeric:
             self.insert_numeric_col(sheet, start_table_row)
+
+        #self.insert_moe_row(sheet, start_table_row)
         self.format_hyperlink(sheet)
         table = self.__tables.get(sheet.title)
         self.format_table_titles(sheet, table, start_table_row)
@@ -241,7 +239,7 @@ class Formatter(object):
         sheet.row_dimensions[1].height = self.__row_height
 
         sheet.row_dimensions[2].height = 36
-        sheet.row_dimensions[3].height = 37
+        sheet.row_dimensions[3].height = 50
         sheet.column_dimensions["A"].width = 50
         sheet.column_dimensions["B"].width = 25
 
@@ -317,7 +315,6 @@ class Formatter(object):
         return start_table_row
 
     def unmerge_response_cols(self, sheet):
-
         merged_ranges =[]  
         for group in sheet.merged_cells.ranges:
             merged_ranges.append(group)
@@ -374,6 +371,46 @@ class Formatter(object):
             self.__col_names.append(sheet[current_cell].value)
             current_col += 1
             current_cell = "%s%s" % (self.__extend_alphabet[current_col], str(banner_row))
+
+    def insert_moe_row(self, sheet, start_table_row):
+        # anywhere there's a Total n, we need to calculate margin of error for it
+        moe_rows = []
+        response_col = self.banner_col_index - 1
+        current_row = start_table_row - 1
+        while current_row < self.end_table_row:
+            current_cell = "%s%s" % (self.__extend_alphabet[response_col], current_row)
+            if sheet[current_cell].value is not None:
+                if "Total" in sheet[current_cell].value:
+                    moe_rows.append(current_row)
+            current_row += 1
+
+        moe_rows.reverse()
+        for row in moe_rows:
+            moe_row = row + 3
+            n_row = row + 1
+            sheet.insert_rows(moe_row)
+
+            # drop in MOE calculations
+            current_col = response_col
+            moe_cell = "%s%s" % (self.__extend_alphabet[current_col], moe_row)
+            sheet[moe_cell].value = "Margin of error"
+
+            current_col += 1
+            n_cell = "%s%s" % (self.__extend_alphabet[current_col], n_row)
+            moe_cell = "%s%s" % (self.__extend_alphabet[current_col], moe_row)
+            while sheet[n_cell].value is not None:
+                if sheet[n_cell].value < 10:
+                    sheet[moe_cell].value = "*"
+                else:
+                    # Utah statewide population sample - 1500000
+                    # South SL population sample - 25000
+                    sheet[moe_cell].value = (math.sqrt((.25/sheet[n_cell].value))*1.96)*(math.sqrt((25000-sheet[n_cell].value)/(25000-1))*100)
+                    sheet[moe_cell].number_format = "0.0"
+                current_col += 1
+                n_cell = "%s%s" % (self.__extend_alphabet[current_col], n_row)
+                moe_cell = "%s%s" % (self.__extend_alphabet[current_col], moe_row)
+
+            self.end_table_row += 1
 
     def insert_numeric_col(self, sheet, start_table_row):
         col_index = self.banner_col_index + 1
@@ -452,14 +489,15 @@ class Formatter(object):
         sheet.merge_cells(merge_range)
         
         # add base description
-        desc_location = "%s%s" % (self.__extend_alphabet[base_desc_col_index], str(table_title_row))
-        sheet[desc_location].font = self.__font_reg
-        sheet[desc_location].alignment = self.__align_names
-        sheet[desc_location] = "Base - %s" % table.description
+        if table.description is not None:
+            desc_location = "%s%s" % (self.__extend_alphabet[base_desc_col_index], str(table_title_row))
+            sheet[desc_location].font = self.__font_reg
+            sheet[desc_location].alignment = self.__align_names
+            sheet[desc_location] = "Base - %s" % table.description
 
         # merge table title row cells
         start_range = "%s%s" % ("A", str(table_title_row))
-        end_range = "%s%s" % (self.__extend_alphabet[self.banner_col_index], str(table_title_row))
+        end_range = "%s%s" % (self.__extend_alphabet[self.banner_col_index-1], str(table_title_row))
         merge_range = "%s:%s" % (start_range, end_range)
         sheet.merge_cells(merge_range)
 

@@ -81,10 +81,9 @@ class Assigner(object):
 
     def find_response(self, response_label, response_value, matching_question):
         responses = matching_question.responses
-
-        matching_response = next((response for response in responses if response.value == response_value), None)
+        matching_response = next((response for response in responses if response.value == float(response_value)), None)
         if matching_response is None:
-             matching_response = next((response for response in responses if response.label == response_label), None)
+            matching_response = next((response for response in responses if response.label == response_label), None)
 
         ## hotspot edge case
         if response_label == 'On':

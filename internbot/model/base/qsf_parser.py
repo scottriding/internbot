@@ -90,9 +90,10 @@ class QSFBlocksParser(object):
         return new_block
         
     def assign_question_id(self, block_element, block):
-        for question_id in block_element['BlockElements']:
-            if question_id['Type'] == 'Question':
-                block.assign_id(question_id['QuestionID'])
+        if 'BlockElements' in block_element.keys():
+            for question_id in block_element['BlockElements']:
+                if question_id['Type'] == 'Question':
+                    block.assign_id(question_id['QuestionID'])
 
 class QSFQuestionsParser(object):
 
@@ -421,13 +422,13 @@ class QSFMultipleSelectParser(object):
             sub_question.subtype = question_payload['Selector']
             sub_question.name = '%s_%s' % (multiple_select.name, code)
             sub_question.prompt = self.convert_prompt_from_byte_str(parent_question['Display'].encode('ascii', 'ignore'))
-            sub_question.add_response('1',1)
+            sub_question.add_response(sub_question.prompt,1)
             multiple_select.add_question(sub_question)
 
     def convert_prompt_from_byte_str(self, prompt):
         prompt = str(prompt)
-        if len(prompt):
-            if prompt[0] is "b" and (prompt[len(prompt) - 1] is "'" or prompt[len(prompt) - 1] is '"'):
+        if len(prompt) > 0:
+            if prompt[0] == "b" and (prompt[len(prompt) - 1] == "'" or prompt[len(prompt) - 1] == '"'):
                 converted = prompt[2: len(prompt) - 1]
                 return converted
         return prompt
@@ -543,7 +544,7 @@ class QSFResponsesParser(object):
 
     def convert_response_from_byte_str(self, response):
         if len(response) > 0:
-            if response[0] is "b" and (response[len(response) - 1] is "'" or response[len(response) - 1] is '"'):
+            if response[0] == "b" and (response[len(response) - 1] == "'" or response[len(response) - 1] == '"'):
                 converted = response[2: len(response) - 1]
                 return converted
         return response

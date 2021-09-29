@@ -532,7 +532,9 @@ class ScoresToplineReport(object):
         cell_two = cells_current[1]
         cell_one_value = score_sheet[cell_one].value
         cell_two_value = score_sheet[cell_two].value
-        formula_current_solution = cell_one_value - cell_two_value
+        formula_current_solution = None
+        if cell_one_value is not None and cell_two_value is not None:
+            formula_current_solution = cell_one_value - cell_two_value
 
         # calculate first/prev round formula solution
         formula_first = score_sheet[calculate_round_cell].value
@@ -549,7 +551,7 @@ class ScoresToplineReport(object):
 
         # formatting
         score_sheet[results_cell].value = "=%s - %s" % (current_round_cell, calculate_round_cell)
-        if formula_first_soluation is not None:
+        if formula_first_soluation is not None and formula_current_solution is not None:
             score_sheet[results_cell].fill = self.highlight(formula_current_solution, formula_first_soluation)
         score_sheet[results_cell].border = self.all_border
         score_sheet[results_cell].number_format = '0%'

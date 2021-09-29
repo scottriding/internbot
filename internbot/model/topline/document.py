@@ -167,7 +167,6 @@ class Document(object):
                                 if group == groups[headers_index]:
                                     if frequency.stat == 'percent':
                                         freq = self.percent(frequency.result, first_row)
-                                        first_row = False
                                     elif frequency.stat == 'mean':
                                         freq = self.mean(frequency.result)
                                     else:
@@ -175,6 +174,7 @@ class Document(object):
                                     table_rows[row][headers_index+4].text = freq
                                     n_text = " (%s n=%s)" % (group, frequency.population)
                                     table_rows[row][1].text += n_text
+                                first_row = False
                 headers_index += 1
                 row = -1
                 first_group = False
