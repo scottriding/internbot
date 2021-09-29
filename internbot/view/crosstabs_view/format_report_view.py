@@ -42,13 +42,7 @@ class FormatReportView(BoxLayout):
         separator_height = 0,
         content=popup_layout,
         size_hint=(.7, .5), 
-        pos_hint={'center_x': 0.5, 'center_y': 0.5},
-        auto_dismiss=False)
-
-        close_btn = Button(text='x', size_hint=(.08,.2))
-        close_btn.bind(on_release=popup.dismiss)
-
-        popup_layout.add_widget(close_btn)
+        pos_hint={'center_x': 0.5, 'center_y': 0.5})
 
         label = Label(text=help_text, markup=True)
         label.bind(on_ref_press=examples_link)
@@ -72,12 +66,7 @@ class FormatReportView(BoxLayout):
         separator_height = 0,
         content=chooser_layout,
         size_hint=(.9, .7), 
-        pos_hint={'center_x': 0.5, 'center_y': 0.5},
-        auto_dismiss=False)
-
-        close_btn = Button(text='x', size_hint=(.08,.1))
-        close_btn.bind(on_release=file_chooser.dismiss)
-        chooser_layout.add_widget(close_btn)
+        pos_hint={'center_x': 0.5, 'center_y': 0.5})
 
         def open_file(path, filename):
             try:
@@ -108,13 +97,7 @@ class FormatReportView(BoxLayout):
         separator_height = 0,
         content=chooser,
         size_hint=(.9, .7), 
-        pos_hint={'center_x': 0.5, 'center_y': 0.5},
-        auto_dismiss=False)
-
-        close_btn = Button(text='x', size_hint=(.08,.1))
-        close_btn.bind(on_release=popup.dismiss)
-
-        chooser.add_widget(close_btn)
+        pos_hint={'center_x': 0.5, 'center_y': 0.5})
 
         text = "Choose from the following format options."
         label = Label(text=text)
@@ -148,13 +131,8 @@ class FormatReportView(BoxLayout):
         separator_height = 0,
         content=popup_layout,
         size_hint=(.7, .5), 
-        pos_hint={'center_x': 0.5, 'center_y': 0.5},
-        auto_dismiss=False)
+        pos_hint={'center_x': 0.5, 'center_y': 0.5})
 
-        close_btn = Button(text='x', size_hint=(.08,.2))
-        close_btn.bind(on_release=popup.dismiss)
-
-        popup_layout.add_widget(close_btn)
         popup_layout.add_widget(label)
 
         save_btn = Button(text='Next', size_hint=(.2,.2))
@@ -173,16 +151,10 @@ class FormatReportView(BoxLayout):
         separator_height = 0,
         content=chooser_layout,
         size_hint=(.9, .7), 
-        pos_hint={'center_x': 0.5, 'center_y': 0.5},
-        auto_dismiss=False)
+        pos_hint={'center_x': 0.5, 'center_y': 0.5})
 
         menu_layout = BoxLayout(orientation='vertical')
         menu_layout.size_hint = (.1, .2)
-
-        close_btn = Button(text='x', size_hint=(.08,.1))
-        close_btn.bind(on_release=file_chooser.dismiss)
-
-        chooser_layout.add_widget(close_btn)
 
         chooser_view = FileChooserListView()
         chooser_view.path = os.path.expanduser("~")
