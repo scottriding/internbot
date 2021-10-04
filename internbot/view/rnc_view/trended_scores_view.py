@@ -125,7 +125,6 @@ class TrendedScoresView(BoxLayout):
     def create_save_folder_prompt(self):
         popup_layout = BoxLayout(orientation='vertical')
         label = Label(text="Choose a folder and name for several trended score reports")
-        label.font_family= "Y2"
 
         popup_layout.add_widget(label)
 
@@ -219,7 +218,6 @@ class TrendedScoresView(BoxLayout):
 
     def error_message(self, error):
         label = Label(text=error)
-        label.font_family= "Y2"
 
         popup = Popup(title="Something Went Wrong",
         content=label,

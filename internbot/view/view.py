@@ -10,7 +10,6 @@ kivy.require('1.11.1')
 from kivy.app import App
 from kivy.uix.button import Button
 from kivy.uix.boxlayout import BoxLayout
-from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.image import Image
 from kivy.graphics import Color, Rectangle
 from kivy.uix.popup import Popup
@@ -23,39 +22,29 @@ from kivy.properties import BooleanProperty, ObjectProperty
 from kivy.factory import Factory
 import webbrowser
 import os
+import time
 
 class View(App):
 
     def build(self):
-        KIVY_FONTS = [
-        {
-            "name": "Y2",
-            "fn_regular": "resources/fonts/GothamBook.otf"
-        }
-        ]
-        for font in KIVY_FONTS:
-            LabelBase.register(**font)
-        
         self.root = self.create_screens()
         
         self.title = "Internbot - 1.3.1"
 
         self.root.bind(size=self._update_rect, pos=self._update_rect)
-        self.root.bind(on_close=self.play_close)
-
+        
         with self.root.canvas.before:
             self.rect = Rectangle(size=self.root.size, pos=self.root.pos, source='resources/images/DWTWNSLC.png')
 
-        self.open_sound = SoundLoader.load('resources/sounds/open.mp3')
-        self.close_sound = SoundLoader.load('resources/sounds/close.mp3')
         self.icon = 'resources/images/y2.icns'
 
+        self.open_sound = SoundLoader.load('resources/sounds/open.mp3')
+        self.close_sound = SoundLoader.load('resources/sounds/close.mp3')
+
         self.open_sound.play()
-
-        self.__controller = None
-
         Window.bind(on_request_close=self.play_close)
 
+        self.__controller = None
         return self.root
 
     @property
@@ -72,36 +61,11 @@ class View(App):
 
     def play_close(self, *args):
         self.close_sound.play()
-        self.goodbye_message()
-        return True
 
-    def goodbye_message(self):
-        bye_content = BoxLayout(orientation="vertical")
-        desc_text = "Thanks for using internbot!" 
+        # delay so that the sound can actually play before application closes
+        time.sleep(0.5)
 
-        desc_label = (Label(text=desc_text, markup=True))
-        desc_label.font_family = "Y2"
-
-        bye_content.add_widget(desc_label)
-
-        empty_label = Label(text=" ")
-        empty_label.size_hint=(1,.3)
-        bye_content.add_widget(empty_label)
-
-        cool_btn = Button(text='cool',
-						pos_hint={'center_x': 0.5, 'center_y': 0.15},
-        				size_hint=(.3, .5)) 
-              
-        bye_content.add_widget(cool_btn)
-
-        popup = Popup(title='Bye',
-        content=bye_content,
-        auto_dismiss=False,
-        separator_color=[243/255.,153/255.,61/255.,1.],
-        size_hint=(.3, .3), pos_hint={'center_x': 0.5, 'center_y': 0.5})
-
-        cool_btn.bind(on_press=self.stop) 
-        popup.open()
+        self.stop()
 
     def create_screens(self):
         layered_menu = BoxLayout()
@@ -130,29 +94,25 @@ class View(App):
         ## buttons
         button_layout = BoxLayout(orientation='vertical')
 
-        xtabs_btn = HoverButton(text="Crosstab Reports", size_hint=(.5,.2), on_press = self.main_to_xtabs)
-        xtabs_btn.font_name = "Y2"
+        xtabs_btn = HoverButton(text="Crosstab Reports", size_hint=(.4,.2), on_press = self.main_to_xtabs)
 
-        top_btn = HoverButton(text="Topline Reports", size_hint=(.5,.2), on_press = self.main_to_top)
-        top_btn.font_name = "Y2"
+        top_btn = HoverButton(text="Topline Reports", size_hint=(.4,.2), on_press = self.main_to_top)
  
-        rnc_btn = HoverButton(text="RNC Reports", size_hint=(.5,.2), on_press = self.main_to_rnc)
-        rnc_btn.font_name = "Y2"
+        rnc_btn = HoverButton(text="RNC Reports", size_hint=(.4,.2), on_press = self.main_to_rnc)
         
-        help_btn = HoverButton(text="Help", size_hint=(.5,.15), on_press = self.main_help)
-        help_btn.font_name = "Y2"
+        help_btn = HoverButton(text="Help", size_hint=(.4,.15), on_press = self.main_help)
         help_btn.background_normal = ''
         help_btn.background_color = (3/255, 169/255, 244/255, 1)
 
-        button_layout.add_widget(Label(text=" ", size_hint=(.5, .01)))
+        button_layout.add_widget(Label(text=" ", size_hint=(.4, .01)))
         button_layout.add_widget(xtabs_btn)
-        button_layout.add_widget(Label(text=" ", size_hint=(.5, .01)))
+        button_layout.add_widget(Label(text=" ", size_hint=(.4, .01)))
         button_layout.add_widget(top_btn)
-        button_layout.add_widget(Label(text=" ", size_hint=(.5, .01)))
+        button_layout.add_widget(Label(text=" ", size_hint=(.4, .01)))
         button_layout.add_widget(rnc_btn)
-        button_layout.add_widget(Label(text=" ", size_hint=(.5, .01)))
+        button_layout.add_widget(Label(text=" ", size_hint=(.4, .01)))
         button_layout.add_widget(help_btn)
-        button_layout.add_widget(Label(text=" ", size_hint=(.5, .01)))
+        button_layout.add_widget(Label(text=" ", size_hint=(.4, .01)))
 
         main_screen.add_widget(BoxLayout(size_hint=(.01, 1)))
         main_screen.add_widget(button_layout)
@@ -209,7 +169,6 @@ class View(App):
         desc_text += "team can focus on the \"quality\" of a report."
 
         desc_label = (Label(text=desc_text, markup=True))
-        desc_label.font_family = "Y2"
 
         help_content.add_widget(desc_label)
 
@@ -220,7 +179,6 @@ class View(App):
         
         help_label = HoverLink(text=help_text, markup=True, valign= "top")
         help_label.bind(on_ref_press=examples_link)
-        help_label.font_family = "Y2"
         help_label.size_hint=(.5,.3)
         help_label.pos_hint={'center_x': 0.5, 'center_y': 0.2}
 

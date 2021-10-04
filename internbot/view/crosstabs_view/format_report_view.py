@@ -46,7 +46,6 @@ class FormatReportView(BoxLayout):
 
         label = Label(text=help_text, markup=True)
         label.bind(on_ref_press=examples_link)
-        label.font_family= "Y2"
 
         popup_layout.add_widget(label)
 
@@ -125,7 +124,6 @@ class FormatReportView(BoxLayout):
     def create_save_file_prompt(self):
         popup_layout = BoxLayout(orientation='vertical')
         label = Label(text="Choose a file location and name for QResearch crosstabs report")
-        label.font_family= "Y2"
 
         popup = Popup(title="",
         separator_height = 0,
@@ -257,7 +255,6 @@ class FormatReportView(BoxLayout):
 
     def error_message(self, error):
         label = Label(text=error)
-        label.font_family= "Y2"
 
         popup = Popup(title="Something Went Wrong",
         content=label,
