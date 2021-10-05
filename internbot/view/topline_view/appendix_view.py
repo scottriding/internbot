@@ -1,3 +1,5 @@
+from view import gui_tools
+
 ## outside modules
 import kivy
 kivy.require('1.11.1')

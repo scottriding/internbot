@@ -1,3 +1,5 @@
+from view import gui_tools
+
 from view.crosstabs_view.format_report_view import FormatReportView
 from view.crosstabs_view.toc_view import TOCView
 

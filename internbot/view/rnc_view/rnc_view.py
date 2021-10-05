@@ -1,3 +1,5 @@
+from view import gui_tools
+
 from view.rnc_view.scores_topline_view import ScoresToplineView
 from view.rnc_view.issue_trended_view import IssueTrendedView
 from view.rnc_view.trended_scores_view import TrendedScoresView

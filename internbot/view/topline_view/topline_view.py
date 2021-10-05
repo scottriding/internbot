@@ -1,3 +1,5 @@
+from view import gui_tools
+
 from view.topline_view.appendix_view import AppendixView
 from view.topline_view.document_view import DocumentView
 from view.topline_view.powerpoint_view import PowerpointView

@@ -2,24 +2,20 @@
 from view import crosstabs_view
 from view import topline_view
 from view import rnc_view
+from view import gui_tools
 
 ## outside modules
 import kivy
 kivy.require('1.11.1')
 
 from kivy.app import App
-from kivy.uix.button import Button
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.image import Image
 from kivy.graphics import Color, Rectangle
 from kivy.uix.popup import Popup
 from kivy.uix.label import Label
-from kivy.core.text import LabelBase
 from kivy.core.audio import SoundLoader
-from kivy.uix.relativelayout import RelativeLayout
 from kivy.core.window import Window
-from kivy.properties import BooleanProperty, ObjectProperty
-from kivy.factory import Factory
 import webbrowser
 import os
 import time
@@ -94,13 +90,13 @@ class View(App):
         ## buttons
         button_layout = BoxLayout(orientation='vertical')
 
-        xtabs_btn = HoverButton(text="Crosstab Reports", size_hint=(.4,.2), on_press = self.main_to_xtabs)
+        xtabs_btn = gui_tools.HoverButton(text="Crosstab Reports", size_hint=(.4,.2), on_press = self.main_to_xtabs)
 
-        top_btn = HoverButton(text="Topline Reports", size_hint=(.4,.2), on_press = self.main_to_top)
+        top_btn = gui_tools.HoverButton(text="Topline Reports", size_hint=(.4,.2), on_press = self.main_to_top)
  
-        rnc_btn = HoverButton(text="RNC Reports", size_hint=(.4,.2), on_press = self.main_to_rnc)
+        rnc_btn = gui_tools.HoverButton(text="RNC Reports", size_hint=(.4,.2), on_press = self.main_to_rnc)
         
-        help_btn = HoverButton(text="Help", size_hint=(.4,.15), on_press = self.main_help)
+        help_btn = gui_tools.HoverButton(text="Help", size_hint=(.4,.15), on_press = self.main_help)
         help_btn.background_normal = ''
         help_btn.background_color = (3/255, 169/255, 244/255, 1)
 
@@ -177,7 +173,7 @@ class View(App):
         def examples_link(instance, value):
             webbrowser.open("https://www.dropbox.com/sh/ia0c3b2lvq8kb68/AAAV4ELm-FPW1giqs4RZdRMra?dl=0")
         
-        help_label = HoverLink(text=help_text, markup=True, valign= "top")
+        help_label = gui_tools.HoverLink(text=help_text, markup=True, valign= "top")
         help_label.bind(on_ref_press=examples_link)
         help_label.size_hint=(.5,.3)
         help_label.pos_hint={'center_x': 0.5, 'center_y': 0.2}
@@ -188,7 +184,7 @@ class View(App):
         empty_label.size_hint=(1,.3)
         help_content.add_widget(empty_label)
 
-        confirm_btn = HoverButton(text='confirm',
+        confirm_btn = gui_tools.HoverButton(text='confirm',
 						pos_hint={'center_x': 0.5, 'center_y': 0.15},
         				size_hint=(.2, .3)) 
               
@@ -206,70 +202,4 @@ class View(App):
 
         confirm_btn.bind(on_press=fix_mouse) 
         popup.open()
-
-"""Hoverable Behaviour (changing when the mouse is on the widget by O. Poyen.
-License: LGPL
-"""
-__author__ = 'Olivier POYEN @ https://gist.github.com/opqopq/15c707dc4cffc2b6455f' 
-
-class HoverBehavior(object):
-    """Hover behavior.
-    :Events:
-        `on_enter`
-            Fired when mouse enter the bbox of the widget.
-        `on_leave`
-            Fired when the mouse exit the widget 
-    """
-
-    hovered = BooleanProperty(False)
-    border_point= ObjectProperty(None)
-    '''Contains the last relevant point received by the Hoverable. This can
-    be used in `on_enter` or `on_leave` in order to know where was dispatched the event.
-    '''
-
-    def __init__(self, **kwargs):
-        self.register_event_type('on_enter')
-        self.register_event_type('on_leave')
-        Window.bind(mouse_pos=self.on_mouse_pos)
-        super(HoverBehavior, self).__init__(**kwargs)
-
-    def on_mouse_pos(self, *args):
-        if not self.get_root_window():
-            return # do proceed if I'm not displayed <=> If have no parent
-        pos = args[1]
-        #Next line to_widget allow to compensate for relative layout
-        inside = self.collide_point(*self.to_widget(*pos))
-        if self.hovered == inside:
-            #We have already done what was needed
-            return
-        self.border_point = pos
-        self.hovered = inside
-        if inside:
-            self.dispatch('on_enter')
-        else:
-            self.dispatch('on_leave')
-
-    def on_enter(self):
-        pass
-
-    def on_leave(self):
-        pass
-
-class HoverLink(Label, HoverBehavior):
-    def on_enter(self, *args):
-        Window.set_system_cursor('hand')
-
-    def on_leave(self, *args):
-        Window.set_system_cursor('arrow')
-
-class HoverButton(Button, HoverBehavior):
-    def on_enter(self, *args):
-        Window.set_system_cursor('hand')
-
-    def on_leave(self, *args):
-        Window.set_system_cursor('arrow')
-
-Factory.register('HoverBehavior', HoverBehavior)
-Factory.register('HoverLink', HoverLink)
-Factory.register('HoverButton', HoverButton)
         

@@ -1,3 +1,5 @@
+from view import gui_tools
+
 ## crosstabs modules
 from view.crosstabs_view.qresearch_view import QResearchView
 from view.crosstabs_view.amazon_view import AmazonView
