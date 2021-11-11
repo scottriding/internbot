@@ -20,7 +20,8 @@ class Formatter(object):
         self.calculate_excel_col_names()
 
     def set_fonts(self):
-        self.__font_reg = Font(name = 'Arial', size = 8)
+        self.__font_reg = Font(name = 'Arial', size = 8, color = "000000")
+        self.__font_white = Font(name = 'Arial', size = 8, color = "FFFFFF")
         self.__font_small = Font(name = 'Arial', size = 7)
         self.__font_bold = Font(name = 'Arial', size = 8, bold = True)
         self.__font_back_hyperlink = Font(name = 'Arial', size = 8, color = "A2AAAD")
@@ -92,25 +93,21 @@ class Formatter(object):
 
     def set_template(self):
         if (os.path.basename(self.__image_path) == "QLogo.png"):
-            self.__row_height = 35
-            self.__header_fill = PatternFill("solid", fgColor = "1E262E")
-            self.__hi_significant_fill = PatternFill("solid", fgColor = "2DCCD3")
-            self.__lo_significant_fill = PatternFill("solid", fgColor = "2DCCD3")
+            self.__row_height = 75
+            self.__header_fill = PatternFill("solid", fgColor = "000000")
+            self.__significant_fill = PatternFill("solid", fgColor = "5F1AE5")
         elif (os.path.basename(self.__image_path) == "y2_xtabs.png"):
             self.__row_height = 52
-            self.__header_fill = PatternFill("solid", fgColor = "0F243E")
-            self.__hi_significant_fill = PatternFill("solid", fgColor = "2083E7")
-            self.__lo_significant_fill = PatternFill("solid", fgColor = "2083E7")
+            self.__header_fill = PatternFill("solid", fgColor = "0B0B45")
+            self.__significant_fill = PatternFill("solid", fgColor = "FFAC0F")
         elif (os.path.basename(self.__image_path) == "whatsapp.png"):
             self.__row_height = 57
             self.__header_fill = PatternFill("solid", fgColor = "445963")
-            self.__hi_significant_fill = PatternFill("solid", fgColor = "1EBDA5")
-            self.__lo_significant_fill = PatternFill("solid", fgColor = "1EBDA5")
+            self.__significant_fill = PatternFill("solid", fgColor = "1EBDA5")
         elif (os.path.basename(self.__image_path) == "FB.png"):
             self.__row_height = 57
             self.__header_fill = PatternFill("solid", fgColor = "344854")
-            self.__hi_significant_fill = PatternFill(fill_type=None)
-            self.__lo_significant_fill = PatternFill(fill_type=None)
+            self.__significant_fill = PatternFill(fill_type=None)
 
         self.__table_fill = PatternFill("solid", fgColor = "E7E6E6")
         self.__white_fill = PatternFill("solid", fgColor = "FFFFFF")
@@ -634,14 +631,16 @@ class Formatter(object):
                 sheet[current_cell].font = self.__font_reg
                 sheet[current_cell].alignment = self.__align_center
                 if sheet[current_cell].data_type == 's':
-                    value = sheet[current_cell].value.upper()
-                    value_list = value.split(" ")
+                    value_list = sheet[current_cell].value.split(" ")
                     if len(value_list) > 1:
-                        sheet[current_cell].fill = self.__hi_significant_fill
+                        sheet[current_cell].fill = self.__significant_fill
+                        sheet[current_cell].font = self.__font_white
                     elif sheet[current_cell].value.isupper():
-                        sheet[current_cell].fill = self.__hi_significant_fill
+                        sheet[current_cell].fill = self.__significant_fill
+                        sheet[current_cell].font = self.__font_white
                     elif sheet[current_cell].value.islower():
-                        sheet[current_cell].fill = self.__lo_significant_fill
+                        sheet[current_cell].fill = self.__significant_fill
+                        sheet[current_cell].font = self.__font_white
                 col_no += 1
             current_row += 1
 
