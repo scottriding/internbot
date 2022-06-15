@@ -15,7 +15,22 @@ class Questions(object):
 
     def find_by_name(self, question_name):
         for question in self.__questions:
-            if question.name == question_name:
+            if question.type == "CompositeQuestion":
+                for subquestion in question.questions:
+                    if subquestion.name == question_name:
+                        return subquestion
+            elif question.name == question_name:
+                return question
+        return None
+
+    def find_by_prompt(self, question_prompt):
+        for question in self.__questions:
+            if question.type == "CompositeQuestion":
+                for subquestion in question.questions:
+                    if subquestion.prompt.replace(" ", "") == question_prompt.replace(" ", ""):
+                        return subquestion
+                    
+            elif question.prompt.replace(" ", "") == question_prompt.replace(" ", ""):
                 return question
         return None
 
@@ -173,8 +188,9 @@ class CompositeQuestion(object):
         self.__has_carry_forward_statements = bool(type)
         
     def add_response(self, label, value):
-        self.__temp_responses.add(label, value)
-        self.sort()    
+        new = self.__temp_responses.add(label, value)
+        self.sort()
+        return new    
         
     def add_question(self, question):
         self.__questions.append(question)
@@ -215,6 +231,15 @@ class CompositeMultipleSelect(CompositeQuestion):
     @property
     def type(self):
         return 'CompositeMultipleSelect'
+
+class CompositeRankOrder(CompositeQuestion):
+
+    def __init__(self):
+        super(CompositeRankOrder, self).__init__()
+
+    @property
+    def type(self):
+        return 'CompositeRankOrder'
         
 class CompositeHotSpot(CompositeQuestion):
 
@@ -243,6 +268,7 @@ class Question(object):
         self.__has_mixed_responses = False
         self.__has_carry_forward_statements = False
         self.__has_carry_forward_answers = False
+        self.__has_match = False
 
     @property
     def has_carry_forward_statements(self):
@@ -349,10 +375,19 @@ class Question(object):
     def display_logic(self, logic):
         self.__display_logic = str(logic)
 
+    @property
+    def has_match(self):
+        return self.__has_match
+
+    @has_match.setter
+    def has_match(self, boolean):
+        self.__has_match = boolean
+
     def add_response(self, label, value=None):
-        self.__responses.add(label, value)
+        new = self.__responses.add(label, value)
         if len(self.__response_order) > 0:
             self.__responses.sort(self.__response_order)
+        return new
 
     def add_dynamic_response(self, label, value=None):
         self.__responses.add_dynamic(label, value)

@@ -25,7 +25,7 @@ class View(App):
     def build(self):
         self.root = self.create_screens()
         
-        self.title = "Internbot - 1.3.1"
+        self.title = "Internbot - 1.3.2"
 
         self.root.bind(size=self._update_rect, pos=self._update_rect)
         

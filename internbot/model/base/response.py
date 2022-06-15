@@ -10,9 +10,11 @@ class Responses(object):
         self.__responses = []
 
     def add(self, label, value=None):
+        new = Response(label, value)
         self.__responses.append(
-            Response(label, value)
+            new
         )
+        return new
 
     def add_dynamic(self, label, value=None):
         response = Response(label, value)
@@ -66,6 +68,10 @@ class Response(object):
     @property
     def frequencies(self):
         return self.__frequencies
+
+    @frequencies.setter
+    def frequencies(self, frequencies):
+        self.__frequencies = frequencies
 
     @property
     def is_dynamic(self):

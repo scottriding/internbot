@@ -35,6 +35,8 @@ class Document(object):
                     self.write_binary_question(question)
             elif question.type == 'TE':
                 self.write_open_ended(question)
+            elif question.type == 'DB':
+                self.write_descriptive(question)
             else:
                 self.write_question(question)
 
@@ -91,9 +93,10 @@ class Document(object):
         header = "Basic"
         for group, n in total_ns.items():
             header = group
-            n_text = "(n=%s)" % n
+            n_text = "(n = %s)" % n
         question_cells[1].text = "%s %s" % (sub_question.prompt, n_text)
         index = 2
+        first = True
         for response in sub_question.responses:
             for group, frequency in response.frequencies.frequencies.items():
                 if group == header:
@@ -103,7 +106,12 @@ class Document(object):
                         freq = self.mean(frequency.result)
                     else:
                         freq = str(frequency.result)
-                question_cells[index].text = freq
+                if first:
+                    percent = str(freq) + "%"
+                    question_cells[index].text = percent
+                    first = False
+                else:
+                    question_cells[index].text = freq
                 index += 1
 
     def write_binary_question(self, binary_question):
@@ -121,21 +129,22 @@ class Document(object):
             for sub_question in binary_question.questions:
                 cells = table.add_row().cells
                 cells[1].merge(cells[2])
-                response = next((response for response in sub_question.responses if response.value == 1), None)
-                if not response.frequencies:
-                    shading_elm = parse_xml(r'<w:shd {} w:fill="FFF206"/>'.format(nsdecls('w')))
-                    cells[1]._tc.get_or_add_tcPr().append(shading_elm)
-                else:
-                    for group, frequency in response.frequencies.frequencies.items():
-                        cells[1].text = "%s (n=%s)" % (sub_question.prompt, frequency.population)
-                        if frequency.stat == 'percent':
-                            freq = self.percent(frequency.result, first_row)
-                        elif frequency.stat == 'mean':
-                            freq = self.mean(frequency.result)
-                        else:
-                            freq = str(frequency.result)
-                        cells[3].text = freq
-                first_row = False
+                response = next((response for response in sub_question.responses if response.value is not None), None)
+                if response is not None:
+                    if not response.frequencies:
+                        shading_elm = parse_xml(r'<w:shd {} w:fill="FFF206"/>'.format(nsdecls('w')))
+                        cells[1]._tc.get_or_add_tcPr().append(shading_elm)
+                    else:
+                        for group, frequency in response.frequencies.frequencies.items():
+                            cells[1].text = "%s (n = %s)" % (sub_question.prompt, frequency.population)
+                            if frequency.stat == 'percent':
+                                freq = self.percent(frequency.result, first_row)
+                            elif frequency.stat == 'mean':
+                                freq = self.mean(frequency.result)
+                            else:
+                                freq = str(frequency.result)
+                            cells[3].text = freq
+                    first_row = False
                 
         else:
             table = self.__document.add_table(rows=1, cols=len(groups)+4)
@@ -172,7 +181,7 @@ class Document(object):
                                     else:
                                         freq = str(frequency.result)
                                     table_rows[row][headers_index+4].text = freq
-                                    n_text = " (%s n=%s)" % (group, frequency.population)
+                                    n_text = " (%s n = %s)" % (group, frequency.population)
                                     table_rows[row][1].text += n_text
                                 first_row = False
                 headers_index += 1
@@ -184,6 +193,11 @@ class Document(object):
         self.write_name(question.name, paragraph)
         self.write_prompt(question.prompt, paragraph)
         paragraph.add_run(' (OPEN-ENDED RESPONSES VERBATIM IN APPENDIX)')
+
+    def write_descriptive(self, question):
+        paragraph = self.__document.add_paragraph()  # each question starts a new paragraph
+        self.write_name(question.name, paragraph)
+        self.write_prompt(question.prompt, paragraph)
 
     def write_question(self, question):
         paragraph = self.__document.add_paragraph()
@@ -206,7 +220,7 @@ class Document(object):
         if len(total_ns) == 1:
             ## responses only belong to one group
             for group, n in total_ns.items():
-                n_text = "(n=%s)" % n
+                n_text = "(n = %s)" % n
                 paragraph.add_run(n_text)
             self.write_results(question.responses, total_ns)
         else:
@@ -265,7 +279,7 @@ class Document(object):
         titles_row = table.add_row().cells
         titles_row[1].merge(titles_row[2])
         for header_index in range(len(headers)):
-            header_text = "Total %s\n(n=%s)" % (headers[header_index], total_ns[headers[header_index]])
+            header_text = "Total %s\n(n = %s)" % (headers[header_index], total_ns[headers[header_index]])
             titles_row[header_index + 4].text = header_text
         first_row = True
         for response in responses:

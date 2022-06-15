@@ -13,7 +13,7 @@ class Topline(object):
 
     def build_appendix_model(self, path_to_csv):
         frequency_assigner = assigner.Assigner(path_to_csv)
-        return frequency_assigner.question_blocks
+        return frequency_assigner.assign()
 
     def build_appendix_report(self, question_blocks, path_to_output, template_path):
         self.__appendix.build_appendix_report(question_blocks, path_to_output, template_path)

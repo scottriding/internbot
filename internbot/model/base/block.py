@@ -29,6 +29,13 @@ class Blocks(object):
             if matching_question is not None:
                 break
         return matching_question
+
+    def find_question_by_prompt(self, question_prompt):
+        for block in self.__blocks:
+            matching_question = block.find_question_by_prompt(question_prompt)
+            if matching_question is not None:
+                break
+        return matching_question
             
     def sort(self, block_id_order):
         sorter = BlockSorter(block_id_order)
@@ -65,11 +72,21 @@ class Block(object):
         self.__questions.sort(self.__assigned_ids)
         
     def find_question_by_name(self, question_name):
+        matching_questions = []
         for question in self.questions:
             if re.match('(%s)(?:\_|$)(\d+)?' % question.name, question_name):
-                return question
+                matching_questions.append(question)
             else:
                 pass
+
+        if len(matching_questions) == 0:
+            return None
+        if len(matching_questions) == 1:
+            return matching_questions[0]
+        else:
+            for matching_question in matching_questions:
+                if matching_question.name == question_name:
+                    return matching_question
     
     @property
     def questions(self):

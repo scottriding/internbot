@@ -50,15 +50,15 @@ class ToplineView(BoxLayout):
 
         button_layout = BoxLayout()
 
-        docx_btn = Button(text='Appendix', size_hint=(.1, .1), on_press = self.build_appendix)
+        app_btn = Button(text='Appendix', size_hint=(.1, .1), on_press = self.build_appendix)
 
-        pptx_btn = Button(text='Document', size_hint=(.1, .1), on_press = self.build_doc)
+        docx_btn = Button(text='Document', size_hint=(.1, .1), on_press = self.build_doc)
 
-        app_btn = Button(text='Powerpoint', size_hint=(.1, .1), on_press = self.build_ppt)
+        #pptx_btn = Button(text='Powerpoint', size_hint=(.1, .1), on_press = self.build_ppt)
 
-        button_layout.add_widget(docx_btn)
-        button_layout.add_widget(pptx_btn)
         button_layout.add_widget(app_btn)
+        button_layout.add_widget(docx_btn)
+        #button_layout.add_widget(pptx_btn)
 
         topline_screen.add_widget(button_layout)
 
