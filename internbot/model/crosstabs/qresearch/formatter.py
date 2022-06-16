@@ -9,7 +9,7 @@ import re
 import math
 
 class Formatter(object):
-
+    
     def __init__(self):
         self.__tables = OrderedDict()
         self.__stop_report = False
@@ -20,10 +20,11 @@ class Formatter(object):
         self.calculate_excel_col_names()
 
     def set_fonts(self):
-        self.__font_reg = Font(name = 'Arial', size = 8)
+        self.__font_reg = Font(name = 'Arial', size = 8, color = "000000")
+        
         self.__font_small = Font(name = 'Arial', size = 7)
         self.__font_bold = Font(name = 'Arial', size = 8, bold = True)
-        self.__font_back_hyperlink = Font(name = 'Arial', size = 8, color = "A2AAAD")
+        self.__font_back_hyperlink = Font(name = 'Arial', size = 8, color = "FFFFFF")
         self.__font_toc_table = Font(name = 'Arial', size = 8, underline = 'single')
 
     def set_alignments(self):
@@ -45,8 +46,8 @@ class Formatter(object):
         for letter in range(65, 91):
             alphabet.append(chr(letter))
     
-        self.__extend_alphabet = []
-        self.__extend_alphabet.extend(alphabet)
+        self.__column_letters = []
+        self.__column_letters.extend(alphabet)
         full_alphabet = []
         double_alphabet = []
         for letter in range(65, 91):
@@ -56,21 +57,22 @@ class Formatter(object):
             for letter in full_alphabet:
                 double_letters = "%s%s" % (full_alphabet[index], letter)
                 double_alphabet.append(double_letters)
-                self.__extend_alphabet.append(double_letters)
+                self.__column_letters.append(double_letters)
             index += 1
         index = 0
         while index < len(double_alphabet):
             for letter in full_alphabet:
                 triple_letters = "%s%s" % (double_alphabet[index], letter)
-                self.__extend_alphabet.append(triple_letters)
+                self.__column_letters.append(triple_letters)
             index += 1
 
-    def format_qresearch_report(self, path_to_workbook, image_path):
+    def format_qresearch_report(self, path_to_workbook, image_path, is_moe = False):
         table_index = 0
-        self.__workbook = load_workbook(path_to_workbook)
         print("Loading workbook")
+        self.__workbook = load_workbook(path_to_workbook)
 
         self.__image_path = image_path
+        self.__is_moe = is_moe
         self.set_template()
 
         for sheet in self.__workbook.worksheets:
@@ -92,27 +94,31 @@ class Formatter(object):
 
     def set_template(self):
         if (os.path.basename(self.__image_path) == "QLogo.png"):
-            self.__row_height = 35
-            self.__header_fill = PatternFill("solid", fgColor = "1E262E")
-            self.__hi_significant_fill = PatternFill("solid", fgColor = "2DCCD3")
-            self.__lo_significant_fill = PatternFill("solid", fgColor = "2DCCD3")
+            self.__row_height = 75
+            self.__header_fill = PatternFill("solid", fgColor = "000000")
+            self.__significant_fill = PatternFill("solid", fgColor = "0768DD")
+            self.__table_fill = PatternFill("solid", fgColor = "E7E6E6")
+            self.__font_white = Font(name = 'Arial', size = 8, color = "FFFFFF")
         elif (os.path.basename(self.__image_path) == "y2_xtabs.png"):
             self.__row_height = 52
-            self.__header_fill = PatternFill("solid", fgColor = "0F243E")
-            self.__hi_significant_fill = PatternFill("solid", fgColor = "2083E7")
-            self.__lo_significant_fill = PatternFill("solid", fgColor = "2083E7")
+            self.__header_fill = PatternFill("solid", fgColor = "122C58")
+            self.__significant_fill = PatternFill("solid", fgColor = "0768DD")
+            self.__table_fill = PatternFill("solid", fgColor = "E7E6E6")
+            self.__font_white = Font(name = 'Arial', size = 8, color = "404040")
         elif (os.path.basename(self.__image_path) == "whatsapp.png"):
             self.__row_height = 57
             self.__header_fill = PatternFill("solid", fgColor = "445963")
-            self.__hi_significant_fill = PatternFill("solid", fgColor = "1EBDA5")
-            self.__lo_significant_fill = PatternFill("solid", fgColor = "1EBDA5")
+            self.__significant_fill = PatternFill("solid", fgColor = "1EBDA5")
+            self.__table_fill = PatternFill("solid", fgColor = "E7E6E6")
+            self.__font_white = Font(name = 'Arial', size = 8, color = "FFFFFF")
         elif (os.path.basename(self.__image_path) == "FB.png"):
             self.__row_height = 57
             self.__header_fill = PatternFill("solid", fgColor = "344854")
-            self.__hi_significant_fill = PatternFill(fill_type=None)
-            self.__lo_significant_fill = PatternFill(fill_type=None)
+            self.__significant_fill = PatternFill(fill_type=None)
+            self.__table_fill = PatternFill("solid", fgColor = "E7E6E6")
+            self.__font_white = Font(name = 'Arial', size = 8, color = "FFFFFF")
 
-        self.__table_fill = PatternFill("solid", fgColor = "E7E6E6")
+        
         self.__white_fill = PatternFill("solid", fgColor = "FFFFFF")
 
     def parse_toc(self, toc_sheet):
@@ -225,7 +231,8 @@ class Formatter(object):
         if self.__is_numeric:
             self.insert_numeric_col(sheet, start_table_row)
 
-        #self.insert_moe_row(sheet, start_table_row)
+        if self.__is_moe:
+            self.insert_moe_row(sheet, start_table_row)
         self.format_hyperlink(sheet)
         table = self.__tables.get(sheet.title)
         self.format_table_titles(sheet, table, start_table_row)
@@ -279,7 +286,7 @@ class Formatter(object):
         # determined where banners start
         col_index = 0
         banner_row = 4
-        for column_name in self.__extend_alphabet:
+        for column_name in self.__column_letters:
             current_cell = "%s%s" % (column_name, str(banner_row))
             if sheet[current_cell].value is not None:
                 banner_col = column_name
@@ -291,15 +298,15 @@ class Formatter(object):
         # determine where table details start
         start_table_row = 1
         for cell in sheet[banner_col]:
-            if cell.number_format != "General":
-                break
-            else:
-                start_table_row += 1
+           if cell.number_format != "General":
+               break
+           else:
+               start_table_row += 1
 
         self.__is_numeric = False
         # determine if table is numeric scale
         check_row = 1
-        for cell in sheet[self.__extend_alphabet[self.banner_col_index+1]]:
+        for cell in sheet[self.__column_letters[self.banner_col_index+1]]:
             if cell.number_format == "0.0":
                 self.__is_numeric = True
                 break
@@ -326,7 +333,7 @@ class Formatter(object):
         else:
             col_index = 0
             while col_index < self.banner_col_index:
-                col_letter = self.__extend_alphabet[col_index]
+                col_letter = self.__column_letters[col_index]
                 to_delete = []
                 for range in merged_ranges:
                     str_range = str(range)
@@ -342,14 +349,14 @@ class Formatter(object):
 
     def insert_names_row(self, sheet, start_table_row):
         banner_row = start_table_row - 2
-        top_banner_cell = "%s%s" % (self.__extend_alphabet[self.banner_col_index], str(banner_row))
+        top_banner_cell = "%s%s" % (self.__column_letters[self.banner_col_index], str(banner_row))
 
         sheet.insert_rows(start_table_row - 1)
         sheet.row_dimensions[start_table_row - 1].height = 16
 
         current_col = self.banner_col_index
         for letter in self.__col_names:
-            col_letter = self.__extend_alphabet[current_col]
+            col_letter = self.__column_letters[current_col]
             current_cell = "%s%s" % (col_letter, str(start_table_row - 1))
             sheet[current_cell].value = "[%s]" % letter
             sheet[current_cell].font = self.__font_reg
@@ -361,16 +368,16 @@ class Formatter(object):
 
     def create_col_names(self, sheet, start_table_row):
         banner_row = start_table_row - 2
-        top_banner_cell = "%s%s" % (self.__extend_alphabet[self.banner_col_index], str(banner_row))
+        top_banner_cell = "%s%s" % (self.__column_letters[self.banner_col_index], str(banner_row))
 
         # adjust list with the correct no of items for future calculations
         banner_row = start_table_row - 1
         current_col = self.banner_col_index
-        current_cell = "%s%s" % (self.__extend_alphabet[current_col], str(banner_row))
+        current_cell = "%s%s" % (self.__column_letters[current_col], str(banner_row))
         while sheet[current_cell].value is not None:
             self.__col_names.append(sheet[current_cell].value)
             current_col += 1
-            current_cell = "%s%s" % (self.__extend_alphabet[current_col], str(banner_row))
+            current_cell = "%s%s" % (self.__column_letters[current_col], str(banner_row))
 
     def insert_moe_row(self, sheet, start_table_row):
         # anywhere there's a Total n, we need to calculate margin of error for it
@@ -378,7 +385,7 @@ class Formatter(object):
         response_col = self.banner_col_index - 1
         current_row = start_table_row - 1
         while current_row < self.end_table_row:
-            current_cell = "%s%s" % (self.__extend_alphabet[response_col], current_row)
+            current_cell = "%s%s" % (self.__column_letters[response_col], current_row)
             if sheet[current_cell].value is not None:
                 if "Total" in sheet[current_cell].value:
                     moe_rows.append(current_row)
@@ -392,12 +399,12 @@ class Formatter(object):
 
             # drop in MOE calculations
             current_col = response_col
-            moe_cell = "%s%s" % (self.__extend_alphabet[current_col], moe_row)
+            moe_cell = "%s%s" % (self.__column_letters[current_col], moe_row)
             sheet[moe_cell].value = "Margin of error"
 
             current_col += 1
-            n_cell = "%s%s" % (self.__extend_alphabet[current_col], n_row)
-            moe_cell = "%s%s" % (self.__extend_alphabet[current_col], moe_row)
+            n_cell = "%s%s" % (self.__column_letters[current_col], n_row)
+            moe_cell = "%s%s" % (self.__column_letters[current_col], moe_row)
             while sheet[n_cell].value is not None:
                 if sheet[n_cell].value < 10:
                     sheet[moe_cell].value = "*"
@@ -407,8 +414,8 @@ class Formatter(object):
                     sheet[moe_cell].value = (math.sqrt((.25/sheet[n_cell].value))*1.96)*(math.sqrt((25000-sheet[n_cell].value)/(25000-1))*100)
                     sheet[moe_cell].number_format = "0.0"
                 current_col += 1
-                n_cell = "%s%s" % (self.__extend_alphabet[current_col], n_row)
-                moe_cell = "%s%s" % (self.__extend_alphabet[current_col], moe_row)
+                n_cell = "%s%s" % (self.__column_letters[current_col], n_row)
+                moe_cell = "%s%s" % (self.__column_letters[current_col], moe_row)
 
             self.end_table_row += 1
 
@@ -429,7 +436,7 @@ class Formatter(object):
 
         current_col = self.banner_col_index
         while current_col < len(self.__col_names) + col_adjust:
-            current_cell = "%s%s" % (self.__extend_alphabet[current_col], str(banner_row))
+            current_cell = "%s%s" % (self.__column_letters[current_col], str(banner_row))
             if sheet[current_cell].value is not None:
                 if is_first:
                     is_first = False
@@ -466,7 +473,7 @@ class Formatter(object):
         col_adjust = self.banner_col_index
         current_col = 0
         for col in range(len(self.__col_names) + col_adjust):
-            col_letter = self.__extend_alphabet[col]
+            col_letter = self.__column_letters[col]
             current_cell = "%s%s" % (col_letter, str(current_row))
             sheet[current_cell].fill = self.__header_fill
             next_row_cell = "%s%s" % (col_letter, str(current_row + 1))
@@ -476,28 +483,28 @@ class Formatter(object):
         col_adjust += 1
 
         # add logos
-        current_cell = "%s%s" % (self.__extend_alphabet[current_col - col_adjust], str(current_row))
+        current_cell = "%s%s" % (self.__column_letters[current_col - col_adjust], str(current_row))
         logo = Image(self.__image_path)
         sheet.add_image(logo, current_cell)
 
         # merge base description cells
         table_title_row = 2
         base_desc_col_index = current_col-col_adjust
-        start_range = "%s%s" % (self.__extend_alphabet[base_desc_col_index], str(table_title_row))
-        end_range = "%s%s" % (self.__extend_alphabet[len(self.__col_names)+1], str(table_title_row))
+        start_range = "%s%s" % (self.__column_letters[base_desc_col_index], str(table_title_row))
+        end_range = "%s%s" % (self.__column_letters[len(self.__col_names)+1], str(table_title_row))
         merge_range = "%s:%s" % (start_range, end_range)
         sheet.merge_cells(merge_range)
         
         # add base description
         if table.description is not None:
-            desc_location = "%s%s" % (self.__extend_alphabet[base_desc_col_index], str(table_title_row))
+            desc_location = "%s%s" % (self.__column_letters[base_desc_col_index], str(table_title_row))
             sheet[desc_location].font = self.__font_reg
             sheet[desc_location].alignment = self.__align_names
             sheet[desc_location] = "Base - %s" % table.description
 
         # merge table title row cells
         start_range = "%s%s" % ("A", str(table_title_row))
-        end_range = "%s%s" % (self.__extend_alphabet[self.banner_col_index-1], str(table_title_row))
+        end_range = "%s%s" % (self.__column_letters[self.banner_col_index-1], str(table_title_row))
         merge_range = "%s:%s" % (start_range, end_range)
         sheet.merge_cells(merge_range)
 
@@ -510,7 +517,7 @@ class Formatter(object):
 
         # merge top corner of table
         start_range = "A3"
-        end_range = "%s%s" % (self.__extend_alphabet[self.banner_col_index-1],str(start_table_row-1))
+        end_range = "%s%s" % (self.__column_letters[self.banner_col_index-1],str(start_table_row-1))
         merge_range = "%s:%s" % (start_range, end_range)
         sheet.merge_cells(merge_range)
 
@@ -523,7 +530,7 @@ class Formatter(object):
         while current_row > 1:
             col_index = 1
             while col_index < len(self.__col_names) + col_adjust:
-                current_cell = "%s%s" % (self.__extend_alphabet[col_index], str(current_row))
+                current_cell = "%s%s" % (self.__column_letters[col_index], str(current_row))
                 sheet[current_cell].font = self.__font_reg
                 sheet[current_cell].alignment = self.__align_banners
                 col_index += 1
@@ -543,7 +550,7 @@ class Formatter(object):
         current_row = start_row 
         end_row = self.end_table_row
         while current_row < end_row:
-            current_cell = "%s%s" % (self.__extend_alphabet[response_col], str(current_row))
+            current_cell = "%s%s" % (self.__column_letters[response_col], str(current_row))
             if sheet[current_cell].value == "NET":
                 sheet[current_cell].value = "Total"
 
@@ -577,7 +584,7 @@ class Formatter(object):
             current_row = start_row 
             end_row = self.end_table_row
             while current_row < end_row:
-                current_cell = "%s%s" % (self.__extend_alphabet[response_col], str(current_row))
+                current_cell = "%s%s" % (self.__column_letters[response_col], str(current_row))
                 if sheet[current_cell].value == "NET":
                     sheet[current_cell].value = "Total"
 
@@ -608,13 +615,13 @@ class Formatter(object):
 
     def format_numeric_details(self, sheet, start_row):
         numeric_col = self.banner_col_index - 1
-        sheet.column_dimensions[self.__extend_alphabet[numeric_col]].width = 15
+        sheet.column_dimensions[self.__column_letters[numeric_col]].width = 15
 
         current_row = start_row
         end_row = self.end_table_row
         while current_row < end_row:
             for numeric_scale in self.numeric_details:
-                num_cell = "%s%s" % (self.__extend_alphabet[numeric_col], str(current_row))
+                num_cell = "%s%s" % (self.__column_letters[numeric_col], str(current_row))
                 sheet[num_cell].font = self.__font_bold
                 sheet[num_cell].alignment = self.__align_left
                 sheet[num_cell].fill = self.__table_fill
@@ -630,18 +637,20 @@ class Formatter(object):
         while current_row < self.end_table_row:
             col_no = self.banner_col_index
             while col_no < len(self.__col_names) + col_adjust:
-                current_cell = "%s%s" % (self.__extend_alphabet[col_no], str(current_row))
+                current_cell = "%s%s" % (self.__column_letters[col_no], str(current_row))
                 sheet[current_cell].font = self.__font_reg
                 sheet[current_cell].alignment = self.__align_center
                 if sheet[current_cell].data_type == 's':
-                    value = sheet[current_cell].value.upper()
-                    value_list = value.split(" ")
+                    value_list = sheet[current_cell].value.split(" ")
                     if len(value_list) > 1:
-                        sheet[current_cell].fill = self.__hi_significant_fill
+                        sheet[current_cell].fill = self.__significant_fill
+                        sheet[current_cell].font = self.__font_white
                     elif sheet[current_cell].value.isupper():
-                        sheet[current_cell].fill = self.__hi_significant_fill
+                        sheet[current_cell].fill = self.__significant_fill
+                        sheet[current_cell].font = self.__font_white
                     elif sheet[current_cell].value.islower():
-                        sheet[current_cell].fill = self.__lo_significant_fill
+                        sheet[current_cell].fill = self.__significant_fill
+                        sheet[current_cell].font = self.__font_white
                 col_no += 1
             current_row += 1
 
@@ -660,19 +669,19 @@ class Formatter(object):
         for row_no in self.__border_response_rows:
             col_no = 0
             while col_no < len(self.__col_names) + col_adjust:
-                current_cell = "%s%s" % (self.__extend_alphabet[col_no], str(row_no))
+                current_cell = "%s%s" % (self.__column_letters[col_no], str(row_no))
                 sheet[current_cell].border = self.__thin_top
                 col_no += 1
 
         col_no = 0
         while col_no < len(self.__col_names) + col_adjust:
-            current_cell = "%s%s" % (self.__extend_alphabet[col_no], str(self.end_table_row))
+            current_cell = "%s%s" % (self.__column_letters[col_no], str(self.end_table_row))
             sheet[current_cell].border = self.__thick_top
             col_no += 1
 
         current_row = 1
         while current_row < self.end_table_row:
-            current_cell = "%s%s" % (self.__extend_alphabet[col_no], str(current_row))
+            current_cell = "%s%s" % (self.__column_letters[col_no], str(current_row))
             sheet[current_cell].border = self.__thick_left
             current_row += 1
 

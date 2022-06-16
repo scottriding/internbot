@@ -1,3 +1,5 @@
+from view import gui_tools
+
 ## outside modules
 import kivy
 kivy.require('1.11.1')
@@ -40,7 +42,6 @@ class TOCView(BoxLayout):
 
         label = Label(text=help_text, markup=True)
         label.bind(on_ref_press=examples_link)
-        label.font_family= "Y2"
 
         popup_layout.add_widget(label)
 
@@ -89,7 +90,6 @@ class TOCView(BoxLayout):
     def create_save_file_prompt(self):
         popup_layout = BoxLayout(orientation='vertical')
         label = Label(text="Choose a file location and name for QResearch table of contents file.")
-        label.font_family= "Y2"
 
         popup_layout.add_widget(label)
 
@@ -170,7 +170,6 @@ class TOCView(BoxLayout):
 
     def error_message(self, error):
         label = Label(text=error)
-        label.font_family= "Y2"
 
         popup = Popup(title="Something Went Wrong",
         content=label,

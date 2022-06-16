@@ -1,3 +1,5 @@
+from view import gui_tools
+
 ## crosstabs modules
 from view.crosstabs_view.qresearch_view import QResearchView
 from view.crosstabs_view.amazon_view import AmazonView
@@ -40,12 +42,10 @@ class CrosstabsView(BoxLayout):
 
         back_arrow = "<"
         self.__xtabs_to_main_btn = Button(text=back_arrow, size_hint=(.1, .05))
-        self.__xtabs_to_main_btn.font_name = "Y2"
 
         crosstabs_screen.add_widget(self.__xtabs_to_main_btn)
 
         help_btn = Button(text='Help', size_hint=(.1, .05), on_press = self.xtabs_help)
-        help_btn.font_name = "Y2"
         help_btn.background_normal = ''
         help_btn.background_color = (.9529, 0.6, .2392, 1)
 
@@ -54,10 +54,8 @@ class CrosstabsView(BoxLayout):
         button_layout = BoxLayout()
 
         qresearch_btn = Button(text='QResearch', size_hint=(.1, .1), on_press = self.xtabs_to_qresearch)
-        qresearch_btn.font_name = "Y2"
 
         amaz_btn = Button(text='Amazon', size_hint=(.1, .1), on_press = self.xtabs_to_amaz)
-        amaz_btn.font_name = "Y2"
         
         button_layout.add_widget(amaz_btn)
         button_layout.add_widget(qresearch_btn)
@@ -95,7 +93,7 @@ class CrosstabsView(BoxLayout):
         self.qresearch_screen.controller = self.__controller
 
     def xtabs_help(self, instance):
-        help_text = "\n \n Crosstabs are a report that \"crosses\" selected dataset \n" 
+        help_text = "\n \nCrosstabs are a report that \"crosses\" selected dataset \n" 
         help_text += "variables against the rest of the dataset variables \n"
         help_text += "visualized in a table form with statistically significant \n"
         help_text += "values highlighted.\n\n"
@@ -116,7 +114,6 @@ class CrosstabsView(BoxLayout):
         help_content.add_widget(content_cancel)
         help_label = (Label(text=help_text, markup=True))
         help_label.bind(on_ref_press=examples_link)
-        help_label.font_family = "Y2"
         help_content.add_widget(help_label)
 		
         popup = Popup(title='Crosstabs Help',

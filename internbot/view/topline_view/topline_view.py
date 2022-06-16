@@ -1,3 +1,5 @@
+from view import gui_tools
+
 from view.topline_view.appendix_view import AppendixView
 from view.topline_view.document_view import DocumentView
 from view.topline_view.powerpoint_view import PowerpointView
@@ -37,12 +39,10 @@ class ToplineView(BoxLayout):
 
         back_arrow = "<"
         self.__back_btn = Button(text=back_arrow, size_hint=(.1, .05))
-        self.__back_btn.font_name = "Y2"
 
         topline_screen.add_widget(self.__back_btn)
 
         help_btn = Button(text='Help', size_hint=(.1, .05), on_press = self.top_help)
-        help_btn.font_name = "Y2"
         help_btn.background_normal = ''
         help_btn.background_color = (.9529, 0.6, .2392, 1)
 
@@ -50,18 +50,15 @@ class ToplineView(BoxLayout):
 
         button_layout = BoxLayout()
 
-        docx_btn = Button(text='Appendix', size_hint=(.1, .1), on_press = self.build_appendix)
-        docx_btn.font_name = "Y2"
+        app_btn = Button(text='Appendix', size_hint=(.1, .1), on_press = self.build_appendix)
 
-        pptx_btn = Button(text='Document', size_hint=(.1, .1), on_press = self.build_doc)
-        pptx_btn.font_name = "Y2"
+        docx_btn = Button(text='Document', size_hint=(.1, .1), on_press = self.build_doc)
 
-        app_btn = Button(text='Powerpoint', size_hint=(.1, .1), on_press = self.build_ppt, disabled=True)
-        app_btn.font_name = "Y2"
+        #pptx_btn = Button(text='Powerpoint', size_hint=(.1, .1), on_press = self.build_ppt)
 
-        button_layout.add_widget(docx_btn)
-        button_layout.add_widget(pptx_btn)
         button_layout.add_widget(app_btn)
+        button_layout.add_widget(docx_btn)
+        #button_layout.add_widget(pptx_btn)
 
         topline_screen.add_widget(button_layout)
 
@@ -110,7 +107,6 @@ class ToplineView(BoxLayout):
         help_content.add_widget(content_cancel)
         help_label = (Label(text=help_text, markup=True))
         help_label.bind(on_ref_press=examples_link)
-        help_label.font_family = "Y2"
         help_content.add_widget(help_label)
 		
         popup = Popup(title='Topline Help',

@@ -104,6 +104,7 @@ class QSFQuestionsParser(object):
         self.constant_parser = QSFConstantSumParser()
         self.carryforwardparser = QSFCarryForwardParser()
         self.response_parser = QSFResponsesParser()
+        self.rank_parser = QSFRankParser()
         self.__questions = []
 
     def parse(self, question_elements):
@@ -126,7 +127,8 @@ class QSFQuestionsParser(object):
     def parse_type(self, question, question_payload, question_element):
         if question.type == 'Matrix':
             if question_payload['Selector'] == 'MaxDiff':
-                pass
+                matrix_question = self.matrix_parser.parse(question_payload)
+                self.__questions.append(matrix_question)
             else:
                 matrix_question = self.matrix_parser.parse(question_payload)
                 self.__questions.append(matrix_question)
@@ -139,11 +141,19 @@ class QSFQuestionsParser(object):
         elif question.type == 'MC' and question.subtype == 'MACOL':
             multiple_select = self.multiple_parser.parse(question, question_payload)
             self.__questions.append(multiple_select)
+        elif question.type == 'Slider':
+            slider_question = self.multiple_parser.parse(question, question_payload)
+            self.__questions.append(slider_question)
         elif question.type == 'TE':
             if question_payload['Validation'].get('Settings') is not None:
                 if question_payload['Validation']['Settings'].get('ContentType') is not None:
                     question.subtype = question_payload['Validation']['Settings']['ContentType']
             self.__questions.append(question)
+        elif question.type == 'DB':
+            self.__questions.append(question)
+        elif question.type == 'RO':
+            rank_question = self.rank_parser.parse(question, question_payload)
+            self.__questions.append(rank_question)
         elif question.type == 'CS':
             constant_sum = self.constant_parser.parse(question, question_payload)
             self.__questions.append(constant_sum)
@@ -433,6 +443,64 @@ class QSFMultipleSelectParser(object):
                 return converted
         return prompt
 
+class QSFRankParser(object):
+
+    def __init__(self):
+        self.carryforward = QSFCarryForwardParser()
+
+    def parse(self, question, question_payload):
+        rank_order = self.rank_details(question_payload, question)
+        if question.has_carry_forward_responses is False:
+            self.basic_rank(rank_order, question_payload)     
+        elif question.has_carry_forward_responses is True and \
+             len(question_payload['Choices']) > 0:
+            self.mixed_rank(rank_order, question_payload)
+        else:
+            self.dynamic_rank(rank_order, question_payload)  
+        return rank_order
+
+    def dynamic_rank(self, rank_question, question_payload):
+        self.carryforward.assign_carry_forward(rank_question, question_payload)
+
+    def mixed_rank(self, rank_question, question_payload):
+        self.dynamic_multiple(rank_question, question_payload)
+        self.basic_rank(rank_question, question_payload)
+
+    def basic_rank(self, rank_order, question_payload):
+        if question_payload.get('Choices') and len(question_payload['Choices']) > 0:
+            if question_payload.get('ChoiceOrder') and \
+               len(question_payload['ChoiceOrder']) > 0: 
+                rank_order.question_order = question_payload['ChoiceOrder']
+            self.question_details(question_payload, rank_order)
+
+    def rank_details(self, question_payload, current_question):
+        rank = question.CompositeRankOrder()
+        rank.name = current_question.name
+        rank.prompt = current_question.prompt
+        rank.subtype = current_question.subtype
+        rank.id = question_payload['QuestionID']
+        return rank
+
+    def question_details(self, question_payload, rank_order):
+        for code, parent_question in question_payload['Choices'].items():
+            sub_question = question.Question()
+            sub_question.id = '%s_%s' % (rank_order.id, code)
+            sub_question.code = code
+            sub_question.type = question_payload['QuestionType']
+            sub_question.subtype = question_payload['Selector']
+            sub_question.name = '%s_%s' % (rank_order.name, code)
+            sub_question.prompt = self.convert_prompt_from_byte_str(parent_question['Display'].encode('ascii', 'ignore'))
+            sub_question.add_response(sub_question.prompt, code)
+            rank_order.add_question(sub_question)
+
+    def convert_prompt_from_byte_str(self, prompt):
+        prompt = str(prompt)
+        if len(prompt) > 0:
+            if prompt[0] == "b" and (prompt[len(prompt) - 1] == "'" or prompt[len(prompt) - 1] == '"'):
+                converted = prompt[2: len(prompt) - 1]
+                return converted
+        return prompt
+
 class QSFConstantSumParser(object):
 
     def __init__(self):
@@ -582,6 +650,8 @@ class QSFCarryForwardParser(object):
         for dynamic_question in dynamic_questions:
             if dynamic_question.type == 'CompositeMultipleSelect':
                 self.multiselect_match(dynamic_question, questions)
+            elif dynamic_question.type == 'CompositeRankOrder':
+                self.rankorder_match(dynamic_question, questions)
             elif dynamic_question.type == 'MC':
                 self.singleMulti_match(dynamic_question, questions)
             elif dynamic_question.type == "CompositeConstantSum":
@@ -636,6 +706,16 @@ class QSFCarryForwardParser(object):
         elif matching_question.type == 'MC':
             self.singleMulti_into_multiselect(dynamic_question, matching_question)
 
+    def rankorder_match(self, dynamic_question, questions):
+        matching_question = next((question for question in questions \
+                            if question.id == dynamic_question.carry_forward_question_id), None)
+        if matching_question.type == 'CompositeMatrix':
+            self.matrix_into_rank(dynamic_question, matching_question)
+        elif matching_question.type == 'CompositeMultipleSelect':
+            self.multiselect_into_rank(dynamic_question, matching_question)
+        elif matching_question.type == 'MC':
+            self.singleMulti_into_rank(dynamic_question, matching_question)
+
     def singleMulti_match(self, dynamic_question, questions):
         matching_question = next((question for question in questions \
                              if question.id == dynamic_question.carry_forward_question_id), None)
@@ -653,7 +733,7 @@ class QSFCarryForwardParser(object):
             dynamic_question.question_order = matching_question.question_order
             for current_q in matching_question.questions:
                 sub_question = question.Question()
-                sub_question.name ='%s_x%s' % (dynamic_question.name, current_q.code)
+                sub_question.name ='%s_%s' % (dynamic_question.name, current_q.code)
                 sub_question.id = '%s_%s' % (dynamic_question.name, current_q.code)
                 sub_question.code = current_q.code
                 sub_question.prompt = current_q.prompt
@@ -665,11 +745,11 @@ class QSFCarryForwardParser(object):
         dynamic_matrix.question_order = matching_matrix.question_order
         for current_q in matching_matrix.questions:
             sub_question = question.Question()
-            sub_question.name ='%s_x%s' % (dynamic_matrix.name, current_q.code)
+            sub_question.name ='%s_%s' % (dynamic_matrix.name, current_q.code)
             sub_question.id = '%s_%s' % (dynamic_matrix.name, current_q.code)
             sub_question.code = current_q.code
             sub_question.prompt = current_q.prompt
-            for response in current_q.responses:
+            for response in dynamic_matrix.temp_responses:
                 sub_question.add_dynamic_response(response.label, response.value)
             dynamic_matrix.add_question(sub_question)
 
@@ -677,7 +757,7 @@ class QSFCarryForwardParser(object):
         dynamic_matrix.question_order = matching_multiselect.question_order
         for current_q in matching_multiselect.questions:
             sub_question = question.Question()
-            sub_question.name = '%s_x%s' % (dynamic_matrix.name, current_q.code)
+            sub_question.name = '%s_%s' % (dynamic_matrix.name, current_q.code)
             sub_question.id = '%s_%s' % (dynamic_matrix.id, current_q.code)
             sub_question.code = current_q.code
             sub_question.prompt = current_q.prompt
@@ -689,7 +769,7 @@ class QSFCarryForwardParser(object):
         dynamic_matrix.question_order = matching_MC.response_order
         for response in matching_MC.responses:
             sub_question = question.Question()
-            sub_question.name = '%s_x%s' % (dynamic_matrix.name, response.value)
+            sub_question.name = '%s_%s' % (dynamic_matrix.name, response.value)
             sub_question.id = '%s_%s' % (dynamic_matrix.id, response.value)
             sub_question.code = response.value
             sub_question.prompt = response.label
@@ -701,7 +781,7 @@ class QSFCarryForwardParser(object):
         multiselect.question_order = matrix.question_order
         for current_q in matrix.questions:
             sub_question = question.Question()
-            sub_question.name = '%s_x%s' % (matrix.name, current_q.code)
+            sub_question.name = '%s_%s' % (multiselect.name, current_q.code)
             sub_question.id = '%s_%s' % (multiselect.id, current_q.code)
             sub_question.code = current_q.code
             sub_question.prompt = current_q.prompt
@@ -712,7 +792,7 @@ class QSFCarryForwardParser(object):
         dynamic_multi.question_order = matching_multi.question_order
         for sub_question in matching_multi.questions:
             current_q = question.Question()
-            current_q.name = '%s_x%s' % (dynamic_multi.name, sub_question.code)
+            current_q.name = '%s_%s' % (dynamic_multi.name, sub_question.code)
             current_q.id = '%s_%s' % (dynamic_multi.id, sub_question.code)
             current_q.code = sub_question.code
             current_q.prompt = sub_question.prompt
@@ -724,12 +804,46 @@ class QSFCarryForwardParser(object):
         multiselect_question.question_order = matching_MC.response_order
         for response in matching_MC.responses:
             sub_question = question.Question()
-            sub_question.name = '%s_x%s' % (multiselect_question.name, response.value)
+            sub_question.name = '%s_%s' % (multiselect_question.name, response.value)
             sub_question.id = '%s_%s' % (multiselect_question.id, response.value)
             sub_question.code = response.value
             sub_question.prompt = response.label
             sub_question.add_dynamic_response('1', 1)
             multiselect_question.add_question(sub_question)
+
+    def matrix_into_rank(self, rank, matrix):
+        rank.question_order = matrix.question_order
+        for current_q in matrix.questions:
+            sub_question = question.Question()
+            sub_question.name = '%s_%s' % (rank.name, current_q.code)
+            sub_question.id = '%s_%s' % (rank.id, current_q.code)
+            sub_question.code = current_q.code
+            sub_question.prompt = current_q.prompt
+            sub_question.add_dynamic_response(current_q.code, current_q.code)
+            rank.add_question(sub_question)
+
+    def multiselect_into_rank(self, rank, matching_multi):
+        rank.question_order = matching_multi.question_order
+        for sub_question in matching_multi.questions:
+            current_q = question.Question()
+            current_q.name = '%s_%s' % (rank.name, sub_question.code)
+            current_q.id = '%s_%s' % (rank.id, sub_question.code)
+            current_q.code = sub_question.code
+            current_q.prompt = sub_question.prompt
+            for response in sub_question.responses:
+                current_q.add_dynamic_response(response.label, response.value)
+            rank.add_question(current_q)
+
+    def singleMulti_into_rank(self, rank, matching_MC):
+        rank.question_order = matching_MC.response_order
+        for response in matching_MC.responses:
+            sub_question = question.Question()
+            sub_question.name = '%s_%s' % (rank.name, response.value)
+            sub_question.id = '%s_%s' % (rank.id, response.value)
+            sub_question.code = response.value
+            sub_question.prompt = response.label
+            sub_question.add_dynamic_response('1', response.value)
+            rank.add_question(sub_question)
 
     def matrix_into_singleMulti(self, dynamic_MC, matching_matrix):
         dynamic_MC.response_order = matching_matrix.question_order

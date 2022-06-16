@@ -9,17 +9,5 @@ Formatting report automation tool for the Y2 Analytics analytical team. The foll
 
 ## Installation Instructions
 
-Download installer from secure internal location. Right click and "Open" .pkg file to run.
-
-## Operating Instructions
-
-Follow pinned google spreadsheet in research_and_dev channel for instructions on how to run.
-
-## Troubleshooting (for Users)
-
-Below are frequent user-errors:
-
-1. Mislabelled or missing columns in frequency or .csv files. 
-2. Corrupted files or bad file encoding - please use UTF-8 encoding.
-
-If the above do not resolve the issue, please post the trouble in the research_and_dev channel.
+Y2 does a company-wide installation of internbot with each version update. Please reach out to your supervisor to set up
+a meeting to download internbot.

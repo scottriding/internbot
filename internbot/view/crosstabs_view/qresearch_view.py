@@ -1,3 +1,5 @@
+from view import gui_tools
+
 from view.crosstabs_view.format_report_view import FormatReportView
 from view.crosstabs_view.toc_view import TOCView
 
@@ -34,18 +36,15 @@ class QResearchView(BoxLayout):
 
         back_arrow = "<"
         self.__back_btn = Button(text=back_arrow, size_hint=(.1, .05))
-        self.__back_btn.font_name = "Y2"
 
         qresearch_screen.add_widget(self.__back_btn)
 
         double_back_arrow = "<<"
         self.__double_back_btn = Button(text=double_back_arrow, size_hint=(.1, .05))
-        self.__double_back_btn.font_name = "Y2"
 
         qresearch_screen.add_widget(self.__double_back_btn)
 
         help_btn = Button(text='Help', size_hint=(.1, .05), on_press = self.qresearch_help)
-        help_btn.font_name = "Y2"
         help_btn.background_normal = ''
         help_btn.background_color = (.9529, 0.6, .2392, 1)
 
@@ -53,10 +52,8 @@ class QResearchView(BoxLayout):
 
         button_layout = BoxLayout()
         toc_btn = Button(text='Create table of contents', size_hint=(.5, .1), on_press = self.build_toc)
-        toc_btn.font_name = "Y2"
         
         format_btn = Button(text='Format report', size_hint=(.5, .1), on_press = self.format_report)
-        format_btn.font_name = "Y2"
 
         button_layout.add_widget(toc_btn)
         button_layout.add_widget(format_btn)

@@ -94,8 +94,12 @@ class Controller(object):
 
 if __name__ == '__main__':
     print("Welcome to internbot!")
-    template_folder = os.path.join(sys._MEIPASS, 'resources/templates/')
-    image_folder = os.path.join(sys._MEIPASS, 'resources/images/')
+    #template_folder = os.path.join(sys._MEIPASS, 'resources/templates/')
+    #image_folder = os.path.join(sys._MEIPASS, 'resources/images/')
+
+    template_folder = 'resources/templates/'
+    image_folder = 'resources/images/'
+
     controller = Controller()
     controller.view.controller = controller
     controller.view.run()

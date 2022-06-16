@@ -1,3 +1,5 @@
+from view import gui_tools
+
 from view.rnc_view.scores_topline_view import ScoresToplineView
 from view.rnc_view.issue_trended_view import IssueTrendedView
 from view.rnc_view.trended_scores_view import TrendedScoresView
@@ -35,12 +37,10 @@ class RNCView(BoxLayout):
 
         back_arrow = "<"
         self.__back_btn = Button(text=back_arrow, size_hint=(.1, .05))
-        self.__back_btn.font_name = "Y2"
 
         rnc_screen.add_widget(self.__back_btn)
 
         help_btn = Button(text='Help', size_hint=(.1, .05), on_press = self.rnc_help)
-        help_btn.font_name = "Y2"
         help_btn.background_normal = ''
         help_btn.background_color = (.9529, 0.6, .2392, 1)
 
@@ -49,15 +49,12 @@ class RNCView(BoxLayout):
         button_layout = BoxLayout()
 
         scores_btn = Button(text='Scores Topline Report', size_hint=(.1, .1))
-        scores_btn.font_name = "Y2"
         scores_btn.bind(on_press=self.build_scores)
 
         issue_btn = Button(text='Issue Trended Report', size_hint=(.1, .1))
-        issue_btn.font_name = "Y2"
         issue_btn.bind(on_press=self.build_issue)
 
         trended_btn = Button(text='Trended Scores Reports', size_hint=(.1, .1))
-        trended_btn.font_name = "Y2"
         trended_btn.bind(on_press=self.build_tsr)
 
         button_layout.add_widget(scores_btn)
@@ -111,7 +108,6 @@ class RNCView(BoxLayout):
         help_content.add_widget(content_cancel)
         help_label = (Label(text=help_text, markup=True))
         help_label.bind(on_ref_press=examples_link)
-        help_label.font_family = "Y2"
         help_content.add_widget(help_label)
 		
         popup = Popup(title='RNC Help',

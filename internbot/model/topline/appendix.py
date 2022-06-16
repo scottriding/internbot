@@ -51,7 +51,7 @@ class Document(object):
         paragraph_format = paragraph.paragraph_format
         paragraph_format.keep_together = True
         paragraph_format.left_indent = docx.shared.Inches(1)
-        prompt_to_add = "\t%s (n=%s)\n" % (question.prompt, len(question.responses))
+        prompt_to_add = "\t%s (n = %s)\n" % (question.prompt, len(question.responses))
         paragraph.add_run(prompt_to_add)
         paragraph_format.first_line_indent = docx.shared.Inches(-1)
 
