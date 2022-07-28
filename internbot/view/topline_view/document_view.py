@@ -1,6 +1,9 @@
 from view import gui_tools
 
 ## outside modules
+from plyer import filechooser as fc
+from plyer import notification
+
 import kivy
 kivy.require('1.11.1')
 
@@ -29,15 +32,11 @@ class DocumentView(BoxLayout):
         self.__survey = None
 
         self.open_survey_prompt = self.create_open_survey_prompt()
-        self.open_survey_dialog = self.create_open_survey_dialog()
         self.trended_selector = self.create_trended_selector()
         self.trended_count = self.create_trended_count()
         self.open_freq_prompt = self.create_open_freq_prompt()
-        self.open_freq_dialog = self.create_open_freq_dialog()
         self.format_selector = self.create_format_selector()
-        self.other_template_dialog = self.create_other_template_dialog()
         self.save_file_prompt = self.create_save_file_prompt()
-        self.save_file_dialog = self.create_save_file_dialog()
 
     def create_open_survey_prompt(self):
         popup_layout = BoxLayout(orientation='vertical')
@@ -52,7 +51,7 @@ class DocumentView(BoxLayout):
 
         popup_layout.add_widget(label)
 
-        save_btn = Button(text='>', size_hint=(.2,.2))
+        save_btn = Button(text='Next', size_hint=(.2,.2))
         save_btn.pos_hint={'center_x': 0.5, 'center_y': 0.5}
         save_btn.bind(on_release=self.open_survey_prompt_to_dialog)
 
@@ -63,44 +62,6 @@ class DocumentView(BoxLayout):
         size_hint=(.7, .5), pos_hint={'center_x': 0.5, 'center_y': 0.5})
 
         return popup
-
-    def create_open_survey_dialog(self):
-        chooser = BoxLayout()
-        container = BoxLayout(orientation='vertical')
-
-        def open_file(path, filename):
-            try:
-                filepath = os.path.join(path, filename[0])
-                path, ext = os.path.splitext(filepath)
-                if ext == ".csv":
-                    self.is_qsf = False
-                    self.__open_filename = filepath
-                    self.open_survey_dialog_to_trended_selector()
-                elif ext == ".qsf":
-                    self.__open_filename = filepath
-                    self.open_survey_dialog_to_trended_selector()
-                else:
-                    self.error_message("Please pick a survey (.csv or .qsf) file")
-            except IndexError:
-                self.error_message("Please pick a survey (.csv or .qsf) file")
-
-        filechooser = FileChooserListView()
-        filechooser.path = os.path.expanduser("~")
-        filechooser.bind(on_selection=lambda x: filechooser.selection)
-        filechooser.filters = ["*.csv", "*.qsf"]
-
-        open_btn = Button(text='open', size_hint=(.2,.1), pos_hint={'center_x': 0.5, 'center_y': 0.5})
-        open_btn.bind(on_release=lambda x: open_file(filechooser.path, filechooser.selection))
-
-        container.add_widget(filechooser)
-        container.add_widget(open_btn)
-        chooser.add_widget(container)
-
-        file_chooser = Popup(title='Open file',
-        content=chooser,
-        size_hint=(.9, .7 ), pos_hint={'center_x': 0.5, 'center_y': 0.5})
-
-        return file_chooser
 
     def create_trended_selector(self):
         chooser = BoxLayout(orientation='vertical')
@@ -236,36 +197,6 @@ class DocumentView(BoxLayout):
 
         return popup
 
-    def create_open_freq_dialog(self):
-        chooser = BoxLayout()
-        container = BoxLayout(orientation='vertical')
-
-        def open_file(path, filename):
-            try:
-                filepath = os.path.join(path, filename[0])
-                self.__open_filename = filepath
-                self.open_freq_dialog_to_format_selector()
-            except IndexError:
-                self.error_message("Please pick a frequencies (.csv) file")
-
-        filechooser = FileChooserListView()
-        filechooser.path = os.path.expanduser("~")
-        filechooser.bind(on_selection=lambda x: filechooser.selection)
-        filechooser.filters = ["*.csv"]
-
-        open_btn = Button(text='open', size_hint=(.2,.1), pos_hint={'center_x': 0.5, 'center_y': 0.5})
-        open_btn.bind(on_release=lambda x: open_file(filechooser.path, filechooser.selection))
-
-        container.add_widget(filechooser)
-        container.add_widget(open_btn)
-        chooser.add_widget(container)
-
-        file_chooser = Popup(title='Open file',
-        content=chooser,
-        size_hint=(.9, .7 ), pos_hint={'center_x': 0.5, 'center_y': 0.5})
-
-        return file_chooser
-
     def create_format_selector(self):
         chooser = BoxLayout(orientation='vertical')
 
@@ -292,36 +223,6 @@ class DocumentView(BoxLayout):
 
         return format_chooser 
 
-    def create_other_template_dialog(self):
-        chooser = BoxLayout()
-        container = BoxLayout(orientation='vertical')
-
-        def open_file(path, filename):
-            try:
-                filepath = os.path.join(path, filename[0])
-                self.__template_file_path = filepath
-                self.other_template_dialog_to_save()
-            except IndexError:
-                self.error_message("Please select a template document (.docx) file")
-
-        filechooser = FileChooserListView()
-        filechooser.path = os.path.expanduser("~")
-        filechooser.bind(on_selection=lambda x: filechooser.selection)
-        filechooser.filters = ["*.docx"]
-
-        open_btn = Button(text='open', size_hint=(.2,.1), pos_hint={'center_x': 0.5, 'center_y': 0.5})
-        open_btn.bind(on_release=lambda x: open_file(filechooser.path, filechooser.selection))
-
-        container.add_widget(filechooser)
-        container.add_widget(open_btn)
-        chooser.add_widget(container)
-
-        file_chooser = Popup(title='Open file',
-        content=chooser,
-        size_hint=(.9, .7 ), pos_hint={'center_x': 0.5, 'center_y': 0.5})
-
-        return file_chooser
-
     def create_save_file_prompt(self):
         popup_layout = BoxLayout(orientation='vertical')
         label = Label(text="Choose a file location and name for topline document report")
@@ -340,57 +241,34 @@ class DocumentView(BoxLayout):
 
         return popup
 
-    def create_save_file_dialog(self):
-        chooser = BoxLayout()
-        container = BoxLayout(orientation='vertical')
-
-        filechooser = FileChooserListView()
-        filechooser.path = os.path.expanduser("~")
-
-        container.add_widget(filechooser)
-
-        def save_file(path, filename):
-            filepath = os.path.join(path, filename)
-            path, ext = os.path.splitext(filepath)
-            if ext != ".docx":
-                filepath += ".docx"
-            self.__save_filename = filepath
-            self.finish()
-
-        button_layout = BoxLayout()
-        button_layout.size_hint = (1, .1)
-
-        file_name = TextInput(text="File name.docx")
-        button_layout.add_widget(file_name)
-
-        save_btn = Button(text='save', size_hint=(.2,1))
-        save_btn.bind(on_release=lambda x: save_file(filechooser.path, file_name.text))
-
-        button_layout.add_widget(save_btn)
-        container.add_widget(button_layout)
-        chooser.add_widget(container)
-
-        file_chooser = Popup(title='Save report',
-        content=chooser,
-        size_hint=(.9, .7 ), pos_hint={'center_x': 0.5, 'center_y': 0.5})
-
-        return file_chooser
-
     def run(self, controller):
         self.__template_name = ""
         self.__group_names = []
         self.__survey = None
         self.__other_template_path = None
         self.__controller = controller
-        self.open_survey_prompt.open()
+        
+        #self.open_survey_prompt.open()
+        title = 'plyer'
+        message = 'This is an example'
+        notification.notify(title=title, message=message)
 
     def open_survey_prompt_to_dialog(self, instance):
         self.open_survey_prompt.dismiss()
-        self.open_survey_dialog.open()
+        survey_file = fc.open_file(title="Pick a survey file", 
+                             filters=[("Comma-separated Values", "*.csv"), ("Qualtrics survey file", "*.qsf")])
+
+        path, ext = os.path.splitext(survey_file[0])
+        if ext == ".csv":
+            self.is_qsf = False
+            self.__open_filename = survey_file[0]
+            self.open_survey_dialog_to_trended_selector()
+        elif ext == ".qsf":
+            self.is_qsf = True
+            self.__open_filename = survey_file[0]
+            self.open_survey_dialog_to_trended_selector()
 
     def open_survey_dialog_to_trended_selector(self):
-        self.open_survey_dialog.dismiss()
-        
         if self.is_qsf:
             try:
                 self.__survey = self.__controller.build_survey(self.__open_filename)
@@ -420,10 +298,9 @@ class DocumentView(BoxLayout):
 
     def open_freq_prompt_to_dialog(self, instance):
         self.open_freq_prompt.dismiss()
-        self.open_freq_dialog.open()
-
-    def open_freq_dialog_to_format_selector(self):
-        self.open_freq_dialog.dismiss()
+        freq_file = fc.open_file(title="Pick a frequency file", 
+                             filters=[("Comma-separated Values", "*.csv")])
+        self.__open_filename = freq_file[0]
         self.format_selector.open()
 
     def is_y2(self, instance):
@@ -435,18 +312,23 @@ class DocumentView(BoxLayout):
         self.__template_name = "OTHER"
         self.format_selector.dismiss()
 
-        self.other_template_dialog.open()
+        template_file = fc.open_file(title="Pick a template file", 
+                             filters=[("Word Document Template", "*.dotx"), ("Word Document", "*.docx")])
 
-    def other_template_dialog_to_save(self):
-        self.other_template_dialog.dismiss()
+        self.__template_file_path = template_file[0]
         self.save_file_prompt.open()
 
     def save_file_prompt_to_dialog(self, instance):
         self.save_file_prompt.dismiss()
-        self.save_file_dialog.open()
+
+        save_path = fc.save_file(title="Save report", 
+                             filters=[("Word Document", "*.docx")])
+
+        self.__save_filename = save_path[0]
+
+        self.finish()
 
     def finish(self):
-        self.save_file_dialog.dismiss()
         try:
             questions = self.__controller.build_document_model(self.__open_filename, self.__group_names, self.__survey)
             self.__controller.build_document_report(questions, self.__template_name, self.__save_filename, self.__other_template_path)
