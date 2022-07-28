@@ -1,6 +1,7 @@
 
 *.pyc
 env
+venv
 
 temp_test.py
 internbot/topline/.DS_Store
