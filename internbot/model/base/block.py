@@ -72,21 +72,15 @@ class Block(object):
         self.__questions.sort(self.__assigned_ids)
         
     def find_question_by_name(self, question_name):
-        matching_questions = []
         for question in self.questions:
-            if re.match('(%s)(?:\_|$)(\d+)?' % question.name, question_name):
-                matching_questions.append(question)
+            if question.parent == "CompositeQuestion":
+                for subquestion in question.questions:
+                    if subquestion.name == question_name:
+                        return subquestion
             else:
-                pass
-
-        if len(matching_questions) == 0:
-            return None
-        if len(matching_questions) == 1:
-            return matching_questions[0]
-        else:
-            for matching_question in matching_questions:
-                if matching_question.name == question_name:
-                    return matching_question
+                if question.name == question_name:
+                    return question
+        return None
     
     @property
     def questions(self):

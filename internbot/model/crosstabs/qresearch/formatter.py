@@ -104,7 +104,7 @@ class Formatter(object):
             self.__header_fill = PatternFill("solid", fgColor = "122C58")
             self.__significant_fill = PatternFill("solid", fgColor = "0768DD")
             self.__table_fill = PatternFill("solid", fgColor = "E7E6E6")
-            self.__font_white = Font(name = 'Arial', size = 8, color = "404040")
+            self.__font_white = Font(name = 'Arial', size = 8, color = "FFFFFF")
         elif (os.path.basename(self.__image_path) == "whatsapp.png"):
             self.__row_height = 57
             self.__header_fill = PatternFill("solid", fgColor = "445963")

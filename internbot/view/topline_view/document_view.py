@@ -17,8 +17,16 @@ from kivy.uix.label import Label
 from kivy.core.text import LabelBase
 from kivy.uix.textinput import TextInput
 from kivy.uix.filechooser import FileChooserListView
+from kivy.uix.spinner import Spinner
+from kivy.uix.scrollview import ScrollView
+from kivy.uix.screenmanager import ScreenManager, Screen
+from kivy.core.window import Window
+from kivy.uix.gridlayout import GridLayout
+from kivy.properties import ObjectProperty
 import webbrowser
 import os
+from datetime import date, time, datetime
+from collections import OrderedDict
 
 class DocumentView(BoxLayout):
 
@@ -171,6 +179,117 @@ class DocumentView(BoxLayout):
         self.trended_labels.content = pop_up_layout
         self.trended_labels.title = "Enter group names"
         self.trended_labels.open()
+        
+    def create_matching_checker(self, survey, qsf_block, freq_block):
+    	self.matching_checker = Popup(title='Check qsf to frequency file match', size_hint=(.9, .7 ), pos_hint={'center_x': 0.5, 'center_y': 0.5})	
+    	
+    	pop_up_layout = BoxLayout(orientation="vertical")
+
+    	scrollable_layout = GridLayout(cols=1, row_force_default=True, row_default_height=44, spacing=10, size_hint_y=None)
+    	scrollable_layout.bind(minimum_height=scrollable_layout.setter('height'))
+    	
+    	row = BoxLayout()
+    	row.add_widget(Label(text="QSF"))
+    	row.add_widget(Label(text="Automatched Freq"))
+    	row.add_widget(Label(text="Self Reassigned"))
+    	
+    	scrollable_layout.add_widget(row)
+
+    	change_log = []
+    	def rematch_value(spinner, text):
+    		root_name = str(spinner.parent.children[2].text)
+
+    		old_question = qsf_block.find_question_by_name(root_name)
+    		new_question = freq_block.find_question_by_name(str(text))
+
+    		old_question.responses = new_question.responses
+
+    		log = "QSF: %s\tAutomatched Freq: %s\tSelf Reassigned: %s\n" % (root_name, spinner.parent.children[1].text, str(text))
+    		change_log.append(log)
+            
+    	def submit():
+            self.__log_text += "Rematched frequences: \n"
+            for text in change_log:
+                self.__log_text += text
+            self.finish(qsf_block)
+    	
+    	freq_questions = []
+    	for question in freq_block.questions:
+    		freq_questions.append(question.name)
+
+    	for question in qsf_block.questions:
+    		# on the left is the qsf question name
+    		# matched in the middle
+    		# on the right is the matched frequency name
+    		# button
+    		
+    		if question.parent != "CompositeQuestion":
+    			row = BoxLayout()
+    			r1_values = []
+    			r2_values = []
+    			for response in question.responses:
+    				text = "%s - %s" % (response.value, response.label)
+    				r1_values.append(text)
+    				r2_values.append(response.assigned)
+			
+    			qsf_spin = Spinner(text=question.name,
+    								values=r1_values,
+    								pos_hint={'center_x': .5, 'center_y': .5})
+    		
+    			row.add_widget(qsf_spin)
+					
+    			match_spin = Spinner(text=str(question.assigned),
+    								values=r2_values,
+    								pos_hint={'center_x': .5, 'center_y': .5})
+    		
+    			row.add_widget(match_spin)
+    			
+    			csv_spin = Spinner(text="rematch",
+    								values=freq_questions,
+    								pos_hint={'center_x': .5, 'center_y': .5})
+    			csv_spin.bind(text=rematch_value)
+    		
+    			row.add_widget(csv_spin)
+    			scrollable_layout.add_widget(row)
+    		else:
+    			for subquestion in question.questions:
+    				row = BoxLayout()
+    				r1_values = []
+    				r2_values = []
+    				for response in subquestion.responses:
+    					text = "%s - %s" % (response.value, response.label)
+    					r1_values.append(text)
+    					r2_values.append(response.assigned)
+			
+    				qsf_spin = Spinner(text=subquestion.name,
+    									values=r1_values,
+    									pos_hint={'center_x': .5, 'center_y': .5})
+    		
+    				row.add_widget(qsf_spin)
+    				match_spin = Spinner(text=subquestion.assigned,
+    									values=r2_values,
+    									pos_hint={'center_x': .5, 'center_y': .5})
+    				row.add_widget(match_spin)
+    				
+    				csv_spin = Spinner(text="rematch",
+    									values=freq_questions,
+    									pos_hint={'center_x': .5, 'center_y': .5})
+    				csv_spin.bind(text=rematch_value)
+    		
+    				row.add_widget(csv_spin)
+    				scrollable_layout.add_widget(row)
+    	
+    	scrollable = ScrollView(size=(self.matching_checker.width, self.matching_checker.height))
+    	scrollable.add_widget(scrollable_layout)
+    	
+    	enter_btn = Button(text="Enter", size_hint=(.2, .2), pos_hint={'center_x': 0.5, 'center_y': 0.5}, 
+        on_press=lambda x: submit())
+    	
+    	pop_up_layout.add_widget(scrollable)
+    	pop_up_layout.add_widget(enter_btn)
+    	self.matching_checker.content = pop_up_layout
+
+    	self.matching_checker.open()
 
     def create_open_freq_prompt(self):
         popup_layout = BoxLayout(orientation='vertical')
@@ -245,13 +364,18 @@ class DocumentView(BoxLayout):
         self.__template_name = ""
         self.__group_names = []
         self.__survey = None
-        self.__other_template_path = None
+        self.__template_file_path = None
+        self.__survey_path = None
+        self.__freq_path = None
         self.__controller = controller
         
-        #self.open_survey_prompt.open()
-        title = 'plyer'
-        message = 'This is an example'
-        notification.notify(title=title, message=message)
+        today = date.today()
+        now = datetime.now()
+        current_time = time(now.hour, now.minute, now.second)
+        self.__log_text = "%s %s\n" % (today, current_time)
+        self.__log_text += "Running topline document report...\n"
+        
+        self.open_survey_prompt.open()
 
     def open_survey_prompt_to_dialog(self, instance):
         self.open_survey_prompt.dismiss()
@@ -261,24 +385,31 @@ class DocumentView(BoxLayout):
         path, ext = os.path.splitext(survey_file[0])
         if ext == ".csv":
             self.is_qsf = False
-            self.__open_filename = survey_file[0]
+            self.__survey_path = survey_file[0]
+            self.__log_text += "No QSF selected\n"
+            self.__log_text += "Inputted survey file = %s\n" % (self.__survey_path)
             self.open_survey_dialog_to_trended_selector()
         elif ext == ".qsf":
             self.is_qsf = True
-            self.__open_filename = survey_file[0]
+            self.__survey_path = survey_file[0]
+            self.__log_text += "Inputted survey file = %s\n" % (self.__survey_path)
             self.open_survey_dialog_to_trended_selector()
 
     def open_survey_dialog_to_trended_selector(self):
         if self.is_qsf:
             try:
-                self.__survey = self.__controller.build_survey(self.__open_filename)
+                self.__survey = self.__controller.build_survey(self.__survey_path)
+                self.__log_text += "QSF successfully parsed by internbot.\n"
                 self.trended_selector.open()
-            except:
+            except Exception as inst:
+                string = "Error (%s):\n %s" % (type(inst), str(inst))
+                self.__log_text += string
                 self.error_message("Issue parsing .qsf file.")
         else:
             self.trended_selector.open()
 
     def trended_selector_to_count(self, instance):
+        self.__log_text += "Trended report selected.\n"
         self.trended_selector.dismiss()
         self.trended_count.open()
 
@@ -290,6 +421,7 @@ class DocumentView(BoxLayout):
             self.format_selector.open()
 
     def trended_labels_to_freqs(self):
+        self.__log_text += "Groups inputted: %s\n" % (self.__group_names)
         self.trended_labels.dismiss()
         if self.is_qsf:
             self.open_freq_prompt.open()
@@ -300,22 +432,26 @@ class DocumentView(BoxLayout):
         self.open_freq_prompt.dismiss()
         freq_file = fc.open_file(title="Pick a frequency file", 
                              filters=[("Comma-separated Values", "*.csv")])
-        self.__open_filename = freq_file[0]
+        self.__freq_path = freq_file[0]
+        self.__log_text += "Inputted frequency file = %s\n" % (self.__freq_path)
         self.format_selector.open()
 
     def is_y2(self, instance):
         self.__template_name = "Y2"
+        self.__log_text += "Template selected: Y2\n"
         self.format_selector.dismiss()
         self.save_file_prompt.open()
 
     def is_other(self, instance):
         self.__template_name = "OTHER"
+        self.__log_text += "Template selected: OTHER\n"
         self.format_selector.dismiss()
 
         template_file = fc.open_file(title="Pick a template file", 
                              filters=[("Word Document Template", "*.dotx"), ("Word Document", "*.docx")])
 
         self.__template_file_path = template_file[0]
+        self.__log_text += "Inputted template file: %s\n" % (self.__template_file_path)
         self.save_file_prompt.open()
 
     def save_file_prompt_to_dialog(self, instance):
@@ -325,13 +461,50 @@ class DocumentView(BoxLayout):
                              filters=[("Word Document", "*.docx")])
 
         self.__save_filename = save_path[0]
+        self.__log_text += "Inputted save filepath: %s\n" % (self.__save_filename)
+        self.grab_questions()
+			
+    def grab_questions(self):
+        if self.is_qsf:
+            try:
+                qsf_questions = self.__controller.build_document_model(self.__freq_path, self.__group_names, self.__survey)
+                freq_questions = self.__controller.build_document_model(self.__freq_path, self.__group_names, None)
+                self.__log_text += "Frequency file successfully read by internbot.\n"
+                self.create_matching_checker(self.__survey, qsf_questions, freq_questions)
+            except KeyError as key_error:
+                string = "Misspelled or missing column (%s):\n %s" % (type(key_error), str(key_error))
+                self.error_message(string)
+            except Exception as inst:
+                string = "Error (%s):\n %s" % (type(inst), str(inst))
+                self.error_message(string)  
+        else:
+            try:
+                questions = self.__controller.build_document_model(self.__survey_path, self.__group_names, None)
+                self.__log_text += "Frequency file successfully read by internbot.\n"
+                self.finish(questions)
+            except KeyError as key_error:
+                string = "Misspelled or missing column (%s):\n %s" % (type(key_error), str(key_error))
+                self.error_message(string)
+            except Exception as inst:
+                string = "Error (%s):\n %s" % (type(inst), str(inst))
+                self.error_message(string)
 
-        self.finish()
-
-    def finish(self):
+    def finish(self, questions):
+        if self.is_qsf:
+            self.matching_checker.dismiss()
         try:
-            questions = self.__controller.build_document_model(self.__open_filename, self.__group_names, self.__survey)
-            self.__controller.build_document_report(questions, self.__template_name, self.__save_filename, self.__other_template_path)
+            self.__log_text += "Building document..."
+            self.__controller.build_document_report(questions, self.__template_name, self.__save_filename, self.__template_file_path)
+            self.__log_text += "Success."
+
+            today = date.today()
+            now = datetime.now()
+            current_time = time(now.hour, now.minute, now.second)
+            log_filename = "internbot log %s %s.txt" % (today, current_time)
+            log_dir = os.path.dirname(self.__save_filename)
+            log_path = os.path.join(log_dir, log_filename)
+            with open(log_path, 'w') as f:
+                f.write(self.__log_text)
         except KeyError as key_error:
             string = "Misspelled or missing column (%s):\n %s" % (type(key_error), str(key_error))
             self.error_message(string)
@@ -340,10 +513,39 @@ class DocumentView(BoxLayout):
             self.error_message(string)
 
     def error_message(self, error):
+    	self.create_error_popup(error)
+
+    def print_log(self, instance):
+        self.error_chooser.dismiss()
+        save_path = fc.save_file(title="Save log", 
+                             filters=[("Text Document", "*.txt")])
+        
+        with open(save_path[0], 'w') as f:
+            f.write(self.__log_text)
+
+    def dismiss_error(self, instance):
+        self.error_chooser.dismiss()
+        
+    def create_error_popup(self, error):
+        chooser = BoxLayout(orientation='vertical')
+
         label = Label(text=error)
 
-        popup = Popup(title="Something Went Wrong",
-        content=label,
-        size_hint=(.5, .8), pos_hint={'center_x': 0.5, 'center_y': 0.5})
+        chooser.add_widget(label)
 
-        popup.open()
+        button_layout = BoxLayout()
+        button_layout.size_hint = (1, .1)
+        yes_btn = Button(text="Print log", on_press=self.print_log)
+
+        no_btn = Button(text="Ignore", on_press=self.dismiss_error)
+
+        button_layout.add_widget(yes_btn)
+        button_layout.add_widget(no_btn)
+
+        chooser.add_widget(button_layout)
+
+        self.error_chooser = Popup(title='Something went wrong',
+        content=chooser,
+        size_hint=(.9, .7 ), pos_hint={'center_x': 0.5, 'center_y': 0.5})
+
+        self.error_chooser.open()

@@ -76,6 +76,7 @@ class Assigner(object):
 
     def compare_responses(self, qsf_question, name_match):
         if name_match:
+            qsf_question.assigned = name_match.name
             for qsf_response in qsf_question.responses:
                 matching_response = next((response for response in name_match.responses if response.label == qsf_response.label), None)
                 if not matching_response:
@@ -85,7 +86,12 @@ class Assigner(object):
                         pass
 
                 if matching_response:
+                    qsf_response.assigned = matching_response
                     qsf_response.frequencies = matching_response.frequencies
+                else:
+                    qsf_response.assigned = "None"
+        else:
+            qsf_question.assigned = "None"
 
 
         

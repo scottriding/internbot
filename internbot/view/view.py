@@ -16,16 +16,17 @@ from kivy.uix.popup import Popup
 from kivy.uix.label import Label
 from kivy.core.audio import SoundLoader
 from kivy.core.window import Window
+from kivy.properties import NumericProperty
 import webbrowser
 import os
 import time
 
-class View(App):
+class View(App):    
 
     def build(self):
         self.root = self.create_screens()
-        
-        self.title = "Internbot - 1.3.2"
+
+        self.title = "Internbot - 1.4.0"
 
         self.root.bind(size=self._update_rect, pos=self._update_rect)
         
