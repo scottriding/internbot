@@ -222,62 +222,62 @@ class DocumentView(BoxLayout):
     		# matched in the middle
     		# on the right is the matched frequency name
     		# button
-    		
-    		if question.parent != "CompositeQuestion":
-    			row = BoxLayout()
-    			r1_values = []
-    			r2_values = []
-    			for response in question.responses:
-    				text = "%s - %s" % (response.value, response.label)
-    				r1_values.append(text)
-    				r2_values.append(response.assigned)
+            print(question.assigned)
+            if question.parent != "CompositeQuestion":
+                row = BoxLayout()
+                r1_values = []
+                r2_values = []
+                for response in question.responses:
+                    text = "%s - %s" % (response.value, response.label)
+                    r1_values.append(text)
+                    r2_values.append(response.assigned)
 			
-    			qsf_spin = Spinner(text=question.name,
+                qsf_spin = Spinner(text=question.name,
     								values=r1_values,
     								pos_hint={'center_x': .5, 'center_y': .5})
     		
-    			row.add_widget(qsf_spin)
-					
-    			match_spin = Spinner(text=str(question.assigned),
+                row.add_widget(qsf_spin)
+
+                match_spin = Spinner(text=str(question.assigned),
     								values=r2_values,
     								pos_hint={'center_x': .5, 'center_y': .5})
     		
-    			row.add_widget(match_spin)
+                row.add_widget(match_spin)
     			
-    			csv_spin = Spinner(text="rematch",
+                csv_spin = Spinner(text="rematch",
     								values=freq_questions,
     								pos_hint={'center_x': .5, 'center_y': .5})
-    			csv_spin.bind(text=rematch_value)
+                csv_spin.bind(text=rematch_value)
     		
-    			row.add_widget(csv_spin)
-    			scrollable_layout.add_widget(row)
-    		else:
-    			for subquestion in question.questions:
-    				row = BoxLayout()
-    				r1_values = []
-    				r2_values = []
-    				for response in subquestion.responses:
-    					text = "%s - %s" % (response.value, response.label)
-    					r1_values.append(text)
-    					r2_values.append(response.assigned)
+                row.add_widget(csv_spin)
+                scrollable_layout.add_widget(row)
+            else:
+                for subquestion in question.questions:
+                    row = BoxLayout()
+                    r1_values = []
+                    r2_values = []
+                    for response in subquestion.responses:
+                        text = "%s - %s" % (response.value, response.label)
+                        r1_values.append(text)
+                        r2_values.append(response.assigned)
 			
-    				qsf_spin = Spinner(text=subquestion.name,
+                    qsf_spin = Spinner(text=subquestion.name,
     									values=r1_values,
     									pos_hint={'center_x': .5, 'center_y': .5})
     		
-    				row.add_widget(qsf_spin)
-    				match_spin = Spinner(text=subquestion.assigned,
+                    row.add_widget(qsf_spin)
+                    match_spin = Spinner(text=subquestion.assigned,
     									values=r2_values,
     									pos_hint={'center_x': .5, 'center_y': .5})
-    				row.add_widget(match_spin)
+                    row.add_widget(match_spin)
     				
-    				csv_spin = Spinner(text="rematch",
+                    csv_spin = Spinner(text="rematch",
     									values=freq_questions,
     									pos_hint={'center_x': .5, 'center_y': .5})
-    				csv_spin.bind(text=rematch_value)
+                    csv_spin.bind(text=rematch_value)
     		
-    				row.add_widget(csv_spin)
-    				scrollable_layout.add_widget(row)
+                    row.add_widget(csv_spin)
+                    scrollable_layout.add_widget(row)
     	
     	scrollable = ScrollView(size=(self.matching_checker.width, self.matching_checker.height))
     	scrollable.add_widget(scrollable_layout)
@@ -466,17 +466,17 @@ class DocumentView(BoxLayout):
 			
     def grab_questions(self):
         if self.is_qsf:
-            try:
-                qsf_questions = self.__controller.build_document_model(self.__freq_path, self.__group_names, self.__survey)
-                freq_questions = self.__controller.build_document_model(self.__freq_path, self.__group_names, None)
-                self.__log_text += "Frequency file successfully read by internbot.\n"
-                self.create_matching_checker(self.__survey, qsf_questions, freq_questions)
-            except KeyError as key_error:
-                string = "Misspelled or missing column (%s):\n %s" % (type(key_error), str(key_error))
-                self.error_message(string)
-            except Exception as inst:
-                string = "Error (%s):\n %s" % (type(inst), str(inst))
-                self.error_message(string)  
+#             try:
+            qsf_questions = self.__controller.build_document_model(self.__freq_path, self.__group_names, self.__survey)
+            freq_questions = self.__controller.build_document_model(self.__freq_path, self.__group_names, None)
+            self.__log_text += "Frequency file successfully read by internbot.\n"
+            self.create_matching_checker(self.__survey, qsf_questions, freq_questions)
+#             except KeyError as key_error:
+#                 string = "Misspelled or missing column (%s):\n %s" % (type(key_error), str(key_error))
+#                 self.error_message(string)
+#             except Exception as inst:
+#                 string = "Error (%s):\n %s" % (type(inst), str(inst))
+#                 self.error_message(string)  
         else:
             try:
                 questions = self.__controller.build_document_model(self.__survey_path, self.__group_names, None)

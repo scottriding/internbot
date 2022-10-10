@@ -58,6 +58,15 @@ class CompositeQuestion(object):
         self.__has_mixed_statements = False
         self.__has_carry_forward_statements = False
         self.__has_carry_forward_answers = False
+        self.__assigned = "None"
+        
+    @property
+    def assigned(self):
+        return self.__assigned
+        
+    @assigned.setter
+    def assigned(self, assigned):
+        self.__assigned = str(assigned)
 
     @property
     def name(self):
@@ -269,6 +278,15 @@ class Question(object):
         self.__has_carry_forward_statements = False
         self.__has_carry_forward_answers = False
         self.__has_match = False
+        self.__assigned = "None"
+        
+    @property
+    def assigned(self):
+        return self.__assigned
+        
+    @assigned.setter
+    def assigned(self, assigned):
+        self.__assigned = str(assigned)
 
     @property
     def has_carry_forward_statements(self):

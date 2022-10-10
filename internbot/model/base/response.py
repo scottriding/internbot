@@ -44,6 +44,7 @@ class Response(object):
         self.__value = value
         self.__is_dynamic = False
         self.__frequencies = frequency.Frequencies()
+        self.__assigned = "None"
 
     @property
     def type(self):
@@ -80,6 +81,14 @@ class Response(object):
     @is_dynamic.setter
     def is_dynamic(self, type):
         self.__is_dynamic = bool(type)
+        
+    @property
+    def assigned(self):
+        return self.__assigned
+
+    @assigned.setter
+    def assigned(self, assigned):
+        self.__assigned = str(assigned)
 
     def add_frequency(self, result, population, stat, group="Basic"):
         self.__frequencies.add(result, population, stat, group)
