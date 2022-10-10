@@ -381,19 +381,19 @@ class DocumentView(BoxLayout):
         self.open_survey_prompt.dismiss()
         survey_file = fc.open_file(title="Pick a survey file", 
                              filters=[("Comma-separated Values", "*.csv"), ("Qualtrics survey file", "*.qsf")])
-
-        path, ext = os.path.splitext(survey_file[0])
-        if ext == ".csv":
-            self.is_qsf = False
-            self.__survey_path = survey_file[0]
-            self.__log_text += "No QSF selected\n"
-            self.__log_text += "Inputted survey file = %s\n" % (self.__survey_path)
-            self.open_survey_dialog_to_trended_selector()
-        elif ext == ".qsf":
-            self.is_qsf = True
-            self.__survey_path = survey_file[0]
-            self.__log_text += "Inputted survey file = %s\n" % (self.__survey_path)
-            self.open_survey_dialog_to_trended_selector()
+        if survey_file is not None:
+            path, ext = os.path.splitext(survey_file[0])
+            if ext == ".csv":
+                self.is_qsf = False
+                self.__survey_path = survey_file[0]
+                self.__log_text += "No QSF selected\n"
+                self.__log_text += "Inputted survey file = %s\n" % (self.__survey_path)
+                self.open_survey_dialog_to_trended_selector()
+            elif ext == ".qsf":
+                self.is_qsf = True
+                self.__survey_path = survey_file[0]
+                self.__log_text += "Inputted survey file = %s\n" % (self.__survey_path)
+                self.open_survey_dialog_to_trended_selector()
 
     def open_survey_dialog_to_trended_selector(self):
         if self.is_qsf:
@@ -432,9 +432,10 @@ class DocumentView(BoxLayout):
         self.open_freq_prompt.dismiss()
         freq_file = fc.open_file(title="Pick a frequency file", 
                              filters=[("Comma-separated Values", "*.csv")])
-        self.__freq_path = freq_file[0]
-        self.__log_text += "Inputted frequency file = %s\n" % (self.__freq_path)
-        self.format_selector.open()
+        if freq_file is not None:
+            self.__freq_path = freq_file[0]
+            self.__log_text += "Inputted frequency file = %s\n" % (self.__freq_path)
+            self.format_selector.open()
 
     def is_y2(self, instance):
         self.__template_name = "Y2"
@@ -450,9 +451,10 @@ class DocumentView(BoxLayout):
         template_file = fc.open_file(title="Pick a template file", 
                              filters=[("Word Document Template", "*.dotx"), ("Word Document", "*.docx")])
 
-        self.__template_file_path = template_file[0]
-        self.__log_text += "Inputted template file: %s\n" % (self.__template_file_path)
-        self.save_file_prompt.open()
+        if template_file is not None:
+            self.__template_file_path = template_file[0]
+            self.__log_text += "Inputted template file: %s\n" % (self.__template_file_path)
+            self.save_file_prompt.open()
 
     def save_file_prompt_to_dialog(self, instance):
         self.save_file_prompt.dismiss()
@@ -460,9 +462,10 @@ class DocumentView(BoxLayout):
         save_path = fc.save_file(title="Save report", 
                              filters=[("Word Document", "*.docx")])
 
-        self.__save_filename = save_path[0]
-        self.__log_text += "Inputted save filepath: %s\n" % (self.__save_filename)
-        self.grab_questions()
+        if save_path is not None:
+            self.__save_filename = save_path[0]
+            self.__log_text += "Inputted save filepath: %s\n" % (self.__save_filename)
+            self.grab_questions()
 			
     def grab_questions(self):
         if self.is_qsf:
@@ -519,9 +522,10 @@ class DocumentView(BoxLayout):
         self.error_chooser.dismiss()
         save_path = fc.save_file(title="Save log", 
                              filters=[("Text Document", "*.txt")])
-        
-        with open(save_path[0], 'w') as f:
-            f.write(self.__log_text)
+                             
+        if save_path is not None:
+            with open(save_path[0], 'w') as f:
+                f.write(self.__log_text)
 
     def dismiss_error(self, instance):
         self.error_chooser.dismiss()
