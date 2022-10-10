@@ -466,17 +466,17 @@ class DocumentView(BoxLayout):
 			
     def grab_questions(self):
         if self.is_qsf:
-#             try:
-            qsf_questions = self.__controller.build_document_model(self.__freq_path, self.__group_names, self.__survey)
-            freq_questions = self.__controller.build_document_model(self.__freq_path, self.__group_names, None)
-            self.__log_text += "Frequency file successfully read by internbot.\n"
-            self.create_matching_checker(self.__survey, qsf_questions, freq_questions)
-#             except KeyError as key_error:
-#                 string = "Misspelled or missing column (%s):\n %s" % (type(key_error), str(key_error))
-#                 self.error_message(string)
-#             except Exception as inst:
-#                 string = "Error (%s):\n %s" % (type(inst), str(inst))
-#                 self.error_message(string)  
+            try:
+                qsf_questions = self.__controller.build_document_model(self.__freq_path, self.__group_names, self.__survey)
+                freq_questions = self.__controller.build_document_model(self.__freq_path, self.__group_names, None)
+                self.__log_text += "Frequency file successfully read by internbot.\n"
+                self.create_matching_checker(self.__survey, qsf_questions, freq_questions)
+            except KeyError as key_error:
+                string = "Misspelled or missing column (%s):\n %s" % (type(key_error), str(key_error))
+                self.error_message(string)
+            except Exception as inst:
+                string = "Error (%s):\n %s" % (type(inst), str(inst))
+                self.error_message(string)  
         else:
             try:
                 questions = self.__controller.build_document_model(self.__survey_path, self.__group_names, None)
