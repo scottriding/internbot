@@ -364,6 +364,10 @@ class Question(object):
     def responses(self):
         return self.__responses
 
+    @responses.setter
+    def responses(self, responses):
+        self.__responses = responses
+
     @property
     def response_order(self):
         return self.__response_order
