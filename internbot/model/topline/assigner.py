@@ -31,7 +31,8 @@ class Assigner(object):
             if not matching_question:
                 matching_question = question.Question()
                 matching_question.name = response_row["variable"]
-                matching_question.prompt = response_row["prompt"]
+                if response_row.get("prompt") is not None:
+                	matching_question.prompt = response_row["prompt"]
                 matching_question.type = "MC"
 
                 questions.add(matching_question)

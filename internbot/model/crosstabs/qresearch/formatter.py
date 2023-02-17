@@ -114,7 +114,7 @@ class Formatter(object):
         elif (os.path.basename(self.__image_path) == "FB.png"):
             self.__row_height = 57
             self.__header_fill = PatternFill("solid", fgColor = "344854")
-            self.__significant_fill = PatternFill(fill_type=None)
+            self.__significant_fill = PatternFill("solid", fgColor = "0768DD")
             self.__table_fill = PatternFill("solid", fgColor = "E7E6E6")
             self.__font_white = Font(name = 'Arial', size = 8, color = "FFFFFF")
 

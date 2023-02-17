@@ -3,8 +3,8 @@
 block_cipher = None
 
 
-a = Analysis(['/users/y2analytics/Documents/GitHub/internbot/internbot/internbot.py'],
-             pathex=['/Users/y2analytics/Documents/GitHub/internbot/internbot/'],
+a = Analysis(['/users/tempuser/Documents/GitHub/internbot/internbot/internbot.py'],
+             pathex=['/Users/tempuser/Documents/GitHub/internbot/internbot/'],
              binaries=[],
              datas=[],
              hiddenimports=[],
@@ -27,7 +27,7 @@ exe = EXE(pyz,
           strip=False,
           upx=True,
           console=False )
-coll = COLLECT(exe, Tree('/users/y2analytics/Documents/GitHub/internbot/internbot/'),
+coll = COLLECT(exe, Tree('/users/tempuser/Documents/GitHub/internbot/internbot/'),
                a.binaries,
                a.zipfiles,
                a.datas,
@@ -37,5 +37,5 @@ coll = COLLECT(exe, Tree('/users/y2analytics/Documents/GitHub/internbot/internbo
                name='internbot')
 app = BUNDLE(coll,
              name='internbot.app',
-             icon='/users/y2analytics/Documents/GitHub/internbot/internbot/resources/images/y2.icns',
+             icon='/users/tempuser/Documents/GitHub/internbot/internbot/resources/images/y2.icns',
              bundle_identifier=None)
