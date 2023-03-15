@@ -4,7 +4,7 @@ from model.base import scoring
 from model.base import question
 
 import re
-from html import parser
+from html.parser import HTMLParser
 
 class QSFSurveyParser(object):
 
@@ -860,7 +860,7 @@ class QSFCarryForwardParser(object):
         for response in matching_MC.responses:
             dynamic_MC.add_dynamic_response(response.label, response.value)
 
-class MLStripper(parser.HTMLParser):
+class MLStripper(HTMLParser):
     def __init__(self):
         self.reset()
         self.strict= False

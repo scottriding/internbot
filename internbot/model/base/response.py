@@ -6,94 +6,98 @@ from collections import OrderedDict
 
 class Responses(object):
 
-    def __init__(self):
-        self.__responses = []
+	def __init__(self):
+		self.__responses = []
 
-    def add(self, label, value=None):
-        new = Response(label, value)
-        self.__responses.append(
-            new
-        )
-        return new
+	def add(self, label, value=None):
+		new = Response(label, value)
+		self.__responses.append(
+			new
+		)
+		return new
 
-    def add_dynamic(self, label, value=None):
-        response = Response(label, value)
-        response.is_dynamic = True
-        self.__responses.append(response)
+	def add_dynamic(self, label, value=None):
+		response = Response(label, value)
+		response.is_dynamic = True
+		self.__responses.append(response)
 
-    def sort(self, response_order):
-        response_sorter = sorter.ResponseSorter(response_order)
-        self.__responses = response_sorter.sort(self.__responses)
+	def sort(self, response_order):
+		response_sorter = sorter.ResponseSorter(response_order)
+		self.__responses = response_sorter.sort(self.__responses)
 
-    def __len__(self):
-        return len(self.__responses)
+	def appendix_sort(self):
+		# sort responses alphabetically by label
+		self.__responses.sort(key=lambda x: x.label)
 
-    def __iter__(self):
-        return(iter(self.__responses))
+	def __len__(self):
+		return len(self.__responses)
 
-    def __repr__(self):
-        result = ''
-        for response in self.__responses:
-            result += "\t\t\t%s\n" % str(response)
-        return result
+	def __iter__(self):
+		return(iter(self.__responses))
+
+	def __repr__(self):
+		result = ''
+		for response in self.__responses:
+			result += "\t\t\t%s\n" % str(response)
+		return result
 
 class Response(object):
 
-    def __init__ (self, label, value=None):
-        self.__label = label
-        self.__value = value
-        self.__is_dynamic = False
-        self.__frequencies = frequency.Frequencies()
-        self.__assigned = "None"
+	def __init__ (self, label, value=None):
+		self.__label = label
+		self.__value = value
+		self.__is_dynamic = False
+		self.__frequencies = frequency.Frequencies()
+		self.__assigned = "None"
 
-    @property
-    def type(self):
-        return 'Response'
+	@property
+	def type(self):
+		return 'Response'
 
-    @property
-    def label(self):
-        return self.__label
+	@property
+	def label(self):
+		return self.__label
 
-    @label.setter
-    def label(self, label):
-        self.__label = str(label)
+	@label.setter
+	def label(self, label):
+		self.__label = str(label)
 
-    @property
-    def value(self):
-        return self.__value
+	@property
+	def value(self):
+		return self.__value
 
-    @value.setter
-    def value(self, value):
-        self.__value = str(value)
+	@value.setter
+	def value(self, value):
+		self.__value = str(value)
 
-    @property
-    def frequencies(self):
-        return self.__frequencies
+	@property
+	def frequencies(self):
+		return self.__frequencies
 
-    @frequencies.setter
-    def frequencies(self, frequencies):
-        self.__frequencies = frequencies
+	@frequencies.setter
+	def frequencies(self, frequencies):
+		self.__frequencies = frequencies
 
-    @property
-    def is_dynamic(self):
-        return self.__is_dynamic
+	@property
+	def is_dynamic(self):
+		return self.__is_dynamic
 
-    @is_dynamic.setter
-    def is_dynamic(self, type):
-        self.__is_dynamic = bool(type)
-        
-    @property
-    def assigned(self):
-        return self.__assigned
+	@is_dynamic.setter
+	def is_dynamic(self, type):
+		self.__is_dynamic = bool(type)
+		
+	@property
+	def assigned(self):
+		return self.__assigned
 
-    @assigned.setter
-    def assigned(self, assigned):
-        self.__assigned = str(assigned)
+	@assigned.setter
+	def assigned(self, assigned):
+		self.__assigned = str(assigned)
 
-    def add_frequency(self, result, population, stat, group="Basic"):
-        self.__frequencies.add(result, population, stat, group)
+	def add_frequency(self, result, population, stat, group="Basic"):
+		self.__frequencies.add(result, population, stat, group)
 
-    def __repr__(self):
-        result = ""
-        result += "%s: %s" % (self.__value, self.__label)
-        return result
+	def __repr__(self):
+		result = ""
+		result += "%s: %s" % (self.__value, self.__label)
+		return result

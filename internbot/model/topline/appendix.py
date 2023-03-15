@@ -9,66 +9,68 @@ import docx
 
 class Appendix(object):
 
-    def unicode_dict_reader(self, utf8_data, **kwargs):
-        csv_reader = csv.DictReader(utf8_data, **kwargs)
-        for row in csv_reader:
-            if row['variable'] != "":
-                yield {key:value for key, value in row.items()}
+	def check_input(self, csv_path):
+		self.check_input_names(open(csv_path, encoding="utf8"))
 
-    def build_appendix_report(self, question_blocks, path_to_output, template_path):
-        builder = Document(template_path)
+	def check_input_names(self, utf8_data, **kwargs):
+		csv_reader = csv.DictReader(utf8_data, **kwargs)
+		for row in csv_reader:
+			if row.get("variable") is None:
+				raise ValueError(f'Missing column: variable')
+			if row.get("prompt") is None:
+				raise ValueError(f'Missing column: prompt')
+			if row.get("label") is None:
+				raise ValueError(f'Missing column: label')
+			break
 
-        builder.write_appendix(question_blocks)
-        builder.save(path_to_output)
-        self.__questions = OrderedDict() ## empty out questions
-            
-        print("Finished!")
+	def build_appendix_report(self, question_blocks, path_to_output, template_path):
+		builder = Document(template_path)
+
+		builder.write_appendix(question_blocks)
+		builder.save(path_to_output)
+		self.__questions = OrderedDict() ## empty out questions
 
 class Document(object):
 
-    def __init__ (self, path_to_template):
-        self.__doc = docx.Document(path_to_template)
+	def __init__ (self, path_to_template):
+		self.__doc = docx.Document(path_to_template)
 
-    def write_appendix(self, question_blocks):
-        first_question = True
-        for question in question_blocks.questions:
-            to_print = "Writing question: %s" % question.name
-            print(to_print)
+	def write_appendix(self, question_blocks):
+		first_question = True
+		for question in question_blocks.questions:
+			if first_question is False:
+				self.__doc.add_page_break()
 
-            if first_question is False:
-                self.__doc.add_page_break()
-
-            paragraph = self.__doc.add_paragraph()
-            self.write_question(question, paragraph)
-            self.__doc.add_paragraph()
-            first_question = False
+			paragraph = self.__doc.add_paragraph()
+			self.write_question(question, paragraph)
+			self.__doc.add_paragraph()
+			first_question = False
 
 
-    def write_question(self, question, paragraph):
-        to_print = "Writing: %s" % question.name
-        print(to_print)
-        paragraph.add_run(question.name + ".")
-        paragraph_format = paragraph.paragraph_format
-        paragraph_format.keep_together = True
-        paragraph_format.left_indent = docx.shared.Inches(1)
-        prompt_to_add = "\t%s (n = %s)\n" % (question.prompt, len(question.responses))
-        paragraph.add_run(prompt_to_add)
-        paragraph_format.first_line_indent = docx.shared.Inches(-1)
+	def write_question(self, question, paragraph):
+		paragraph.add_run(question.name + ".")
+		paragraph_format = paragraph.paragraph_format
+		paragraph_format.keep_together = True
+		paragraph_format.left_indent = docx.shared.Inches(1)
+		prompt_to_add = "\t%s (n = %s)\n" % (question.prompt, len(question.responses))
+		paragraph.add_run(prompt_to_add)
+		paragraph_format.first_line_indent = docx.shared.Inches(-1)
 
-        self.write_responses(question.responses, paragraph)
+		self.write_responses(question.responses, paragraph)
 
 
-    def write_responses(self, responses, paragraph):
-        table = self.__doc.add_table(rows = 0, cols = 5)
-        try:
-            table.style = 'Appendix' # Custom format in template
-        except KeyError:
-            pass
-        for response in responses:
-            response_cells = table.add_row().cells
-            response_cells[0].merge(response_cells[4])
-            response_cells[0].text = response.label
+	def write_responses(self, responses, paragraph):
+		responses.appendix_sort()
+		table = self.__doc.add_table(rows = 0, cols = 5)
+		try:
+			table.style = 'Appendix' # Custom format in template
+		except KeyError:
+			pass
+		for response in responses:
+			response_cells = table.add_row().cells
+			response_cells[0].merge(response_cells[4])
+			response_cells[0].text = response.label
 
-    def save(self, path_to_output):
-        self.__doc.save(path_to_output)
+	def save(self, path_to_output):
+		self.__doc.save(path_to_output)
 

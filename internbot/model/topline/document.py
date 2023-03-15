@@ -20,14 +20,10 @@ class Document(object):
             self.line_break = None
 
         self.write_questions()
-        print("Saving report...")
         self.__document.save(path_to_output)
 
     def write_questions(self):
         for question in self.__question_blocks.questions:
-            to_print = "Writing question: %s" % question.name
-            print(to_print)
-
             if question.parent == 'CompositeQuestion':
                 if question.type == "CompositeMatrix":
                     self.write_matrix_question(question)
