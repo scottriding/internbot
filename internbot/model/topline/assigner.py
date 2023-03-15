@@ -9,18 +9,24 @@ from collections import OrderedDict
 class Assigner(object):
 
 	def check_input(self, path_to_csv, groups):
-		csv_reader = self.unicode_dict_reader(open(path_to_csv, encoding="utf8"))
+		self.check_input_names(groups, open(path_to_csv, encoding="utf8"))
+
+	def check_input_names(self, groups, utf8_data, **kwargs):
+		csv_reader = csv.DictReader(utf8_data, **kwargs)
 		for row in csv_reader:
 			if row.get("variable") is None:
 				raise ValueError(f'Missing column: variable')
-			
 			if row.get("value") is None:
 				raise ValueError(f'Missing column: value')
-
 			if row.get("label") is None:
 				raise ValueError(f'Missing column: label')
-
-			if len(groups) > 0:
+			
+			if len(groups) == 0:
+				if row.get("result") is None:
+					raise ValueError(f'Missing column: result')
+				if row.get("n") is None:
+					raise ValueError(f'Missing column: n')
+			else:
 				for group in groups:
 					result_col = "result %s" % group
 					n_col = "n %s" % group
@@ -30,12 +36,7 @@ class Assigner(object):
 					
 					if row.get(n_col) is None:
 						raise ValueError(f'Missing column: {n_col}')
-			else:
-				if row.get("result") is None:
-					raise ValueError(f'Missing column: result')
-
-				if row.get("n") is None:
-					raise ValueError(f'Missing column: n')
+			break
 	
 	def build_questions(self, path_to_freqs, groups=[], inputted_survey=None):
 		self.__groups = groups
