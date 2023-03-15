@@ -16,8 +16,8 @@ class QSFSurveyCompiler(object):
 				qsf_json = self.parse_json(path_to_qsf)
 				survey = self.compile_survey(qsf_json)
 				return survey
-			except Error as e:
-				raise ValueError(f'Could not parse survey file. This is not a user error, file may be corrupted. Please contact Systems Developer.')
+			except Exception as e:
+				raise ValueError(f'Could not parse survey file. This is not a user error, file may be corrupted. \nPlease contact Systems Developer.')
 		else:
 			return None
 
