@@ -13,6 +13,7 @@ class ToplineView(ttk.Frame):
 		super().__init__(parent)
 
 		self.controller = controller
+		self.parent = parent
 
 		# create widgets		
 		# input frequencies file section
@@ -65,6 +66,7 @@ class ToplineView(ttk.Frame):
 		self.group_entry = ttk.Entry(self, textvariable=self.group_var, width=30)
 		self.group_entry.grid(row=4, column=1, sticky=tk.NSEW)
 
+
 		self.group_message_label = ttk.Label(self, text='', foreground='red')
 		self.group_message_label.grid(row=4, column=2, sticky=tk.W)
 
@@ -75,26 +77,29 @@ class ToplineView(ttk.Frame):
 		self.submit_message = ttk.Label(self, text='', foreground='blue')
 		self.submit_message.grid(row=6, column=1, sticky=tk.W)
 
-	def show_matcher(self, csv_questions, qsf_questions):
+	def show_matcher(self, csv_questions, qsf_questions, groups):
 		# create a popup-window
 		self.matcher_window = tk.Toplevel()
 		
 		# create frequency matcher view and place it in window
-		matcher = frequency_matcher.Matcher(self.matcher_window, csv_questions, qsf_questions, self.controller)
+		matcher = frequency_matcher.Matcher(self.matcher_window, csv_questions, qsf_questions, groups, self.controller)
 		matcher.pack(side="top", fill="both", expand=True)
 
 	def hide_matcher(self):
 		self.matcher_window.destroy()
 
 	def show_loading_success(self, message):
+		self.update_idletasks()
 		self.submit_message['foreground'] = 'blue'
 		self.submit_message['text'] = message
-		self.submit_message.after(3000, self.hide_submit_message)
+		self.submit_message.after(1000, self.hide_submit_message)
 
 	def hide_submit_message(self):
 		self.submit_message['text'] = ''
+		self.parent.destroy()
 
 	def show_loading_error(self, message):
+		self.update_idletasks()
 		self.submit_message['foreground'] = 'red'
 		self.submit_message['text'] = message
 		
@@ -116,6 +121,7 @@ class ToplineView(ttk.Frame):
 		:param message:
 		:return:
 		"""
+		self.update_idletasks()
 		self.freq_message_label['text'] = message
 		self.freq_message_label['foreground'] = 'red'
 
@@ -146,6 +152,7 @@ class ToplineView(ttk.Frame):
 		:param message:
 		:return:
 		"""
+		self.update_idletasks()
 		self.output_message_label['text'] = message
 		self.output_message_label['foreground'] = 'red'
 
@@ -176,6 +183,7 @@ class ToplineView(ttk.Frame):
 		:param message:
 		:return:
 		"""
+		self.update_idletasks()
 		self.survey_message_label['text'] = message
 		self.survey_message_label['foreground'] = 'red'
 
@@ -194,6 +202,7 @@ class ToplineView(ttk.Frame):
 		:param message:
 		:return:
 		"""
+		self.update_idletasks()
 		self.group_message_label['text'] = message
 		self.group_message_label['foreground'] = 'green'
 

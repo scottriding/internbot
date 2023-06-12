@@ -15,11 +15,18 @@ class BlockSorter(Sorter):
         super(BlockSorter, self).__init__(sort_order)
 
     def compare(self, block1, block2):
-        block1_location = self.sort_order.index(block1.blockid)
-        block2_location = self.sort_order.index(block2.blockid)
-        if block1_location > block2_location:
+        if block1.blockid in self.sort_order and block2.blockid in self.sort_order:
+            block1_location = self.sort_order.index(block1.blockid)
+            block2_location = self.sort_order.index(block2.blockid)
+            if block1_location > block2_location:
+                return 1
+            elif block1_location < block2_location:
+                return -1
+            else:
+                return 0
+        elif block1.blockid not in self.sort_order:
             return 1
-        elif block1_location < block2_location:
+        elif block2.blockid not in self.sort_order:
             return -1
         else:
             return 0

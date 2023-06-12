@@ -63,6 +63,7 @@ class CrosstabsView(ttk.Frame):
 		self.submit_message.grid(row=4, column=1, sticky=tk.W)
 
 	def show_loading_success(self, message):
+		self.update_idletasks()
 		self.submit_message['foreground'] = 'blue'
 		self.submit_message['text'] = message
 		self.submit_message.after(3000, self.hide_submit_message)
@@ -71,6 +72,7 @@ class CrosstabsView(ttk.Frame):
 		self.submit_message['text'] = ''
 
 	def show_loading_error(self, message):
+		self.update_idletasks()
 		self.submit_message['foreground'] = 'red'
 		self.submit_message['text'] = message
 
@@ -124,6 +126,7 @@ class CrosstabsView(ttk.Frame):
 		:param message:
 		:return:
 		"""
+		self.update_idletasks()
 		self.output_message['text'] = message
 		self.output_message['foreground'] = 'red'
 
@@ -143,6 +146,7 @@ class CrosstabsView(ttk.Frame):
 		self.format_message['text'] = ''
 	
 	def show_format_error(self, message):
+		self.update_idletasks()
 		self.format_message['text'] = message
 		self.format_message['foreground'] = 'red'
 		

@@ -41,8 +41,8 @@ class View(ttk.Frame):
 		self.topline = topline_view.ToplineView(topline_window, self.controller)
 		self.topline.grid(row=0, column=0, padx=10, pady=10)
 
-	def show_topline_matcher(self, csv_questions, qsf_questions):
-		self.topline.show_matcher(csv_questions, qsf_questions)
+	def show_topline_matcher(self, csv_questions, qsf_questions, groups):
+		self.topline.show_matcher(csv_questions, qsf_questions, groups)
 		
 	def hide_topline_matcher(self):
 		self.topline.hide_matcher()

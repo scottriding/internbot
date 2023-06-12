@@ -42,8 +42,8 @@ class Model(object):
     def build_document_model(self, path_to_csv, groups, survey):
         return topline.Topline().build_document_model(path_to_csv, groups, survey)
 
-    def build_document_report(self, question_blocks, path_to_template, path_to_output):
-        topline.Topline().build_document_report(question_blocks, path_to_template, path_to_output)
+    def build_document_report(self, question_blocks, groups, path_to_template, path_to_output):
+        topline.Topline().build_document_report(question_blocks, groups, path_to_template, path_to_output)
 
     def build_powerpoint_model(self, path_to_csv, groups, survey):
         return topline.Topline().build_powerpoint_model(path_to_csv, groups, survey)

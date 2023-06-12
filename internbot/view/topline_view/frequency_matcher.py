@@ -5,7 +5,7 @@ import tkinter as tk
 from tkinter import ttk
 
 class Matcher(tk.Frame):
-	def __init__(self, parent, csv_questions, qsf_questions, controller):
+	def __init__(self, parent, csv_questions, qsf_questions, groups, controller):
 
 		tk.Frame.__init__(self, parent)
 		self.canvas = tk.Canvas(self, borderwidth=0)
@@ -22,6 +22,7 @@ class Matcher(tk.Frame):
 		
 		self.qsf_questions = qsf_questions
 		self.csv_questions = csv_questions
+		self.groups = groups
 
 		current_row = self.populate()
 		
@@ -111,5 +112,5 @@ class Matcher(tk.Frame):
 				question_to_change.type = rematch.type
 				question_to_change.responses = rematch.responses
 				
-		self.controller.finalize_topline(self.qsf_questions)
+		self.controller.finalize_topline(self.qsf_questions, self.groups)
 				

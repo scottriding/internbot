@@ -11,9 +11,9 @@ class AppendixView(ttk.Frame):
 
 		# set the controller
 		self.controller = controller
-
-		# create widgets
+		self.parent = parent
 		
+		# create widgets
 		# verbatims
 		self.verbatims_label = ttk.Label(self, text='Path to verbatims file:', justify=tk.RIGHT, anchor="e")
 		self.verbatims_label.grid(sticky = tk.E, row=1, column=0)
@@ -50,14 +50,17 @@ class AppendixView(ttk.Frame):
 		self.submit_message.grid(row=3, column=1, sticky=tk.W)
 
 	def show_loading_success(self, message):
+		self.update_idletasks()
 		self.submit_message['foreground'] = 'blue'
 		self.submit_message['text'] = message
-		self.submit_message.after(3000, self.hide_submit_message)
+		self.submit_message.after(1000, self.hide_submit_message)
 
 	def hide_submit_message(self):
 		self.submit_message['text'] = ''
+		self.parent.destroy()
 
 	def show_loading_error(self, message):
+		self.update_idletasks()
 		self.submit_message['foreground'] = 'red'
 		self.submit_message['text'] = message
 
@@ -67,7 +70,6 @@ class AppendixView(ttk.Frame):
 		Handle verbatims button click event
 		:return:
 		"""
-		self.hide_submit_message()
 		filename = filedialog.askopenfilename(title='Open a verbatims file', initialdir='~/', filetypes=[('Comma-Separated File', '*.csv')])
 		if filename:
 			self.verbatims_entry['state'] = "normal"
@@ -81,6 +83,7 @@ class AppendixView(ttk.Frame):
 		:param message:
 		:return:
 		"""
+		self.update_idletasks()
 		self.verbatims_message['text'] = message
 		self.verbatims_message['foreground'] = 'red'
 
@@ -98,7 +101,6 @@ class AppendixView(ttk.Frame):
 		Handle output button click event
 		:return:
 		"""
-		self.hide_submit_message()
 		filename = filedialog.asksaveasfilename(title='Save report', initialdir='~/', filetypes=[('Microsoft Word Document', '*.docx')])
 		if filename:
 			self.output_entry['state'] = "normal"
@@ -112,6 +114,7 @@ class AppendixView(ttk.Frame):
 		:param message:
 		:return:
 		"""
+		self.update_idletasks()
 		self.output_message['text'] = message
 		self.output_message['foreground'] = 'red'
 
@@ -161,8 +164,6 @@ class AppendixView(ttk.Frame):
 		Handle submit button click event
 		:return:
 		"""
-		self.hide_submit_message()
-		
 		# check all entry variables for valid paths/exts
 		# we do global check on variables so all input errors can be shown at once
 		self.check_verbatims()

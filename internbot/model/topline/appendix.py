@@ -21,6 +21,8 @@ class Appendix(object):
 				raise ValueError(f'Missing column: prompt')
 			if row.get("label") is None:
 				raise ValueError(f'Missing column: label')
+			if row.get("base_ns") is None:
+				raise ValueError(f'Missing column: base_ns')
 			break
 
 	def build_appendix_report(self, question_blocks, path_to_output, template_path):
@@ -52,7 +54,7 @@ class Document(object):
 		paragraph_format = paragraph.paragraph_format
 		paragraph_format.keep_together = True
 		paragraph_format.left_indent = docx.shared.Inches(1)
-		prompt_to_add = "\t%s (n = %s)\n" % (question.prompt, len(question.responses))
+		prompt_to_add = "\t%s %s\n" % (question.prompt, question.base_n)
 		paragraph.add_run(prompt_to_add)
 		paragraph_format.first_line_indent = docx.shared.Inches(-1)
 

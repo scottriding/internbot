@@ -58,17 +58,17 @@ class Controller:
 			questions = self.model.build_document_model(frequency_path, groups, survey)
 			if survey:
 				csv_questions = self.model.build_document_model(frequency_path, groups, None)
-				self.view.show_topline_matcher(csv_questions, questions)
+				self.view.show_topline_matcher(csv_questions, questions, groups)
 			else:
-				self.model.build_document_report(questions, self.template_path, self.output_path)
+				self.model.build_document_report(questions, groups, self.template_path, self.output_path)
 				self.view.topline_show_success("Done!")
 		except ValueError as error:
 			self.view.topline_show_error(error)
 
-	def finalize_topline(self, qsf_questions):
+	def finalize_topline(self, qsf_questions, groups):
 		try:
 			self.view.hide_topline_matcher()
-			self.model.build_document_report(qsf_questions, self.template_path, self.output_path)
+			self.model.build_document_report(qsf_questions, groups, self.template_path, self.output_path)
 			self.view.topline_show_success("Done!")
 		except ValueError as error:
 			self.view.topline_show_error(error)
@@ -78,7 +78,7 @@ class Internbot(tk.Tk):
 	def __init__(self):
 		super().__init__()
 		
-		self.title('internbot 1.4.0')
+		self.title('internbot 1.4.1')
 
 		# create a model
 		internbot_model = model.Model()
