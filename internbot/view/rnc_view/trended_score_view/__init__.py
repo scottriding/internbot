@@ -1,0 +1,1 @@
+from view.rnc_view.trended_score_view.trended_score_view import TrendedScoreView

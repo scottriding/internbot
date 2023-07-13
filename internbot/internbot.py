@@ -1,3 +1,8 @@
+"""This is the example module.
+
+This module does stuff.
+"""
+
 from model import model
 from view import view
 
@@ -73,25 +78,47 @@ class Controller:
 		except ValueError as error:
 			self.view.topline_show_error(error)
 
-class Internbot(tk.Tk):
+	def run_scores_topline(self, path_to_input, round_number, location, path_to_output):
+		try:
+			score_details = self.model.build_scores_model(path_to_input, round_number)
+			self.model.build_scores_report(score_details, round_number, location, path_to_output)
+			self.view.rnc_score_show_success("Done!")
+		except ValueError as error:
+			self.view.rnc_score_show_error(error)
+
+	def run_issue_trended(self, path_to_input, round_number, path_to_output):
+		try:
+			issues_details = self.model.build_issues_model(path_to_input, round_number)
+			self.model.build_issues_report(issues_details, round_number, path_to_output)
+			self.view.rnc_issues_show_success("Done!")
+		except ValueError as error:
+			self.view.rnc_issues_show_error(error)
+	
+	def run_trended_score(self, path_to_input, round_number, path_to_output):
+		try:
+			trended_details = self.model.build_trended_model(path_to_input, round_number)
+			self.model.build_trended_report(trended_details, round_number, path_to_output)
+			self.view.rnc_trended_show_success("Done!")
+		except ValueError as error:
+			self.view.rnc_trended_show_error(error)
+
+class Internbot(object):
 
 	def __init__(self):
-		super().__init__()
-		
-		self.title('internbot 1.4.1')
-
 		# create a model
-		internbot_model = model.Model()
+		self.__internbot_model = model.Model()
 		
-		# create a view and place it on the root window
-		internbot_view = view.View(self)
-		internbot_view.grid(row=0, column=0, padx=10, pady=10)
+		# create a view
+		self.__internbot_view = view.View()
 		
 		#create a controller
-		controller = Controller(internbot_model, internbot_view)
+		controller = Controller(self.__internbot_model, self.__internbot_view)
 		
 		# set the controller to view
-		internbot_view.set_controller(controller)
+		self.__internbot_view.controller = controller
+
+	def run(self):
+		self.__internbot_view.mainloop()
 
 if __name__ == '__main__':
 	print("Welcome to internbot!")
@@ -103,4 +130,4 @@ if __name__ == '__main__':
 	#image_folder = os.path.join(sys._MEIPASS, 'resources/images/')
 	
 	internbot = Internbot()
-	internbot.mainloop()	
+	internbot.run()	

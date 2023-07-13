@@ -9,7 +9,7 @@ class ScoreToplineModels(object):
 
     def add_model(self, model_data):
         model_name = model_data["Model"]
-        model_desc = model_data["Survey question"]
+        model_desc = model_data["Survey question reference"]
 
         round_iteration = 1
         while round_iteration <= self.rounds:

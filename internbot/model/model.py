@@ -54,20 +54,20 @@ class Model(object):
     def build_powerpoint_report(self, question_blocks, layout_index, path_to_output):
         topline.Topline().build_powerpoint_report(question_blocks, layout_index, path_to_output)
 
-    def build_scores_model(self, path_to_csv, round, location):
-        rnc.RNC().build_scores_model(path_to_csv, round, location)
+    def build_scores_model(self, path_to_csv, round_number):
+        return rnc.RNC().build_scores_model(path_to_csv, round_number)
 
-    def build_scores_report(self, path_to_output):
-        rnc.RNC().build_scores_report(path_to_output)
+    def build_scores_report(self, score_details, round_number, location, path_to_output):
+        rnc.RNC().build_scores_report(score_details, round_number, location, path_to_output)
 
-    def build_issues_model(self, path_to_csv, round):
-        rnc.RNC().build_issues_model(path_to_csv, round)
+    def build_issues_model(self, path_to_csv, round_number):
+        return rnc.RNC().build_issues_model(path_to_csv, round_number)
 
-    def build_issues_report(self, path_to_output):
-        rnc.RNC().build_issues_report(path_to_output)
+    def build_issues_report(self, issues_details, round_number, path_to_output):
+        rnc.RNC().build_issues_report(issues_details, round_number, path_to_output)
 
-    def build_trended_model(self, path_to_csv, round):
-        rnc.RNC().build_trended_model(path_to_csv, round)
+    def build_trended_model(self, path_to_csv, round_number):
+        return rnc.RNC().build_trended_model(path_to_csv, round_number)
 
     def build_trended_report(self, path_to_output):
         rnc.RNC().build_trended_report(path_to_output)
